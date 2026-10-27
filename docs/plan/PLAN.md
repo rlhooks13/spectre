@@ -170,7 +170,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - `core.longpaths`. It's a per-clone setting: the README clone line carries it, and the owner sets it on the Windows signing checkout.
    - Scripts write `encoding="utf-8", newline="\n"`.
    - Delete the committed APK and PDFs and gitignore them.
-3. **Build.**
+3. ✅ **Build.** (Dependency verification: owner-signed #32.)
    - Version catalog.
    - The `debug` / `staging` / `release` build types.
    - Signing only in CI.
@@ -184,7 +184,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - ✅ **P0-4a** `Brand` plus the non-copy literals: TAK callsign, GPX/KML/GeoJSON/WiGLE creator, export file names and titles, log tags, User-Agent, crash and report headers. Stable identifiers stay: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names.
      - ✅ **P0-4b** English copy values (`ChromeLines`, `LanguageCopy`) and `strings.xml`. Keys never change. Also the hard-coded English copy outside the language map: `PlaceLookup.kt` (online-lookup line) and the `GnssInterference.kt` explanations. The `SitTakPackage` zip folder fallback `"fieldwatch"` stays as an id.
      - ✅ **P0-4c** Remove upstream's social links.
-     - **P0-4d** (protected) `SpectreDisclaimer` and the `disclaimerRev` bump. The same owner-reviewed PR also settles the other legal and attribution copy that names Off Grid Pete LLC:
+     - ✅ **P0-4d** (protected; owner-signed #33) `SpectreDisclaimer` and the `disclaimerRev` bump. The same owner-reviewed PR also settles the other legal and attribution copy that names Off Grid Pete LLC:
        - the in-app copyright line `ui.copyright.c.2026.off` (MIT requires keeping upstream's notice; add the Spectre contributors);
        - the debrief PDF footer `ui.off.grid.pete.llc`;
        - `OfficialSentences.NOT_REVIEWED` on the language screen.
@@ -220,8 +220,8 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - The two-job release workflow (see Release model). The release notes list the APK's SHA-256 and the signing certificate's SHA-256, which the README and install card promise.
    - CI uploads the staging APK as its artifact; debug is debuggable and unminified (P0-3).
    - Split into sub-steps (both are protected PRs the owner signs and copies into `.github/workflows/`):
-     - **P0-8a** CI workflow draft (`docs/setup/workflows/android.yml`): wrapper validation, unit tests, lint, the test-count guard, unsigned `assembleRelease`, `assembleStaging` uploaded as the artifact. Actions pinned by SHA.
-     - **P0-8b** Release workflow draft (`docs/setup/workflows/release.yml`): the two-job release.
+     - ✅ **P0-8a** (owner-signed #37) CI workflow draft (`docs/setup/workflows/android.yml`): wrapper validation, unit tests, lint, the test-count guard, unsigned `assembleRelease`, `assembleStaging` uploaded as the artifact. Actions pinned by SHA.
+     - ✅ **P0-8b** (owner-signed #34) Release workflow draft (`docs/setup/workflows/release.yml`): the two-job release.
      - ✅ **P0-8c** Version from the git tag (ADR-0002). `vX.Y.Z` and `dryrun/v0.0.Z` tags give the version, and untagged builds give `X.Y.Z-dev+<sha>`. Needs P0-4h.
      - **P0-8d** Release-notes generator: every label and verdict change, from the catalog diff and the flag states. Depends on the per-version catalog snapshots (`catalog/snapshots/`), which the first catalog PR (P1-B1) adds, so it lands after P1-B1 and before the 0.1.0 tag. Notes are hand-written until it lands.
 

@@ -2,26 +2,29 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved; unblocked now that #33 merged). Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`. Also:
-  - **P1-A1** is PR #38, a protected PR (verification metadata, approved dependencies, baseline 807) waiting for the owner's signature. A2 → A3 → 1B–1E follow once it merges.
-  - **P2-1** (build-logic) is unblocked by the dependency list.
+- Current step: none open for the agent; two protected PRs wait for the owner's signature:
+  - **P0-4e** is PR #39. The owner also copies its release.yml hunk into `.github/workflows/release.yml`; until then a release fails at the aapt2 package check.
+  - **P1-A1** is PR #38 (verification metadata, approved dependencies, baseline 807). A2 → A3 → 1B–1E follow once it merges.
+  - Whichever of #38 and #39 merges second is rebased, and #39 raises the baseline by 1 for its `ApplicationIdTest`.
+  - **P2-1** (build-logic) is unblocked by the dependency list, but it moves `app/build.gradle.kts` config that #38 and #39 both change, so it starts after they merge.
   - **P0-8d** after P1-B1.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** signing #38 (P1-A1); the P0-7c layer choice.
+  - **Waiting on the owner:** signing #38 (P1-A1) and #39 (P0-4e); the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `main` (no work in progress)
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T16:40Z
+- Last cycle: 2026-10-27T15:49Z
 
 ## Needs human (owner)
 **For the owner:**
+- **Sign and merge #39 (P0-4e, applicationId).** In the same signed merge, apply its `docs/setup/workflows/release.yml` hunk to `.github/workflows/release.yml` (the agent's token can't push workflows). Until then, every release fails at the aapt2 package check, which still expects `app.fieldwatch`.
 - **Sign and merge #38 (P1-A1).** It adds `android-all-instrumented` and Robolectric's test-only transitive crypto (BouncyCastle, Conscrypt) to `approved-dependencies.md`. Robolectric pins SDK 34 because SDK 35 needs Java 21 and CI runs 17. Moving CI to Java 21 would allow 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
@@ -62,6 +65,15 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Bookkeeping and P0-4e.**
+  - Ticked P0-3 (Build; #32), P0-4d (#33), P0-8a (#37) and P0-8b (#34) in PLAN.
+  - **P0-4e** opened as PR #39 (protected):
+    - `applicationId` is `io.github.rlhooks13.spectre`; the namespace and package are unchanged.
+    - The Debrief "Tool" line's value changed in English and in all 26 packs; the key didn't.
+    - `BrandTest` lost the old-id exemption, and the new `ApplicationIdTest` pins the id.
+    - Updated: README, NOTICE, the capture runbook and ADR-0016 `run-as`, the manual and diagram generators, and the release.yml draft.
+    - On the phone, `io.github.rlhooks13.spectre.debug` and `.staging` install next to the `app.fieldwatch*` packages and run without crashes.
+  - Reviews: no blocking findings. The live release.yml is the owner's step (see Needs human).
 - 2026-10-27: **Owner PRs all merged** (relayed): #32 (#6), #33 (#10), #34 (#20), #35 (CLAUDE.md key rule, build plugins), #36 (staging test keystore), #37 (#19). #6, #10, #19 and #20 are closed. Main is e8ff4a6. #37 also raised `org.gradle.jvmargs` to `-Xmx4g -XX:MaxMetaspaceSize=1g` and `kotlin.daemon.jvmargs` to `-Xmx4g`, after the APK job's three-variant build ran out of memory at 2 GB. CI reports 854 passing tests against the 804 baseline. The release environment accepts `dryrun/v*`. P0-4e, P1-A1 and P2-1 are unblocked. P1-A1 opened as #38 (protected).
 - 2026-10-27: **Owner update,** relayed the same way:
   1. #32 (the owner-signed #6, P0-3 dependency verification) merged and #6 is closed, so **P1-A1 is unblocked**. #33 (#10), #34 (#20), #37 (#19: CI workflow, baseline 804, lint baseline protected), #35 (CLAUDE.md key rule and build plugins) and #36 (staging test keystore) are in CI; the owner merges each when green.
