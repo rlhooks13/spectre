@@ -33,10 +33,10 @@ class PlaceStore(private val file: File) {
     private var cacheMine = 0
     private var cacheKeys: Set<String> = emptySet()
 
-    fun load() {
+    /** Reads the file and drops records older than the retention window at [now]. */
+    fun load(now: Long = System.currentTimeMillis()) {
         val text = runCatching { file.readText() }.getOrNull() ?: return
         val parsed = runCatching { json.decodeFromString<PlaceFile>(text) }.getOrNull() ?: return
-        val now = System.currentTimeMillis()
         synchronized(lock) {
             records.clear()
             for (record in parsed.records) {

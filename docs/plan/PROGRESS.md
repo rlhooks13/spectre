@@ -69,10 +69,13 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - #51 (prompts and packs) merged.
   - **Fixtures:** the five files under `fixtures/fieldwatch-1.1.32/` were written by the 1.1.32 code itself (a worktree at 819365d, each store's own Json) from synthetic inputs: config, a saved sit, places, and both share packs. The generator is in the folder's README.
   - **`Fieldwatch1132DecodeTest`** (Robolectric) reads them as the app does: ConfigStore.load, SitStore, SettingsExchange.apply and SignatureExchange.merge. Places are decoded with PlaceStore's Json, because PlaceStore.load prunes against the wall clock.
+  - **The fixtures are a real install's shape:** every stock row with its decode, Tile off, a custom row, a preset, a live-decode chip, a flood and a GNSS mark in the sit, and `localDay` derived from the time.
   - **Findings, pinned:**
-    - A signature pack's stock row with `enabled = false` is skipped as "already present" when merged, so a disabled state doesn't carry over in a pack.
+    - A signature pack's stock row with `enabled = false` is skipped as "already present" when merged (new P1-E6).
+    - `onlineLookup = true` carries over from 1.1.32 files without Spectre's first-run choice (P1-E6).
     - 1.1.32's places.json has no `format` key.
-    - PlaceStore.load reads the wall clock (a testability follow-up for the importer).
+    - `offerLiveTourOnce` bumps `liveTourRev` 0 → 1 on load.
+  - `PlaceStore.load(now)` takes the time, so the test runs the real loader.
 - 2026-10-27: **Owner update (in session), and P1-A3's AI prompts and packs.**
   - **Usage gate:** #50 (3bd5de2) merged. Work runs only while the weekly window is under 80% and the five-hour window under 90%. Pre-flight step 5 runs `tools/usage-watch.sh --gate`, and a paused wakeup is cheap. The watcher was restarted from the new script, and the gate was open (five-hour 16/90, weekly 50/80).
   - **CI flake:** main CI was red on ba09e1f (#48). The APK job's dependency verification fetched `org.jetbrains.kotlin.android.gradle.plugin-2.0.21.pom` from the Gradle Plugin Portal: an auto-generated copy (681 bytes, sha256 9d841037…) where Maven Central's matches the pin (61ffa872…). The owner re-ran the job, and main is green. **Don't change `verification-metadata.xml` for it; if it happens again, tell the owner.**

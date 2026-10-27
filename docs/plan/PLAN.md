@@ -359,6 +359,9 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Ship `scripts/build_sensors.py`: an Overpass query, the ODbL license file, and the "© OpenStreetMap contributors" credit in the UI and exports.
   - Build and host the list from this repo (or a release asset); set `SensorList.OTHER.url` and `Features.OTHER_SENSORS_LAYER`.
   - Gate the download through `NetworkPolicy`.
+- **P1-E6 What carries over from Fieldwatch** (found by the P1-A3 1.1.32 decode goldens, `golden/import-1.1.32/`, which pin today's behavior; the fix re-blesses them):
+  - A signature pack's stock row turned off (`enabled = false`) is skipped as "already present" on merge, so the off choice is lost. It should carry over.
+  - `onlineLookup = true` carries over from a 1.1.32 config or settings pack, so a migrating user never makes Spectre's first-run choice for online maps and place names. The import should ask.
 
 **1F. Capture v1** (debug builds only; its own workstream, not a prerequisite for the fixes)
 - ✅ **P1-F1 Contents** (ADR-0016; debug-only recorder, started over adb): full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.

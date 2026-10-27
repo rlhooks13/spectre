@@ -1,9 +1,11 @@
 package app.fieldwatch.testing
 
 import app.fieldwatch.data.ConfigStore
+import app.fieldwatch.data.PlaceStore
 import app.fieldwatch.data.SitStore
 import app.fieldwatch.domain.DefaultCatalog
 import app.fieldwatch.domain.Fleet
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.PersistedConfig
 import app.fieldwatch.domain.PlaceMemory
 import app.fieldwatch.domain.SettingsExchange
@@ -20,10 +22,11 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.put
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
@@ -34,15 +37,27 @@ import java.io.File
 
 /**
  * P1-A3: real Fieldwatch 1.1.32 files, decoded by today's code. The fixtures under `fixtures/fieldwatch-1.1.32/`
- * were written by the 1.1.32 code itself (819365d, each store's own Json settings) from synthetic inputs, and become
- * the importer's fixtures. Each is read the way the app reads it: config.json through ConfigStore.load, a sit through
- * SitStore, the share packs through SettingsExchange / SignatureExchange, and places.json with PlaceStore's settings.
- * The goldens hold what the app ends up with.
+ * were written by the 1.1.32 code itself (819365d, each store's own Json settings) from synthetic inputs; see the
+ * README there. They become the importer's fixtures. Each is read the way the app reads it:
+ * - config.json through ConfigStore.load;
+ * - a sit through SitStore;
+ * - places.json through PlaceStore.load at [Golden.NOW];
+ * - the settings pack through ConfigStore.importSettings on a fresh install;
+ * - the signature pack through SignatureExchange.merge into today's stock catalog.
+ *
+ * Each first checks the file decodes at all, because the stores fall back silently (a fresh config, a skipped sit,
+ * no places). The goldens hold what the app ends up with.
  */
 @RunWith(RobolectricTestRunner::class)
 class Fieldwatch1132DecodeTest {
     @get:Rule
     val golden = GoldenRule()
+
+    /** ConfigStore sets the process-wide NetworkPolicy settings; leave them unset for the next test. */
+    @After
+    fun forgetSettings() {
+        NetworkPolicy.settings = null
+    }
 
     private val json = Json { prettyPrint = true; encodeDefaults = true }
 
@@ -57,11 +72,15 @@ class Fieldwatch1132DecodeTest {
     /** config.json through ConfigStore.load: the stored catalog is patched against today's stock rows. */
     @Test
     fun configJson() {
+        // Decodes on its own terms first: ConfigStore would quietly seed a fresh config on a failure.
+        val raw = Json { ignoreUnknownKeys = true }.decodeFromString(PersistedConfig.serializer(), fixture("config.json").readText(Charsets.UTF_8))
+        assertEquals("AB23", raw.takInstallTag)
         val file = File(RuntimeEnvironment.getApplication().filesDir, "config.json")
         fixture("config.json").copyTo(file, overwrite = true)
         val store = ConfigStore(file)
         runBlocking { store.load() }
         val cfg = store.config.value
+        assertEquals("the stored config was replaced", "AB23", cfg.takInstallTag)
         val out = buildJsonObject {
             put("version", cfg.version)
             put("fleetCount", cfg.fleets.size)
@@ -70,7 +89,7 @@ class Fieldwatch1132DecodeTest {
             put("watchlist", json.encodeToJsonElement(cfg.watchlist))
             put("settings", json.encodeToJsonElement(cfg.settings))
             put("filter", json.encodeToJsonElement(cfg.filter))
-            put("presets", JsonArray(cfg.presets.map { JsonPrimitive(it.id) }))
+            put("presets", json.encodeToJsonElement(cfg.presets))
             put("hiddenPresetIds", JsonArray(cfg.hiddenPresetIds.sorted().map(::JsonPrimitive)))
             put("arrivalKnownKeys", JsonArray(cfg.arrivalKnownKeys.sorted().map(::JsonPrimitive)))
             put("takInstallTag", cfg.takInstallTag)
@@ -82,16 +101,18 @@ class Fieldwatch1132DecodeTest {
     @Test
     fun savedSit() {
         val app = RuntimeEnvironment.getApplication()
+        Json { ignoreUnknownKeys = true }.decodeFromString(SitFile.serializer(), fixture("sits/sit-1132-golden.json").readText(Charsets.UTF_8))
         File(app.filesDir, "sits").mkdirs()
         fixture("sits/sit-1132-golden.json").copyTo(File(app.filesDir, "sits/sit-1132-golden.json"), overwrite = true)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         try {
             val store = SitStore(app, scope)
             runBlocking { store.load() }
-            val file = store.sitFile("sit-1132-golden")!!
+            val file = store.sitFile("sit-1132-golden")
+            assertNotNull("SitStore skipped the 1.1.32 sit", file)
             val out = buildJsonObject {
                 put("listed", json.encodeToJsonElement(store.ui.value.closed))
-                put("file", json.encodeToJsonElement(SitFile.serializer(), file))
+                put("file", json.encodeToJsonElement(SitFile.serializer(), file!!))
             }
             Golden.assertJson("import-1.1.32/sit.json", out.toString())
         } finally {
@@ -99,29 +120,34 @@ class Fieldwatch1132DecodeTest {
         }
     }
 
-    /**
-     * places.json with PlaceStore's own Json. PlaceStore.load also prunes against the wall clock, so the test decodes
-     * the records directly to keep the golden fixed.
-     */
+    /** places.json through PlaceStore.load at NOW (it prunes against the time it's given). */
     @Test
     fun placesJson() {
-        val placeJson = Json { ignoreUnknownKeys = true; encodeDefaults = false }
-        val root = placeJson.parseToJsonElement(fixture("places.json").readText(Charsets.UTF_8)).jsonObject
-        assertNull(root["format"]) // 1.1.32 wrote no format key (its default, with encodeDefaults = false)
-        val records = placeJson.decodeFromJsonElement(ListSerializer(PlaceMemory.Record.serializer()), root.getValue("records").jsonArray)
+        val text = fixture("places.json").readText(Charsets.UTF_8)
+        assertNull(Json.parseToJsonElement(text).jsonObject["format"]) // 1.1.32 wrote no format key (its default)
+        val file = File(RuntimeEnvironment.getApplication().filesDir, "places.json")
+        fixture("places.json").copyTo(file, overwrite = true)
+        val store = PlaceStore(file)
+        store.load(now = Golden.NOW)
+        val records = store.snapshot().sortedBy { it.id }
+        assertEquals("PlaceStore dropped the 1.1.32 records", 1, records.size)
         Golden.assertJson("import-1.1.32/places.json", json.encodeToString(ListSerializer(PlaceMemory.Record.serializer()), records))
     }
 
-    /** The settings share pack, imported onto a fresh install's config. */
+    /** The settings share pack, imported the way the app imports one (ConfigStore.importSettings) onto a fresh install. */
     @Test
     fun settingsPack() {
         val pack = SettingsExchange.parse(fixture("settings-pack.json").readText(Charsets.UTF_8))
-        val (cfg, result) = SettingsExchange.apply(PersistedConfig(), pack)
+        val store = ConfigStore(File(RuntimeEnvironment.getApplication().filesDir, "fresh-config.json"))
+        runBlocking { store.load() } // a fresh install seeds its config
+        val result = runBlocking { store.importSettings(pack) }
         assertNull(result.error)
+        val cfg = store.config.value
         val out = buildJsonObject {
             put("result", result.summary())
             put("watchlist", json.encodeToJsonElement(cfg.watchlist))
             put("settings", json.encodeToJsonElement(cfg.settings))
+            put("presets", json.encodeToJsonElement(cfg.presets))
             put("hiddenPresetIds", JsonArray(cfg.hiddenPresetIds.sorted().map(::JsonPrimitive)))
         }
         Golden.assertJson("import-1.1.32/settings-pack.json", out.toString())

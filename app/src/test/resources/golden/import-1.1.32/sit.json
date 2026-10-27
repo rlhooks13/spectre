@@ -1,9 +1,31 @@
 {
     "file": {
-        "floods": [],
+        "floods": [
+            {
+                "at": 1793101500000,
+                "families": [
+                    "Apple proximity pairing"
+                ],
+                "keys": [
+                    "BLE:6A:00:00:00:00:01"
+                ],
+                "medianRssi": -58,
+                "nameCount": 6,
+                "popupCount": 14,
+                "wifi": false
+            }
+        ],
         "format": "fieldwatch-sit",
         "formatVersion": 1,
-        "gnss": [],
+        "gnss": [
+            {
+                "at": 1793101620000,
+                "confidence": "Low",
+                "detail": "Signal-to-noise dropped on every constellation",
+                "endedAt": 1793101680000,
+                "kind": "jamming"
+            }
+        ],
         "operatorPath": [
             {
                 "at": 1793101200000,
@@ -59,7 +81,13 @@
                 "key": "BLE:7A:11:22:33:44:01",
                 "kind": "BLE",
                 "lastSeen": 1793102370000,
-                "liveDecode": [],
+                "liveDecode": [
+                    {
+                        "emphasis": true,
+                        "note": "Away from its owner.",
+                        "text": "separated"
+                    }
+                ],
                 "mac": "7A:11:22:33:44:01",
                 "name": "",
                 "payloadLat": null,

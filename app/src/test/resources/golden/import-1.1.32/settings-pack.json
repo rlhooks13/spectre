@@ -1,8 +1,41 @@
 {
     "hiddenPresetIds": [
-        "preset-hidden-test"
+        "wifi"
     ],
-    "result": "Restored Settings, the current filter, and 0 presets. 2 named radios, 1 signature watch.",
+    "presets": [
+        {
+            "filter": {
+                "arrivalsOnly": false,
+                "classes": [
+                    "FINDER",
+                    "BEACON"
+                ],
+                "customNamesOnly": false,
+                "excludeClasses": false,
+                "excludeSignatures": false,
+                "fleetIds": [],
+                "hideFastPairAccountKey": false,
+                "hideMine": false,
+                "includeFleetIds": [],
+                "includeSignatures": false,
+                "logic": "OR",
+                "movingWithYou": false,
+                "nameQuery": "",
+                "namedOnly": false,
+                "ouiQuery": "",
+                "rssiMin": -100,
+                "seenAtPlaces": false,
+                "showBle": true,
+                "showWifi": true,
+                "useClassFilter": true,
+                "useFleetFilter": false,
+                "watchedOnly": false
+            },
+            "id": "user-finders",
+            "name": "Finders, either radio"
+        }
+    ],
+    "result": "Restored Settings, the current filter, and 1 preset. 2 named radios, 1 signature watch.",
     "settings": {
         "alertBeep": true,
         "alertShade": false,
@@ -47,7 +80,7 @@
         "listTitleLine": "MAC",
         "livePathSplit": 0.5,
         "liveTourDone": false,
-        "liveTourRev": 0,
+        "liveTourRev": 1,
         "logFormat": "CSV",
         "logRotateKb": 1024,
         "loggingEnabled": true,

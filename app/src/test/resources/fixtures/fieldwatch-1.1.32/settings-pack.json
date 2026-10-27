@@ -114,7 +114,39 @@
         "classes": [],
         "hideMine": false
     },
-    "presets": [],
+    "presets": [
+        {
+            "id": "user-finders",
+            "name": "Finders, either radio",
+            "filter": {
+                "namedOnly": false,
+                "customNamesOnly": false,
+                "watchedOnly": false,
+                "useFleetFilter": false,
+                "excludeSignatures": false,
+                "fleetIds": [],
+                "includeSignatures": false,
+                "includeFleetIds": [],
+                "showWifi": true,
+                "showBle": true,
+                "rssiMin": -100,
+                "nameQuery": "",
+                "ouiQuery": "",
+                "logic": "OR",
+                "movingWithYou": false,
+                "seenAtPlaces": false,
+                "arrivalsOnly": false,
+                "hideFastPairAccountKey": false,
+                "useClassFilter": true,
+                "excludeClasses": false,
+                "classes": [
+                    "FINDER",
+                    "BEACON"
+                ],
+                "hideMine": false
+            }
+        }
+    ],
     "watchlist": [
         {
             "id": "w-tag",
@@ -151,6 +183,6 @@
         }
     ],
     "hiddenPresetIds": [
-        "preset-hidden-test"
+        "wifi"
     ]
 }

@@ -8,6 +8,29 @@
             "builtIn": true,
             "clusterByOui": false,
             "colorIndex": 3,
+            "decode": {
+                "companyId": null,
+                "fields": [
+                    {
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "endian": "le",
+                        "enum": null,
+                        "id": "private_id",
+                        "label": "Private ID",
+                        "length": 8,
+                        "modulo": null,
+                        "offset": 0,
+                        "offsetAdd": null,
+                        "scale": null,
+                        "type": "hex",
+                        "unit": null,
+                        "when": null
+                    }
+                ],
+                "serviceUuid": "FEED",
+                "source": "serviceData"
+            },
             "enabled": false,
             "id": "fleet-tile",
             "kind": "FINDER",
@@ -113,11 +136,43 @@
         "useFleetFilter": false,
         "watchedOnly": false
     },
-    "fleetCount": 4,
+    "fleetCount": 256,
     "hiddenPresetIds": [
-        "preset-hidden-test"
+        "wifi"
     ],
-    "presets": [],
+    "presets": [
+        {
+            "filter": {
+                "arrivalsOnly": false,
+                "classes": [
+                    "FINDER",
+                    "BEACON"
+                ],
+                "customNamesOnly": false,
+                "excludeClasses": false,
+                "excludeSignatures": false,
+                "fleetIds": [],
+                "hideFastPairAccountKey": false,
+                "hideMine": false,
+                "includeFleetIds": [],
+                "includeSignatures": false,
+                "logic": "OR",
+                "movingWithYou": false,
+                "nameQuery": "",
+                "namedOnly": false,
+                "ouiQuery": "",
+                "rssiMin": -100,
+                "seenAtPlaces": false,
+                "showBle": true,
+                "showWifi": true,
+                "useClassFilter": true,
+                "useFleetFilter": false,
+                "watchedOnly": false
+            },
+            "id": "user-finders",
+            "name": "Finders, either radio"
+        }
+    ],
     "settings": {
         "alertBeep": true,
         "alertShade": false,

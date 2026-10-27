@@ -85,7 +85,30 @@
             "notes": "Tile item finder. Decoded fields can show a rotating private id — not a serial.",
             "attentionNote": "",
             "builtIn": true,
-            "kind": "FINDER"
+            "kind": "FINDER",
+            "decode": {
+                "source": "serviceData",
+                "serviceUuid": "FEED",
+                "companyId": null,
+                "fields": [
+                    {
+                        "id": "private_id",
+                        "label": "Private ID",
+                        "offset": 0,
+                        "length": 8,
+                        "type": "hex",
+                        "endian": "le",
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": null,
+                        "when": null
+                    }
+                ]
+            }
         }
     ]
 }
