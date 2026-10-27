@@ -56,13 +56,22 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - It leaves keys, metadata (`format`, `writtenFor`) and layout alone, checks the JSON before and after, and lists inflected forms per language.
     - `--check` makes no changes and exits 1 if anything still needs the plain rebrand.
   - Ran on all 26 bundled packs: 1,288 lines changed, same keys.
-  - 39 inflected forms fixed by hand:
+  - 39 inflected forms fixed by hand, then corrected after the localization review:
     - da: Spectres.
-    - et: Spectre (genitive), Spectrel, Spectrega, Spectrele, SPECTRE.
+    - et: apostrophe endings for a silent final letter, read [spekter]: Spectre'i (genitive, 18 lines), Spectre'it (partitive), Spectre'il, Spectre'iga, Spectre'ile, SPECTRE'I.
     - fi: Spectren, Spectreen, Spectrelle.
-    - hu: Spectre-nek, Spectre-rel, Spectre-t (hyphenated, as Hungarian does for foreign names).
-    - tr: Spectre’ın, Spectre’ı.
-  - New `BrandTest.noBundledPackNamesTheUpstreamApp` checks all 26 packs (case-sensitive; the lowercase app id stays until P0-4e).
+    - hu: Spectre-nek, Spectre-rel, Spectre-t.
+    - tr: Spectre’in, Spectre’i (front-vowel harmony; the first draft wrongly used ’ın/’ı).
+    - sv: also fixed an upstream genitive slip, "Spectres batterisida".
+  - Localization review (independent reviewer with the gates.md Lens 4): da, fi and hu are correct, and agreement in the other 21 packs is fine. The et and tr errors are fixed as above.
+  - Left for the pack authors: Hungarian upstream typos "TEREMI" → "TEREPI" and "a értesítésből" → "az értesítésből" (not brand-related).
+  - Script hardening from review:
+    - Left word boundary that still allows a JSON escape such as `\n` right before the name.
+    - Hyphen compounds are listed for checking.
+    - Any joiner (’ ' ‘ ʼ :) counts as an inflection.
+    - `--check` fails while inflected forms remain.
+    - Line endings are preserved; the shebang enforces `-I`.
+  - New `BrandTest.noBundledPackNamesTheUpstreamApp` checks every pack in `BundledLanguages.all`. It's case-insensitive (`field\s?watch`), allowing only the app id `app.fieldwatch` until P0-4e.
   - Disclaimer: packs don't translate it; it's compiled English, so the English disclaimer is what users see (the step's condition holds).
   - Upstream's copyright and footer text in packs stays under the old keys, which PR #10 retires in favor of new ones.
   - Result: 773 tests green.

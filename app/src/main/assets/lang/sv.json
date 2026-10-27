@@ -456,7 +456,7 @@
     "ui.opens.app.s.battery": "Öppnar appens batterisida. Slå på Tillåt bakgrundsanvändning där. Är den av kan Android stoppa sökningen när du lämnar appen.",
     "ui.unrestricted.battery": "Obegränsat batteri",
     "ui.opens.same.battery.page": "Öppnar samma batterisida. Välj Obegränsat. På vissa telefoner, även Samsung, tryck först Tillåt bakgrundsanvändning och välj sedan Obegränsat.",
-    "ui.opens.fieldwatch.s.battery": "Det här öppnar Spectre batterisida. Slå på Tillåt bakgrundsanvändning. Spectre följer det när du kommer tillbaka.",
+    "ui.opens.fieldwatch.s.battery": "Det här öppnar Spectres batterisida. Slå på Tillåt bakgrundsanvändning. Spectre följer det när du kommer tillbaka.",
     "ui.choose.unrestricted.some.phones": "Välj Obegränsat. På vissa telefoner, även Samsung, tryck på orden Tillåt bakgrundsanvändning och välj sedan Obegränsat. Spectre följer det när du kommer tillbaka.",
     "ui.open.android.settings": "Öppna Android-inställningar",
     "ui.watchlist.alerts": "Larm från bevakningen",

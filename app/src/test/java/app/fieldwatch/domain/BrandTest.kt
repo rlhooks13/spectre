@@ -52,13 +52,14 @@ class BrandTest {
             java.io.File("src/main/assets/lang"),
             java.io.File("app/src/main/assets/lang"),
         ).first { it.isDirectory }
-        val packs = dir.listFiles { f -> f.name.endsWith(".json") }!!.sortedBy { it.name }
-        assertEquals(26, packs.size)
+        val packs = BundledLanguages.all.map { java.io.File(dir, "${it.tag}.json") }
+        assertTrue(packs.all { it.isFile })
+        val upstream = Regex("(?i)field\\s?watch")
         val stale = packs.flatMap { pack ->
             val strings = kotlinx.serialization.json.Json.parseToJsonElement(pack.readText(Charsets.UTF_8))
                 .let { it as kotlinx.serialization.json.JsonObject }["strings"] as kotlinx.serialization.json.JsonObject
-            // Case-sensitive: the lowercase app id "(app.fieldwatch)" stays until P0-4e.
-            strings.filter { (_, v) -> "Fieldwatch" in v.toString() || "FIELDWATCH" in v.toString() }
+            // The app id "(app.fieldwatch)" stays until P0-4e; any other spelling of the name fails.
+            strings.filter { (_, v) -> upstream.containsMatchIn(v.toString().replace("app.fieldwatch", "")) }
                 .keys.map { "${pack.name}: $it" }
         }
         assertEquals(emptyList<String>(), stale)
