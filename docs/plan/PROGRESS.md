@@ -1,20 +1,22 @@
 # Spectre progress
 
 ## Resume pointer
-- State: RUNNING
-- Current step: P1-F4 (capture storage tool and runbook), on branch `p1/f4-capture-storage`; check `gh pr list --head p1/f4-capture-storage` for the PR.
-  - **Then:** nothing is unblocked. The rest of Phase 1 waits on the owner.
+- State: RUNNING (waiting: nothing is unblocked; hourly checks)
+- Current step: none. Every open step waits on the owner. Next, in order, once each unblocks:
+  - P1-A1 (after #6) → A2 → A3 → 1B–1E;
+  - re-sync #10 if `main` moves;
+  - P0-8d after P1-B1.
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/f4-capture-storage`
+- Branch: `main` (no work in progress)
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T16:10Z
+- Last cycle: 2026-10-27T16:40Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -67,7 +69,12 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-F4 Capture storage.** Branch `p1/f4-capture-storage`.
+- 2026-10-27: **P1-F4 merged** as `0049184` (PR #29). Phase 1F is done. Nothing is unblocked:
+  - **Phase 1 fixes (1B–1E)** wait on the 1A safety net. P1-A1 needs #6 merged (so new test dependencies land in its verification metadata), and A2 and A3 build on A1.
+  - **P1-A6** waits for build-logic (P2-1, which needs approved build plugins).
+  - **P0-8d** waits for P1-B1.
+  - **The loop drops to hourly checks** (LOOP_PROMPT §7) and notifies the owner.
+- 2026-10-27: **P1-F4 Capture storage.** PR #29. Branch `p1/f4-capture-storage`.
   - **`CaptureScrubTool`:** an opt-in test, run with `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`. `build.gradle.kts` passes those Gradle properties as system properties, and the test is skipped without them, so CI never runs it.
     - It scrubs each part with its own secret and leak-checks it.
     - If any part leaks, it writes nothing and keeps the raw files.
