@@ -75,7 +75,8 @@ android {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
     lint {
-        // The 9 errors inherited from 1.1.32; CI fails on any new one. P1-A8 clears this file.
+        // Holds only the 9 errors inherited from 1.1.32; CI fails on any new error and on any growth of
+        // this file. P1-A8 clears it before Phase 2 moves files (entries match by path).
         baseline = file("lint-baseline.xml")
     }
 }

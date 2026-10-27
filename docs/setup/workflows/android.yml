@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          fetch-depth: 0 # the lint-baseline guard reads the base branch's copy
           persist-credentials: false
 
       - name: Validate the Gradle wrapper
@@ -49,32 +50,62 @@ jobs:
       - name: Unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
 
-      # Sums passing tests over every module's results and compares the total with the protected baseline.
-      # A deletion the plan names lowers the baseline in an owner-signed PR; nothing else may.
+      # Counts each passing debug test case once, by (module, class, name), so another variant's run or a
+      # duplicated result file can't inflate the total. Compares it with the protected baseline, which only
+      # an owner-signed PR can lower. Phase 2 modules extend the pattern with their own test task.
       - name: Test-count guard
         run: |
           set -euo pipefail
           python3 -I - <<'PY'
-          import glob, sys, xml.etree.ElementTree as ET
-          passed = 0
-          files = glob.glob("**/build/test-results/**/*.xml", recursive=True)
+          import glob, re, sys, xml.etree.ElementTree as ET
+          files = sorted(glob.glob("**/build/test-results/testDebugUnitTest/TEST-*.xml", recursive=True))
+          if not files:
+              print("::error::No debug unit-test results found.")
+              sys.exit(1)
+          passed = set()
           for path in files:
-              root = ET.parse(path).getroot()
-              suites = [root] if root.tag == "testsuite" else root.iter("testsuite")
-              for s in suites:
-                  n = lambda k: int(s.get(k, "0"))
-                  passed += n("tests") - n("failures") - n("errors") - n("skipped")
+              module = path.split("/build/", 1)[0]
+              for case in ET.parse(path).getroot().iter("testcase"):
+                  if any(case.find(t) is not None for t in ("failure", "error", "skipped")):
+                      continue
+                  passed.add((module, case.get("classname"), case.get("name")))
           with open("docs/plan/test-baseline.txt", encoding="utf-8") as f:
-              lines = [l.strip() for l in f if l.strip() and not l.lstrip().startswith("#")]
-          baseline = int(lines[0])
-          print(f"{passed} passing tests in {len(files)} result files; baseline {baseline}.")
-          if passed < baseline:
-              print(f"::error::Passing tests fell below the baseline: {passed} < {baseline}.")
+              baseline = next(int(l.strip()) for l in f if re.fullmatch(r"\d+", l.strip()))
+          print(f"{len(passed)} passing tests in {len(files)} result files; baseline {baseline}.")
+          if len(passed) < baseline:
+              print(f"::error::Passing tests fell below the baseline: {len(passed)} < {baseline}.")
               sys.exit(1)
           PY
 
       - name: Lint
+        if: success() || failure()
         run: ./gradlew lintDebug --stacktrace
+
+      # app/lint-baseline.xml holds the inherited errors (P1-A8 clears it). A PR may shrink it, never grow
+      # it, and the report must hold no error the baseline doesn't cover (catches abortOnError = false).
+      - name: Lint-baseline guard
+        if: success() || failure()
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          report=app/build/reports/lint-results-debug.xml
+          if [ ! -f "$report" ]; then
+            echo "::error::$report is missing."
+            exit 1
+          fi
+          if grep -Eq 'severity="(Error|Fatal)"' "$report"; then
+            echo "::error::The lint report has errors the baseline doesn't cover."
+            exit 1
+          fi
+          issue='<issue([[:space:]]|$)' # not the <issues> root
+          head_n=$(grep -cE "$issue" app/lint-baseline.xml 2>/dev/null || true)
+          base_n=$(git show "$BASE_SHA:app/lint-baseline.xml" 2>/dev/null | grep -cE "$issue" || true)
+          if git cat-file -e "$BASE_SHA:app/lint-baseline.xml" 2>/dev/null && [ "${head_n:-0}" -gt "${base_n:-0}" ]; then
+            echo "::error::app/lint-baseline.xml grew from $base_n to $head_n entries."
+            exit 1
+          fi
+          echo "Lint baseline: ${head_n:-0} entries (base ${base_n:-none})."
 
       - name: Upload reports
         if: always()
@@ -90,7 +121,6 @@ jobs:
     name: APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -113,21 +143,26 @@ jobs:
           yes | "$SM" --licenses >/dev/null || true
           "$SM" --install "platforms;android-35" "build-tools;35.0.0"
 
-      # Release is never signed by Gradle (build.gradle.kts checks this); building it proves R8 and the
-      # resource shrinker still pass. Staging is minified and test-signed, and is what testers install.
-      - name: Assemble release (unsigned) and staging
-        run: ./gradlew assembleRelease assembleStaging --stacktrace
+      # Debug is what the device checklist installs. Release is never signed by Gradle (a finalizeDsl
+      # check in build.gradle.kts); building it proves R8 and the resource shrinker pass. Staging is
+      # minified and test-signed, and is what testers install.
+      - name: Assemble debug, release (unsigned) and staging
+        run: ./gradlew assembleDebug assembleRelease assembleStaging --stacktrace
 
-      - name: Check the release APK is unsigned
+      - name: Release output is the unsigned APK only
         run: |
           set -euo pipefail
-          apk=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
-          test -n "$apk"
-          if "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$apk" >/dev/null 2>&1; then
-            echo "::error::$apk is signed; release must stay unsigned until the release workflow signs it."
+          apks=$(find app/build/outputs/apk/release -name '*.apk' | sort)
+          if [ "$apks" != "app/build/outputs/apk/release/app-release-unsigned.apk" ]; then
+            echo "::error::Expected only app-release-unsigned.apk, found: $apks"
             exit 1
           fi
-          echo "$apk is unsigned."
+
+      - name: Staging signing key
+        run: |
+          if [ ! -f app/signing/staging-test.jks ]; then
+            echo "::warning::app/signing/staging-test.jks is missing, so this staging APK is signed with the runner's throwaway debug key and can't be installed over another run's."
+          fi
 
       - name: Upload staging APK
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
