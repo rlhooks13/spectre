@@ -1,5 +1,5 @@
 # Minimum number of passing tests summed across all modules. Protected file.
 # Raise it whenever tests are added. Lower it only for a deletion the plan names (for example
 # Phase 4 replaces StockCatalogFileTest), and record the reason on its own line below.
-804
+807
 # planned-deletion lines: <date> <step-id> -<count> <reason>

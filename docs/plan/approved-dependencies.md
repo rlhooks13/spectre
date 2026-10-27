@@ -28,6 +28,8 @@ This file is protected. The agent may add a dependency only if it appears here (
 | `org.jetbrains.kotlinx:kotlinx-coroutines-test` | 1 | Tests |
 | `app.cash.turbine:turbine` | 1 | Flow tests |
 | `org.robolectric:robolectric` | 1 | JVM Android tests |
+| `org.robolectric:android-all-instrumented` (test only) | 1 | The Android SDK jar Robolectric runs against. Declared so Gradle verifies it and Robolectric runs offline, instead of downloading it unverified at test time |
+| Robolectric's transitive dependencies, including `org.bouncycastle:bcprov-jdk18on` and `org.conscrypt:conscrypt-openjdk-uber` (test classpath only) | 1 | Robolectric's shadows of the platform's crypto. `checkNoTestCryptoInApp` fails the build if either group reaches an app runtime classpath |
 | `androidx.test:core`, `androidx.test.ext:junit`, `androidx.test:runner`, `androidx.test:rules`, `androidx.test.uiautomator:uiautomator` | 1–5 | Instrumented tests |
 | `androidx.compose.ui:ui-test-junit4`, `ui-test-manifest` | 5 | Compose UI tests |
 | `io.github.takahirom.roborazzi` (plugin and libraries) | 8 | Screenshots for the manual |
