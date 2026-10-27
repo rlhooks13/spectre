@@ -85,7 +85,17 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **Random-address OUI hits are separate** (`randomAddressOuiHits`: Axon 00:25:DF, LiteOn 70:C9:4E, Arlo 48:62:64, `addressType` "Random").
     - Matching still hits these by design. P1-B8 changes how they're shown, not the match, so the test asserts they hit and that each MAC's top bits are a real random address.
     - Flock's B4:1E:52 starts with the reserved bits 10, so no random address can collide with it.
-  - **Review:** `/code-review` led to the per-rule isolation, the realistic payloads, the P1-B8 split, the Flock correction, the stale-key check and the clustered pin. Rebutted: sharing the engine's private cluster test (the pin catches drift).
+  - **Also from review:**
+    - **BLE OUI positives:** unscoped OUI and MAC-prefix rules also get a public BLE positive. That's 7,020 positives, and the count is asserted exactly, so a dropped rule or signature fails.
+    - **All-rules negatives:** each rule left out must stop the hit (RayNeo).
+    - **Real-device targets** (hand-pinned devices a fix must keep hitting): AirTag status 0x10, SmartTag FD5A, Tile FEED, Tile 0x067C (misses until P1-B2), Axon BLE on its public OUI, Flock Wi-Fi BSSID, Tattile, ShotSpotter, Motorola Vigilant, IBR900.
+    - **FINDER label:** the Galaxy, Buds, Quuppa and Tattile near-misses are also checked against `TrackerMatch.kind`. The 0x12 cases aren't: whether a type-unknown Find My device stays FINDER is P1-B3's call.
+    - **Open steps only:** each `knownUntil` must name an existing PLAN step that isn't ticked.
+    - **Test UUID:** SERVICE_DATA filler uses a test-only UUID that no catalog row may use.
+  - **Rebutted:**
+    - **Sharing the engine's private cluster test:** the clustered-count pin catches drift.
+    - **Full-length Samsung/Quuppa payloads:** P1-B1 and P1-B2 drop those company-id rules, so the bytes don't matter. A capture can replace them later.
+  - **For P1-A5:** a golden of each case's full hit set waits for P1-A2's golden rule. It would show new cross-signature collisions as a diff.
 - 2026-10-27: **P1-A8 merged** as `f3d5d47` (PR #24). #19 synced: the lint baseline, `lint {}` and the growth guard are gone, replaced by a "Lint guard" step that fails on report errors or a baseline or opt-out coming back. The test baseline goes 790 → 804. #19 now touches only `docs/setup/workflows/android.yml` and `docs/plan/test-baseline.txt`.
 - 2026-10-27: **P1-A8 Inherited lint errors.** PR #24. Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
   - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
