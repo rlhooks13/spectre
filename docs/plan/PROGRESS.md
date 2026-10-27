@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: gate fix for the startup crash, on branch `p0/fix-viewmodel-init-order`; check `gh pr list --head p0/fix-viewmodel-init-order` for the PR. Next: P0-3 part 2 (dependency verification, protected PR).
+- Current step: gate fix for the startup crash, PR #5 (waiting on CI, then squash-merge). Next: P0-3 part 2 (dependency verification, protected PR).
 - Branch: `p0/fix-viewmodel-init-order`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -48,7 +48,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **Gate fix: startup crash in `FieldwatchViewModel`.** Branch `p0/fix-viewmodel-init-order`.
+- 2026-10-27: **Gate fix: startup crash in `FieldwatchViewModel`.** PR #5. Follow-up: `cachedCameraReport` can compute twice under concurrent calls (upstream, performance only). Revisit when P5-1/P5-2 move the camera report out of the ViewModel.
   - The bug was found by P0-3's device check and reproduced on `main` (see the P0-3 entry).
   - Inside `init`, `app.sits.ui.collect` runs at once on `Main.immediate` and calls `refreshSitPath()`. That starts `cachedCameraReport()` on `Dispatchers.Default` while the constructor is still running. `cameraCacheLock`, `cameraCacheStamp` and `cameraCache` were initialized after `init`, so the lock could still be null.
   - Fix: those three properties now sit above `init`, with a comment. An audit found no other class property initialized after `init`.
