@@ -78,7 +78,11 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - One `MatchRule.matchKey()` (Models.kt) ignores the switch, trims, uppercases, and reads a base UUID as its alias. All three places use it.
     - `ruleStateKey` adds the switch, for the import fingerprint's sibling, the overlay's change check.
     - The overlay keeps each stock rule's user switch ("off" wins over an old duplicate).
-  - **Ladder v104:** each rule kept once in every row, off if any copy was.
+  - **Ladder v104:** each rule kept once in every row (`withoutDuplicates`), switched by `mergedSwitch`:
+    - Exact copies, the overlay bug's shape: off if any copy was, which restores the user's lost "off".
+    - Case or format variants: on if any variant was on, because each matched before. Off-wins would have silently switched off detection, a tracker included ("moto tag" / "Moto Tag"), for a user who had switched off one variant. Both reviewers caught this in the first draft.
+    - The same policy applies in the overlay, to user extras, on import (incoming rows deduped) and on the pack-overlay path, which skips the ladder.
+    - `matchKey` doesn't trim, because the engine matches untrimmed text. `ReleaseNotes` uses it too.
   - **Stock:** 37 case-variant duplicates removed ("Eufy*" beside "eufy*", ...). Name matching ignores case, so they were one rule twice. New lint `noStockRowHoldsARuleTwice`.
   - **Tests:** `RuleKeyTest` (written first and seen failing: the overlay held 3 rules where 2 belong), `CatalogV104LadderTest`.
 - 2026-10-27: **P1-B5 Over-broad names, the last 16 (catalog v103).** #62 (P1-B5b) merged as ac21e0e.

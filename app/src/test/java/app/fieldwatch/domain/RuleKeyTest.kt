@@ -17,7 +17,9 @@ class RuleKeyTest {
     @Test
     fun theKeyIgnoresEnabledAndCaseAndLongFormUuids() {
         assertEquals(stockRule.matchKey(), stockRule.copy(enabled = false).matchKey())
-        assertEquals(stockRule.matchKey(), stockRule.copy(text = " fe33 ").matchKey())
+        assertEquals(stockRule.matchKey(), stockRule.copy(text = "fe33").matchKey())
+        // The engine matches the text as written, so a space makes a different rule.
+        assertNotEquals(MatchRule(RuleKind.NAME_CONTAINS, text = "Tile").matchKey(), MatchRule(RuleKind.NAME_CONTAINS, text = "Tile ").matchKey())
         assertEquals(stockRule.matchKey(), stockRule.copy(text = "0000FE33-0000-1000-8000-00805F9B34FB").matchKey())
         assertNotEquals(stockRule.matchKey(), stockRule.copy(radio = RadioKind.BLE).matchKey())
         assertEquals(SignatureExchange.ruleKey(stockRule), SignatureExchange.ruleKey(stockRule.copy(enabled = false)))
@@ -42,6 +44,27 @@ class RuleKeyTest {
         assertEquals(1, out.single().rules.size)
         assertFalse(out.single().rules.single().enabled)
         assertEquals(0, result.merged)
+    }
+
+    /**
+     * Exact copies (the overlay bug's shape): off wins, the user's choice. Case variants ("eufy*", "Eufy*") each matched
+     * before, so the rule stays on if any variant was on: switching off one of them never stopped the match.
+     */
+    @Test
+    fun aMergedSwitchIsOffForExactCopiesAndOnIfAnyCaseVariantWasOn() {
+        val glob = MatchRule(RuleKind.NAME_GLOB, text = "eufy*")
+        assertFalse(listOf(glob, glob.copy(enabled = false)).mergedSwitch())
+        assertTrue(listOf(glob, glob.copy(text = "Eufy*", enabled = false)).mergedSwitch())
+        assertFalse(listOf(glob.copy(enabled = false), glob.copy(text = "Eufy*", enabled = false)).mergedSwitch())
+        assertEquals(1, listOf(glob, glob.copy(text = "Eufy*", enabled = false)).withoutDuplicates().size)
+    }
+
+    /** An imported row that holds a rule twice ("X*" and "x*") comes in with it once. */
+    @Test
+    fun mergeTakesAnImportedRowWithEachRuleOnce() {
+        val imported = Fleet(id = "user-2", name = "Theirs", rules = listOf(MatchRule(RuleKind.NAME_GLOB, text = "Cam*"), MatchRule(RuleKind.NAME_GLOB, text = "cam*")))
+        val (out, _) = SignatureExchange.merge(emptyList(), listOf(imported))
+        assertEquals(1, out.single().rules.size)
     }
 
     /** A rule switched off or on is still a change worth saving, so the overlay reports it. */

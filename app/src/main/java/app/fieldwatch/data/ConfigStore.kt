@@ -16,6 +16,7 @@ import app.fieldwatch.domain.PersistedConfig
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RetiredRules
 import app.fieldwatch.domain.matchKey
+import app.fieldwatch.domain.withoutDuplicates
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureCandidates
 import app.fieldwatch.domain.SignatureClass
@@ -173,7 +174,8 @@ class ConfigStore internal constructor(private val file: File) {
         if (overlay.error != null) {
             return@withLock StockCatalogUpdateResult(error = overlay.error)
         }
-        val next = local.copy(fleets = fleets, version = pack.catalogVersion)
+        // A pack sets the version past the ladder, so rows (custom ones too) get the v104 duplicate cleanup here.
+        val next = local.copy(fleets = fleets.map(::withoutDuplicateRules), version = pack.catalogVersion)
         publish(next)
         withContext(Dispatchers.IO) {
             val tmp = File(file.parentFile, "config.tmp")
@@ -1264,7 +1266,8 @@ class ConfigStore internal constructor(private val file: File) {
         }
         if (version < CATALOG_V104) {
             // P1-B6: the overlay and the import used to count a rule's switch as part of the rule, so a row could end
-            // up holding a rule twice, once on and once off (the "on" copy won). Keep one, off if either copy was.
+            // up holding a rule twice, once on and once off (the "on" copy won); stock also held case variants of one
+            // rule ("Eufy*", "eufy*"). Keep one copy of each, switched as mergedSwitch says.
             fleets = fleets.map(::withoutDuplicateRules)
             version = CATALOG_V104
         }
@@ -1313,11 +1316,10 @@ class ConfigStore internal constructor(private val file: File) {
 
     private fun ruleKey(rule: MatchRule): String = rule.matchKey()
 
-    /** [fleet] with each rule once, where it first appears; a rule held more than once is off if any copy was. */
+    /** [fleet] with each rule held once ([withoutDuplicates]); the same instance when it has no duplicate. */
     private fun withoutDuplicateRules(fleet: Fleet): Fleet {
-        val copies = fleet.rules.groupBy { ruleKey(it) }
-        if (copies.size == fleet.rules.size) return fleet
-        return fleet.copy(rules = copies.values.map { same -> same.first().copy(enabled = same.all { it.enabled }) })
+        val rules = fleet.rules.withoutDuplicates()
+        return if (rules === fleet.rules) fleet else fleet.copy(rules = rules)
     }
 
     private fun seed(): PersistedConfig {

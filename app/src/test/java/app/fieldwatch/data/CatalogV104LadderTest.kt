@@ -30,10 +30,10 @@ class CatalogV104LadderTest {
                 version = 103,
                 fleets = c.fleets.map { fleet ->
                     if (fleet.id != "fleet-chipolo") return@map fleet
-                    // As the old overlay left it: the user's "off" copy beside a fresh "on" copy, plus a long-form alias.
+                    // As the old overlay left it: the user's "off" copy beside a fresh "on" copy of the same text.
                     fleet.copy(
                         rules = fleet.rules.filterNot { SignatureExchange.ruleKey(it) == SignatureExchange.ruleKey(fe33) } +
-                            fe33.copy(enabled = false) + fe33 + fe33.copy(text = "0000fe33-0000-1000-8000-00805f9b34fb"),
+                            fe33.copy(enabled = false) + fe33,
                     )
                 },
             )
@@ -45,10 +45,31 @@ class CatalogV104LadderTest {
         assertEquals(chipolo.size, chipolo.map { SignatureExchange.ruleKey(it) }.toSet().size)
     }
 
+    /** A user who switched off one case variant of a stock rule ("Eufy*") still matched on the other; that stays. */
+    @Test
+    fun aCaseVariantOffKeepsTheRuleOn() {
+        val old = ConfigUpgrade.fieldwatch1132().let { c ->
+            c.copy(
+                version = 103,
+                fleets = c.fleets.map { fleet ->
+                    if (fleet.id != "fleet-eufy") return@map fleet
+                    fleet.copy(rules = fleet.rules + MatchRule(RuleKind.NAME_GLOB, text = "Eufy*", enabled = false))
+                },
+            )
+        }
+        val eufy = ConfigUpgrade.load(old).fleets.single { it.id == "fleet-eufy" }.rules
+        val copies = eufy.filter { it.kind == RuleKind.NAME_GLOB && it.text.equals("eufy*", ignoreCase = true) }
+        assertEquals(1, copies.size)
+        assertTrue(copies.single().enabled)
+    }
+
+    /** With no duplicates, the v104 step changes nothing but the version. */
     @Test
     fun aConfigWithoutDuplicatesIsUnchangedApartFromTheVersion() {
-        val cfg = ConfigUpgrade.load()
-        assertEquals(ConfigStore.CATALOG_VERSION, cfg.version)
-        assertTrue(cfg.fleets.all { f -> f.rules.size == f.rules.map { SignatureExchange.ruleKey(it) }.toSet().size })
+        val clean = ConfigUpgrade.load()
+        assertTrue(clean.fleets.all { f -> f.rules.size == f.rules.map { SignatureExchange.ruleKey(it) }.toSet().size })
+        val replayed = ConfigUpgrade.load(clean.copy(version = 103))
+        assertEquals(ConfigStore.CATALOG_VERSION, replayed.version)
+        assertEquals(clean.fleets, replayed.fleets)
     }
 }

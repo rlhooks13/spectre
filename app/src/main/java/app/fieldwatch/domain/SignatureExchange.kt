@@ -136,10 +136,12 @@ object SignatureExchange {
 
         for (raw in incoming) {
             // A pack from before a rule was retired doesn't bring it back.
+            // Nor does it bring a rule twice (P1-B6): an older pack can hold "X*" and "x*", or a copy on and off.
             val fleet = RetiredRules.strip(
                 raw.copy(
                     id = raw.id.ifBlank { UUID.randomUUID().toString() },
                     kind = raw.kind.folded(),
+                    rules = raw.rules.withoutDuplicates(),
                 ),
             )
             if (fleet.rules.isEmpty()) {
@@ -249,10 +251,9 @@ object SignatureExchange {
             val stockKeys = stock.rules.map { ruleKey(it) }.toSet()
             // A retired stock rule isn't a user extra: it goes, not carried over.
             val extras = local.rules.filter { ruleKey(it) !in stockKeys && !RetiredRules.isRetired(local.id, it) }
-                .distinctBy { ruleKey(it) }
-            // The user's switch on each stock rule stays (P1-B6). A rule held twice (an older overlay's duplicate) is
-            // off if either copy was.
-            val localOn = local.rules.groupBy { ruleKey(it) }.mapValues { (_, copies) -> copies.all { it.enabled } }
+                .withoutDuplicates()
+            // The user's switch on each stock rule stays (P1-B6), merged over any copies as mergedSwitch says.
+            val localOn = local.rules.groupBy { ruleKey(it) }.mapValues { (_, copies) -> copies.mergedSwitch() }
             val overlaid = stock.copy(
                 enabled = local.enabled,
                 rules = stock.rules.map { s -> localOn[ruleKey(s)]?.let { on -> s.copy(enabled = on) } ?: s } + extras,
