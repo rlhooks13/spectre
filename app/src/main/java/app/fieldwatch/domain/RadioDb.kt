@@ -155,8 +155,26 @@ object RadioDb {
         return String(nameBlob, start, end - start, StandardCharsets.UTF_8)
     }
 
-    /** Internal so JVM tests (CatalogLintTest) can load `assets/lookups/radiodb.bin` without a Context. */
-    internal fun parse(bytes: ByteArray) {
+    /** For JVM tests (CatalogLintTest): load `assets/lookups/radiodb.bin` without a Context. */
+    internal fun initFrom(bytes: ByteArray) {
+        synchronized(lock) {
+            parse(bytes)
+            ready = true
+        }
+    }
+
+    /** For JVM tests: back to the unloaded state, so a test that loaded the tables doesn't leak them. */
+    internal fun resetForTest() {
+        synchronized(lock) {
+            ready = false
+            malKeys = IntArray(0); malIdx = ShortArray(0); cidKeys = IntArray(0); cidIdx = ShortArray(0)
+            longKeys = LongArray(0); longIdx = ShortArray(0); btKeys = IntArray(0); btIdx = ShortArray(0)
+            appKeys = IntArray(0); appIdx = ShortArray(0); uuidKeys = IntArray(0); uuidIdx = ShortArray(0)
+            nameOff = IntArray(0); nameBlob = ByteArray(0); builtYmd = 0; nameCount = 0
+        }
+    }
+
+    private fun parse(bytes: ByteArray) {
         val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         val magic = ByteArray(4)
         buf.get(magic)
@@ -215,7 +233,6 @@ object RadioDb {
         val nstrAt = sections["nstr"] ?: error("missing nstr")
         val last = nameOff.last()
         nameBlob = bytes.copyOfRange(nstrAt, nstrAt + last)
-        ready = true
     }
 
     private fun isPhoneHouseVendor(vendor: String): Boolean {

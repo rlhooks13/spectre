@@ -67,22 +67,24 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
 - 2026-10-27: **P1-A5 CatalogLintTest (ADR-0015).** Branch `p1/a5-catalog-lint`.
-  - **`RadioDb.parse`** is now `internal` and sets `ready`, so JVM tests can load `radiodb.bin` (built 2026-08-24).
+  - **`RadioDb`:** an internal `initFrom(bytes)` (under the lock) and `resetForTest()` let JVM tests load `radiodb.bin` (built 2026-08-24). `@AfterClass` unloads it, so later test classes don't depend on run order. `parse` stays private.
   - **Lint rules:**
     - company ids must be in the SIG tables;
-    - no bare `MANUFACTURER_ID` for Apple, Samsung, Google, Microsoft or DJI (matched on the SIG company name);
-    - `NAME_CONTAINS` must be at least 5 characters.
-  - **Today's 41 violations,** each listed with ADR-0015 or a fixing step, strictly in both directions:
-    - **Unassigned id:** `fleet-huf` 0x070A, accepted until the radiodb refresh.
+    - no bare `MANUFACTURER_ID` for Apple, Samsung, Google, Microsoft or DJI (by SIG company name), alone in an any-rule signature;
+    - name rules that need a literal under 5 characters fail: `NAME_CONTAINS`, or a glob starting with `*`.
+  - **Today's 41 violations,** each keyed by content (not rule position) and listed with ADR-0015 or a fixing step, strictly in both directions:
+    - **Unassigned id:** `fleet-huf/0x070A`, accepted until the radiodb refresh.
     - **Bare mega-vendor ids:**
       - SmartTag 0x0075 → P1-B1;
-      - Google 0x00E0 and Microsoft 0x0006 vendor rows → accepted;
-      - Fitbit on Google's 0x018E and DJI 0x08AA on a DRONE row → **new P1-B10** (payload prefixes from captures).
+      - Google 0x00E0, Microsoft 0x0006 (PHONE class on the whole id), Fitbit on Google's 0x018E and DJI 0x08AA on a DRONE row → **new P1-B10** (payload prefixes or a fitting class, from captures).
     - **35 short names:**
       - "Tile" → P1-B2;
       - 34 brand names → P1-B5, widened to every short name.
-  - **Corpus collisions:** each target, near-miss and random-address case has its full hit set pinned, so any new cross-signature hit fails. A golden replaces the pin after P1-A2.
-  - **Open steps only:** every step an exception names must be an open PLAN step; every ADR-0015 entry must be named in the ADR.
+  - **Corpus collisions:**
+    - each target, near-miss and random-address case has its full hit set pinned;
+    - the generated positives' cross-signature hits are pinned at 13;
+    - so any new overlap fails. A golden replaces the pins after P1-A2.
+  - **Open steps only:** every step an exception names must be an open PLAN step, and every accepted entry must be backticked under "Accepted" in ADR-0015.
 - 2026-10-27: **P1-A4 merged** as `7fd97df` (PR #25).
 - 2026-10-27: **P1-A4 Match corpus.** PR #25. Branch `p1/a4-match-corpus`. Test-only.
   - **Shared builders:** `testing/Sightings.kt` holds `sighting()` and `mac()`, the first of P1-A1's shared builders.
