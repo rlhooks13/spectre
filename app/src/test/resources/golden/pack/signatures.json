@@ -13,7 +13,7 @@
             "kind": "CAMERA",
             "matchAny": true,
             "minPeers": 0,
-            "name": "Neighbour's doorbell",
+            "name": "Test doorbell",
             "notes": "Made on this phone.",
             "peerWindowSec": 60,
             "rules": [
@@ -23,7 +23,7 @@
                     "enabled": true,
                     "kind": "NAME_CONTAINS",
                     "radio": null,
-                    "text": "Doorbell-4C2A"
+                    "text": "Doorbell-TEST"
                 }
             ],
             "sequentialMac": false

@@ -52,52 +52,58 @@ This compare is two windows of radios this phone heard (kind + MAC). BLE rotatio
 
 This sit      Golden sit
 Second sit    Yesterday
-This radios   5
+This radios   6
 Second radios 2
 
 1. WINDOWS
 This sit: Golden sit
-5 radios · named window (up to 6000)
+6 radios · named window (up to 6000)
 Second sit: Yesterday
 2 radios · named window (up to 6000)
 Radios this phone heard. Kind + MAC. BLE rotation is a new row. Not a radio fix.
-Only in this sit: 1 Wi-Fi, 2 BLE
+Only in this sit: 1 Wi-Fi, 3 BLE
 In both: 1 Wi-Fi, 1 BLE
 Only in second sit: 0 Wi-Fi, 0 BLE
 
-2. OBSERVER NOTES
+2. AIRCRAFT
+• TESTSERIAL0000000001
+  Golden sit: 1 fix last 0.002100, 0.003100 grid 31N AA 66366 00232 Pilot 0.001800, 0.002900 grid 31N AA 66344 00199
+These positions were broadcast by the radio. They are not this phone's GPS.
+
+3. OBSERVER NOTES
 Your captions on radios heard in either window. Same KIND+MAC as Named radios. Not catalog Notes.
   · WIFI  B4:1E:52:0A:0B:0C  Flock-1A2B  both
     On the pole by the gate,
 facing the road
 
-3. MARKED MINE
+4. MARKED MINE
 Radios you marked mine. Heard in either window. Still listed.
   · BLE  6E:11:22:33:44:03  Galaxy S23  this sit
 
-4. ONLY IN THIS SIT (3)
+5. ONLY IN THIS SIT (4)
 Samsung SmartTags  2
+Remote ID  1
 Unmatched  1
 BLE   6E:11:22:33:44:03  Galaxy S23  Marked mine  Samsung SmartTags
 
-5. ONLY IN SECOND SIT (0)
+6. ONLY IN SECOND SIT (0)
 (none)
 
-6. IN BOTH (2)
+7. IN BOTH (2)
 Apple AirTags  1
 Flock Safety Cameras  1
 WIFI  B4:1E:52:0A:0B:0C  Flock-1A2B  Flock Safety Cameras  Extra attention
 BLE   7A:11:22:33:44:01  Tom's "bag", left & <right>  Apple AirTags
 
 —
-Takeaway: 3 only in this sit · 0 only in the second · 2 in both. · 1 marked mine.
+Takeaway: 4 only in this sit · 0 only in the second · 2 in both. · 1 marked mine.
 
 ## Working data (for the addendum — do not copy rosters into the answer)
 
-This sit: Golden sit (5 radios, named sit up to 6000)
+This sit: Golden sit (6 radios, named sit up to 6000)
 Second sit: Yesterday (2 radios, named sit up to 6000)
-Only in this sit: 3  Only in second: 0  In both: 2  Union: 5  Overlap: 40%
-Only in this sit by radio: Wi-Fi 1  BLE 2  RAND BLE 2
+Only in this sit: 4  Only in second: 0  In both: 2  Union: 6  Overlap: 33%
+Only in this sit by radio: Wi-Fi 1  BLE 3  RAND BLE 3
 Only in second sit by radio: Wi-Fi 0  BLE 0  RAND BLE 0
 In both by radio: Wi-Fi 1  BLE 1  RAND BLE 1
 

@@ -43,7 +43,7 @@ Write complete sentences. Headings as below. Short bullets only for Extra attent
 - Tool: Spectre, receive-only, no association / injection / cloud.
 - Window: sit **Golden sit** (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC), with a 5-minute recent slice.
 - Scan intensity: performance. Stale after 45s.
-- Location tags: on. Online place names: on.
+- Location tags: on. Online place names: off.
 
 ## Onboard Debrief (verbatim — already shown to the operator; do not rewrite)
 
@@ -63,18 +63,19 @@ This sit report is from named sit “Golden sit” (radios heard in that window;
 Generated     2026-10-27T12:00:00Z UTC
 Sit           Golden sit
 Window        sit Golden sit (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
-Radios        5
+Radios        6
 Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
 Scan          performance · stale 45s · brief hold 10s
 GPS tag       on
 Distance      traveled 62 m along path · span 62 m · 3 fixes
 Places        off
-ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS, advertised aircraft track
 
 1. EXECUTIVE SUMMARY
-In sit Golden sit Spectre heard 2 Wi-Fi access points and 3 BLE advertisers (4 signature-matched, 1 marked mine, 0 hidden SSIDs, 3 randomized BLE). Overall distance traveled: 62 m along the GPS path (straight-line span 62 m). No finder tag clearly stayed with the GPS path in this window.
+In sit Golden sit Spectre heard 2 Wi-Fi access points and 4 BLE advertisers (5 signature-matched, 1 marked mine, 0 hidden SSIDs, 4 randomized BLE). Overall distance traveled: 62 m along the GPS path (straight-line span 62 m). No finder tag clearly stayed with the GPS path in this window.  Advertised position: masked.
 Finder tags  3
 Surveillance  1
+Drones  1
 Unmatched  1
 
 2. WHERE YOU WERE
@@ -83,11 +84,11 @@ Overall: 62 m along-track, span 62 m, 3 fixes.
 
 1. Stay  11:55–12:00 UTC  (5m0s)
    masked  (operator phone)
-   Heard here: 1 AP(s), 3 BLE  ·  Flock Safety Cameras, Apple AirTags, Samsung SmartTags
+   Heard here: 1 AP(s), 4 BLE  ·  Flock Safety Cameras, Apple AirTags, Samsung SmartTags, Remote ID
    · Flock-1A2B  B4:1E:52:**:**:**  -55 dBm
    · Tom's "bag", left & <right>  7A:11:22:**:**:**  -67 dBm
    · 5E:11:22:**:**:**  5E:11:22:**:**:**  -72 dBm
-   · Galaxy S23  6E:11:22:**:**:**  -80 dBm
+   · 4E:11:22:**:**:**  4E:11:22:**:**:**  -74 dBm
 
 2. Stay  12:00–12:00 UTC  (0s)
    masked  (operator phone)
@@ -97,60 +98,73 @@ Overall: 62 m along-track, span 62 m, 3 fixes.
 3. KNOWN CAMERAS ON PATH
 Within about 150 m
 
-No listed camera was along this path.
+Flock
+  0 facing the path
+  1 on the path with no direction
 
-4. OBSERVER NOTES
+4. AIRCRAFT
+• masked
+  Last masked
+  Grid masked
+  86 m  ·  course 270°  ·  6.5 m/s
+  1 advertised fix
+  Pilot masked
+  Grid masked
+These positions were broadcast by the radio. They are not this phone's GPS.
+
+5. OBSERVER NOTES
 Your captions on radios heard in this window. Same KIND+MAC as Named radios. Not catalog Notes.
   · WIFI  Flock-1A2B  B4:1E:52:**:**:**  -55 dBm
     On the pole by the gate,
 facing the road
 
-5. MARKED MINE
+6. MARKED MINE
 Radios you marked mine. Heard in this window. Still listed. No beep while the mark is on.
   · BLE  6E:11:22:**:**:**  Galaxy S23  -80 dBm
     Marked mine.
 
-6. TRACKING ASSESSMENT
+7. TRACKING ASSESSMENT
 Overall distance traveled: 62 m along the GPS path (3 samples). Straight-line span 62 m.
 Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
 No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
 
-7. ENVIRONMENT
-Likely a dwelling or small office — few sitting APs, limited BLE.  (2 APs, 3 BLE, 1 persistent APs, traveled 62 m, span 62 m.)
+8. ENVIRONMENT
+Likely a dwelling or small office — few sitting APs, limited BLE.  (2 APs, 4 BLE, 1 persistent APs, traveled 62 m, span 62 m.)
 
-8. NETWORKS (WI-FI ACCESS POINTS)
+9. NETWORKS (WI-FI ACCESS POINTS)
 Heard 2 AP(s); 0 hidden SSID; 1 sat most of the window.
 ch 6  1  strongest -55 dBm
 ch 11  1  strongest -86 dBm
 
-9. BLUETOOTH LE
-Heard 3 advertiser(s); 3 with randomized addresses; 3 signature-matched.
+10. BLUETOOTH LE
+Heard 4 advertiser(s); 4 with randomized addresses; 4 signature-matched.
 
-10. SIGNATURE HITS
+11. SIGNATURE HITS
 Samsung SmartTags  2
 Apple AirTags  1
 Flock Safety Cameras  1
+Remote ID  1
 Named or marked:
   · Flock-1A2B  B4:1E:52:**:**:**  -55 dBm
   · Tom's "bag", left & <right>  7A:11:22:**:**:**  -67 dBm
   · Galaxy S23  6E:11:22:**:**:**  -80 dBm  Marked mine
 
-11. PERSISTENCE
+12. PERSISTENCE
 Sat most of this window: 1
-First seen in this window: 5
+First seen in this window: 6
 
-12. EXTRA ATTENTION
+13. EXTRA ATTENTION
 Pattern match, not identity, not a skimmer detector, not a safety finding.
   · Flock-1A2B  B4:1E:52:**:**:**  -55 dBm  [Flock Safety Cameras]
     Flock-style roadside ALPR / camera pole — reads plates and can be used to locate a vehicle. IEEE B4:1E:52 or a Flock-* SSID is the strong hit. Current poles are often quiet on Wi-Fi and BLE. Pattern match, not that camera. Look with your eyes.
 
-13. ANOMALIES
+14. ANOMALIES
 No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
 
-14. PRIVACY
-A passive observer with the same radios would see 2 named/hidden APs and 3 BLE advertisers (3 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+15. PRIVACY
+A passive observer with the same radios would see 2 named/hidden APs and 4 BLE advertisers (4 randomized). This debrief includes operator GPS samples used for distance and the following test. This debrief includes advertised aircraft positions from radios that broadcast a latitude and longitude. Do not share this file off-device without redaction.
 
-15. RECOMMENDED ACTIONS
+16. RECOMMENDED ACTIONS
   · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
   · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
 
@@ -159,11 +173,11 @@ Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS
 
 ## Working data (for the addendum — do not copy rosters into the answer)
 
-15 min: Wi-Fi 2  BLE 3  signed 4  hidden SSIDs 0  RAND BLE 3/3 (100%)  first-seen 5 (0.3/min)  persistent 1  gone/quiet 4
-5 min: Wi-Fi 2  BLE 3  signed 4  first-seen 0
-BLE RSSI (n=3): ≥−50 0  −51..−70 1  −71..−85 2  <−85 0
+15 min: Wi-Fi 2  BLE 4  signed 5  hidden SSIDs 0  RAND BLE 4/4 (100%)  first-seen 6 (0.4/min)  persistent 1  gone/quiet 4
+5 min: Wi-Fi 2  BLE 4  signed 5  first-seen 0
+BLE RSSI (n=4): ≥−50 0  −51..−70 1  −71..−85 3  <−85 0
 Wi-Fi RSSI (n=2): ≥−50 0  −51..−70 1  −71..−85 0  <−85 1
-Signature families (count): Samsung SmartTags=2, Flock Safety Cameras=1, Apple AirTags=1
+Signature families (count): Samsung SmartTags=2, Flock Safety Cameras=1, Apple AirTags=1, Remote ID=1
 GPS path: tagging on  fixes 3  length 62 m  span 62 m  places off
 
 Extra attention:

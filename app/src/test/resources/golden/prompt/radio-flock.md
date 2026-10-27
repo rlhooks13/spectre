@@ -28,7 +28,7 @@ Constraints you must respect:
 - Subject: Wi-Fi access point titled “Flock-1A2B”.
 - Scan intensity: performance. Stale after 45s. Brief hold 10s.
 - Location tags: on.
-- Online place names: on.
+- Online place names: off.
 - Randomized MAC flag: no.
 - Hits this session: 40. Gone: false.
 - Operator GPS trail samples on this radio: 1 (phone path while it was heard).

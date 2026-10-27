@@ -30,7 +30,7 @@ Constraints you must respect:
 - Subject: Bluetooth LE advertiser titled “Apple AirTag / Find My tag”.
 - Scan intensity: performance. Stale after 45s. Brief hold 10s.
 - Location tags: on.
-- Online place names: on.
+- Online place names: off.
 - Randomized MAC flag: yes.
 - Hits this session: 25. Gone: false.
 - Operator GPS trail samples on this radio: 1 (phone path while it was heard).
@@ -53,7 +53,7 @@ Apple AirTags: Apple AirTag or Find My accessory. iPhones also send Find My so t
 ## Identity
 Radio: Bluetooth Low Energy advertiser
 Address: Random / privacy address. The MAC can change, so this is not a lasting identity.
-Who made it: Bluetooth company in the ad: unlisted (0x004C).
+Who made it: Bluetooth company in the ad: Apple, Inc. (0x004C).
 
 ## Signal
 How loud here (RSSI): -67 dBm · medium
@@ -63,7 +63,7 @@ Heard range this session: -76 to -63 dBm
 ## Bluetooth advertisement
 
 ## Maker data inside the ad
-Bluetooth company 0x004C: Not in the Bluetooth company list
+Bluetooth company 0x004C: Apple, Inc.
 Apple Continuity type: 0x12 · Find My / Offline Finding
 Find My / Offline Finding: Broadcasting a public key so the Find My network can report a location. Used by AirTags, Find My accessories, and Apple devices locating themselves. Owner not seen in the current key window. Battery full. (24-byte key fragment — not a serial number.)
 Raw payload (27 bytes): 12 19 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00

@@ -1,6 +1,7 @@
 package app.fieldwatch.testing
 
 import app.fieldwatch.domain.LanguageText
+import app.fieldwatch.domain.RadioDb
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -104,12 +105,15 @@ object Golden {
 }
 
 /**
- * Pins what a golden must not depend on: the default TimeZone (UTC) and Locale (en-US), and the language
- * overlay (English). Restores all three afterwards. Pass `now` explicitly ([Golden.NOW]); never read the clock.
+ * Pins what a golden must not depend on: the default TimeZone (UTC) and Locale (en-US), the language overlay
+ * (English), and the company and OUI tables (RadioDb), which the app always loads but a unit test only has if
+ * an earlier test happened to load them. Restores all of it afterwards. Pass `now` explicitly ([Golden.NOW]);
+ * never read the clock.
  */
 class GoldenRule : ExternalResource() {
     private var zone: TimeZone? = null
     private var locale: Locale? = null
+    private var radioDbWasReady = false
 
     override fun before() {
         zone = TimeZone.getDefault()
@@ -117,11 +121,14 @@ class GoldenRule : ExternalResource() {
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         Locale.setDefault(Locale.US)
         LanguageText.clear()
+        radioDbWasReady = RadioDb.isReady()
+        if (!radioDbWasReady) RadioDb.initFrom(TestFiles.repoFile("src/main/assets/lookups/radiodb.bin").readBytes())
     }
 
     override fun after() {
         LanguageText.clear()
         zone?.let(TimeZone::setDefault)
         locale?.let(Locale::setDefault)
+        if (!radioDbWasReady) RadioDb.resetForTest()
     }
 }

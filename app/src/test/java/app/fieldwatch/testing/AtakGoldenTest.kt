@@ -2,9 +2,7 @@ package app.fieldwatch.testing
 
 import app.fieldwatch.domain.CotEvent
 import app.fieldwatch.domain.GnssMark
-import app.fieldwatch.domain.GpsSample
 import app.fieldwatch.domain.LogExportRadios
-import app.fieldwatch.domain.PayloadFix
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.Sighting
 import app.fieldwatch.domain.SitTakPackage
@@ -29,36 +27,9 @@ class AtakGoldenTest {
 
     private val tag = LiveCot.TAG
 
-    /**
-     * A Remote ID drone matched through FFFA, decoded mid-flight, with its pilot's live GPS. Its times all differ,
-     * so the goldens show which one each event uses: last hear NOW-5 s, newest flight fix and decode NOW-9 s,
-     * pilot fix NOW-12 s.
-     */
-    private fun drone(): Sighting = Sightings.sighting(
-        key = "BLE:4E:11:22:33:44:07",
-        mac = "4E:11:22:33:44:07",
-        serviceUuids = listOf("FFFA"),
-    ).copy(
-        rssi = -74, rssiMin = -82, rssiMax = -70,
-        firstSeen = Golden.NOW - 6 * 60_000L, lastSeen = Golden.NOW - 5_000L, hitCount = 120,
-        latitude = 0.0015, longitude = 0.0024,
-        gpsTrail = listOf(GpsSample(Golden.NOW - 5_000L, 0.0015, 0.0024, -74)),
-        payloadUasId = "TESTSERIAL0000000001",
-        payloadLat = 0.0021, payloadLon = 0.0031, payloadAlt = 86.0, payloadHeading = 270.0, payloadSpeed = 6.5,
-        payloadAt = Golden.NOW - 9_000L,
-        payloadOpLat = 0.0018, payloadOpLon = 0.0029, payloadOpKind = 1, payloadOpAlt = 4.0,
-        payloadOpAt = Golden.NOW - 12_000L,
-        // The advertised flight so far, ending at the current position: the package's drone track.
-        payloadTrail = listOf(
-            PayloadFix(Golden.NOW - 129_000L, 0.0019, 0.0035, 80.0, 270.0, 6.0),
-            PayloadFix(Golden.NOW - 69_000L, 0.0020, 0.0033, 84.0, 270.0, 6.3),
-            PayloadFix(Golden.NOW - 9_000L, 0.0021, 0.0031, 86.0, 270.0, 6.5),
-        ),
-    )
-
     private fun sit(): Pair<SitFixture.Sit, List<Sighting>> {
         val sit = SitFixture.build()
-        return sit to sit.devices + SitFixture.matched(listOf(drone()), sit.fleets)
+        return sit to sit.devices + SitFixture.matched(listOf(SitFixture.drone()), sit.fleets)
     }
 
     /** A spoofing episode and a later interference mark, both while the operator path was recording. */
