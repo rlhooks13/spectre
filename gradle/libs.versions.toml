@@ -12,12 +12,10 @@ junit = "4.13.2"
 json = "20240303"
 turbine = "1.2.0"
 robolectric = "4.14.1"
-# The Android SDK jars Robolectric needs. Gradle resolves and verifies them, so Robolectric never downloads
-# them itself (see app/build.gradle.kts). Tests run on SDK 34, because SDK 35 needs Java 21 and CI runs 17.
-# Robolectric also loads framework resources from the newest SDK the JVM supports, which is 35 on Java 21.
+# The Android SDK jar Robolectric runs tests on (SDK 35, the targetSdk; it also loads framework resources
+# from it). Runs on Java 17, CI's JDK (checked: java.version 17.0.20.1). Gradle resolves and verifies it, so Robolectric never downloads it itself (see app/build.gradle.kts).
 # The -iN suffix is Robolectric's instrumentation version: change it with Robolectric. A mismatch fails every
 # Robolectric test with the name of the jar it expected.
-robolectric-android-all-sdk34 = "14-robolectric-10818077-i7"
 robolectric-android-all-sdk35 = "15-robolectric-12650502-i7"
 
 [libraries]
@@ -42,7 +40,6 @@ json = { module = "org.json:json", version.ref = "json" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
-robolectric-android-all-sdk34 = { module = "org.robolectric:android-all-instrumented", version.ref = "robolectric-android-all-sdk34" }
 robolectric-android-all-sdk35 = { module = "org.robolectric:android-all-instrumented", version.ref = "robolectric-android-all-sdk35" }
 
 [plugins]

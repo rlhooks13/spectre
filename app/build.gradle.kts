@@ -138,8 +138,6 @@ androidComponents {
     }
 }
 
-// One configuration per SDK: the jars share coordinates, so in one configuration only the newest survives.
-val robolectricSdk34: Configuration by configurations.creating { isCanBeConsumed = false }
 val robolectricSdk35: Configuration by configurations.creating { isCanBeConsumed = false }
 
 dependencies {
@@ -165,15 +163,14 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.robolectric)
-    robolectricSdk34(libs.robolectric.android.all.sdk34) { isTransitive = false }
     robolectricSdk35(libs.robolectric.android.all.sdk35) { isTransitive = false }
 }
 
 // Robolectric fetches its Android SDK jar from Maven Central at test time, outside Gradle's dependency
-// verification. Instead Gradle resolves (and verifies) the jars it needs, and tests run offline from them.
+// verification. Instead Gradle resolves (and verifies) the one jar it needs, and tests run offline from it.
 val robolectricJars = layout.buildDirectory.dir("robolectric-jars")
 val syncRobolectricJars by tasks.registering(Sync::class) {
-    from(robolectricSdk34, robolectricSdk35)
+    from(robolectricSdk35)
     into(robolectricJars)
 }
 tasks.withType<Test>().configureEach {
@@ -229,7 +226,8 @@ val checkNoTestCryptoInApp by tasks.registering {
         }
     }
 }
-tasks.named("check") { dependsOn(checkNoTestCryptoInApp) }
+// On preBuild, so every build runs it, including CI's, which doesn't run `check`.
+tasks.named("preBuild") { dependsOn(checkNoTestCryptoInApp) }
 
 // Capture scrub tool (P1-F4, docs/capture-runbook.md): `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`.
 // Without them the tool's test is skipped, so CI and ordinary runs never touch capture files. With them,
