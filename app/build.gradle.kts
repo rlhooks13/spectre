@@ -121,6 +121,10 @@ android {
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
+    testOptions {
+        // Robolectric tests see the merged manifest and resources.
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 androidComponents {
@@ -132,6 +136,10 @@ androidComponents {
         }
     }
 }
+
+// One configuration per SDK: the jars share coordinates, so in one configuration only the newest survives.
+val robolectricSdk34: Configuration by configurations.creating { isCanBeConsumed = false }
+val robolectricSdk35: Configuration by configurations.creating { isCanBeConsumed = false }
 
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
@@ -153,7 +161,49 @@ dependencies {
     testImplementation(libs.junit)
     // Real org.json on the JVM test classpath; the android.jar bundled JSONObject is a stub.
     testImplementation(libs.json)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.robolectric)
+    robolectricSdk34(libs.robolectric.android.all.sdk34) { isTransitive = false }
+    robolectricSdk35(libs.robolectric.android.all.sdk35) { isTransitive = false }
 }
+
+// Robolectric fetches its Android SDK jar from Maven Central at test time, outside Gradle's dependency
+// verification. Instead Gradle resolves (and verifies) the jars it needs, and tests run offline from them.
+val robolectricJars = layout.buildDirectory.dir("robolectric-jars")
+val syncRobolectricJars by tasks.registering(Sync::class) {
+    from(robolectricSdk34, robolectricSdk35)
+    into(robolectricJars)
+}
+tasks.withType<Test>().configureEach {
+    // An input, so a new SDK jar reruns the tests; the folder's absolute path stays out of the cache key.
+    inputs.files(syncRobolectricJars).withPropertyName("robolectricJars").withPathSensitivity(PathSensitivity.NONE)
+    systemProperty("robolectric.offline", "true")
+    jvmArgumentProviders += CommandLineArgumentProvider {
+        listOf("-Drobolectric.dependency.dir=${robolectricJars.get().asFile.absolutePath}")
+    }
+}
+
+// Robolectric brings BouncyCastle and Conscrypt onto the test classpath. They are approved there only
+// (approved-dependencies.md), so the build fails if either reaches an app runtime classpath.
+val checkNoTestCryptoInApp by tasks.registering {
+    val forbidden = listOf("org.bouncycastle", "org.conscrypt")
+    val classpaths = listOf("debugRuntimeClasspath", "releaseRuntimeClasspath", "stagingRuntimeClasspath")
+        .map { name -> name to configurations.named(name).flatMap { it.incoming.resolutionResult.rootComponent } }
+    doLast {
+        classpaths.forEach { (name, root) ->
+            val seen = mutableSetOf<org.gradle.api.artifacts.result.ResolvedComponentResult>()
+            fun walk(c: org.gradle.api.artifacts.result.ResolvedComponentResult) {
+                if (!seen.add(c)) return
+                c.dependencies.filterIsInstance<org.gradle.api.artifacts.result.ResolvedDependencyResult>().forEach { walk(it.selected) }
+            }
+            walk(root.get())
+            val bad = seen.mapNotNull { it.moduleVersion }.filter { it.group in forbidden }
+            check(bad.isEmpty()) { "$name contains test-only crypto: ${bad.joinToString()}" }
+        }
+    }
+}
+tasks.named("check") { dependsOn(checkNoTestCryptoInApp) }
 
 // Capture scrub tool (P1-F4, docs/capture-runbook.md): `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`.
 // Without them the tool's test is skipped, so CI and ordinary runs never touch capture files. With them,
