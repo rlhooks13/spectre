@@ -283,6 +283,13 @@ object MatchCorpus {
             sighting("NM:ibr", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:09", name = "IBRAHIM-iPhone"),
             setOf("fleet-cradlepoint"),
         ),
+        // P1-B5b: short brand names caught words that contain them; the rows keep only their anchored globs.
+        NearMiss("Car stereo named Audio", sighting("NM:car-audio", name = "Car Audio BT"), setOf("fleet-audi-mmi")),
+        NearMiss(
+            "Hotspot named Veeroo",
+            sighting("NM:veeroo", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0E", name = "Veeroo-5G"),
+            setOf("fleet-eero"),
+        ),
         // The P1-B5a replacements need a separator or the exact name, and the Wi-Fi Direct shape.
         NearMiss("Fan gear named Ravens", sighting("NM:ravens-fan", name = "Ravens-Fan"), setOf("fleet-raven")),
         NearMiss("Device named Vigilante", sighting("NM:vigilante", name = "Vigilante"), setOf("fleet-vigilant")),

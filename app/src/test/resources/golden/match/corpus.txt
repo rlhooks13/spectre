@@ -109,6 +109,12 @@ NM:vigilant	near-miss	Home alarm named Vigilant
 NM:ibr	near-miss	Phone hotspot named Ibrahim
   must not fleet-cradlepoint
   -> fleet-apple-device [PHONE]
+NM:car-audio	near-miss	Car stereo named Audio
+  must not fleet-audi-mmi
+  -> (none)
+NM:veeroo	near-miss	Hotspot named Veeroo
+  must not fleet-eero
+  -> (none)
 NM:ravens-fan	near-miss	Fan gear named Ravens
   must not fleet-raven
   -> (none)

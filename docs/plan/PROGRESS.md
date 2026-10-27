@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B5 Over-broad names** (the 34 short names `CatalogLintTest` lists), after P1-B5a (catalog v101) merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B5 Over-broad names**: 15 short names left, none with an anchored glob to fall back on. Starts after P1-B5b (catalog v102) merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b5a-raven-vigilant-ibr`
+- Branch: `p1/b5b-redundant-short-names`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -69,6 +69,14 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B5b Redundant short names (catalog v102).** #61 (P1-B5a) merged as e9666a7.
+  - **Triage:** of the 34 short "contains" names the lint lists, 19 sit on a row that already has an anchored glob of the same brand (`Arlo*`, `DJI*`, `Net2*`, ...).
+  - **The fix:**
+    - The 19 contains-rules are retired (`retired.json`, `RetiredRules`, retiredIn 102).
+    - The globs stay, and ADR-0015 accepts them as anchored short brand prefixes, with the reason.
+    - No new rules, so the ladder step only moves the version.
+  - **Corpus:** new near misses "Car Audio BT" (was Audi) and the "Veeroo-5G" SSID (was eero). No existing corpus case relied on a bare name.
+  - **Left for P1-B5:** 15 names with no anchored glob: Echo, iPad, Seos, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Sony, UBNT, VW.
 - 2026-10-27: **P1-B5a RAVEN, Vigilant, IBR\* (catalog v101).** #60 (P1-B4c) merged as f91b91a.
   - **Split:** P1-B5 splits into B5a, the three rules the step names, and B5 itself, the 34 short names, which each need evidence of what real devices advertise.
   - **The fix:**

@@ -18,6 +18,12 @@
 - `fleet-inseego#3` and `fleet-novatel#0`, each hitting the other: Inseego is the former Novatel Wireless, and the hotspots carry both names.
 - `fleet-unifi-ap#0`, `fleet-unifi-ap#1`, `fleet-unifi-ap#3` and `fleet-unifi-ap#4` → UniFi: the AP row is a narrower view of the UniFi row.
 
+**Anchored short brand prefixes (P1-B5b, catalog v102).** Nineteen rows had both a short "contains" name and an anchored glob of the same brand: `Arlo*`, `ASUS*`, `Audi MMI*`, `DJI*`, `eero*`, `eufy*`, `FOBO*`, `Hak5*`, `ENVY*`, `Kevo*`, `MBUX*`, `MyQ-*`, `Nuki*`, `Net2*`, `Yale*`, `Tapo*`, `TUYA*`, `Wyze*`. P1-B5b retired the "contains" rule and kept the glob.
+- The step's rule asks for a prefix literal of 5+ characters or one that ends in a separator. These short brand prefixes stay anyway, as accepted: each device's default name starts with its brand.
+- Anchoring at the start already rules out the mid-word hits that made "contains" wrong ("Tattile", "IBRAHIM").
+- What's left is a word that starts with the brand, which is rare for these names.
+- A capture showing a separator form can still tighten one.
+
 **Assigned to a fix:**
 
 | Violation | Fixed by |

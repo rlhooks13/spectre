@@ -121,16 +121,12 @@ class CatalogLintTest {
             "fleet-dji/0x08AA" to "P1-B10",
         )
 
+        /** The short names P1-B5b left: none of these rows has an anchored glob of the same name to fall back on. */
         private val SHORT_NAME: Map<String, String> = listOf(
-            "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-arlo/Arlo/ANY", "fleet-seos/Seos/BLE",
-            "fleet-seos/Yale/BLE", "fleet-asus/ASUS/WIFI", "fleet-audi-mmi/Audi/BLE", "fleet-bmw/BMW/BLE",
-            "fleet-bose/Bose/BLE", "fleet-byd/BYD/BLE", "fleet-dji/DJI/BLE", "fleet-dji/DJI/WIFI",
-            "fleet-eero/eero/WIFI", "fleet-eufy/eufy/ANY", "fleet-fobo/FOBO/BLE", "fleet-ford/Ford/BLE",
-            "fleet-hak5-pineapple/Hak5/ANY", "fleet-hobby-ble/BT05/BLE", "fleet-hp/ENVY/BLE", "fleet-jbl/JBL/BLE",
-            "fleet-kevo/Kevo/BLE", "fleet-logitech/Logi/BLE", "fleet-mbux/MBUX/WIFI", "fleet-microsoft/Xbox/BLE",
-            "fleet-myq/MyQ/BLE", "fleet-nuki/Nuki/BLE", "fleet-oura/Oura/BLE", "fleet-paxton/Net2/BLE",
-            "fleet-sony/Sony/BLE", "fleet-tapo/Tapo/ANY", "fleet-tuya/TUYA/BLE", "fleet-unifi-ap/UBNT/WIFI",
-            "fleet-volkswagen/VW/BLE", "fleet-wyze/Wyze/ANY",
+            "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-seos/Seos/BLE", "fleet-bmw/BMW/BLE",
+            "fleet-bose/Bose/BLE", "fleet-byd/BYD/BLE", "fleet-ford/Ford/BLE", "fleet-hobby-ble/BT05/BLE",
+            "fleet-jbl/JBL/BLE", "fleet-logitech/Logi/BLE", "fleet-microsoft/Xbox/BLE", "fleet-oura/Oura/BLE",
+            "fleet-sony/Sony/BLE", "fleet-unifi-ap/UBNT/WIFI", "fleet-volkswagen/VW/BLE",
         ).associateWith { "P1-B5" }
 
         /** Generated positive → the other signatures it hits, with ADR-0015 or the fixing step. */

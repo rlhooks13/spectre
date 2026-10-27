@@ -25,7 +25,33 @@ object RetiredRules {
         Entry("fleet-raven", MatchRule(RuleKind.NAME_CONTAINS, text = "RAVEN"), retiredIn = 101),
         Entry("fleet-vigilant", MatchRule(RuleKind.NAME_CONTAINS, text = "Vigilant"), retiredIn = 101),
         Entry("fleet-cradlepoint", MatchRule(RuleKind.NAME_GLOB, text = "IBR*", radio = RadioKind.WIFI), retiredIn = 101),
-    )
+        // P1-B5b: short "contains" names whose row already has the anchored brand glob (Arlo*, DJI*, Net2*, ...).
+    ) + B5B_RETIRED.map { (fleetId, text, radio) ->
+        Entry(fleetId, MatchRule(RuleKind.NAME_CONTAINS, text = text, radio = radio), retiredIn = 102)
+    }
+
+    private val B5B_RETIRED: List<Triple<String, String, RadioKind?>>
+        get() = listOf(
+            Triple("fleet-arlo", "Arlo", null),
+            Triple("fleet-asus", "ASUS", RadioKind.WIFI),
+            Triple("fleet-audi-mmi", "Audi", RadioKind.BLE),
+            Triple("fleet-dji", "DJI", RadioKind.BLE),
+            Triple("fleet-dji", "DJI", RadioKind.WIFI),
+            Triple("fleet-eero", "eero", RadioKind.WIFI),
+            Triple("fleet-eufy", "eufy", null),
+            Triple("fleet-fobo", "FOBO", RadioKind.BLE),
+            Triple("fleet-hak5-pineapple", "Hak5", null),
+            Triple("fleet-hp", "ENVY", RadioKind.BLE),
+            Triple("fleet-kevo", "Kevo", RadioKind.BLE),
+            Triple("fleet-mbux", "MBUX", RadioKind.WIFI),
+            Triple("fleet-myq", "MyQ", RadioKind.BLE),
+            Triple("fleet-nuki", "Nuki", RadioKind.BLE),
+            Triple("fleet-paxton", "Net2", RadioKind.BLE),
+            Triple("fleet-seos", "Yale", RadioKind.BLE),
+            Triple("fleet-tapo", "Tapo", null),
+            Triple("fleet-tuya", "TUYA", RadioKind.BLE),
+            Triple("fleet-wyze", "Wyze", null),
+        )
 
     /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
     private val BASE_UUID = Regex("""^0000([0-9A-F]{4})-0000-1000-8000-00805F9B34FB$""")
