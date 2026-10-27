@@ -72,7 +72,14 @@ object MatchCorpus {
         )
     }
 
-    private fun apple(hex: String) = listOf(MfgRecord(0x004C, hex))
+    private fun apple(vararg hex: String) = hex.map { MfgRecord(0x004C, it) }
+
+    /**
+     * An Offline Finding record: type 0x12, length 0x19 (25 bytes) = status, 22-byte key, key bits, hint.
+     * Status bits 4-5 carry the device type as AirGuard decodes it: 0x00 Apple device (iPhone, Mac),
+     * 0x10 AirTag, 0x20 Find My accessory, 0x30 AirPods. P1-B3 confirms this layout against a capture.
+     */
+    private fun offlineFinding(status: Int) = "1219" + "%02X".format(status) + "00".repeat(24)
 
     val nearMisses: List<NearMiss> = listOf(
         // Samsung's company id is on every Galaxy phone and Buds, not only SmartTags.
@@ -89,18 +96,19 @@ object MatchCorpus {
         // Offline Finding (0x12) is sent by separated or powered-off iPhones and AirPods too.
         NearMiss(
             "Separated iPhone, Offline Finding only",
-            sighting("NM:iphone-of", mfg = apple("1219000000000000000000000000000000000000000000000000")),
+            sighting("NM:iphone-of", mfg = apple(offlineFinding(0x00))),
             setOf("fleet-airtag"), knownUntil = "P1-B3",
         ),
         NearMiss(
             "Powered-off AirPods, Offline Finding only",
-            sighting("NM:airpods-of", mfg = apple("1219100000000000000000000000000000000000000000000000")),
+            sighting("NM:airpods-of", mfg = apple(offlineFinding(0x30))),
             setOf("fleet-airtag"), knownUntil = "P1-B3",
         ),
-        // A phone carried by the user: Continuity nearby-info, no Find My.
+        // A phone carried by the user sends Continuity nearby-info next to Offline Finding. The Continuity
+        // record is what keeps it off AirTag today (dropAirTagsWhenAppleDevice), so this exercises that filter.
         NearMiss(
-            "Companion iPhone (Continuity 0x10)",
-            sighting("NM:iphone", mfg = apple("1005031C0F2A7B")),
+            "Companion iPhone (Continuity 0x10 with Offline Finding)",
+            sighting("NM:iphone", mfg = apple("1005031C0F2A7B", offlineFinding(0x00))),
             setOf("fleet-airtag"),
         ),
         // "Tattile" (plate-reader maker) contains "tile".
@@ -131,26 +139,25 @@ object MatchCorpus {
             sighting("NM:ibr", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:09", name = "IBRAHIM-iPhone"),
             setOf("fleet-cradlepoint"), knownUntil = "P1-B5",
         ),
-        // Random BLE addresses are random bytes; any of them can start with a camera vendor's OUI.
-        NearMiss(
-            "Random BLE address on Axon's OUI",
-            sighting("NM:rand-axon", mac = mac("00:25:DF", "4A1B2C")),
-            setOf("fleet-axon"), knownUntil = "P1-B8",
-        ),
-        NearMiss(
-            "Random BLE address on Flock's OUI",
-            sighting("NM:rand-flock", mac = mac("B4:1E:52", "4A1B2C")),
-            setOf("fleet-flock-cameras"), knownUntil = "P1-B8",
-        ),
-        NearMiss(
-            "Random BLE address on a LiteOn OUI",
-            sighting("NM:rand-liteon", mac = mac("70:C9:4E", "4A1B2C")),
-            setOf("fleet-liteon-camera-radio"), knownUntil = "P1-B8",
-        ),
-        NearMiss(
-            "Random BLE address on Arlo's OUI",
-            sighting("NM:rand-arlo", mac = mac("48:62:64", "4A1B2C")),
-            setOf("fleet-arlo"), knownUntil = "P1-B8",
-        ),
+    )
+
+    /**
+     * Random BLE addresses whose first bytes collide with a camera vendor's OUI. Matching hits them by design:
+     * P1-B8 (flagged) keeps the hit but shows an OUI-only hit on a random address as "possible", with no
+     * attention card or alert. So these are P1-B8's fixtures, and today's test asserts they still hit.
+     * A random address's top two bits are 00 (non-resolvable) or 01 (resolvable), or 11 for a static random
+     * address. Flock's B4:1E:52 starts 10, which is reserved, so no random address collides with it.
+     */
+    val randomAddressOuiHits: List<NearMiss> = listOf(
+        randomOn("Axon", "00:25:DF", "fleet-axon"), // 00: non-resolvable
+        randomOn("LiteOn", "70:C9:4E", "fleet-liteon-camera-radio"), // 01: resolvable
+        randomOn("Arlo", "48:62:64", "fleet-arlo"), // 01: resolvable
+    )
+
+    private fun randomOn(vendor: String, oui: String, fleet: String) = NearMiss(
+        "Random BLE address on $vendor's OUI",
+        sighting("RND:$vendor", mac = mac(oui, "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+        setOf(fleet),
+        knownUntil = "P1-B8",
     )
 }

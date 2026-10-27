@@ -67,20 +67,25 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 - 2026-10-27: **P1-A4 Match corpus.** Branch `p1/a4-match-corpus`. Test-only.
   - **Shared builders:** `testing/Sightings.kt` holds `sighting()` and `mac()`, the first of P1-A1's shared builders.
   - **Positives:**
-    - `MatchCorpus.positives()` makes one sighting per enabled rule of every built-in signature, or one sighting with every rule for the all-rules row. That's 6,974 positives from 255 signatures; none are clustered.
-    - Each must hit its own signature, and all do today. There's an allowlist for post-filter misses; it's empty, and a stale entry fails the test.
+    - `MatchCorpus.positives()` makes one sighting per enabled rule of every built-in signature, or one sighting with every rule for the all-rules row. That's 6,974 positives from 255 signatures; the clustered count is pinned at 0.
+    - Each rule must hit a copy of its signature that holds only that rule, so a sibling rule can't hide a broken one.
+    - Each must also hit its signature in the full catalog. There's an allowlist for post-filter misses; it's empty, and a stale or unresolvable entry fails the test.
   - **Near-misses** (hand-written confusers, each with the signatures it must not hit):
 
     | Confusers | Hit today? | Fixed by |
     |---|---|---|
     | Galaxy phone and Buds on 0x0075 | yes | P1-B1 |
-    | Separated iPhone and powered-off AirPods sending only 0x12 | yes | P1-B3 |
+    | Separated iPhone (Offline Finding status 0x00) and powered-off AirPods (status 0x30) | yes | P1-B3 |
     | "Tattile" and a Quuppa 0x00C7 tag | yes | P1-B2 |
     | "RAVENCLAW", "Vigilant Home Alarm" and the "IBRAHIM-iPhone" hotspot | yes | P1-B5 |
-    | Random BLE addresses on the Axon, Flock, LiteOn and Arlo OUIs | yes | P1-B8 |
-    | Companion iPhone (Continuity 0x10) | no; must not hit AirTag | |
+    | Companion iPhone (Continuity 0x10 next to 0x12) | no; must not hit AirTag | |
 
     - **Strict:** a known near-miss that stops hitting fails the test until its fix removes the `knownUntil` marker.
+    - **Offline Finding records** are the full 25 bytes. Their status-byte types follow AirGuard's layout, which P1-B3 confirms against a capture.
+  - **Random-address OUI hits are separate** (`randomAddressOuiHits`: Axon 00:25:DF, LiteOn 70:C9:4E, Arlo 48:62:64, `addressType` "Random").
+    - Matching still hits these by design. P1-B8 changes how they're shown, not the match, so the test asserts they hit and that each MAC's top bits are a real random address.
+    - Flock's B4:1E:52 starts with the reserved bits 10, so no random address can collide with it.
+  - **Review:** `/code-review` led to the per-rule isolation, the realistic payloads, the P1-B8 split, the Flock correction, the stale-key check and the clustered pin. Rebutted: sharing the engine's private cluster test (the pin catches drift).
 - 2026-10-27: **P1-A8 merged** as `f3d5d47` (PR #24). #19 synced: the lint baseline, `lint {}` and the growth guard are gone, replaced by a "Lint guard" step that fails on report errors or a baseline or opt-out coming back. The test baseline goes 790 → 804. #19 now touches only `docs/setup/workflows/android.yml` and `docs/plan/test-baseline.txt`.
 - 2026-10-27: **P1-A8 Inherited lint errors.** PR #24. Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
   - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
