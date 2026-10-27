@@ -11,6 +11,8 @@ ENTRIES
   golden-package/FIELDWATCH-TRACK-RID-TESTSERIAL0000000001.cot
   golden-package/FIELDWATCH-PILOT-TESTSERIAL0000000001.cot
   golden-package/FIELDWATCH-AB23-HERE-BLE-6E1122334403.cot
+  golden-package/FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot
+  golden-package/FIELDWATCH-GNSS-AB23-1793102340000-jamming.cot
 
 ==== MANIFEST/manifest.xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -64,6 +66,14 @@ ENTRIES
       <Parameter name="uid" value="FIELDWATCH-AB23-HERE-BLE-6E1122334403.cot"/>
       <Parameter name="name" value="FIELDWATCH-AB23-HERE-BLE-6E1122334403.cot"/>
     </Content>
+    <Content ignore="false" zipEntry="golden-package/FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot">
+      <Parameter name="uid" value="FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot"/>
+      <Parameter name="name" value="FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot"/>
+    </Content>
+    <Content ignore="false" zipEntry="golden-package/FIELDWATCH-GNSS-AB23-1793102340000-jamming.cot">
+      <Parameter name="uid" value="FIELDWATCH-GNSS-AB23-1793102340000-jamming.cot"/>
+      <Parameter name="name" value="FIELDWATCH-GNSS-AB23-1793102340000-jamming.cot"/>
+    </Content>
   </Contents>
 </MissionPackageManifest>
 
@@ -83,30 +93,48 @@ ENTRIES
 
 ==== golden-package/FIELDWATCH-SELF-AB23.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-SELF-AB23" type="a-f-G-U-C" time="2026-10-27T12:00:00.000Z" start="2026-10-27T12:00:00.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Spectre-AB23"/><__group name="Cyan" role="Team Member"/><remarks>This phone. End of the recorded path.</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-PATH.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-PATH" type="b-m-r" time="2026-10-27T12:00:00.000Z" start="2026-10-27T12:00:00.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0011" lon="0.002" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Operator path"/><__group name="Cyan" role="Team Member"/><remarks>Operator path</remarks><link uid="FIELDWATCH-PATH-pt-0" type="b-m-p-w" relation="p-p" point="0.0011,0.002"/><link uid="FIELDWATCH-PATH-pt-1" type="b-m-p-w" relation="p-p" point="0.0013,0.0022"/><link uid="FIELDWATCH-PATH-pt-2" type="b-m-p-w" relation="p-p" point="0.0015,0.0024"/><strokeColor value="-16711681"/><strokeWeight value="3.0"/><labels_on value="false"/></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-WIFI-B41E520A0B0C.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-WIFI-B41E520A0B0C" type="a-u-G" time="2026-10-27T11:55:30.000Z" start="2026-10-27T11:55:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0012" lon="0.0021" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Flock Safety Cameras (here)"/><__group name="Maroon" role="Team Member"/><remarks>Flock Safety Cameras (here)&#10;Wi-Fi  B4:1E:52:0A:0B:0C  -55 dBm  ch 6&#10;heard here (operator GPS)&#10;Flock-1A2B&#10;Extra attention: Flock-style roadside ALPR / camera pole — reads plates and can be used to locate a vehicle. IEEE B4:1E:52 or a Flock-* S&#10;via Spectre-AB23</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-BLE-7A1122334401.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-7A1122334401" type="a-u-G" time="2026-10-27T11:56:30.000Z" start="2026-10-27T11:56:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0013" lon="0.0022" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Tom&apos;s &quot;bag&quot;, left &amp; &lt;righ (here)"/><__group name="Cyan" role="Team Member"/><remarks>Tom&apos;s &quot;bag&quot;, left &amp; &lt;righ (here)&#10;BLE  7A:11:22:33:44:01  -67 dBm&#10;heard here (operator GPS)&#10;Apple AirTags&#10;via Spectre-AB23</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-BLE-5E1122334402.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-5E1122334402" type="a-u-G" time="2026-10-27T11:57:30.000Z" start="2026-10-27T11:57:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0014" lon="0.0023" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Samsung SmartTags (here)"/><__group name="Cyan" role="Team Member"/><remarks>Samsung SmartTags (here)&#10;BLE  5E:11:22:33:44:02  -72 dBm&#10;heard here (operator GPS)&#10;via Spectre-AB23</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-BLE-4E1122334407.cot
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-4E1122334407" type="a-u-G" time="2026-10-27T11:59:50.000Z" start="2026-10-27T11:59:50.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001 (here)"/><__group name="Cyan" role="Team Member"/><remarks>TESTSERIAL0000000001 (here)&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;heard here (operator GPS) · UAS ID TESTSERIAL0000000001&#10;Remote ID&#10;via Spectre-AB23</remarks></detail></event>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-4E1122334407" type="a-u-G" time="2026-10-27T11:59:55.000Z" start="2026-10-27T11:59:55.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001 (here)"/><__group name="Cyan" role="Team Member"/><remarks>TESTSERIAL0000000001 (here)&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;heard here (operator GPS) · UAS ID TESTSERIAL0000000001&#10;Remote ID&#10;via Spectre-AB23</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-RID-TESTSERIAL0000000001.cot
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-RID-TESTSERIAL0000000001" type="a-u-A-M-H-Q" time="2026-10-27T11:59:50.000Z" start="2026-10-27T11:59:50.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0021" lon="0.0031" hae="86" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001"/><__group name="Yellow" role="Team Member"/><link uid="FIELDWATCH-PILOT-TESTSERIAL0000000001" type="a-u-G" relation="p-p"/><track course="270" speed="6.5"/><remarks>TESTSERIAL0000000001&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;advertised position · UAS ID TESTSERIAL0000000001&#10;Remote ID</remarks></detail></event>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-RID-TESTSERIAL0000000001" type="a-u-A-M-H-Q" time="2026-10-27T11:59:51.000Z" start="2026-10-27T11:59:51.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0021" lon="0.0031" hae="86" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001"/><__group name="Yellow" role="Team Member"/><link uid="FIELDWATCH-PILOT-TESTSERIAL0000000001" type="a-u-G" relation="p-p"/><track course="270" speed="6.5"/><remarks>TESTSERIAL0000000001&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;advertised position · UAS ID TESTSERIAL0000000001&#10;Remote ID</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-TRACK-RID-TESTSERIAL0000000001.cot
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001" type="b-m-r" time="2026-10-27T11:59:50.000Z" start="2026-10-27T11:59:50.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0019" lon="0.0035" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001 track"/><__group name="Yellow" role="Team Member"/><remarks>TESTSERIAL0000000001 track</remarks><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-0" type="b-m-p-w" relation="p-p" point="0.0019,0.0035"/><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-1" type="b-m-p-w" relation="p-p" point="0.002,0.0033"/><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-2" type="b-m-p-w" relation="p-p" point="0.0021,0.0031"/><strokeColor value="-256"/><strokeWeight value="3.0"/><labels_on value="false"/></detail></event>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001" type="b-m-r" time="2026-10-27T11:59:51.000Z" start="2026-10-27T11:59:51.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0019" lon="0.0035" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="TESTSERIAL0000000001 track"/><__group name="Yellow" role="Team Member"/><remarks>TESTSERIAL0000000001 track</remarks><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-0" type="b-m-p-w" relation="p-p" point="0.0019,0.0035"/><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-1" type="b-m-p-w" relation="p-p" point="0.002,0.0033"/><link uid="FIELDWATCH-TRACK-RID-TESTSERIAL0000000001-pt-2" type="b-m-p-w" relation="p-p" point="0.0021,0.0031"/><strokeColor value="-256"/><strokeWeight value="3.0"/><labels_on value="false"/></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-PILOT-TESTSERIAL0000000001.cot
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-PILOT-TESTSERIAL0000000001" type="a-u-G" time="2026-10-27T11:59:50.000Z" start="2026-10-27T11:59:50.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0018" lon="0.0029" hae="4" ce="9999999" le="9999999"/><detail><contact callsign="Pilot · TESTSERIAL0000000001"/><__group name="Orange" role="Team Member"/><link uid="FIELDWATCH-RID-TESTSERIAL0000000001" type="a-u-A-M-H-Q" relation="p-p"/><remarks>Pilot · TESTSERIAL0000000001&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;operator (pilot) position · UAS ID TESTSERIAL0000000001&#10;Remote ID</remarks></detail></event>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-PILOT-TESTSERIAL0000000001" type="a-u-G" time="2026-10-27T11:59:55.000Z" start="2026-10-27T11:59:55.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0018" lon="0.0029" hae="4" ce="9999999" le="9999999"/><detail><contact callsign="Pilot · TESTSERIAL0000000001"/><__group name="Orange" role="Team Member"/><link uid="FIELDWATCH-RID-TESTSERIAL0000000001" type="a-u-A-M-H-Q" relation="p-p"/><remarks>Pilot · TESTSERIAL0000000001&#10;BLE  4E:11:22:33:44:07  -74 dBm&#10;operator (pilot) position · UAS ID TESTSERIAL0000000001&#10;Remote ID</remarks></detail></event>
+[no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-BLE-6E1122334403.cot
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-6E1122334403" type="a-u-G" time="2026-10-27T11:58:30.000Z" start="2026-10-27T11:58:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Samsung SmartTags (here)"/><__group name="Cyan" role="Team Member"/><remarks>Samsung SmartTags (here)&#10;BLE  6E:11:22:33:44:03  -80 dBm&#10;heard here (operator GPS)&#10;Galaxy S23&#10;via Spectre-AB23</remarks></detail></event>
+[no final newline]
+
+==== golden-package/FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-GNSS-AB23-1793102160000-spoofing" type="b-m-p-s-m" time="2026-10-27T11:56:00.000Z" start="2026-10-27T11:56:00.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0011" lon="0.002" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Possible GNSS interference"/><__group name="Magenta" role="Team Member"/><remarks>11:56 UTC. Possible GNSS spoofing. Medium. Position jumped 2 km and back. Ended 11:57 UTC.&#10;Where this phone was. Not the source.</remarks></detail></event>
+[no final newline]
+
+==== golden-package/FIELDWATCH-GNSS-AB23-1793102340000-jamming.cot
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-GNSS-AB23-1793102340000-jamming" type="b-m-p-s-m" time="2026-10-27T11:59:00.000Z" start="2026-10-27T11:59:00.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Possible GNSS interference"/><__group name="Magenta" role="Team Member"/><remarks>11:59 UTC. Possible GNSS interference. Low. Signal-to-noise dropped on every constellation.&#10;Where this phone was. Not the source.</remarks></detail></event>
+[no final newline]

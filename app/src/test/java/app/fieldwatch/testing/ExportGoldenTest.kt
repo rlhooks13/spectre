@@ -106,18 +106,9 @@ class ExportGoldenTest {
         Golden.assertText("cot/flock-live.xml", liveCot(SitFixture.FLOCK))
     }
 
-    /** A live TAK event, built the way TakPublisher builds one, with a real install tag. */
+    /** A live TAK event, built the way TakPublisher builds one, with the sit's watchlist. */
     private fun liveCot(mac: String): String {
         val sit = SitFixture.build()
-        val tag = "AB23"
-        assertEquals(tag, TakInstall.clean(tag)) // a valid tag, so the uid is phone-scoped
-        // TAK on, sending every signed device (the AirTag has no attention note, so the default skips it).
-        val settings = AppSettings().copy(takEnabled = true, takAllSignatures = true, tagLocation = true)
-        val marker = TakPublish.markers(sit.device(mac), settings, sit.fleets, emptyList(), tag).single()
-        val face = CotEvent.face(
-            device = marker.device, fleets = sit.fleets, watchlist = emptyList(), advertised = marker.advertised,
-            tag = tag, pilot = marker.pilot, viaCallsign = TakInstall.viaLine(marker.uid, tag, "SPECTRE-AB23"),
-        )
-        return CotEvent.render(marker.uid, face, marker.lat, marker.lon, Golden.NOW, TakDefaults.STALE_MS) + "\n"
+        return LiveCot.events(sit.device(mac), sit.fleets, sit.watchlist)
     }
 }

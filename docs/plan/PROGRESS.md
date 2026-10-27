@@ -69,6 +69,12 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - The Debrief goldens merged as #48.
   - `atak/sit-package.txt` pins the zip's entries, manifest and every entry: phone-scoped HERE pins, the self and path events, and `tracks.kml` with the operator path and a drone track. It uses `SitFixture` plus a synthetic Remote ID drone (FFFA, made-up serial, advertised position, heading, speed and pilot).
   - `cot/drone-live.xml` pins the live aircraft and pilot events, linked to each other.
+  - **Also in the package:**
+    - two GNSS pins (spoofing and jamming);
+    - the Galaxy near-miss's false "Samsung SmartTags" pin, which P1-B1 must re-bless along with the other goldens it names;
+    - the pilot event stamped with the radio's last hear (P1-D7).
+  - The live CoT goldens now use the phone callsign the app produces (`Spectre-AB23`), not a hand-typed one, and the sit's real watchlist, so the AirTag's live callsign is the user's name for it.
+  - `SitFixture.Sit.watchlist` (names, notes, mine) and `LiveCot` are shared.
 - 2026-10-27: **P1-A3, Debrief goldens for 6 sits:**
   - **The sits:**
     1. a stationary café stop;
