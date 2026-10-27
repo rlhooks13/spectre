@@ -1105,7 +1105,6 @@
     "settings.layer.alert.camera": "Alerta de outras câmaras",
     "settings.layer.download.title": "Transferir leitores de matrículas.",
     "settings.layer.more": "Atualize para incluir cada leitor de matrículas.",
-    "settings.layer.download.body": "A transferência é a lista de leitores de matrículas dos Estados Unidos, cerca de 37 MB. Pode atualizá-la mais tarde. Fica neste telefone.",
     "settings.layer.other.download.title": "Transferir outros sensores.",
     "settings.layer.other.download.body": "Cerca de 1 MB. Pode atualizá-la mais tarde. Fica neste telefone.",
     "settings.layer.download.action": "Transferir",

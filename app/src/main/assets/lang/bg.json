@@ -1113,7 +1113,6 @@
     "settings.layer.alert.camera": "Тревога за други камери",
     "settings.layer.download.title": "Изтегляне на четци на номера.",
     "settings.layer.more": "Актуализацията включва всеки четец на номера.",
-    "settings.layer.download.body": "Изтеглянето е списъкът с четци на номера за Съединените щати, около 37 MB. По-късно може да се обнови. Остава в този телефон.",
     "settings.layer.other.download.title": "Изтегляне на други сензори.",
     "settings.layer.other.download.body": "Около 1 MB. Може да го обновите по-късно. Остава на този телефон.",
     "settings.layer.download.action": "Изтегли",
