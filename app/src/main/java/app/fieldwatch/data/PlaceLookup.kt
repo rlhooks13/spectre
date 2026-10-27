@@ -1,6 +1,8 @@
 package app.fieldwatch.data
 
 import android.content.Context
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
@@ -187,6 +189,7 @@ object PlaceLookup {
     }
 
     private suspend fun reverse(geocoder: Geocoder, lat: Double, lon: Double): String? {
+        if (!NetworkPolicy.allows(Egress.PLACE_NAMES)) return null
         val async = withTimeoutOrNull(8_000L) {
             runCatching {
                 if (Build.VERSION.SDK_INT >= 33) {

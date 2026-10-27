@@ -1,6 +1,8 @@
 package app.fieldwatch.data
 
 import android.content.Context
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -66,14 +68,13 @@ object PathTiles {
     suspend fun load(
         context: Context,
         samples: List<GpsSample>,
-        onlineLookup: Boolean,
         forPrint: Boolean = false,
         basemap: MapBasemap = MapBasemap.OSM,
         mapKey: String? = null,
         overlays: Set<MapOverlay> = emptySet(),
     ): Batch = withContext(Dispatchers.IO) {
         try {
-            if (!onlineLookup) return@withContext Batch()
+            if (!NetworkPolicy.allows(Egress.MAP_TILES)) return@withContext Batch()
             if (samples.isEmpty()) return@withContext Batch()
             if (!PlaceLookup.online(context)) return@withContext Batch()
             val expanded = expandToPlot(
@@ -111,14 +112,13 @@ object PathTiles {
         north: Double,
         west: Double,
         east: Double,
-        onlineLookup: Boolean,
         basemap: MapBasemap = MapBasemap.OSM,
         mapKey: String? = null,
         overlays: Set<MapOverlay> = emptySet(),
         onTile: (suspend (Tile) -> Unit)? = null,
     ): Batch = withContext(Dispatchers.IO) {
         try {
-            if (!onlineLookup) return@withContext Batch()
+            if (!NetworkPolicy.allows(Egress.MAP_TILES)) return@withContext Batch()
             if (!PlaceLookup.online(context)) return@withContext Batch()
             loadBox(
                 context,
@@ -148,12 +148,11 @@ object PathTiles {
         north: Double,
         west: Double,
         east: Double,
-        onlineLookup: Boolean,
         basemap: MapBasemap = MapBasemap.OSM,
         mapKey: String? = null,
         overlays: Set<MapOverlay> = emptySet(),
     ) {
-        if (!onlineLookup) return
+        if (!NetworkPolicy.allows(Egress.MAP_TILES)) return
         withContext(Dispatchers.IO) {
             if (!PlaceLookup.online(context)) return@withContext
             if (blockedKey(basemap, mapKey) != null) return@withContext
@@ -598,6 +597,7 @@ object PathTiles {
         file: File,
         hopsLeft: Int,
     ): Fetch {
+        if (!NetworkPolicy.allows(Egress.MAP_TILES)) return Fetch.Failed
         val conn = (URL(address).openConnection() as HttpURLConnection).apply {
             connectTimeout = 4000
             readTimeout = 4000

@@ -222,8 +222,8 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Split into sub-steps (both are protected PRs the owner signs and copies into `.github/workflows/`):
      - **P0-8a** CI workflow draft (`docs/setup/workflows/android.yml`): wrapper validation, unit tests, lint, the test-count guard, unsigned `assembleRelease`, `assembleStaging` uploaded as the artifact. Actions pinned by SHA.
      - **P0-8b** Release workflow draft (`docs/setup/workflows/release.yml`): the two-job release.
-     - **P0-8c** Version from the git tag (ADR-0002). `vX.Y.Z` and `dryrun/v0.0.Z` tags give the version, and untagged builds give `X.Y.Z-dev+<sha>`. Needs P0-4h.
-     - **P0-8d** Release-notes generator: every label and verdict change, from the catalog diff and the flag states. Notes are hand-written until it lands.
+     - ✅ **P0-8c** Version from the git tag (ADR-0002). `vX.Y.Z` and `dryrun/v0.0.Z` tags give the version, and untagged builds give `X.Y.Z-dev+<sha>`. Needs P0-4h.
+     - **P0-8d** Release-notes generator: every label and verdict change, from the catalog diff and the flag states. Depends on the per-version catalog snapshots (`catalog/snapshots/`), which the first catalog PR (P1-B1) adds, so it lands after P1-B1 and before the 0.1.0 tag. Notes are hand-written until it lands.
 
 - **Verify:** install the staging and debug builds next to official Fieldwatch. Check scanning, an alert, an export share and the TAK callsign.
 - **Exit:**
@@ -234,7 +234,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 ### Phase 1: Safety net + correctness fixes → 0.1.0 (L)
 
 **1A. Safety net** (lands before any fix)
-- **P1-A1 Test libraries:** coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
+- **P1-A1 Test libraries:** (waits for PR #6, dependency verification, so new dependencies land in its metadata instead of breaking it; P1-A2 needs Robolectric and waits too) coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
 - **P1-A2 Golden rule:** goldens live under a `golden/` directory (for example `app/src/test/resources/golden/`), so `.gitattributes` keeps them `-text`.
   - Pins TimeZone and Locale, resets the LanguageText overlay, and passes `now` explicitly.
   - JSON goldens are compared **after parsing**, plus one Robolectric test that pins the device's byte order.
@@ -261,7 +261,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Corpus collisions are checked.
   - Every remaining violation needs an ADR. Whether a company name fits a signature is a reviewer check, not a lint rule.
 - **P1-A6 `LanguageKeyTest`** (build-logic): every literal key exists.
-- **P1-A7 `NetworkPolicy` + `EgressInventoryTest`.**
+- ✅ **P1-A7 `NetworkPolicy` + `EgressInventoryTest`** (ADR-0014).
   - One check inside `PathTiles` fetch, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher`.
   - Remove the 5 hard-coded `onlineLookup = true` calls.
   - Delete the V17/V19/V20 steps that force settings back on.

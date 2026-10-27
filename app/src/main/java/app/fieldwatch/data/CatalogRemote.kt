@@ -1,5 +1,7 @@
 package app.fieldwatch.data
 
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -19,6 +21,7 @@ object CatalogRemote {
         readTimeoutMs: Int = 15_000,
         userAgent: String = app.fieldwatch.domain.Brand.userAgent(app.fieldwatch.BuildConfig.VERSION_NAME),
     ): String {
+        check(NetworkPolicy.allows(Egress.CATALOG_UPDATE)) { "The catalog update is off." }
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             instanceFollowRedirects = true
             connectTimeout = connectTimeoutMs
