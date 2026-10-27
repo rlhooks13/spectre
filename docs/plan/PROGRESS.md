@@ -55,11 +55,15 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - `ChromeLines` (49) and `LanguageCopy` (7).
     - The hard-coded copy in `GnssInterference` (5) and `PlaceLookup` (1).
     - `strings.xml` `app_name`.
-  - `ui.fieldwatch.app.fieldwatch.stock` loses the `(app.fieldwatch)` app id.
+  - `ui.fieldwatch.app.fieldwatch.stock` becomes "Spectre (app.fieldwatch) · …". It keeps the app id until P0-4e.
+  - The idle top-bar title (`FieldwatchAppUi.kt`, a hard-coded `"FIELDWATCH"`) is now `Brand.NAME_UPPER`.
+  - New `BrandTest.noEnglishLineNamesTheUpstreamApp` guards against regressions.
+  - Moved to P0-4d (owner-reviewed): copy naming Off Grid Pete LLC (copyright line, PDF footer, language-pack review sentence).
+  - Known effect: a translation's length cap scales with the English text, so shorter English values give slightly tighter caps. No bundled pack is affected (both reviewers checked). An external pack written for upstream may lose a few long CONTROL lines to English fallback.
   - No key changed: a diff check shows every touched key once as removed and once as added. Every line keeps `addedIn = "1.1.27"`.
   - Left for later: the upstream author-guide URL in `LanguageCopy` (P0-4c), translated packs (P0-5), the disclaimer (P0-4d, protected), catalog notes (catalog checklist or P0-6).
   - Four tests updated to the new English values, none removed. `launcherNameStaysFieldwatch` became `launcherNameIsSpectre`.
-  - Result: 770 tests green.
+  - Result: 771 tests green.
   - Device: the staging launcher label is `Spectre` (aapt2). Cold start with 0 `FATAL`; it opens on the disclaimer.
 - 2026-10-27: **P0-4a Brand literals.** PR #7, merged as `b40423b`.
   - PLAN: P0-4 is split into P0-4a to P0-4e. 4d is protected, and 4e waits for the owner (see Needs human).

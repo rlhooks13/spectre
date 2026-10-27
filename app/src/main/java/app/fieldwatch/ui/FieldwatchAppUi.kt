@@ -496,7 +496,7 @@ private fun FieldwatchShell(state: FieldwatchUi, vm: FieldwatchViewModel) {
                                         LanguageText.text("ui.fieldwatch.sit.paused")
                                     state.sit.open != null -> LanguageText.text("ui.fieldwatch.sit")
                                     state.displayPaused -> LanguageText.text("ui.fieldwatch.paused")
-                                    else -> "FIELDWATCH"
+                                    else -> app.fieldwatch.domain.Brand.NAME_UPPER
                                 },
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
