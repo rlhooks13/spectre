@@ -169,7 +169,7 @@ One JSON object, UTF-8. A leading byte-order mark is stripped before parsing. Un
 | `language` | Required display name, 1 to 40 characters after trim and cleaning. |
 | `languageTag` | Optional. Stored and shown. It does not change the Android locale, layout direction, or number formats. If it is not a short BCP 47 tag, ignore the tag and keep the pack. |
 | `writtenFor` | Optional, at most 32 characters. The Spectre version the author used. Informational. A mismatch does not reject the pack. |
-| `keyRevision` | Optional integer. The newest key revision in the template the author used (ADR-0013). It sets the "new since" count. A pack without it is read as a Fieldwatch pack: `writtenFor` 1.1.27 or later counts as revision 1, an earlier 1.x version as revision 0, and anything else gives no count. |
+| `keyRevision` | Optional integer. The newest key revision in the template the author used (ADR-0013). It sets the "new since" count. A value that isn't a positive integer drops the count, not the pack. A pack without it is read as a Fieldwatch pack: `writtenFor` 1.1.27 to 1.1.32 maps to that release's revision, an earlier 1.x version to revision 0, and anything else gives no count. |
 | `strings` | Required object. Key to line. Missing keys stay English. |
 
 Keys in the file use the same ids as the English map. A key is ASCII lowercase letters, digits, and dots, for example `settings.diagnostics` or `live.flood_hide`. The English sentence is not the key.
@@ -260,7 +260,7 @@ There is no second hand-maintained copy of the English text. The template is gen
 
 Keys stay stable. Renaming a key makes existing packs show English for that line. Prefer a new key over renaming one.
 
-Each key records the key revision that added it (ADR-0013). Revision 1 is the map Fieldwatch 1.1.27 shipped; Spectre's Phase 0 keys are revision 2. A release that adds keys raises the revision. The confirm dialog uses this to count keys new since the pack's `keyRevision`.
+Each key records the key revision that added it (ADR-0013). Revision 1 is the map Fieldwatch 1.1.27 introduced. Revisions 2 to 5 are the keys Fieldwatch 1.1.28, 1.1.29, 1.1.31 and 1.1.32 added, and revision 6 is Spectre's Phase 0 keys. Each release that adds keys gets a new revision. The confirm dialog uses this to count keys new since the pack's `keyRevision`.
 
 Changing the English text under the same key is allowed when the meaning stays the same. Packs keep their old line until they are updated, unless the placeholders changed. When the meaning of a safety sentence changes, give it a new key so the old translation falls back to English. Nothing watches the sentences in the background. The edit that changes the English includes this check.
 

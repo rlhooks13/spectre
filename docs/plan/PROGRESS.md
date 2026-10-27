@@ -16,7 +16,7 @@
   - Review `docs/setup/workflows/release.yml`, sign it, and copy it to `.github/workflows/release.yml`.
   - Add `dryrun/v*` to the `release` environment's allowed deployment tags.
   - Leave `dryrun/v*` out of the `release-tags` ruleset, so scratch tags can be deleted.
-- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys take `revision = EnglishCopy.KEY_REVISION`, and the first key-adding PR after a release raises it (ADR-0013).
+- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys go in `LanguageKeyRevisions` at the newest revision, and the first key-adding PR after a release raises `NEWEST` (ADR-0013).
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
@@ -63,16 +63,16 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 
 - 2026-10-27: **P0-4h Language key revision (ADR-0013).** Branch `p0/4h-language-key-revision`.
   - **Why now:** P0-8c makes the versionName 0.x, so the old `addedIn` "1.1.27" vs `writtenFor` comparison would count every key as new for any Spectre-made pack.
-  - **Change:** `EnglishLine.addedIn` (String) → `revision` (Int).
-    - Revision 1 is the Fieldwatch 1.1.27 map. Revision 2 is the six Phase 0 keys.
-    - `EnglishCopy.KEY_REVISION = 2`.
-    - The template writes `keyRevision`, an optional field, so `formatVersion` stays 1.
-    - "New since" counts keys above the pack's revision.
-    - A pack without `keyRevision` maps its `writtenFor`: 1.x at or after 1.1.27 → 1, earlier 1.x → 0, anything else → no count.
-  - **Behavior change:** a pack written for Fieldwatch 1.1.27–1.1.32 now shows the Phase 0 keys as new (6 or fewer). Before, it showed 0.
-  - **Docs:** the author guide and the requirements doc are updated. New test `LanguageKeyRevisionTest`; `confirmCountsAndNewSince` is updated for the rev-2 keys.
+  - **Change:** `EnglishLine.addedIn` (String) → `revision` (Int), from the new `LanguageKeyRevisions` table.
+    - Each release commit was diffed for keys: 1 = 1.1.27 (1,099), 2 = 1.1.28 (5), 3 = 1.1.29 (2), 4 = 1.1.31 (53), 5 = 1.1.32 (69), 6 = Spectre Phase 0 (6). `KEY_REVISION = 6`.
+    - Revision 1 is frozen by a SHA-256 of its sorted keys, checked independently against `3ebda52`'s key set.
+  - **Templates:** they write `keyRevision`, which is optional, so `formatVersion` stays 1. The app reads it leniently: a bad value drops the count, not the pack.
+  - **Fieldwatch packs** have no `keyRevision`, so their `writtenFor` maps through the release table. Before 1.1.27 → 0; after 1.1.32, or 0.x → no count.
+  - **Behavior change:** "new since" is now right for packs from every Fieldwatch release. A 1.1.27 pack reports up to 135 new keys; it reported 0 before.
+  - **First review round:** both reviews caught that the draft lumped 1.1.28–1.1.32 into revision 1, and that a defaulted revision let new keys slip in as old. Both are fixed.
+  - **Docs:** the author guide, the requirements doc and the manual builder are updated. New test `LanguageKeyRevisionTest`; `confirmCountsAndNewSince` is updated.
   - **Bookkeeping:** this PR also carries the PLAN and PROGRESS entries for #18–#20. They were stripped from #19 so the protected PRs don't conflict.
-  - **#10's keys:** #10's two new keys take revision 2 when it's re-synced.
+  - **#10's keys:** #10's two new keys go in the table at revision 6 when it's re-synced.
 - 2026-10-27: **P0-8b Release workflow draft.** PR #20 (protected; the owner signs it and copies it to `.github/workflows/release.yml`). Branch `p0/8b-release-workflow-draft`.
   - **Tags:** `vX.Y.Z` for a real pre-release, and `dryrun/v0.0.Z` for a draft-only scratch run (the Phase 0 exit check).
   - **Job A "Build"** (no secrets):

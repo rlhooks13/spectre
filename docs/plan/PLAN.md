@@ -192,7 +192,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - Catalog `notes` that mention Fieldwatch go through the catalog change checklist, or onto BrandGuard's allowlist (P0-6).
      - ✅ **P0-4f** README and docs rebrand: `README.md`, `docs/language-pack-requirements.md`, the instruction cards (`dist/` and `docs/instruction.txt`), and the other user-facing docs that still name Fieldwatch or present Off Grid Pete LLC as the publisher. Upstream's history and attribution stay.
      - ✅ **P0-4g** Language-pack file cap follows the English map (ADR-0011). The Phase 0 copy pushed the worst-case pack past the cap's test margin. Must land before P0-4d.
-     - **P0-4h** Language keys carry an integer revision (ADR-0013), pulled forward from Phase 1 "Language versioning" because P0-8c changes the versionName. `addedIn` becomes `revision`, templates write `keyRevision`, and "new since" counts by revision.
+     - **P0-4h** Language keys carry an integer revision (ADR-0013), pulled forward from Phase 1 "Language versioning" because P0-8c changes the versionName. `addedIn` becomes `revision`, from a table with one revision per release that added keys. Templates write `keyRevision`, and "new since" counts by revision.
 5. ✅ **Language packs.**
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.

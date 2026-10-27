@@ -2,6 +2,10 @@ package app.fieldwatch.domain
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.intOrNull
 import java.nio.ByteBuffer
 import java.nio.charset.CharacterCodingException
 import java.nio.charset.CodingErrorAction
@@ -17,7 +21,7 @@ data class LanguagePreview(
     val changed: Int,
     val stayEnglish: Int,
     val ignored: Int,
-    /** Null when writtenFor is missing or not a version the app can compare. */
+    /** Null when the pack gives no usable key revision: a bad keyRevision, or a writtenFor that isn't Fieldwatch 1.x. */
     val newSince: Int?,
     val formatNewer: Boolean,
 )
@@ -35,12 +39,15 @@ data class LanguageFile(
     val languageTag: String? = null,
     val writtenFor: String? = null,
     val strings: Map<String, String> = emptyMap(),
-    /** Newest key revision the template had (ADR-0013). Absent in Fieldwatch packs. */
-    val keyRevision: Int? = null,
 )
 
+/**
+ * `keyRevision` is the newest key revision the pack's template had (ADR-0013); Fieldwatch packs have none.
+ * It's read here as raw JSON, so a malformed value only drops the "new since" count and never the pack.
+ * Stored packs don't keep it: nothing computes "new since" after import.
+ */
 @Serializable
-private data class LanguageHeader(val format: String = "")
+private data class LanguageHeader(val format: String = "", val keyRevision: JsonElement? = null)
 
 @Serializable
 private data class LanguageTemplateFile(
@@ -104,7 +111,10 @@ object LanguagePack {
         val written = file.writtenFor?.trim()?.takeIf { it.isNotEmpty() && it.length <= MAX_WRITTEN_FOR }
         val (accepted, ignored) = acceptLines(file.strings)
         if (accepted.isEmpty()) return LanguageParse.Reject(LanguageErrors.NONE)
-        val since = file.keyRevision?.takeIf { it >= 1 } ?: legacyRevision(written?.let { parseVersion(it) })
+        val since = when (val raw = header.keyRevision) {
+            null, JsonNull -> legacyRevision(written?.let { parseVersion(it) })
+            else -> (raw as? JsonPrimitive)?.takeIf { !it.isString }?.intOrNull?.takeIf { it >= 1 }
+        }
         val newSince = since?.let { revision ->
             EnglishCopy.lines.count { line -> line.key !in accepted && line.revision > revision }
         }
@@ -240,14 +250,16 @@ object LanguagePack {
     }
 
     /**
-     * A pack with no keyRevision came from Fieldwatch 1.x, whose writtenFor maps to a revision (ADR-0013).
-     * 1.1.27 or later had every revision-1 key; earlier 1.x versions had none of this map. Any other version
-     * (a hand-edited 0.x, say) gives no count.
+     * A pack with no keyRevision came from Fieldwatch, whose writtenFor maps to the revision of the newest
+     * release at or before it (ADR-0013). A 1.x version before 1.1.27 had none of this map (revision 0).
+     * Anything else, such as a hand-edited 0.x or a Spectre 1.x, gives no count.
      */
-    private fun legacyRevision(version: List<Int>?): Int? = when {
-        version == null || version.firstOrNull() != 1 -> null
-        compareVersion(version, listOf(1, 1, 27)) >= 0 -> 1
-        else -> 0
+    private fun legacyRevision(version: List<Int>?): Int? {
+        if (version == null || version.firstOrNull() != 1) return null
+        val releases = LanguageKeyRevisions.UPSTREAM_RELEASES
+        if (compareVersion(version, releases.first().first) < 0) return 0
+        if (compareVersion(version, listOf(1, 1, 33)) >= 0) return null // after the last upstream release
+        return releases.last { compareVersion(version, it.first) >= 0 }.second
     }
 
     private fun acceptLines(strings: Map<String, String>): Pair<Map<String, String>, Int> {
