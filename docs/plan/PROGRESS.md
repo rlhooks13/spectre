@@ -65,6 +65,13 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-A3: three PRs.**
+  - **#45, sit exports and live CoT:** merged.
+  - **#46, rotating-log exports:** merged. It found a part-order bug, now listed under P1-C2: parts merge in file-name order, so an older part's position can win.
+  - **Signature matching (this PR):**
+    - `golden/match/corpus.txt` replaces CatalogLintTest's hand-pinned `PINNED_HITS`. Each corpus case shows its expectation (expect, must not, or wrong until P1-Bn) and its full hit set with class and attention.
+    - `corpus-live-group.txt` runs each case as a live group of three, so cluster signatures can fire. None does today.
+    - The generated-positive collisions stay in CatalogLintTest's step-linked allowlist.
 - 2026-10-27: **P1-A2 merged (#44); P1-A3 started.**
   - **Owner merges:** #38 → #41 and #39 → #42, owner-signed. #42 also copied release.yml into `.github/workflows/`. Main was f14917c.
   - **#43, P1-A1 follow-ups (protected):** Robolectric runs on SDK 35, the targetSdk. The SDK 34 jar is dropped, the crypto guard runs on `preBuild`, and the baseline is 858. CI is green on Java 17, which disproves the "SDK 35 needs Java 21" premise from the P1-A1 review.

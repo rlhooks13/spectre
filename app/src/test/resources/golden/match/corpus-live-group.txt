@@ -1,0 +1,75 @@
+T:airtag	target	AirTag, Offline Finding status 0x10
+  expect fleet-airtag
+  -> fleet-airtag [FINDER]
+T:smarttag	target	SmartTag on FD5A
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
+T:tile-feed	target	Tile on FEED
+  expect fleet-tile
+  -> fleet-tile [FINDER]
+T:tile-067c	target	Tile on its own company id 0x067C
+  expect fleet-tile, missed until P1-B2
+  -> (none)
+T:axon	target	Axon Body camera, BLE on its public OUI
+  expect fleet-axon
+  -> fleet-axon [LAW_ENFORCEMENT, attention]
+T:flock	target	Flock camera Wi-Fi BSSID
+  expect fleet-flock-cameras
+  -> fleet-flock-cameras [SURVEILLANCE, attention]
+T:tattile	target	Tattile camera name
+  expect fleet-tattile
+  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+T:raven	target	ShotSpotter sensor name
+  expect fleet-raven
+  -> fleet-raven [SURVEILLANCE]
+T:vigilant	target	Motorola Vigilant name
+  expect fleet-vigilant
+  -> fleet-vigilant [SURVEILLANCE, attention]
+T:cradlepoint	target	Cradlepoint IBR900 router
+  expect fleet-cradlepoint
+  -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
+NM:galaxy	near-miss	Galaxy phone advertising Samsung 0x0075
+  must not fleet-smarttag (nor be a finder), wrong until P1-B1
+  -> fleet-smarttag [FINDER]
+NM:buds	near-miss	Galaxy Buds advertising Samsung 0x0075
+  must not fleet-smarttag (nor be a finder), wrong until P1-B1
+  -> fleet-smarttag [FINDER]
+NM:iphone-of	near-miss	Separated iPhone, Offline Finding only
+  must not fleet-airtag, wrong until P1-B3
+  -> fleet-airtag [FINDER]
+NM:airpods-of	near-miss	Powered-off AirPods, Offline Finding only
+  must not fleet-airtag, wrong until P1-B3
+  -> fleet-airtag [FINDER]
+NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
+  must not fleet-airtag
+  -> fleet-apple-device [PHONE]
+NM:tattile	near-miss	Tattile camera name
+  must not fleet-tile (nor be a finder), wrong until P1-B2
+  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+NM:quuppa	near-miss	Quuppa tag on 0x00C7
+  must not fleet-tile (nor be a finder), wrong until P1-B2
+  -> fleet-tile [FINDER]
+NM:dji	near-miss	Unnamed DJI accessory on 0x08AA (a mic or action camera, not a drone)
+  must not fleet-dji, wrong until P1-B10
+  -> fleet-dji [DRONE]
+NM:google-018e	near-miss	Unnamed non-Fitbit Google LLC device on 0x018E
+  must not fleet-fitbit, wrong until P1-B10
+  -> fleet-fitbit [WEARABLE]
+NM:raven	near-miss	Speaker named Ravenclaw
+  must not fleet-raven, wrong until P1-B5
+  -> fleet-raven [SURVEILLANCE]
+NM:vigilant	near-miss	Home alarm named Vigilant
+  must not fleet-vigilant, wrong until P1-B5
+  -> fleet-vigilant [SURVEILLANCE, attention]
+NM:ibr	near-miss	Phone hotspot named Ibrahim
+  must not fleet-cradlepoint, wrong until P1-B5
+  -> fleet-apple-device [PHONE]; fleet-cradlepoint [LAW_ENFORCEMENT, attention]
+RND:Axon	random-oui	Random BLE address on Axon's OUI
+  hits by design until P1-B8 classifies the address
+  -> fleet-axon [LAW_ENFORCEMENT, attention]
+RND:LiteOn	random-oui	Random BLE address on LiteOn's OUI
+  hits by design until P1-B8 classifies the address
+  -> fleet-liteon-camera-radio [CAMERA]
+RND:Arlo	random-oui	Random BLE address on Arlo's OUI
+  hits by design until P1-B8 classifies the address
+  -> fleet-arlo [CAMERA]
