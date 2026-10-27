@@ -154,8 +154,13 @@ The binding decisions, invariants, trust rule, hard stops, protected paths and d
 
 Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-runnable" means the agent can check it alone on the dedicated phone.
 
+**Step ids and ticks.**
+- Every step has an id: `P<phase>-<n>` (for example `P0-3`, `P4-2`), or `P1-<group><n>` in Phase 1 (for example `P1-B1`). PR titles and branches use it.
+- A finished step starts with ✅, added in the PR that completes it. A step without ✅ is open.
+- Within a phase, steps run in the listed order unless the text says otherwise. Phase 1: 1A lands before 1B–1E, and 1F is independent. "Verify" and "Exit" lines are phase gates, not steps.
+
 ### Phase 0: Fork foundation (M; no public release)
-1. **Agent scaffolding.**
+1. ✅ **Agent scaffolding.**
    - `CLAUDE.md`: commands, localization and enum rules, the golden workflow, the adb checklist, the restart runbook.
    - `docs/plan/CHARTER.md` and `PLAN.md`, with step ids such as `P1-B3` used in PR titles. `PLAN.md` is agent-editable; `CHARTER.md` is protected.
    - `docs/plan/PROGRESS.md`, `review-prompts/`, `approved-dependencies.md` (seeded with this plan's libraries), `test-baseline.txt`.
@@ -171,6 +176,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Signing only in CI.
    - `dependenciesInfo { includeInApk = false }`.
    - Gradle dependency verification, which writes the protected `verification-metadata.xml`.
+   - Pin `buildToolsVersion = "35.0.0"` and set `android.builder.sdkDownload=false`, so AGP never fetches SDK packages on its own (it downloaded Build-Tools 34 during the P0-1 test run).
 4. **Identity.**
    - applicationId, `Brand`, and rebranded `strings.xml`, English copy values, and the literals: TAK callsign, GPX creator, export names, log prefix, UA.
    - Remove upstream's social links. Rename the disclaimer to `SpectreDisclaimer` and bump `disclaimerRev`.
@@ -199,17 +205,17 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 ### Phase 1: Safety net + correctness fixes → 0.1.0 (L)
 
 **1A. Safety net** (lands before any fix)
-- **Test libraries:** coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
-- **Golden rule:**
+- **P1-A1 Test libraries:** coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
+- **P1-A2 Golden rule:**
   - Pins TimeZone and Locale, resets the LanguageText overlay, and passes `now` explicitly.
   - JSON goldens are compared **after parsing**, plus one Robolectric test that pins the device's byte order.
   - One localized golden.
-- **Goldens:**
+- **P1-A3 Goldens:**
   - signature matching
   - Debrief text for 6 sits, including late-joining and tag-in-bag-from-start cases
   - every export format, CoT, the 3 AI prompts, and both packs
   - decoding of real 1.1.32 files, which become the importer's fixtures
-- **Match corpus.**
+- **P1-A4 Match corpus.**
   - Positives are **generated automatically** from each signature's rules.
   - Hand-written near-misses cover the confusers only:
     - Galaxy phone and Buds (0x0075)
@@ -219,95 +225,95 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - a Quuppa 0x00C7 tag
     - RAVEN, Vigilant, IBR\*
     - random BLE addresses that collide with BLE-applicable OUIs (Axon, Flock, LiteOn/Arlo)
-- **`CatalogLintTest`.**
+- **P1-A5 `CatalogLintTest`.**
   - Company ids must exist in radiodb (expose `RadioDb.parse` as `internal`).
   - Bare mega-vendor MANUFACTURER_ID rules are banned (Apple, Samsung, Google, Microsoft, DJI).
   - NAME_CONTAINS needs at least 5 characters.
   - Corpus collisions are checked.
   - Every remaining violation needs an ADR. Whether a company name fits a signature is a reviewer check, not a lint rule.
-- **`LanguageKeyTest`** (build-logic): every literal key exists.
-- **`NetworkPolicy` + `EgressInventoryTest`.**
+- **P1-A6 `LanguageKeyTest`** (build-logic): every literal key exists.
+- **P1-A7 `NetworkPolicy` + `EgressInventoryTest`.**
   - One check inside `PathTiles` fetch, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher`.
   - Remove the 5 hard-coded `onlineLookup = true` calls.
   - Delete the V17/V19/V20 steps that force settings back on.
 
 **1B. Detection fixes** (one PR each; every golden diff is justified)
 - **Shipped on immediately** (rule fixes checked against the corpus and static tags):
-  - **SmartTag:** drop `mfg(0x0075)` and keep FD5A.
-  - **Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
-  - **AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
-  - **Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
-  - **Over-broad names:** tighten RAVEN, Vigilant and IBR\*.
-  - **Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
-  - **Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
+  - **P1-B1 SmartTag:** drop `mfg(0x0075)` and keep FD5A.
+  - **P1-B2 Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
+  - **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
+  - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
+  - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*.
+  - **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
+  - **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
 - **Shipped behind flags** (default off; acceptance checks listed in the Decision policy):
-  - **BLE address classifier.**
+  - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.
     - Otherwise the class is **UNKNOWN** unless there's evidence: an ecosystem that requires random addresses (Apple 0x004C, FD5A, FD6F, Find Hub) means random; persistence over 20 minutes means stable.
     - Recomputed on every merge.
     - An OUI-only BLE hit on a non-PUBLIC/STATIC address shows as "possible", with no attention card or alert, unless a non-OUI rule backs it up.
     - `RadioDb.vendorForMac` skips random addresses.
-  - **Late-tail fix.**
+  - **P1-B9 Late-tail fix.**
     - Coverage counted from first-heard, used **only inside `possibleTail`**.
     - **OWN_LIKELY requires `presentAtStart`.**
     - Minimum absolute coverage: 300 m and 5 minutes.
 
 **1C. Platform fixes**
-- **Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK.
-- **Storage:**
+- **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK.
+- **P1-C2 Storage:**
   - LogStore resumes from the highest existing index.
   - `AtomicFiles` replaces the 7 copies and `SitStore.writeFile`.
   - Corrupt config or sit files move to `.corrupt-<ts>` and a notice is shown.
-- **Alerter:** single-thread confinement.
-- **Permissions:** POST_NOTIFICATIONS becomes optional.
-- **Radio:**
+- **P1-C3 Alerter:** single-thread confinement.
+- **P1-C4 Permissions:** POST_NOTIFICATIONS becomes optional.
+- **P1-C5 Radio:**
   - Cache `bluetoothClass`.
   - The Wi-Fi heard time comes from `ScanResult.timestamp`.
-- **GNSS:**
+- **P1-C6 GNSS:**
   - Re-arm `lastCue`.
   - Total loss of lock is a separate state, checked for interference.
   - The witness listener uses 0 m.
-- **Duplicate tick:** the ViewModel stops repeating the service tick.
+- **P1-C7 Duplicate tick:** the ViewModel stops repeating the service tick.
 
 **1D. UX fixes**
-- **Navigation:** a notification tap opens Detail; tabs use `popUpTo`, `saveState` and `restoreState`.
-- **Hunt** survives rotation.
-- **Stop** is remembered.
-- **Exports:**
+- **P1-D1 Navigation:** a notification tap opens Detail; tabs use `popUpTo`, `saveState` and `restoreState`.
+- **P1-D2 Hunt** survives rotation.
+- **P1-D3 Stop** is remembered.
+- **P1-D4 Exports:**
   - Can be cancelled (`runExport` rethrows `CancellationException`).
   - A typed `ExportUi.kind` sets the dialog title.
-- **Settings and localization:**
+- **P1-D5 Settings and localization:**
   - Filter titles are resolved when drawn.
   - `refreshPermissions` writes only on change.
   - About 30 hard-coded strings move to keys.
-- **Accessibility:** tabs get `Role.Tab`; bars use `heightIn(min)`; Radar gets a text alternative.
+- **P1-D6 Accessibility:** tabs get `Role.Tab`; bars use `heightIn(min)`; Radar gets a text alternative.
 
 **1E. Exports and privacy**
-- **Export formats:**
+- **P1-E1 Export formats:**
   - GPX/KML strip control characters.
   - WiGLE writes the raw SSID with proper quoting.
   - The AI prompt uses the real window length.
   - The ATAK uid includes the install tag.
-- **Privacy:**
+- **P1-E2 Privacy:**
   - Privacy mode blocks tiles (screen, PDF, fetch) and the geocoder.
   - Settings import shows a diff of privacy-relevant changes.
   - First-run choice covers tiles, geocoder, TAK and future catalog checks. Fresh installs default to offline.
-- **Export handling:**
+- **P1-E3 Export handling:**
   - `ShareHelper` replaces the 8 FileProvider sites.
   - Exports go to `cache/export/<id>/` with a janitor.
   - No external-files copies.
-- **Network:**
+- **P1-E4 Network:**
   - Download size caps.
   - OSM: at most 2 connections, no prefetch.
 
 **1F. Capture v1** (debug builds only; its own workstream, not a prerequisite for the fixes)
-- **Contents:** full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.
-- **Scrubber v1, field-level:**
+- **P1-F1 Contents:** full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.
+- **P1-F2 Scrubber v1, field-level:**
   - Names, SSIDs and WPS fields are replaced.
   - MACs embedded in payloads (both byte orders) and rotating Find My / FD5A / FEAA ids are remapped.
   - Timestamps are shifted, the first and last 500 m are trimmed, and the path is rotated.
-- **Leak test:** searches the output for every original address, in both byte orders, and every original name.
-- **Storage:** the corpus lives in a **private repo**; raw captures are deleted after scrubbing.
+- **P1-F3 Leak test:** searches the output for every original address, in both byte orders, and every original name.
+- **P1-F4 Storage:** the corpus lives in a **private repo**; raw captures are deleted after scrubbing.
 
 - **Exit:**
   - Every verified bug is closed or has an issue explaining the deferral.
@@ -338,14 +344,14 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **Exit:** `:core:domain` has no Android on its classpath; goldens are green; the test count holds. ADR-0004, ADR-0005.
 
 ### Phase 3: Data layer → 0.2.0 (L)
-- **Stable rule ids.**
+- **P3-1 Stable rule ids.**
   - OUI rules get content-derived ids (`oui:E0:0A:F6`); the others get explicit ids, plus the matching snapshot.
   - Override operations:
     - turn a stock rule on or off
     - add a user rule (`user:<uuid>`)
     - an edit is "turn off the stock rule plus add a user rule"
     - a removed stock signature turns its user rules into a user signature
-- **Room** (exported schema; enums stored as TEXT with tolerant converters):
+- **P3-2 Room** (exported schema; enums stored as TEXT with tolerant converters):
 
   | Table | Contents |
   |---|---|
@@ -358,7 +364,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   | `signature_override`, `rule_override`, `user_signature` | the user's catalog layer |
   | `catalog_state` | catalog version and source |
 
-- **DataStore** (typed):
+- **P3-3 DataStore** (typed):
   - `settings`
   - `filter`: filter state, presets
   - `ui-state`: disclaimer, tours, first-run choice, user-stopped flag, hunt stride
@@ -366,14 +372,14 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - map keys, encrypted with AES-GCM under an AndroidKeyStore key
 
   Serializers handle enums inside collections. A corrupt file is backed up and replaced by defaults, with a notice.
-- **Files** (all written through `AtomicFiles`): logs, capture, tiles, MBTiles, gnss-raw, FWFC, crash notes.
-- **Legacy importer.**
+- **P3-4 Files** (all written through `AtomicFiles`): logs, capture, tiles, MBTiles, gnss-raw, FWFC, crash notes.
+- **P3-5 Legacy importer.**
   - Runs once behind `StartupGate`, under an idempotency flag.
   - **Runs the ladder first, then a three-way diff against `snapshot[config.version]`**, so stale stock rules never become user overrides.
   - Imports one transaction per sit.
   - Kept, and tested at head, **until 1.0**.
-- **Wiring.** Interfaces over the old stores, then one repository swapped per PR. Then `NetworkPolicy` moves into `:core:network` and the Hilt `WorkerFactory` is added.
-- **Cleanup:** remove the startup `runBlocking` and add `dataExtractionRules`.
+- **P3-6 Wiring.** Interfaces over the old stores, then one repository swapped per PR. Then `NetworkPolicy` moves into `:core:network` and the Hilt `WorkerFactory` is added.
+- **P3-7 Cleanup:** remove the startup `runBlocking` and add `dataExtractionRules`.
 - **Verify:**
   - Robolectric repository tests.
   - `MigrationTestHelper` from every released schema.
@@ -382,25 +388,25 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **Exit:** a toggle writes kilobytes. ADR-0006.
 
 ### Phase 4: Catalog v2 → 0.3.0 (L)
-- **Files.** `catalog/signatures/<class>/<id>.json` compiles into a **compact** `assets/catalog/catalog.json` (about 0.8 MB).
-- **Schema v2** (the model lives in `:core:domain`):
+- **P4-1 Files.** `catalog/signatures/<class>/<id>.json` compiles into a **compact** `assets/catalog/catalog.json` (about 0.8 MB).
+- **P4-2 Schema v2** (the model lives in `:core:domain`):
   - signature fields: `id`, `rev`, `class`, `priority`, `suppresses:[{id, unless}]`, `protocol`, `cluster`, `decode`, `provenance`, `examples`
   - rule fields: a stable `id`, a string `kind` (an unknown kind makes the rule inert, with a warning), `role` (MATCH, REQUIRE or EXCLUDE), `payload {offset, mask, value, minLen, maxLen}`, `radio`
-- **Steps.**
+- **P4-3 Migration steps** (one PR each, in order).
   1. A converter generates the files, and an equivalence test plus an unchanged match golden prove nothing changed.
   2. The six hard-coded suppressions become data, and the unused `policy` parameter is deleted.
   3. The overlay is stock plus Room overrides, joined by rule id; orphaned overrides are reported.
   4. The lint runs the examples plus a SIG member-UUID table; each remaining exception needs an ADR.
-- **Signing.**
+- **P4-4 Signing.**
   - A detached DER ECDSA P-256 signature over the raw manifest bytes `{format, serial, sha256, size, minApp, keyId}`, verified with `SHA256withECDSA` (API 29+).
   - Two public keys are pinned (current and next).
   - Rollback, files over 8 MiB, and hash mismatches are rejected.
   - A debug-only test key exists for the on-device tamper test.
-- **Distribution.**
+- **P4-5 Distribution.**
   - Catalog releases are `catalog-vN` and are **never marked latest**, so Obtainium always sees an APK.
   - A **beta** pointer gets the catalog for 7 days before the **stable** pointer.
   - A small signed **`disable:[ids]` kill list** is checked often and is the fast fix for a bad signature.
-- **The in-app update returns**, gated by `NetworkPolicy` and the first-run choice.
+- **P4-6 The in-app update returns**, gated by `NetworkPolicy` and the first-run choice.
 - **Exit:** a signed update installs on the phone and a tampered one is rejected. ADR-0007, ADR-0008.
 
 ### Phase 5: App decomposition → 0.4.0 (L)
@@ -417,40 +423,40 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **Exit:** no UI file over 1,000 lines, no feature-to-feature dependencies, and on-device checks for the deep link and rotation pass.
 
 ### Phase 6: Detection v2 → 0.5.0 (L)
-- **Address model:** `BleAddressClass`, plus the evidence for it, per the 1B rules.
-- **Linked identity** (`link:<uuid>`).
+- **P6-1 Address model:** `BleAddressClass`, plus the evidence for it, per the 1B rules.
+- **P6-2 Linked identity** (`link:<uuid>`).
   - An RPA that goes silent, followed within about 3 s by a new address with the same payload template and RSSI within ±6 dB.
   - Labeled "probably the same device".
   - **A link never alerts on its own.**
-- **Tail v2.**
+- **P6-3 Tail v2.**
   - One `TailAssessor`, shared by Debrief and Live.
   - Coverage counts from first-heard, across links.
   - **Only user-confirmed Mine or owned devices are excluded.**
   - An unknown finder that is on your body from the start of the sit gets its own verdict, **"unaccounted tag with you"**, and is never suppressed.
   - Verdicts list their reasons.
-- **Flood v2:** an adaptive per-place baseline, new-address rate × payload diversity, and for Wi-Fi: sequential or local BSSIDs and SSID entropy.
-- **GNSS v2:** a NOMINAL → DEGRADED → LOST state machine, interference and spoofing heuristics, one cue per episode.
-- **Wi-Fi IEs:** WPS name, manufacturer and model (serial masked), RSN, country, HE, as new string rule kinds.
-- **Trusted networks / evil twin,** per `docs/trusted-network-requirements.md`. The agent can test it if the PC can host a cloned-SSID hotspot; otherwise the owner records it.
-- **Cell and 2G-downgrade observations.**
+- **P6-4 Flood v2:** an adaptive per-place baseline, new-address rate × payload diversity, and for Wi-Fi: sequential or local BSSIDs and SSID entropy.
+- **P6-5 GNSS v2:** a NOMINAL → DEGRADED → LOST state machine, interference and spoofing heuristics, one cue per episode.
+- **P6-6 Wi-Fi IEs:** WPS name, manufacturer and model (serial masked), RSN, country, HE, as new string rule kinds.
+- **P6-7 Trusted networks / evil twin,** per `docs/trusted-network-requirements.md`. The agent can test it if the PC can host a cloned-SSID hotspot; otherwise the owner records it.
+- **P6-8 Cell and 2G-downgrade observations.**
   - Off by default; covered by Invariant 1.
   - Behind a flag, with no notifications.
   - READ_PHONE_STATE only when enabled.
   - Labeled as observations.
-- **`CaptureReplay` regression corpus** from scrubbed captures plus `.expect.json`.
+- **P6-9 `CaptureReplay` regression corpus** from scrubbed captures plus `.expect.json`.
 
 - **Exit:** the corpus is green, and the gate passes. Field-dependent features stay flagged off until their acceptance checks pass.
 
 ### Phase 7: Privacy, maps, TAK, active features → 0.6.0 (M/L)
-- **Offline mode:** an "Offline" switch blocks every egress category.
-- **Offline maps:** raster MBTiles import via SAF (y-flip handled, attribution from the pack's metadata). No bulk OSM download.
-- **Privacy-mode exports:** MACs masked, coordinates coarsened, no tiles.
-- **TAK.**
+- **P7-1 Offline mode:** an "Offline" switch blocks every egress category.
+- **P7-2 Offline maps:** raster MBTiles import via SAF (y-flip handled, attribution from the pack's metadata). No bulk OSM download.
+- **P7-3 Privacy-mode exports:** MACs masked, coordinates coarsened, no tiles.
+- **P7-4 TAK.**
   - `TakTransport` with three transports: UDP, TCP and TLS.
   - The `.p12` key goes into AndroidKeyStore.
   - Reconnects with backoff, and the queue is bounded.
   - Tested against a **local open-source TAK-compatible server**, not the official TAK Server (hard stop).
-- **Active features** (ADR-0010). All go through the `TxGate` and the Receive-only lock, with an opt-in dialog, a TX chip, time limits, and a record of each use.
+- **P7-5 Active features** (ADR-0010). All go through the `TxGate` and the Receive-only lock, with an opt-in dialog, a TX chip, time limits, and a record of each use.
   - **Bluetooth Classic discovery.** Its dialog says it **pages with this phone's public, stable Bluetooth address**.
   - **Wi-Fi RTT** and **Wi-Fi Aware NAN Remote ID.** Their dialogs say which MAC each uses.
 - **Exit.**
@@ -458,10 +464,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - The owner runs an optional proxy (MITM) audit, which needs a CA certificate installed by the owner. It doesn't gate releases.
 
 ### Phase 8: Hardening → 1.0.0 (M)
-- **Accessibility:** TalkBack, 200% font, contrast, 48 dp targets.
-- **Performance:** battery and performance budgets enforced.
-- **Docs:** the manual is rebuilt from Roborazzi screenshots and published as a release asset.
-- **Cleanup:** the legacy importer and the ladder are removed once 1.0 notes the cutoff.
+- **P8-1 Accessibility:** TalkBack, 200% font, contrast, 48 dp targets.
+- **P8-2 Performance:** battery and performance budgets enforced.
+- **P8-3 Docs:** the manual is rebuilt from Roborazzi screenshots and published as a release asset.
+- **P8-4 Cleanup:** the legacy importer and the ladder are removed once 1.0 notes the cutoff.
 - **Exit:** every gate passes.
 
 ## Autonomous operation
