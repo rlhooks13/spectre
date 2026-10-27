@@ -15,6 +15,7 @@
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `p1/b5a-raven-vigilant-ibr`
 - Phone serial: RFCX205JR3K
+- **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
