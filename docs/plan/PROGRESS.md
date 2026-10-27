@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B5 Over-broad names**: 15 short names left, none with an anchored glob to fall back on. Starts after P1-B5b (catalog v102) merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B6 Retired rules**, after P1-B5 (catalog v103) merges. Then B7 onward. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b5b-redundant-short-names`
+- Branch: `p1/b5-short-names-word-start`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -69,6 +69,27 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B5 Over-broad names, the last 16 (catalog v103).** #62 (P1-B5b) merged as ac21e0e.
+  - **The fix:**
+    - 14 short BLE "contains" names (Echo, Audi, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Seos, Sony, VW) become the brand as a whole word at the start: `DefaultCatalog.bleWordStart` gives the exact name plus `X *`, `X-*` and `X_*`. Bose also gets `LE-Bose*`.
+    - UBNT's row already had the anchored `UBNT*`; B5b's triage missed it because its output cut off at four names.
+    - iPad stays a contains-rule, as an ADR-0015 exception: Apple's default name puts it last ("Jane's iPad").
+    - The ladder carries an "off" (`ADDED_RULES_V103`, from `bleWordStart`).
+  - **Corpus:**
+    - targets "JBL Flip 5", "LE-Bose QC Earbuds", "Echo Dot-1AB", "Xbox Wireless Controller" and "BT05";
+    - new near misses "Stanford Guest", "Logistics Scanner" and "Entourage Speaker";
+    - "Car Audio BT" loses its `knownUntil`.
+  - **Lint:**
+    - `SHORT_NAME` is down to iPad (ADR-0015).
+    - The UniFi AP collision keys shift down one with the row's rules. The lint list and ADR-0015's Accepted list both moved.
+  - **Review fixes:**
+    - `carryRetiredOff` matches by kind, text and radio, so BMW's Wi-Fi `BMW_*` stays on.
+    - It only follows rules retired in that same version (`RetiredRules.retiredIn`), so Seos's v102 "Yale" off doesn't switch off the v103 Seos globs.
+    - The v101, v102 and v103 maps are frozen literal rules, not built from `bleWordStart`.
+    - Upgraded rows are compared in order.
+    - New near misses for Echoes, Sonya and TVWALL; a "BT05-A" target.
+    - PLAN P1-B5d notes the no-separator and "LE-" forms that need captures.
+  - **Process:** CLAUDE.md says to end every commit message with `Agent: spectre-loop`, but my commits have put the Co-Authored-By line after it. From this commit on, `Agent: spectre-loop` is the last line.
 - 2026-10-27: **P1-B5b Redundant short names (catalog v102).** #61 (P1-B5a) merged as e9666a7.
   - **Triage:** of the 34 short "contains" names the lint lists, 18 sit on a row that already has an anchored glob of the same brand on the same radio (`Arlo*`, `DJI*`, `Net2*`, ...).
   - **The fix:**

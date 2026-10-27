@@ -44,6 +44,23 @@ object RetiredRules {
         Entry("fleet-tapo", MatchRule(RuleKind.NAME_CONTAINS, text = "Tapo"), retiredIn = 102),
         Entry("fleet-tuya", MatchRule(RuleKind.NAME_CONTAINS, text = "TUYA", radio = RadioKind.BLE), retiredIn = 102),
         Entry("fleet-wyze", MatchRule(RuleKind.NAME_CONTAINS, text = "Wyze"), retiredIn = 102),
+        // P1-B5: the last short "contains" names become the brand as a whole word at the start (bleWordStart).
+        Entry("fleet-amazon", MatchRule(RuleKind.NAME_CONTAINS, text = "Echo", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-audi-mmi", MatchRule(RuleKind.NAME_CONTAINS, text = "Audi", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-bmw", MatchRule(RuleKind.NAME_CONTAINS, text = "BMW", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-bose", MatchRule(RuleKind.NAME_CONTAINS, text = "Bose", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-byd", MatchRule(RuleKind.NAME_CONTAINS, text = "BYD", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-ford", MatchRule(RuleKind.NAME_CONTAINS, text = "Ford", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-hobby-ble", MatchRule(RuleKind.NAME_CONTAINS, text = "BT05", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-jbl", MatchRule(RuleKind.NAME_CONTAINS, text = "JBL", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-logitech", MatchRule(RuleKind.NAME_CONTAINS, text = "Logi", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-microsoft", MatchRule(RuleKind.NAME_CONTAINS, text = "Xbox", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-oura", MatchRule(RuleKind.NAME_CONTAINS, text = "Oura", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-seos", MatchRule(RuleKind.NAME_CONTAINS, text = "Seos", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-sony", MatchRule(RuleKind.NAME_CONTAINS, text = "Sony", radio = RadioKind.BLE), retiredIn = 103),
+        Entry("fleet-volkswagen", MatchRule(RuleKind.NAME_CONTAINS, text = "VW", radio = RadioKind.BLE), retiredIn = 103),
+        // The UniFi AP row already has the anchored UBNT* (as in P1-B5b).
+        Entry("fleet-unifi-ap", MatchRule(RuleKind.NAME_CONTAINS, text = "UBNT", radio = RadioKind.WIFI), retiredIn = 103),
     )
 
     /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
@@ -58,6 +75,12 @@ object RetiredRules {
     }
 
     private val keys: Map<String, Set<String>> = ALL.groupBy({ it.fleetId }, { key(it.rule) }).mapValues { it.value.toSet() }
+
+    /** The catalog version that retired [rule] on [fleetId], or null when it isn't retired. */
+    fun retiredIn(fleetId: String, rule: MatchRule): Int? {
+        val k = key(rule)
+        return ALL.firstOrNull { it.fleetId == fleetId && key(it.rule) == k }?.retiredIn
+    }
 
     fun isRetired(fleetId: String, rule: MatchRule): Boolean = keys[fleetId]?.contains(key(rule)) == true
 

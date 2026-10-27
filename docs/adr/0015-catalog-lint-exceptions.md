@@ -16,7 +16,8 @@
 - `fleet-honeywell-home#4` and `fleet-honeywell-home#5` → Amazon: the Amazon Smart Thermostat is a Honeywell-made Amazon product.
 - `fleet-marauder#3` → hobby BLE: "ESP32 Marauder" runs on an ESP32 board.
 - `fleet-inseego#3` and `fleet-novatel#0`, each hitting the other: Inseego is the former Novatel Wireless, and the hotspots carry both names.
-- `fleet-unifi-ap#0`, `fleet-unifi-ap#1`, `fleet-unifi-ap#3` and `fleet-unifi-ap#4` → UniFi: the AP row is a narrower view of the UniFi row.
+- `fleet-unifi-ap#0`, `fleet-unifi-ap#1`, `fleet-unifi-ap#2` and `fleet-unifi-ap#3` → UniFi: the AP row is a narrower view of the UniFi row. (The indices moved down one in catalog v103, when P1-B5 dropped the row's "UBNT" contains rule.)
+- `fleet-apple-device/iPad/ANY`, a short "contains" name (P1-B5): Apple's default name puts it last ("Jane's iPad"), so anchoring it would lose the default form. A false hit only labels a radio Apple Device (a phone class, no alert), and the row's Apple company id carries it anyway.
 
 **Anchored short brand prefixes (P1-B5b, catalog v102).** Eighteen short "contains" rules, on seventeen rows (DJI has a BLE and a Wi-Fi one), sat beside an anchored glob of the same brand on the same radio: `Arlo*`, `ASUS*`, `DJI*`, `eero*`, `eufy*`, `FOBO*`, `Hak5*`, `ENVY*`, `Kevo*`, `MBUX*`, `MyQ-*`, `Nuki*`, `Net2*`, `Yale*`, `Tapo*`, `TUYA*`, `Wyze*`. P1-B5b retired the "contains" rule and kept the glob. HP also gained `HP ENVY*` and MyQ the exact name `MyQ`, for forms the glob misses.
 - The step's rule asks for a prefix literal of 5+ characters or one that ends in a separator. These short brand prefixes stay anyway, as accepted: each device's default name starts with its brand.
@@ -30,7 +31,6 @@
 |---|---|
 | `fleet-smarttag/0x0075`, bare Samsung | P1-B1 (done: retired in catalog v98) |
 | `fleet-tile/Tile/ANY`, and the Tattile → Tile collisions | P1-B2 (done in catalog v99: BLE-only anchored glob) |
-| 16 short brand names (18 more done as P1-B5b) | P1-B5 |
 | Anchored short brand globs that match a first name | P1-B5d |
 | `fleet-google/0x00E0`, `fleet-microsoft/0x0006`, `fleet-fitbit/0x018E`, `fleet-dji/0x08AA`, `fleet-huf/0x070A`, and the LiteOn → TP-Link collision | P1-B10 |
 
@@ -44,7 +44,7 @@
 
 **What the steps do:**
 - **P1-B10** (new) moves these to payload-prefix rules or a class that fits everything on the id, backed by captures. If no capture arrives by the 0.1.0 phase gate, it drops the bare id and keeps the row's names and service UUIDs.
-- **P1-B5** is widened from "RAVEN, Vigilant and IBR\*" (done as P1-B5a, catalog v101) to every short name the lint lists (18 of them done as P1-B5b, catalog v102; 16 left): Echo, iPad, Arlo, Seos, Yale, ASUS, Audi, BMW, Bose, BYD, DJI (BLE and Wi-Fi), eero, eufy, FOBO, Ford, Hak5, BT05, ENVY, JBL, Kevo, Logi, MBUX, Xbox, MyQ, Nuki, Oura, Net2, Sony, Tapo, TUYA, UBNT, VW, Wyze.
+- **P1-B5** is widened from "RAVEN, Vigilant and IBR\*" (done as P1-B5a, catalog v101) to every short name the lint lists (18 of them done as P1-B5b, catalog v102; the other 16 in catalog v103: 15 became the brand as a whole word at the start, `bleWordStart` or UBNT's existing `UBNT*`, and iPad is accepted above): Echo, iPad, Arlo, Seos, Yale, ASUS, Audi, BMW, Bose, BYD, DJI (BLE and Wi-Fi), eero, eufy, FOBO, Ford, Hak5, BT05, ENVY, JBL, Kevo, Logi, MBUX, Xbox, MyQ, Nuki, Oura, Net2, Sony, Tapo, TUYA, UBNT, VW, Wyze.
   - It turns each into a longer name, or a prefix glob whose literal is at least 5 characters or ends in a separator (`-`, `_`, space). A glob that starts with `*` counts as "contains".
   - Or it moves a name into the Accepted list above, with a reason.
 

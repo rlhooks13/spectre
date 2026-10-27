@@ -195,6 +195,13 @@ object MatchCorpus {
         Target("HP ENVY printer", sighting("T:hp-envy", name = "HP ENVY 6055e"), "fleet-hp"),
         Target("MyQ hub by its bare name", sighting("T:myq", name = "MyQ"), "fleet-myq"),
         Target("DJI drone by its bare name", sighting("T:dji", name = "DJI"), "fleet-dji"),
+        // P1-B5: brand-first names the word-start globs keep.
+        Target("JBL speaker", sighting("T:jbl", name = "JBL Flip 5"), "fleet-jbl"),
+        Target("Bose earbuds over BLE", sighting("T:bose-le", name = "LE-Bose QC Earbuds"), "fleet-bose"),
+        Target("Echo Dot", sighting("T:echo", name = "Echo Dot-1AB"), "fleet-amazon"),
+        Target("Xbox controller", sighting("T:xbox", name = "Xbox Wireless Controller"), "fleet-microsoft"),
+        Target("Hobby BLE module by its default name", sighting("T:bt05", name = "BT05"), "fleet-hobby-ble"),
+        Target("Hobby BLE module with a suffix", sighting("T:bt05-a", name = "BT05-A"), "fleet-hobby-ble"),
         Target("Cradlepoint IBR1150 router", sighting("T:cradlepoint-1150", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0C", name = "IBR1150-3F2"), "fleet-cradlepoint"),
         Target(
             "Cradlepoint IBR900 router",
@@ -288,7 +295,14 @@ object MatchCorpus {
             setOf("fleet-cradlepoint"),
         ),
         // P1-B5b: short brand names caught words that contain them; the rows keep only their anchored globs.
-        NearMiss("Car stereo named Audio", sighting("NM:car-audio", name = "Car Audio BT"), setOf("fleet-audi-mmi"), knownUntil = "P1-B5"),
+        NearMiss("Car stereo named Audio", sighting("NM:car-audio", name = "Car Audio BT"), setOf("fleet-audi-mmi")),
+        // P1-B5: the last short names are the brand as a whole word at the start.
+        NearMiss("BLE speaker named Bradford", sighting("NM:stanford", name = "Bradford Speaker"), setOf("fleet-ford")),
+        NearMiss("Speaker named Echoes", sighting("NM:echoes", name = "Echoes Speaker"), setOf("fleet-amazon")),
+        NearMiss("Phone named for a Sonya", sighting("NM:sonya", name = "Sonya's Phone"), setOf("fleet-sony")),
+        NearMiss("TV wall mount with vw in its name", sighting("NM:tvwall", name = "TVWALL-55"), setOf("fleet-volkswagen")),
+        NearMiss("Scanner named Logistics", sighting("NM:logistics", name = "Logistics Scanner"), setOf("fleet-logitech")),
+        NearMiss("Speaker named Entourage", sighting("NM:entourage", name = "Entourage Speaker"), setOf("fleet-oura")),
         // The anchored short brand globs ADR-0015 accepts still catch a person's name that starts with the brand.
         NearMiss("Phone named for an Arlo", sighting("NM:arlo-phone", name = "Arlo's iPhone"), setOf("fleet-arlo"), knownUntil = "P1-B5d"),
         NearMiss("Phone named for a Kevon", sighting("NM:kevon-phone", name = "Kevon-iPhone"), setOf("fleet-kevo"), knownUntil = "P1-B5d"),

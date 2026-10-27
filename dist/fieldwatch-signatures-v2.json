@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 102,
+    "catalogVersion": 103,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -824,14 +824,6 @@
                 },
                 {
                     "kind": "NAME_CONTAINS",
-                    "text": "Echo",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
                     "text": "Amazon",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -841,6 +833,38 @@
                 {
                     "kind": "NAME_CONTAINS",
                     "text": "Fire TV",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Echo",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Echo *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Echo-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Echo_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -6600,7 +6624,15 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
+                    "text": "Yale*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "Seos",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -6609,7 +6641,23 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "Yale*",
+                    "text": "Seos *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Seos-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Seos_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -7892,14 +7940,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Audi",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Audi_MMI_*",
                     "companyId": 0,
@@ -7913,6 +7953,38 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Audi",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Audi *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Audi-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Audi_*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
                     "enabled": true
                 }
             ],
@@ -8973,8 +9045,32 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
+                    "text": "BMW_*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "BMW",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BMW *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BMW-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -8985,7 +9081,7 @@
                     "text": "BMW_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
-                    "radio": "WIFI",
+                    "radio": "BLE",
                     "enabled": true
                 }
             ],
@@ -9030,8 +9126,40 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "Bose",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Bose *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Bose-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Bose_*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "LE-Bose*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -9450,8 +9578,32 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "BYD",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BYD *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BYD-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BYD_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -24555,6 +24707,14 @@
                 },
                 {
                     "kind": "NAME_CONTAINS",
+                    "text": "Lincoln",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "Ford",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -24562,8 +24722,24 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Lincoln",
+                    "kind": "NAME_GLOB",
+                    "text": "Ford *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Ford-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Ford_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -26955,14 +27131,6 @@
                 },
                 {
                     "kind": "NAME_CONTAINS",
-                    "text": "BT05",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
                     "text": "MLT-BT05",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -26980,6 +27148,38 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "ESP32-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BT05",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BT05 *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BT05-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BT05_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -44836,6 +45036,14 @@
                 },
                 {
                     "kind": "NAME_CONTAINS",
+                    "text": "Harman",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "JBL",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -44843,8 +45051,24 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Harman",
+                    "kind": "NAME_GLOB",
+                    "text": "JBL *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "JBL-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "JBL_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -45782,8 +46006,32 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "Logi",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Logi *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Logi-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Logi_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -46631,8 +46879,32 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "Xbox",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Xbox *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Xbox-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Xbox_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -49262,8 +49534,32 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "Oura",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Oura *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Oura-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Oura_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -57457,14 +57753,6 @@
                 },
                 {
                     "kind": "NAME_CONTAINS",
-                    "text": "Sony",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
                     "text": "WH-1000",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -57474,6 +57762,38 @@
                 {
                     "kind": "NAME_CONTAINS",
                     "text": "WF-1000",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Sony",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Sony *",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Sony-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Sony_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -61237,14 +61557,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "UBNT",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "UniFi*",
                     "companyId": 0,
@@ -63060,7 +63372,15 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
+                    "text": "My VW*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "VW",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -63069,10 +63389,26 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "My VW*",
+                    "text": "VW *",
                     "companyId": 0,
                     "dataPrefixHex": "",
-                    "radio": "WIFI",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "VW-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "VW_*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
                     "enabled": true
                 }
             ],
