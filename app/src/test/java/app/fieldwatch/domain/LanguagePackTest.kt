@@ -177,7 +177,7 @@ class LanguagePackTest {
             EnglishCopy.text(LanguageErrors.SIGNATURES),
         )
         assertEquals(
-            "Not a Fieldwatch language pack.",
+            "Not a Spectre language pack.",
             EnglishCopy.text(LanguageErrors.NOT_PACK),
         )
         val big = ByteArray(LanguagePack.MAX_BYTES + 1) { ' '.code.toByte() }
@@ -439,9 +439,9 @@ class LanguagePackTest {
     }
 
     @Test
-    fun launcherNameStaysFieldwatch() {
+    fun launcherNameIsSpectre() {
         val xml = repoFile("src/main/res/values/strings.xml").readText()
-        assertTrue(xml.contains(">Fieldwatch<"))
+        assertTrue(xml.contains(">Spectre<"))
     }
 
     @Test

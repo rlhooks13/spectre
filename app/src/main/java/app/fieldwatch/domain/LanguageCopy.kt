@@ -78,7 +78,7 @@ object LanguageExportCopy {
 
 /** First-run import door. English, compiled, not pack keys. */
 object LanguageDoorCopy {
-    const val TITLE = "Fieldwatch is in English"
+    const val TITLE = "Spectre is in English"
     const val BODY = "You can import a language-pack file if you already have one."
     const val CONTINUE = "Continue in English"
     const val IMPORT = "Import a language file"
@@ -281,9 +281,9 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("map.key.label", "Map key", LanguageSlot.BODY),
     en("map.key.hint", "Paste the key from your account. It stays on this phone and is not in Export settings.", LanguageSlot.BODY),
     en("map.key.missing.title", "This map needs a key", LanguageSlot.BODY),
-    en("map.key.missing.body", "Paste the key from your account. Fieldwatch keeps it on this phone.", LanguageSlot.BODY),
+    en("map.key.missing.body", "Paste the key from your account. Spectre keeps it on this phone.", LanguageSlot.BODY),
     en("map.key.denied.title", "Key not saved", LanguageSlot.BODY),
-    en("map.key.denied.body", "Fieldwatch did not store that. Use the key from your account. Only letters, numbers, and . - _ are kept.", LanguageSlot.BODY),
+    en("map.key.denied.body", "Spectre did not store that. Use the key from your account. Only letters, numbers, and . - _ are kept.", LanguageSlot.BODY),
     en("map.key.rejected.title", "Map key was rejected", LanguageSlot.BODY),
     en("map.key.rejected.body", "The map service did not accept this key. Check the key and that the account allows this app.", LanguageSlot.BODY),
     en("map.key.failed.title", "Map did not load", LanguageSlot.BODY),
@@ -317,13 +317,13 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("language.section.add", "Add", LanguageSlot.CONTROL),
     en(
         "language.section.add.about",
-        "Import a language file that does not come with the app. Fieldwatch does not download one.",
+        "Import a language file that does not come with the app. Spectre does not download one.",
         LanguageSlot.BODY,
     ),
     en("language.section.remove", "Remove", LanguageSlot.CONTROL),
     en(
         "language.section.remove.about",
-        "Remove the imported file on this phone. Fieldwatch then follows the phone language.",
+        "Remove the imported file on this phone. Spectre then follows the phone language.",
         LanguageSlot.BODY,
     ),
     en(
@@ -334,7 +334,7 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("language.remove.title", "Remove this language pack?", LanguageSlot.BODY),
     en(
         "language.remove.body",
-        "This deletes the imported file on this phone.\n\nFieldwatch then follows the phone language.",
+        "This deletes the imported file on this phone.\n\nSpectre then follows the phone language.",
         LanguageSlot.BODY,
     ),
     en("language.import.action", "Import", LanguageSlot.CONTROL),
@@ -414,7 +414,7 @@ private fun buildLines(): List<EnglishLine> = listOf(
         "That is a signature pack. Use Import signatures.",
         LanguageSlot.BODY,
     ),
-    en("language.err.not", "Not a Fieldwatch language pack.", LanguageSlot.BODY),
+    en("language.err.not", "Not a Spectre language pack.", LanguageSlot.BODY),
     en("language.err.empty", "This file is empty.", LanguageSlot.BODY),
     en("language.err.large", "That file is too large.", LanguageSlot.BODY),
     en("language.err.none", "That file has no lines this version can use.", LanguageSlot.BODY),

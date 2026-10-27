@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4a (brand literals), PR #7 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4b (English copy values).
-- Branch: `p0/4a-brand-literals`
+- Current step: P0-4b (English copy values), on branch `p0/4b-english-copy`; check `gh pr list --head p0/4b-english-copy` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4c (upstream social links).
+- Branch: `p0/4b-english-copy`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T07:35Z
+- Last cycle: 2026-10-27T07:48Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,18 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4a Brand literals.** PR #7.
+- 2026-10-27: **P0-4b English copy values.** Branch `p0/4b-english-copy`.
+  - "Fieldwatch"/"FIELDWATCH" → "Spectre"/"SPECTRE" in English values only:
+    - `ChromeLines` (49) and `LanguageCopy` (7).
+    - The hard-coded copy in `GnssInterference` (5) and `PlaceLookup` (1).
+    - `strings.xml` `app_name`.
+  - `ui.fieldwatch.app.fieldwatch.stock` loses the `(app.fieldwatch)` app id.
+  - No key changed: a diff check shows every touched key once as removed and once as added. Every line keeps `addedIn = "1.1.27"`.
+  - Left for later: the upstream author-guide URL in `LanguageCopy` (P0-4c), translated packs (P0-5), the disclaimer (P0-4d, protected), catalog notes (catalog checklist or P0-6).
+  - Four tests updated to the new English values, none removed. `launcherNameStaysFieldwatch` became `launcherNameIsSpectre`.
+  - Result: 770 tests green.
+  - Device: the staging launcher label is `Spectre` (aapt2). Cold start with 0 `FATAL`; it opens on the disclaimer.
+- 2026-10-27: **P0-4a Brand literals.** PR #7, merged as `b40423b`.
   - PLAN: P0-4 is split into P0-4a to P0-4e. 4d is protected, and 4e waits for the owner (see Needs human).
   - New `domain/Brand`: `NAME`, `NAME_UPPER`, `FILE_PREFIX`, `REPO_URL`, `LOG_TAG`, `userAgent()`.
   - Now using `Brand`:

@@ -120,7 +120,7 @@ object PlaceLookup {
             attempted = true,
             available = named > 0,
             note = if (named > 0) {
-                "Online lookup: system geocoder named $named distinct GPS cell(s). Street names are from the phone’s network geocoder, not a Fieldwatch cloud. Approximate."
+                "Online lookup: system geocoder named $named distinct GPS cell(s). Street names are from the phone’s network geocoder, not a Spectre cloud. Approximate."
             } else {
                 "Online lookup ran, but the system geocoder returned no street names. Coordinates only."
             },
