@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-3, part 1 (build types), PR #4 (waiting on CI, then squash-merge). Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
-- Branch: `p0/3-build-types`
+- Current step: gate fix for the startup crash, on branch `p0/fix-viewmodel-init-order`; check `gh pr list --head p0/fix-viewmodel-init-order` for the PR. Next: P0-3 part 2 (dependency verification, protected PR). Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
+- Branch: `p0/fix-viewmodel-init-order`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T06:30Z
+- Last cycle: 2026-10-27T06:44Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -48,7 +48,15 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-3 Build, part 1.** PR #4. Follow-up for P0-8: `testReleaseUnitTest` also writes results, so the test-count guard must count one variant (debug), not sum every XML file. P0-3 stays unticked until part 2 (dependency verification) lands.
+- 2026-10-27: **Gate fix: startup crash in `FieldwatchViewModel`.** Branch `p0/fix-viewmodel-init-order`.
+  - The bug was found by P0-3's device check and reproduced on `main` (see the P0-3 entry).
+  - Inside `init`, `app.sits.ui.collect` runs at once on `Main.immediate` and calls `refreshSitPath()`. That starts `cachedCameraReport()` on `Dispatchers.Default` while the constructor is still running. `cameraCacheLock`, `cameraCacheStamp` and `cameraCache` were initialized after `init`, so the lock could still be null.
+  - Fix: those three properties now sit above `init`, with a comment. An audit found no other class property initialized after `init`.
+  - Failing test first: `ViewModelInitOrderTest` scans the ViewModel source and fails if any property with an initializer comes after `init`. Before the fix it reported exactly lines 3320–3322; after the fix it passes.
+  - Result: 767 tests green (+1). `assembleDebug` and `assembleStaging` OK.
+  - Device: no `FATAL` in the crash buffer after cold starts from `pm clear` (staging ×3, debug ×2). Staging stays alive on the first-run disclaimer screen.
+  - Follow-up (needs human): `test-baseline.txt` (protected) is still 766. Raise it to 767 in the next owner-signed PR.
+- 2026-10-27: **P0-3 Build, part 1.** PR #4, merged as `c3ebf37`. Follow-up for P0-8: `testReleaseUnitTest` also writes results, so the test-count guard must count one variant (debug), not sum every XML file. P0-3 stays unticked until part 2 (dependency verification) lands.
   - Added the version catalog `gradle/libs.versions.toml`. Same coordinates and versions, no new dependencies.
   - Build types now follow PLAN:
     - `debug`: debuggable, `.debug` suffix, no longer minified.
