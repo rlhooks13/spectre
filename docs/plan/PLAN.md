@@ -223,7 +223,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - ✅ **P0-8a** (owner-signed #37) CI workflow draft (`docs/setup/workflows/android.yml`): wrapper validation, unit tests, lint, the test-count guard, unsigned `assembleRelease`, `assembleStaging` uploaded as the artifact. Actions pinned by SHA.
      - ✅ **P0-8b** (owner-signed #34) Release workflow draft (`docs/setup/workflows/release.yml`): the two-job release.
      - ✅ **P0-8c** Version from the git tag (ADR-0002). `vX.Y.Z` and `dryrun/v0.0.Z` tags give the version, and untagged builds give `X.Y.Z-dev+<sha>`. Needs P0-4h.
-     - **P0-8d** Release-notes generator: every label and verdict change, from the catalog diff and the flag states. Depends on the per-version catalog snapshots (`catalog/snapshots/`), which the first catalog PR (P1-B1) adds, so it lands after P1-B1 and before the 0.1.0 tag. Notes are hand-written until it lands.
+     - ✅ **P0-8d** Release-notes generator: every label and verdict change, from the catalog diff and the flag states. Depends on the per-version catalog snapshots (`catalog/snapshots/`), which the first catalog PR (P1-B1) adds, so it lands after P1-B1 and before the 0.1.0 tag. Notes are hand-written until it lands.
 
 - **Verify:** install the staging and debug builds next to official Fieldwatch. Check scanning, an alert, an export share and the TAK callsign.
 - **Exit:**
