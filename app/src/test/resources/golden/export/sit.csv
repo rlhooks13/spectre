@@ -1,0 +1,5 @@
+kind,mac,name,custom_name,observer_notes,rssi,rssi_min,rssi_max,channel,frequency_mhz,randomized,hidden,first_seen,last_seen,hits,lat,lon,extra_attention,signatures,extra_attention_families,mine
+WIFI,B4:1E:52:0A:0B:0C,Flock-1A2B,,On the pole by the gate,-55,-64,-51,6,2437,false,false,2026-10-27T11:50:00Z,2026-10-27T12:00:00Z,40,0.001200,0.002100,true,Flock Safety Cameras,Flock Safety Cameras,false
+BLE,7A:11:22:33:44:01,,Bag tag?,,-67,-76,-63,0,0,true,false,2026-10-27T11:52:00Z,2026-10-27T12:02:00Z,25,0.001300,0.002200,false,Apple AirTags,,false
+BLE,5E:11:22:33:44:02,,,,-72,-81,-68,0,0,true,false,2026-10-27T11:53:00Z,2026-10-27T12:03:00Z,18,0.001400,0.002300,false,Samsung SmartTags,,false
+BLE,6E:11:22:33:44:03,Galaxy S23,,,-80,-89,-76,0,0,true,false,2026-10-27T11:54:00Z,2026-10-27T12:04:00Z,9,0.001500,0.002400,false,Samsung SmartTags,,true
