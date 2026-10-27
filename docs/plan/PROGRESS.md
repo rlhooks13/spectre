@@ -1,43 +1,35 @@
 # Spectre progress
 
 ## Resume pointer
-- State: RUNNING (waiting: nothing is unblocked; hourly checks)
-- Current step: none. Every open step waits on the owner's signed PRs (decisions of 2026-10-27, see Log). Next, in order, once each unblocks:
-  - **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved) after the owner PR adopting #10 merges. Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`.
-  - **P1-A1** after the owner PR adopting #6 merges → A2 → A3 → 1B–1E.
+- State: RUNNING
+- Current step: **P1-A1** (unblocked: #32, the owner-signed #6, merged). It adds dependencies, so it edits `verification-metadata.xml` and is a protected PR the owner signs. Then A2 → A3 → 1B–1E. Also next:
+  - **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved) after #33 (the owner PR adopting #10) merges. Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`.
   - **P0-8d** after P1-B1.
   - **Don't push** to `p0/3*` (#6), `p0/4d-spectre-disclaimer` (#10), `p0/8a-ci-workflow-draft` (#19) or `p0/8b-release-workflow-draft` (#20). The owner is adopting them and will close them.
-  - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download.
+  - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
-    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
+    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:**
-    - owner-signed PRs adopting #6, #10, #19 and #20 (with both workflows copied in, `dryrun/v*` on the release environment, and `app/lint-baseline.xml` protected);
-    - the CLAUDE.md language-key rule;
-    - the build plugins in `approved-dependencies.md`;
-    - the staging test keystore;
-    - a `gh pr merge --delete-branch` allow rule;
-    - the P0-7c layer choice.
+  - **Waiting on the owner:** #33 (#10), #34 (#20), #37 (#19), #35 (CLAUDE.md key rule, build plugins) and #36 (staging test keystore) merge when green; the P0-7c layer choice.
+  - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `main` (no work in progress)
 - Phone serial: RFCX205JR3K
-- Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
+- Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
 - Last cycle: 2026-10-27T16:40Z
 
 ## Needs human (owner)
 **In progress by the owner (2026-10-27).** These come as owner-signed PRs from the host. The agent waits and doesn't push to the original branches.
-- **Adopting PRs #6, #10, #19 and #20:**
-  - both workflows copied into `.github/workflows/`;
-  - `dryrun/v*` on the release environment;
-  - `app/lint-baseline.xml` in the protected paths.
-- **The CLAUDE.md language-key rule:** new keys go in `LanguageKeyRevisions` at the newest revision (ADR-0013).
-- **Build plugins in `approved-dependencies.md`.**
-- **The staging test keystore:** alias `staging`, password `spectre-staging`.
-- **An allow rule for `gh pr merge --delete-branch`.** The owner also deletes remote branches that are already merged.
-- **The phone's screen timeout,** set over adb.
+- **#32 (adopting #6) merged; #6 closed.** In CI, merged by the owner when green:
+  - #33 (adopting #10);
+  - #34 (adopting #20);
+  - #37 (adopting #19: the CI workflow, baseline 804, `app/lint-baseline.xml` protected);
+  - #35 (the CLAUDE.md language-key rule and the build plugins in `approved-dependencies.md`);
+  - #36 (the staging test keystore: alias `staging`, password `spectre-staging`).
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
+- **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
 **Still open:**
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -75,6 +67,11 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Owner update,** relayed the same way:
+  1. #32 (the owner-signed #6, P0-3 dependency verification) merged and #6 is closed, so **P1-A1 is unblocked**. #33 (#10), #34 (#20), #37 (#19: CI workflow, baseline 804, lint baseline protected), #35 (CLAUDE.md key rule and build plugins) and #36 (staging test keystore) are in CI; the owner merges each when green.
+  2. **Correction to point 3 below:** no branch-delete allow rule is coming, and none is needed. GitHub auto-deletes merged head branches; the stale branches were remote-tracking refs, cleaned with `git fetch --prune`. The only leftover remote agent branch, `p0/language-pack-cap` (no PR), was superseded by P0-4g (#17) and is listed for the owner to delete.
+  3. **Phone:** screen timeout at maximum, stay-awake forced on (`svc power stayon true`).
+  4. **dontgetflocked:** undecided. The existing user-triggered download stays unchanged until the owner decides.
 - 2026-10-27: **Owner decisions,** relayed into this session by the owner's Windows-host session at the owner's request:
   1. **P0-4e approved:** change the applicationId to `io.github.rlhooks13.spectre`. Start it after the owner PR that adopts #10 merges, to avoid conflicts. Draft its protected parts (such as release.yml's aapt2 package check) in `docs/setup/workflows/` as usual.
   2. **PRs #6, #10, #19 and #20** are being adopted from the host as owner-signed PRs, along with:
