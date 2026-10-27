@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B5 Over-broad names**, after P1-B4c merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B5 Over-broad names** (the 34 short names `CatalogLintTest` lists), after P1-B5a (catalog v101) merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,8 +13,9 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b4c-beacons-wearables-by-class`
+- Branch: `p1/b5a-raven-vigilant-ibr`
 - Phone serial: RFCX205JR3K
+- **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
@@ -68,6 +69,22 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B5a RAVEN, Vigilant, IBR\* (catalog v101).** #60 (P1-B4c) merged as f91b91a.
+  - **Split:** P1-B5 splits into B5a, the three rules the step names, and B5 itself, the 34 short names, which each need evidence of what real devices advertise.
+  - **The fix:**
+    - `RAVEN` (contains) and `Vigilant` (contains) become the exact name plus separator-ended prefix globs: `RAVEN`, `RAVEN-*`, `RAVEN_*`, `Vigilant`, `Vigilant-*`, `Vigilant_*`.
+    - Raven also gets `DIRECT-??-Raven-*` (Wi-Fi), the shape of a real SSID, "DIRECT-rR-Raven-607", that only the bare name matched (pinned by the existing test `ravenWifiDirectSsidHitsRavenOnly`).
+    - Cradlepoint drops bare `IBR*`, keeps its eight model globs, and adds `IBR350*` and `IBR1150*`, which only `IBR*` covered.
+    - No capture shows Raven's or Vigilant's own name format, so these trade some recall for fewer false labels. Raven's UUIDs and OUI still find it.
+    - The retired rules are in `catalog/retired.json` and `RetiredRules`.
+  - **Ladder (v101):**
+    - It carries an "off" on a retired rule (or SSID keywords off, via the v4 policy) to that row's replacements (`ADDED_RULES_V101`).
+    - The replacements sit last in their rows, where `patchBuiltIn` appends them, so upgraded rows equal stock.
+  - **Corpus:**
+    - the three P1-B5 near misses (Ravenclaw speaker, Vigilant home alarm, IBRAHIM hotspot) lose `knownUntil`;
+    - new targets: `RAVEN-1A2B`, `Vigilant_C3D4`, the Raven Wi-Fi Direct SSID, and `IBR1150-3F2`;
+    - new near misses: "Ravens-Fan", "Vigilante", and "DIRECT-5G-My-Raven-Cam".
+  - **Tests:** `RetiredRulesFileTest` accepts suffixed step ids such as P1-B5a. New `CatalogV101LadderTest`.
 - 2026-10-27: **P1-B4c Beacons and wearables by class.** #59 (P1-B4b) merged as 3f73949.
   - **The fix:** `TrackerMatch` picks BEACON and WEARABLE by the matched fleets' class, as FINDER already is; no name tokens are left in `kind` or `label`.
     - Target's cart tag is now a beacon.

@@ -66,6 +66,45 @@
                 "dataPrefixHex": "12",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-raven",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"RAVEN\" anywhere in a name matched speakers and fan gear (\"Ravenclaw\", \"Ravens\"). Replaced by the exact name RAVEN, the separator-ended globs RAVEN-* and RAVEN_*, and the Wi-Fi Direct shape DIRECT-??-Raven-*. No capture shows a Raven's own name format; UUIDs 3100-3500 and its OUI still find it.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "RAVEN",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-vigilant",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"Vigilant\" anywhere in a name matched home alarms and \"Vigilante\". The full names stay, plus the exact name Vigilant and the separator-ended globs Vigilant-* and Vigilant_*. No capture shows Vigilant's own name format.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Vigilant",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-cradlepoint",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"IBR*\" matched any SSID starting IBR (\"IBRAHIM-iPhone\"). The model globs (IBR900*, IBR1100*, ...) stay, and IBR350* and IBR1150* are added for the models it alone covered.",
+            "rule": {
+                "kind": "NAME_GLOB",
+                "text": "IBR*",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
         }
     ]
 }

@@ -43,7 +43,7 @@ class RetiredRulesFileTest {
             val retiredIn = entry.getValue("retiredIn").jsonPrimitive.int
             val rule = json.decodeFromJsonElement(MatchRule.serializer(), entry.getValue("rule"))
             assertTrue("$fleetId: retiredIn $retiredIn is after the current catalog", retiredIn <= ConfigStore.CATALOG_VERSION)
-            assertTrue("$fleetId: a retired rule names its step", entry.getValue("step").jsonPrimitive.content.matches(Regex("""P\d-[A-Z]?\d+""")))
+            assertTrue("$fleetId: a retired rule names its step", entry.getValue("step").jsonPrimitive.content.matches(Regex("""P\d-[A-Z]?\d+[a-z]?""")))
             val key = SignatureExchange.ruleKey(rule)
             assertFalse("$fleetId still has the retired rule $key", stock.getValue(fleetId).rules.any { SignatureExchange.ruleKey(it) == key })
             val before = SignatureExchange.parse(TestFiles.repoFile("../catalog/snapshots/v${retiredIn - 1}.json").readText(Charsets.UTF_8))

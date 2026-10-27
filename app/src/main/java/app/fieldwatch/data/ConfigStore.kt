@@ -1240,6 +1240,20 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V100
         }
+        if (version < CATALOG_V101) {
+            // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load), and patchBuiltIn above
+            // appends their replacements switched on (ADDED_RULES_V101). A user who had switched the old rule off,
+            // or had SSID keywords off (the v4 policy), gets the replacements off too.
+            fleets = fleets.map { fleet ->
+                val added = ADDED_RULES_V101[fleet.id]
+                if (added == null || !fleet.builtIn) return@map fleet
+                val old = cfg.fleets.firstOrNull { it.id == fleet.id } ?: return@map fleet
+                val wasOff = old.rules.any { RetiredRules.isRetired(fleet.id, it) && !it.enabled }
+                if (!wasOff) return@map fleet
+                fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in added) r.copy(enabled = false) else r })
+            }
+            version = CATALOG_V101
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1286,7 +1300,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 100
+        const val CATALOG_VERSION = 101
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1384,7 +1398,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V97 = 97
         private const val CATALOG_V98 = 98
         private const val CATALOG_V99 = 99
-        private const val CATALOG_V100 = CATALOG_VERSION
+        private const val CATALOG_V100 = 100
+        private const val CATALOG_V101 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
@@ -1772,6 +1787,13 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-findmy",
         )
         private const val AIRTAGS = "fleet-airtag"
+
+        /** The name globs v101 added in place of each retired name rule (P1-B5a), by fleet. */
+        private val ADDED_RULES_V101 = mapOf(
+            "fleet-raven" to setOf("RAVEN", "RAVEN-*", "RAVEN_*", "DIRECT-??-Raven-*"),
+            "fleet-vigilant" to setOf("Vigilant", "Vigilant-*", "Vigilant_*"),
+            "fleet-cradlepoint" to setOf("IBR350*", "IBR1150*"),
+        )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */
         private const val V99_AIRTAG_NOTES = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be " +
