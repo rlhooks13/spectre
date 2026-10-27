@@ -34,7 +34,8 @@ Layer 1 is the real boundary; layers 2 and 3 can be bypassed by scripts the agen
 - Field-dependent detection logic stays behind flags that are off by default, until owner-recorded captures with ground truth pass.
 
 **Usage**
-- A script-based watcher (no model involved) pauses the loop at 90% of either plan window and resumes it after the reset.
+- A script-based watcher (no model involved) pauses the loop at 90% of the five-hour window and resumes it after the reset.
+- Amended 2026-10-27 by the owner: work runs only while the weekly window is under 80%. The watcher pauses at that threshold, and a pre-flight gate keeps each cycle from starting over either threshold.
 
 ## Consequences
 - The owner signs and merges only protected-path PRs, records field captures, and handles `needs-human` items.
