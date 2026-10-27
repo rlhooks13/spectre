@@ -958,7 +958,7 @@
     "ui.sit.label": "Stráž",
     "ui.window.label": "Okno",
     "ui.tool.label": "Nástroj",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · bežný Android · len príjem bodov Wi-Fi + oznamovač BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · bežný Android · len príjem bodov Wi-Fi + oznamovač BLE",
     "ui.scan.label": "Sken",
     "ui.gps.tag": "Značka GPS",
     "ui.distance.label": "Vzdialenosť",

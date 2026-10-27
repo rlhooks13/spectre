@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Debug-only Capture v1 recorder (ADR-0016). Records only while `files/capture/ENABLED` exists:
- * `adb shell run-as app.fieldwatch.debug touch files/capture/ENABLED` (and `rm` to stop).
+ * `adb shell run-as io.github.rlhooks13.spectre.debug touch files/capture/ENABLED` (and `rm` to stop).
  *
  * The radio callbacks run on the main thread, so they only copy fields into a record and queue it. One
  * writer thread encodes, writes, flushes every second, rotates at [PART_BYTES] and keeps at most

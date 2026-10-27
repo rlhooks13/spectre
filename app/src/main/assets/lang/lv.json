@@ -920,7 +920,7 @@
     "ui.sit.label": "Maiņa",
     "ui.window.label": "Logs",
     "ui.tool.label": "Rīks",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · standarta Android · tikai uztveršana Wi-Fi AP + BLE sludinātājs",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · standarta Android · tikai uztveršana Wi-Fi AP + BLE sludinātājs",
     "ui.scan.label": "Skenēt",
     "ui.gps.tag": "GPS atzīme",
     "ui.distance.label": "Attālums",

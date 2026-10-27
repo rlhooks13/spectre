@@ -955,7 +955,7 @@
     "ui.recommended.actions": "Ações recomendadas",
     "ui.generated.label": "Gerado",
     "ui.window.label": "Janela",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · Android de origem · só receção de pontos de acesso Wi-Fi + anunciante BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · Android de origem · só receção de pontos de acesso Wi-Fi + anunciante BLE",
     "ui.scan.label": "Pesquisa",
     "ui.gps.tag": "Marca GPS",
     "ui.distance.label": "Distância",

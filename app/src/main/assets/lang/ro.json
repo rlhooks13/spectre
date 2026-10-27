@@ -953,7 +953,7 @@
     "ui.generated.label": "Generat",
     "ui.window.label": "Fereastră",
     "ui.tool.label": "Unealtă",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · Android de stoc · doar recepție Wi-Fi AP + emitător BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · Android de stoc · doar recepție Wi-Fi AP + emitător BLE",
     "ui.scan.label": "Scanare",
     "ui.gps.tag": "Marcaj GPS",
     "ui.distance.label": "Distanță",

@@ -927,7 +927,7 @@
     "ui.sit.label": "Roje",
     "ui.window.label": "Dritare",
     "ui.tool.label": "Mjet",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · Android stok · vetëm pritje Wi-Fi AP + shpallës BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · Android stok · vetëm pritje Wi-Fi AP + shpallës BLE",
     "ui.scan.label": "Skanim",
     "ui.gps.tag": "Vulë GPS",
     "ui.distance.label": "Distanca",

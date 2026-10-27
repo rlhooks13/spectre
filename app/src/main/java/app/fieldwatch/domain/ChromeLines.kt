@@ -845,7 +845,7 @@ internal object ChromeLines {
         en("ui.sit.label", "Sit", LanguageSlot.CONTROL),
         en("ui.window.label", "Window", LanguageSlot.CONTROL),
         en("ui.tool.label", "Tool", LanguageSlot.CONTROL),
-        en("ui.fieldwatch.app.fieldwatch.stock", "Spectre (app.fieldwatch) · stock Android · receive-only Wi-Fi AP + BLE advertiser", LanguageSlot.BODY),
+        en("ui.fieldwatch.app.fieldwatch.stock", "Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser", LanguageSlot.BODY),
         en("ui.scan.label", "Scan", LanguageSlot.CONTROL),
         en("ui.gps.tag", "GPS tag", LanguageSlot.CONTROL),
         en("ui.distance.label", "Distance", LanguageSlot.CONTROL),

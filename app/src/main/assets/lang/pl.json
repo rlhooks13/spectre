@@ -954,7 +954,7 @@
     "ui.sit.label": "Sesja",
     "ui.window.label": "Okno",
     "ui.tool.label": "Program",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · zwykły Android · tylko odbiór punktów Wi-Fi + nadajnik BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · zwykły Android · tylko odbiór punktów Wi-Fi + nadajnik BLE",
     "ui.scan.label": "Skan",
     "ui.gps.tag": "Znacznik GPS",
     "ui.distance.label": "Odległość",

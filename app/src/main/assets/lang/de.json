@@ -928,7 +928,7 @@
     "ui.sit.label": "Lage",
     "ui.window.label": "Fenster",
     "ui.tool.label": "Werkzeug",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · normales Android · nur Empfang Wi-Fi-AP + BLE-Sender",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · normales Android · nur Empfang Wi-Fi-AP + BLE-Sender",
     "ui.gps.tag": "GPS-Stempel",
     "ui.distance.label": "Entfernung",
     "ui.classification.label": "Einordnung",
