@@ -2,6 +2,7 @@ package app.fieldwatch.data
 
 import android.content.Context
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.withFeatureGates
 import app.fieldwatch.domain.DefaultCatalog
 import app.fieldwatch.domain.FilterEngine
 import app.fieldwatch.domain.LIVE_TOUR_REV
@@ -70,7 +71,7 @@ class ConfigStore(context: Context) {
                     _config.value = seeded
                 } else {
                     val patched = TakInstall.ensure(patchBuiltIn(loaded)).let {
-                        it.copy(settings = it.settings.offerLiveTourOnce().withOverlayBasemaps())
+                        it.copy(settings = it.settings.offerLiveTourOnce().withOverlayBasemaps().withFeatureGates())
                     }
                     _config.value = patched
                     if (patched != loaded) {
@@ -86,7 +87,7 @@ class ConfigStore(context: Context) {
     }
 
     suspend fun update(transform: (PersistedConfig) -> PersistedConfig) = mutex.withLock {
-        val next = transform(_config.value)
+        val next = transform(_config.value).let { it.copy(settings = it.settings.withFeatureGates()) }
         _config.value = next
         withContext(Dispatchers.IO) {
             val tmp = File(file.parentFile, "config.tmp")

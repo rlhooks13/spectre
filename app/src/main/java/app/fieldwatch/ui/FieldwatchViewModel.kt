@@ -686,6 +686,10 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     it.copy(savedAt = header.savedAt, fullList = header.version >= FlockFiles.ALL_PLATES)
                 }
             }
+            if (!Features.OTHER_SENSORS_LAYER) {
+                // Upstream's list from before P0-7b; P1-E5 downloads this project's own list.
+                FlockFiles.file(app.filesDir, SensorList.OTHER).delete()
+            }
             val other = FlockFiles.peek(app.filesDir, SensorList.OTHER)
             if (other != null) {
                 _sensorLayer.update { it.copy(savedAt = other.savedAt, fullList = true) }
@@ -2248,7 +2252,12 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     private fun layerFlow(list: SensorList): MutableStateFlow<FlockLayerUi> =
         if (list == SensorList.PLATES) _flockLayer else _sensorLayer
 
+    /** The "Other sensors" layer is off with [Features.OTHER_SENSORS_LAYER]; its entry points do nothing. */
+    private fun available(list: SensorList): Boolean =
+        list != SensorList.OTHER || Features.OTHER_SENSORS_LAYER
+
     private fun setSensorList(list: SensorList, on: Boolean) {
+        if (on && !available(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
         if (!on) {
@@ -2269,6 +2278,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun updateSensorList(list: SensorList) {
+        if (!available(list)) return
         val flow = layerFlow(list)
         val enabled = if (list == SensorList.PLATES) app.config.settings.flockLayer else app.config.settings.sensorLayer
         if (flow.value.busy || !enabled) return
@@ -2295,6 +2305,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun confirmSensorDownload(list: SensorList) {
+        if (!available(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
         flow.update {
@@ -3357,10 +3368,13 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
         return fresh
     }
 
-    /** Lists saved on this phone. A layer that is off still counts if its file is here. */
+    /**
+     * Lists saved on this phone. A layer that is off still counts if its file is here, except the
+     * Other-sensors list while [Features.OTHER_SENSORS_LAYER] is off (P0-7b).
+     */
     private fun cameraReport(): PathCameras.Report {
         val plates = FlockFiles.read(app.filesDir, SensorList.PLATES)?.cameras
-        val others = FlockFiles.read(app.filesDir, SensorList.OTHER)?.cameras
+        val others = if (Features.OTHER_SENSORS_LAYER) FlockFiles.read(app.filesDir, SensorList.OTHER)?.cameras else null
         val index = FlockIndex()
         val all = ArrayList<FlockCamera>((plates?.size ?: 0) + (others?.size ?: 0))
         if (plates != null) all.addAll(plates)
