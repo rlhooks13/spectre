@@ -23,7 +23,7 @@ class GoldenDeviceJsonTest {
             deviceInfo = "", track = LogRadios.track,
         )
         Golden.assertText("export/map.device.geojson", out)
-        // Different key order from the JVM, same document.
-        Golden.assertJson("export/map.geojson", out)
+        // Different key order from the JVM, same document. Compare only: GoldenTest owns that file.
+        Golden.assertMatchesJson("export/map.geojson", out)
     }
 }

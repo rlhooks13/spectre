@@ -8,15 +8,15 @@
                 ],
                 "type": "Point"
             },
-            "type": "Feature",
             "properties": {
-                "rssi": -48,
-                "kind": "WIFI",
-                "name": "Test AP",
                 "description": "WIFI 02:00:5E:10:00:01 · Example Vendor · -48 dBm · ch 6 · Heard at this phone. Not a radio fix.",
-                "time": "2026-10-27T12:00:00Z",
-                "mac": "02:00:5E:10:00:01"
-            }
+                "kind": "WIFI",
+                "mac": "02:00:5E:10:00:01",
+                "name": "Test AP",
+                "rssi": -48,
+                "time": "2026-10-27T12:00:00Z"
+            },
+            "type": "Feature"
         },
         {
             "geometry": {
@@ -26,15 +26,15 @@
                 ],
                 "type": "Point"
             },
-            "type": "Feature",
             "properties": {
-                "rssi": -71,
-                "kind": "BLE",
-                "name": "Tag",
                 "description": "BLE 6A:1B:2C:3D:4E:5F · -71 dBm · Heard at this phone. Not a radio fix.",
-                "time": "2026-10-27T12:00:05Z",
-                "mac": "6A:1B:2C:3D:4E:5F"
-            }
+                "kind": "BLE",
+                "mac": "6A:1B:2C:3D:4E:5F",
+                "name": "Tag",
+                "rssi": -71,
+                "time": "2026-10-27T12:00:05Z"
+            },
+            "type": "Feature"
         },
         {
             "geometry": {
@@ -50,10 +50,10 @@
                 ],
                 "type": "LineString"
             },
-            "type": "Feature",
             "properties": {
                 "name": "Operator path"
-            }
+            },
+            "type": "Feature"
         }
     ],
     "name": "Spectre 0.0.0-golden export",

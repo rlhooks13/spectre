@@ -2,7 +2,9 @@ package app.fieldwatch.testing
 
 import app.fieldwatch.domain.LanguageText
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.rules.ExternalResource
@@ -32,18 +34,35 @@ object Golden {
 
     /**
      * JSON compared after parsing, so key order doesn't matter: the JVM's org.json orders keys differently
-     * from Android's. The file holds a pretty-printed copy; [GoldenDeviceJsonTest] pins the device's bytes.
+     * from Android's. The file holds a pretty-printed copy with sorted keys, so a re-bless never reorders it.
+     * [GoldenDeviceJsonTest] pins the device's bytes.
      */
     fun assertJson(name: String, actual: String) {
-        val parsed = json.parseToJsonElement(actual)
+        val parsed = canonical(json.parseToJsonElement(actual))
         val file = file(name)
         if (update(file, json.encodeToString(JsonElement.serializer(), parsed) + "\n")) return
         assertEquals("Golden $name (re-bless with UPDATE_GOLDEN=1 and justify it)", json.parseToJsonElement(file.readText(Charsets.UTF_8)), parsed)
     }
 
-    /** True while re-blessing: every assert writes its golden instead of comparing. */
+    /** Like [assertJson], but never writes: for a second producer checked against another test's golden. */
+    fun assertMatchesJson(name: String, actual: String) {
+        val file = file(name)
+        if (!file.isFile) fail("Golden $name is missing; its owning test creates it.")
+        assertEquals("Golden $name", json.parseToJsonElement(file.readText(Charsets.UTF_8)), json.parseToJsonElement(actual))
+    }
+
+    /**
+     * True while re-blessing: every assert writes its golden instead of comparing. The build turns
+     * `UPDATE_GOLDEN=1` and `-PupdateGolden` into this property (and then never counts the tests up to date).
+     */
     val updating: Boolean
-        get() = System.getenv("UPDATE_GOLDEN") == "1" || System.getProperty("spectre.updateGolden") == "true"
+        get() = System.getProperty("spectre.updateGolden") == "true"
+
+    private fun canonical(e: JsonElement): JsonElement = when (e) {
+        is JsonObject -> JsonObject(e.entries.sortedBy { it.key }.associate { it.key to canonical(it.value) })
+        is JsonArray -> JsonArray(e.map(::canonical))
+        else -> e
+    }
 
     private fun update(file: File, content: String): Boolean {
         if (updating) {
