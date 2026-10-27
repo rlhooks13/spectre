@@ -71,7 +71,7 @@ A PR that changes any of these needs every commit signed with the owner's SSH ke
 - `docs/setup/**` (includes `allowed_signers`, the owner's public signing key)
 - `gradle/verification-metadata.xml`
 - `tools/usage-watch.*`, `tools/statusline.*`, `tools/hooks/**`
-- the disclaimer source (currently `app/src/main/java/app/fieldwatch/domain/FieldwatchDisclaimer.kt`, later `SpectreDisclaimer.kt`)
+- the disclaimer source (currently `app/src/main/java/app/fieldwatch/domain/SpectreDisclaimer.kt`)
 
 ## Decision policy
 
