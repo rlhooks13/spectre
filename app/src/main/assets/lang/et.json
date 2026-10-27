@@ -929,7 +929,7 @@
     "ui.sit.label": "Vaht",
     "ui.window.label": "Aken",
     "ui.tool.label": "Tööriist",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · tavapärane Android · ainult vastuvõtt Wi-Fi AP + BLE reklaamija",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · tavapärane Android · ainult vastuvõtt Wi-Fi AP + BLE reklaamija",
     "ui.scan.label": "Otsing",
     "ui.gps.tag": "GPS-märk",
     "ui.distance.label": "Vahemaa",

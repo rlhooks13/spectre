@@ -937,7 +937,7 @@
     "ui.sit.label": "Veille",
     "ui.window.label": "Fenêtre",
     "ui.tool.label": "Outil",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · Android d'origine · réception seule de points d'accès Wi-Fi + annonceur BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · Android d'origine · réception seule de points d'accès Wi-Fi + annonceur BLE",
     "ui.scan.label": "Balayage",
     "ui.gps.tag": "Marque GPS",
     "ui.operationally.sensitive.neighbor.ssids": "Sensible sur le plan opérationnel — SSID voisins, MAC, GPS de l'opérateur, trace d'aéronef annoncée",

@@ -58,7 +58,8 @@ android {
     buildToolsVersion = "35.0.0"
 
     defaultConfig {
-        applicationId = "app.fieldwatch"
+        // Spectre's own id (P0-4e), so it installs next to Fieldwatch. The namespace (package) stays.
+        applicationId = "io.github.rlhooks13.spectre"
         minSdk = 29
         targetSdk = 35
         versionCode = appVersion.code

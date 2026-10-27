@@ -926,7 +926,7 @@
     "ui.sit.label": "Vakt",
     "ui.window.label": "Gluggi",
     "ui.tool.label": "Verkfæri",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · venjulegur Android · aðeins móttaka Wi-Fi AP + BLE auglýsandi",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · venjulegur Android · aðeins móttaka Wi-Fi AP + BLE auglýsandi",
     "ui.scan.label": "Skönnun",
     "ui.gps.tag": "GPS-merking",
     "ui.distance.label": "Fjarlægð",

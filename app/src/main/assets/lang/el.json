@@ -957,7 +957,7 @@
     "ui.sit.label": "Βάρδια",
     "ui.window.label": "Παράθυρο",
     "ui.tool.label": "Εργαλείο",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · κανονικό Android · μόνο λήψη Wi-Fi AP + εκπομπός BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · κανονικό Android · μόνο λήψη Wi-Fi AP + εκπομπός BLE",
     "ui.scan.label": "Σάρωση",
     "ui.gps.tag": "Σήμανση GPS",
     "ui.distance.label": "Απόσταση",

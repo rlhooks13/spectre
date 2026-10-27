@@ -958,7 +958,7 @@
     "ui.sit.label": "Oturum",
     "ui.window.label": "Pencere",
     "ui.tool.label": "Alet",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · stok Android · yalnız alım Wi-Fi AP + BLE duyurucu",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · stok Android · yalnız alım Wi-Fi AP + BLE duyurucu",
     "ui.scan.label": "Tarama",
     "ui.gps.tag": "GPS etiket",
     "ui.distance.label": "Mesafe",

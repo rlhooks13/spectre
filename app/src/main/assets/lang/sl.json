@@ -955,7 +955,7 @@
     "ui.sit.label": "Straža",
     "ui.window.label": "Okno",
     "ui.tool.label": "Orodje",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · običajni Android · samo sprejem točk Wi-Fi + oglaševalec BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · običajni Android · samo sprejem točk Wi-Fi + oglaševalec BLE",
     "ui.scan.label": "Sken",
     "ui.gps.tag": "Oznaka GPS",
     "ui.distance.label": "Razdalja",

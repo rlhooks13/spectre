@@ -958,7 +958,7 @@
     "ui.sit.label": "Смяна",
     "ui.window.label": "Прозорец",
     "ui.tool.label": "Средство",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · обикновен Android · само прием на точки Wi-Fi + обявяващ BLE",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · обикновен Android · само прием на точки Wi-Fi + обявяващ BLE",
     "ui.scan.label": "Скан",
     "ui.gps.tag": "GPS белег",
     "ui.distance.label": "Разстояние",

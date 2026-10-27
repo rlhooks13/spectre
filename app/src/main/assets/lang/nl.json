@@ -932,7 +932,7 @@
     "ui.generated.label": "Gemaakt",
     "ui.sit.label": "Wacht",
     "ui.window.label": "Venster",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · standaard Android · alleen ontvangen Wi-Fi-AP + BLE-zender",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · standaard Android · alleen ontvangen Wi-Fi-AP + BLE-zender",
     "ui.gps.tag": "GPS-stempel",
     "ui.distance.label": "Afstand",
     "ui.classification.label": "Indeling",
