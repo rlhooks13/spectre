@@ -273,6 +273,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 **1B. Detection fixes** (one PR each; every golden diff is justified)
 - **Shipped on immediately** (rule fixes checked against the corpus and static tags):
   - **P1-B1 SmartTag:** drop `mfg(0x0075)` and keep FD5A.
+    - It re-blesses the goldens that pin the Galaxy near-miss as "Samsung SmartTags": `match/corpus*.txt`, `export/sit*`, `export/log*`, `cot/*` where present, `atak/sit-package.txt` and `debrief/5-galaxy-phone-in-pocket.txt`. Each diff shows the label going away.
   - **P1-B2 Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
   - **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
   - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
@@ -334,6 +335,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - A Transit leg's "along track" distance is longer than the whole path's (9.94 km against 7.99 km on the drive golden).
   - The header's `Classification` label runs into its value (`ClassificationOperationally sensitive`).
   - A finder that isn't Apple's still gets "Find My / iPhone addresses rotate" (the Galaxy golden; it goes with P1-B1).
+  - The ATAK package stamps a drone's pilot event with the radio's last hear, not the pilot fix's own time (`payloadOpAt`); pinned in `atak/sit-package.txt`.
 
 **1E. Exports and privacy**
 - **P1-E1 Export formats:**

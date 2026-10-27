@@ -29,6 +29,15 @@ object SitFixture {
         val extraKeys: Set<String> get() = devices.filter { it.attentionNotes(fleets).isNotEmpty() }.map { it.key }.toSet()
 
         fun device(mac: String): Sighting = devices.first { it.mac == mac }
+
+        /** The watchlist rows the app keeps for these names, notes and mine marks (one row per radio). */
+        val watchlist: List<app.fieldwatch.domain.WatchTarget>
+            get() = (customNames.keys + observerNotes.keys + mineKeys).distinct().map { key ->
+                app.fieldwatch.domain.WatchTarget(
+                    id = "w-$key", deviceKey = key, label = customNames[key].orEmpty(),
+                    observerNotes = observerNotes[key].orEmpty(), mine = key in mineKeys,
+                )
+            }
     }
 
     const val FLOCK = "B4:1E:52:0A:0B:0C"
