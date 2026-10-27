@@ -167,6 +167,16 @@ class SignatureExchangeTest {
         assertFalse("routed, not left on Find My device", "fleet-findmy" in hits)
     }
 
+    /** P1-B3: a type whose row the catalog doesn't have, or a status byte that isn't hex, stays "Find My device". */
+    @Test
+    fun offlineFindingWithoutATargetRowOrReadableStatusStaysFindMyDevice() {
+        val iphone = ble(name = "", manufacturerId = 0x004C, manufacturerDataHex = "121900" + "00".repeat(24))
+        val noAppleDevice = stock.filterNot { it.id == "fleet-apple-device" }
+        assertEquals(setOf("fleet-findmy"), SignatureEngine().match(listOf(iphone), noAppleDevice).getValue(iphone.key))
+        val garbled = ble(name = "", manufacturerId = 0x004C, manufacturerDataHex = "1219ZZ" + "00".repeat(24))
+        assertEquals(setOf("fleet-findmy"), SignatureEngine().match(listOf(garbled), stock).getValue(garbled.key))
+    }
+
     /** P1-B3: a record too short to read its device type stays a finder, on "Find My device". */
     @Test
     fun unreadableOfflineFindingStaysFindMyDevice() {

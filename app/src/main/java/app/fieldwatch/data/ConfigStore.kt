@@ -1217,13 +1217,27 @@ class ConfigStore internal constructor(private val file: File) {
         }
         if (version < CATALOG_V100) {
             // P1-B3: AirTags' bare Offline Finding rule is retired (RetiredRules strips it on load); a new "Find My device"
-            // row takes that record and the engine routes it by its status byte. AirTags' rule labeled these records
-            // until now, so a user who turned AirTags off gets the new row off too.
+            // row takes that record and the engine routes it by its status byte. That rule labeled these records until
+            // now, so what the user set on it carries over: switched off, the new row's rule starts off; watched or
+            // filtered on AirTags, the new row is watched or filtered too.
+            val oldAirTags = cfg.fleets.firstOrNull { it.id == AIRTAGS && it.builtIn }
+            val ruleOff = oldAirTags?.rules?.any { RetiredRules.isRetired(AIRTAGS, it) && !it.enabled } == true
             val have = fleets.map { it.id }.toSet()
-            val airTagsOff = fleets.any { it.id == "fleet-airtag" && it.builtIn && !it.enabled }
             val extras = ADDED_IN_V100.mapNotNull { catalog[it] }.filter { it.id !in have }
-                .map { if (airTagsOff) it.copy(enabled = false) else it }
+                .map { if (ruleOff) it.copy(rules = it.rules.map { r -> r.copy(enabled = false) }) else it }
             if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
+            if (extras.isNotEmpty()) {
+                val findMy = extras.single()
+                val watched = watchlist.firstOrNull { it.fleetId == AIRTAGS }
+                if (watched != null && watchlist.none { it.fleetId == findMy.id }) {
+                    watchlist = watchlist + watched.copy(id = "watch-${findMy.id}", fleetId = findMy.id, label = findMy.name)
+                }
+                filter = filter.withFleetAlongside(AIRTAGS, findMy.id)
+                presets = presets.map { p -> if (p.isBuiltIn()) p else p.copy(filter = p.filter.withFleetAlongside(AIRTAGS, findMy.id)) }
+            }
+            fleets = fleets.map { fleet ->
+                if (fleet.id == AIRTAGS && fleet.builtIn && fleet.notes == V99_AIRTAG_NOTES) fleet.copy(notes = catalog.getValue(AIRTAGS).notes) else fleet
+            }
             version = CATALOG_V100
         }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
@@ -1756,6 +1770,17 @@ class ConfigStore internal constructor(private val file: File) {
         )
         private val ADDED_IN_V100 = listOf(
             "fleet-findmy",
+        )
+        private const val AIRTAGS = "fleet-airtag"
+
+        /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */
+        private const val V99_AIRTAG_NOTES = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be " +
+            "located — that stays on Apple Device unless the name is AirTag. Addresses rotate."
+
+        /** Where a filter names [old] in a fleet set, it names [added] too (a row that takes over part of [old]'s radios). */
+        private fun FilterState.withFleetAlongside(old: String, added: String): FilterState = copy(
+            fleetIds = if (old in fleetIds) fleetIds + added else fleetIds,
+            includeFleetIds = if (old in includeFleetIds) includeFleetIds + added else includeFleetIds,
         )
     }
 }

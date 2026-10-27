@@ -8,6 +8,7 @@ import app.fieldwatch.domain.RetiredRules
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureClass
 import app.fieldwatch.domain.SignatureExchange
+import app.fieldwatch.domain.WatchTarget
 import app.fieldwatch.testing.ConfigUpgrade
 import app.fieldwatch.testing.TestFiles
 import org.junit.After
@@ -61,19 +62,46 @@ class CatalogV100LadderTest {
         assertFalse(RetiredRules.strip(v99).hasOfflineFindingRule())
     }
 
+    private fun findMy(fleets: List<Fleet>) = fleets.single { it.id == "fleet-findmy" }
+
     @Test
-    fun aV99ConfigWithAirTagsOnGetsFindMyOn() {
-        val loaded = ConfigUpgrade.load(v99Config(airTagsEnabled = true))
-        assertTrue(loaded.fleets.single { it.id == "fleet-findmy" }.enabled)
+    fun aV99ConfigWithTheRuleOnGetsFindMyOn() {
+        val loaded = ConfigUpgrade.load(v99Config(ruleEnabled = true))
+        assertTrue(findMy(loaded.fleets).rules.all { it.enabled })
         assertFalse(airTags(loaded.fleets).hasOfflineFindingRule())
     }
 
-    /** AirTags' rule labeled these records until v100, so turning AirTags off had turned them off too. */
+    /** The engine reads rule switches, not Fleet.enabled; a user who switched AirTags' 0x12 rule off keeps it off. */
     @Test
-    fun aV99ConfigWithAirTagsOffGetsFindMyOff() {
-        val loaded = ConfigUpgrade.load(v99Config(airTagsEnabled = false))
-        assertFalse(loaded.fleets.single { it.id == "fleet-findmy" }.enabled)
-        assertFalse(airTags(loaded.fleets).enabled)
+    fun aV99ConfigWithTheRuleOffGetsFindMysRuleOff() {
+        val loaded = ConfigUpgrade.load(v99Config(ruleEnabled = false))
+        assertTrue(findMy(loaded.fleets).rules.none { it.enabled })
+        assertFalse(airTags(loaded.fleets).hasOfflineFindingRule())
+    }
+
+    @Test
+    fun watchesAndFiltersOnAirTagsCoverFindMy() {
+        val base = v99Config(ruleEnabled = true)
+        val watched = WatchTarget(id = "watch-fleet-airtag", fleetId = "fleet-airtag", label = "Apple AirTags", vibrate = false)
+        val old = base.copy(
+            watchlist = base.watchlist.filterNot { it.fleetId == "fleet-airtag" } + watched,
+            filter = base.filter.copy(includeFleetIds = setOf("fleet-airtag", "fleet-tile"), fleetIds = setOf("fleet-tile")),
+        )
+        val loaded = ConfigUpgrade.load(old)
+        val target = loaded.watchlist.single { it.fleetId == "fleet-findmy" }
+        assertEquals("Find My device", target.label)
+        assertFalse("the user's alert settings carry over", target.vibrate)
+        assertEquals(setOf("fleet-airtag", "fleet-tile", "fleet-findmy"), loaded.filter.includeFleetIds)
+        assertEquals("a set without AirTags is left alone", setOf("fleet-tile"), loaded.filter.fleetIds)
+    }
+
+    @Test
+    fun theStockAirTagNoteIsRewordedAndAUsersNoteStays() {
+        val stockNote = snapshot(99).single { it.id == "fleet-airtag" }.notes
+        val reworded = ConfigUpgrade.load(v99Config(ruleEnabled = true, airTagNotes = stockNote))
+        assertEquals(airTags(DefaultCatalog.fleets()).notes, airTags(reworded.fleets).notes)
+        val mine = ConfigUpgrade.load(v99Config(ruleEnabled = true, airTagNotes = "My note."))
+        assertEquals("My note.", airTags(mine.fleets).notes)
     }
 
     /** A config at v100 still holding the old rule, switched off, loses it on load. */
@@ -97,11 +125,17 @@ class CatalogV100LadderTest {
         assertFalse(airTags(merged).hasOfflineFindingRule())
     }
 
-    private fun v99Config(airTagsEnabled: Boolean) = ConfigUpgrade.fieldwatch1132().let { c ->
+    /** A v99 config whose AirTags row is the v99 stock row, with its 0x12 rule switched as given. */
+    private fun v99Config(ruleEnabled: Boolean, airTagNotes: String? = null) = ConfigUpgrade.fieldwatch1132().let { c ->
+        val v99 = airTags(snapshot(99))
+        val row = v99.copy(
+            builtIn = true,
+            rules = v99.rules.map { if (RetiredRules.isRetired("fleet-airtag", it)) it.copy(enabled = ruleEnabled) else it },
+            notes = airTagNotes ?: v99.notes,
+        )
         c.copy(
             version = 99,
-            fleets = c.fleets.filterNot { it.id == "fleet-findmy" }
-                .map { if (it.id == "fleet-airtag") it.copy(enabled = airTagsEnabled) else it },
+            fleets = c.fleets.filterNot { it.id == "fleet-findmy" }.map { if (it.id == "fleet-airtag") row else it },
         )
     }
 }

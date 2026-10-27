@@ -3,7 +3,7 @@
 ### Signatures (stock catalog v97 → v100)
 
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12.
-- **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12.
+- **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.
 - **BlueTOAD Spectra** (surveillance): notes reworded.
 - **Cisco** (isp): notes reworded.
 - **goTenna** (mesh): notes reworded.

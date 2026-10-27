@@ -477,6 +477,18 @@ object AdvPayloadDecoder {
         }
     }
 
+    /**
+     * The status byte of an Apple Offline Finding record whose hex starts at the 0x12 type byte: `12 <len> <status> …`,
+     * the first byte of the value [decodeFindMy] reads. Null when the record isn't Offline Finding, declares no value,
+     * or stops before the status byte. The matcher routes on it (SignatureEngine.routeOfflineFinding, P1-B3).
+     */
+    fun offlineFindingStatus(hex: String): Int? {
+        if (!hex.startsWith("12") || hex.length < 6) return null
+        val len = hex.substring(2, 4).toIntOrNull(16) ?: return null
+        if (len < 1) return null
+        return hex.substring(4, 6).toIntOrNull(16)
+    }
+
     private fun decodeFindMy(data: ByteArray): List<Field> {
         if (data.isEmpty()) return listOf(Field("Find My", "Offline Finding advertisement."))
         val status = data[0].toInt() and 0xFF

@@ -48,7 +48,7 @@ What this looks like: Most likely an Apple AirTag / Find My tag
 Matched signature Apple AirTags. This is what the device is advertising, not a visual ID.
 
 ## Notes
-Apple AirTags: Apple AirTag or Find My accessory. iPhones also send Find My so they can be located — that stays on Apple Device unless the name is AirTag. Addresses rotate.
+Apple AirTags: Apple AirTag. A nameless AirTag is found through Find My device's Offline Finding rule, whose status byte says AirTag. Addresses rotate.
 
 ## Identity
 Radio: Bluetooth Low Energy advertiser

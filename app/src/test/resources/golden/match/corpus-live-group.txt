@@ -10,6 +10,9 @@ T:findmy-accessory	target	Find My accessory, status 0x20
 T:findmy-short	target	Offline Finding record too short to read
   expect fleet-findmy
   -> fleet-findmy [FINDER]
+T:airtag-near-owner	target	AirTag near its owner, short Offline Finding form
+  expect fleet-airtag
+  -> fleet-airtag [FINDER]
 T:smarttag	target	SmartTag on FD5A
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
@@ -62,7 +65,10 @@ NM:airpods-of	near-miss	Powered-off AirPods, Offline Finding only
   must not fleet-airtag, fleet-findmy (nor be a finder), still labeled a tracker until P1-B4
   -> fleet-apple-audio [AUDIO]
 NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
-  must not fleet-airtag
+  must not fleet-airtag, fleet-findmy
+  -> fleet-apple-device [PHONE]
+NM:iphone-short-of	near-miss	Companion iPhone with an unreadable Offline Finding record
+  must not fleet-airtag, fleet-findmy
   -> fleet-apple-device [PHONE]
 NM:tattile	near-miss	Tattile camera name
   must not fleet-tile (nor be a finder), still labeled a tracker until P1-B4

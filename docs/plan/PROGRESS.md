@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B3 AirTag** (Offline Finding status bits), after P1-B2 (catalog v99) merges. Then B4 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B4 Apple phones** (TrackerMatch uses the matched fleets' class), after P1-B3 (catalog v100) merges. It removes the `finderKnownUntil = "P1-B4"` markers (Tattile, iPhone-of, AirPods-of). Then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,16 +13,18 @@
   - **Waiting on the owner:** signing #43; the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a3g-1132-fixtures`
+- Branch: `p1/b3-offline-finding-type`
 - Phone serial: RFCX205JR3K
+- **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T18:29Z
+- Last cycle: 2026-10-27T20:01Z
 
 ## Needs human (owner)
 **For the owner:**
 - **Sign and merge #43 (P1-A1 follow-ups).** CI is green on Java 17 with Robolectric on SDK 35. The earlier "SDK 35 needs Java 21" note was wrong: a test run showed `java.version` 17.0.20.1 on SDK 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
+- **Uninstall the stale `app.fieldwatch.debug` from the phone** if you don't need its data (the agent leaves it alone because uninstalling deletes that data). Also, the Spectre debug build stops at its first-run "Disclaimer and license" screen. The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
 **Still open:**
@@ -56,11 +58,39 @@ The owner skipped the supervised dry run on 2026-10-27 (UTC) and told the agent 
 | Re-create the loop with the `loop` skill | Pending (at the 6-day loop-age check) |
 
 ## Field-capture requests (owner)
-None yet. The agent adds an entry here, plus a `field-capture` issue, for each scenario it needs.
+The agent adds an entry here, plus a `field-capture` issue, for each scenario it needs.
+- **Offline Finding status byte (P1-B3):** a short capture of an AirTag, an iPhone, AirPods and a third-party Find My tag, each separated from its owner and near it. It checks the device type that `routeOfflineFinding` reads from status bits 4-5 (AirGuard's layout), in both the `12 19` and `12 02` forms. Payload hex only, no addresses.
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B3 AirTag (catalog v100).**
+  - **The fix:** AirTags no longer match a bare Offline Finding record (0x004C, prefix 12). A new "Find My device" finder row (`fleet-findmy`) does. `SignatureEngine.routeOfflineFinding` reads status bits 4-5 of a `12 19 <status>` record and moves the hit by type:
+    - 0 → Apple Device;
+    - 1 → AirTags;
+    - 3 → Apple audio;
+    - 2 (a third-party Find My accessory), an unreadable record, or a target row that's off → stays "Find My device", still a finder.
+  - **Retirement:** the rule is in `catalog/retired.json` and `RetiredRules` (retiredIn 100).
+  - **Ladder:** the v100 step adds `fleet-findmy`. What the user set on AirTags' old 0x12 rule carries over, since that rule labeled these records before: a switched-off rule starts off on the new row, and watchlist targets and filter sets naming AirTags gain Find My device. The stock AirTags note is reworded only where it's still the v99 text. v99 is frozen and the v100 snapshot is added.
+  - **Review fixes (both reviewers):**
+    - the near-owner `12 02 <status>` form is decoded too, through one parser, `AdvPayloadDecoder.offlineFindingStatus`, with `toIntOrNull`;
+    - a Find My device hit that isn't routed is dropped on a Continuity or Apple-product radio, as AirTags is;
+    - the engine ignores `Fleet.enabled`, so the first draft's fleet-level carry-over was a no-op; it's now rule-level;
+    - routing checks a plan-id set, and its KDoc says "row exists" rather than "row is on";
+    - DeviceExplain gives "Find My device" the tag hint;
+    - the ADR-0015 line is updated;
+    - new corpus cases: AirTag near its owner, and a Continuity iPhone with an unreadable record.
+  - **Rebutted:** "AirTag detection depends on another row's rule" is what the step asks for (0x12 alone is Find My device). Both rows' notes now say so.
+  - **Corpus:**
+    - new targets: low-battery AirTag (0xD0), Find My accessory (0x20), short record;
+    - iPhone-of and AirPods-of now carry the right signature, but `TrackerMatch` still reads them as trackers, so they get `finderKnownUntil = "P1-B4"`.
+  - **Goldens:**
+    - `match/corpus*`: the new targets, plus iPhone-of and AirPods-of moving off AirTags;
+    - `release/since-v97.md`: the rule changes and four verdicts;
+    - `import-1.1.32/*`: fleet count +1 and version 100; the user fleet moves because the v100 step sorts by name, as every `ADDED_IN` step does.
+  - **Device check:**
+    - My first check targeted the stale `app.fieldwatch.debug` (see the resume pointer). I redid it on `io.github.rlhooks13.spectre.debug`: it launches with no FATAL, ANR or AndroidRuntime lines, and its config is at v100 with `fleet-findmy`.
+    - The UI stops at the first-run disclaimer, which needs the owner.
 - 2026-10-27: **P1-B2 Tile (catalog v99).** #54 (P0-8d) merged first.
   - **The fix:** Tile matches on its own company id 0x067C, FEED and FEEC, and the BLE-only exact name "Tile". It no longer matches on:
     - "tile" anywhere in a name (Tattile cameras);
