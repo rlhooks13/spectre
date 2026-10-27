@@ -6,7 +6,7 @@ My goals were to have a modern interface that was easy to use, flexible in how i
 
 I have been using it and iterating on it for a while now, and it has been useful enough that I thought I would share it.
 
-This is a hobby — something I do for fun in my spare time. There is no Fieldwatch backend. There are no ads. Everything lives on the phone. Source and sideload files are in this repository (`dist/` for the APK, instruction card, and manual).
+This is a hobby — something I do for fun in my spare time. There is no Fieldwatch backend. There are no ads. Everything lives on the phone. Source is in this repository; `dist/` has the instruction card and catalog packs. The APK and the manual will ship as GitHub release assets once the release workflow lands (P0-8). Until then, build from source.
 
 It was Spectre through 1.2.14. I later learned that name was already in use by another app, so I renamed this one Fieldwatch to keep the two from being mixed up. Same field tool, new application id (`app.fieldwatch`), MIT License. Installing Fieldwatch does not replace Spectre on a phone; it is a separate app.
 
@@ -29,7 +29,7 @@ This is a hobby project, provided as-is under the MIT License. A few things to k
 
 ## Put it on a phone
 
-On a phone, the install files are in [`dist/`](https://github.com/OffGridPete/Fieldwatch/tree/main/dist), not the root of the repo:
+This repo doesn't publish an APK yet. Upstream Fieldwatch's install files are in its [`dist/`](https://github.com/OffGridPete/Fieldwatch/tree/main/dist):
 
 - [Fieldwatch.apk](https://github.com/OffGridPete/Fieldwatch/raw/main/dist/Fieldwatch.apk)
 - [instruction.txt](https://github.com/OffGridPete/Fieldwatch/raw/main/dist/instruction.txt)
@@ -39,20 +39,21 @@ Do not rename the APK. Open `Fieldwatch.apk` from Files (or My Files). Allow ins
 
 | File | What it is |
 |---|---|
-| `dist/Fieldwatch.apk` | Sideload APK |
 | `dist/fieldwatch-signatures.json` | Stock catalog for 1.1.11 GitHub update (catalog 77) |
 | `dist/fieldwatch-signatures-v2.json` | Stock catalog for 1.1.12+ GitHub update |
 | `dist/fieldwatch-sensors.geojson.gz` | Other sensors list. OpenStreetMap contributors, ODbL 1.0. See `dist/fieldwatch-sensors.txt` |
 | `dist/instruction.txt` | Permissions, first launch |
-| `dist/Fieldwatch_User_Manual.pdf` | User manual |
 | [`CHANGELOG.md`](CHANGELOG.md) | What’s new in each build |
 | `LICENSE` | MIT License |
 | `NOTICE` | Third-party attribution |
 
 Android 10+. Allow install from the app you used to open the APK. Play Protect may warn that it is not from Play — expected. Full steps are in `instruction.txt`.
 
+Build from source (developers). Clone with `git clone -c core.longpaths=true …` on Windows. Until the debug build gets its own application id, uninstall a release build before installing this one.
+
 ```bash
-adb install -r dist/Fieldwatch.apk
+./gradlew assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### Upgrading from 1.0.4 or earlier — Fieldwatch now has a real publisher certificate (one-time reinstall)
