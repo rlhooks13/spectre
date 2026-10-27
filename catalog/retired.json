@@ -66,6 +66,45 @@
                 "dataPrefixHex": "12",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-raven",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"RAVEN\" anywhere in a name matched speakers and fan gear (\"Ravenclaw\", \"Ravens\"). Replaced by the separator-ended globs RAVEN-* and RAVEN_*, and the Wi-Fi Direct glob DIRECT-*-Raven-*.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "RAVEN",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-vigilant",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"Vigilant\" anywhere in a name matched home alarms and \"Vigilante\". The full names stay, plus the separator-ended globs Vigilant-* and Vigilant_*.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Vigilant",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-cradlepoint",
+            "retiredIn": 101,
+            "step": "P1-B5a",
+            "reason": "\"IBR*\" matched any SSID starting IBR (\"IBRAHIM-iPhone\"). The model globs (IBR900*, IBR1100*, ...) stay.",
+            "rule": {
+                "kind": "NAME_GLOB",
+                "text": "IBR*",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
         }
     ]
 }

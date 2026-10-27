@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 100,
+    "catalogVersion": 101,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -20390,14 +20390,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "Cradlepoint*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "IBR*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -47278,8 +47270,16 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Vigilant",
+                    "kind": "NAME_GLOB",
+                    "text": "Vigilant-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Vigilant_*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -50437,14 +50437,6 @@
             "rules": [
                 {
                     "kind": "NAME_CONTAINS",
-                    "text": "RAVEN",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
                     "text": "ShotSpotter",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -50513,6 +50505,30 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "RAVEN-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "RAVEN_*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "DIRECT-*-Raven-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
                     "enabled": true
                 }
             ],

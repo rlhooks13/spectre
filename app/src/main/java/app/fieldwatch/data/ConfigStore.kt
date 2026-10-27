@@ -1240,6 +1240,11 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V100
         }
+        if (version < CATALOG_V101) {
+            // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load); the separator-ended
+            // RAVEN and Vigilant globs are added by patchBuiltIn above, so this step only moves the version.
+            version = CATALOG_V101
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1286,7 +1291,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 100
+        const val CATALOG_VERSION = 101
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1384,7 +1389,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V97 = 97
         private const val CATALOG_V98 = 98
         private const val CATALOG_V99 = 99
-        private const val CATALOG_V100 = CATALOG_VERSION
+        private const val CATALOG_V100 = 100
+        private const val CATALOG_V101 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still

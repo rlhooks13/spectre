@@ -187,6 +187,9 @@ object MatchCorpus {
         Target("Tattile camera name", sighting("T:tattile", name = "Tattile Vega"), "fleet-tattile"),
         Target("ShotSpotter sensor name", sighting("T:raven", name = "ShotSpotter"), "fleet-raven"),
         Target("Motorola Vigilant name", sighting("T:vigilant", name = "Motorola Vigilant"), "fleet-vigilant"),
+        // P1-B5a: the bare names became separator-ended prefixes; a default "NAME-suffix" still matches.
+        Target("Raven default-style name", sighting("T:raven-default", name = "RAVEN-1A2B"), "fleet-raven"),
+        Target("Vigilant default-style name", sighting("T:vigilant-default", name = "Vigilant_C3D4"), "fleet-vigilant"),
         Target(
             "Cradlepoint IBR900 router",
             sighting("T:cradlepoint", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0A", name = "IBR900-1A2"),
@@ -262,21 +265,21 @@ object MatchCorpus {
             sighting("NM:google-018e", mfg = listOf(MfgRecord(0x018E, "0100"))),
             setOf("fleet-fitbit"), knownUntil = "P1-B10",
         ),
-        // Bare "contains" names catch everyday devices.
+        // Bare "contains" names caught everyday devices until P1-B5a anchored them.
         NearMiss(
             "Speaker named Ravenclaw",
             sighting("NM:raven", name = "RAVENCLAW SPEAKER"),
-            setOf("fleet-raven"), knownUntil = "P1-B5",
+            setOf("fleet-raven"),
         ),
         NearMiss(
             "Home alarm named Vigilant",
             sighting("NM:vigilant", name = "Vigilant Home Alarm"),
-            setOf("fleet-vigilant"), knownUntil = "P1-B5",
+            setOf("fleet-vigilant"),
         ),
         NearMiss(
             "Phone hotspot named Ibrahim",
             sighting("NM:ibr", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:09", name = "IBRAHIM-iPhone"),
-            setOf("fleet-cradlepoint"), knownUntil = "P1-B5",
+            setOf("fleet-cradlepoint"),
         ),
     )
 

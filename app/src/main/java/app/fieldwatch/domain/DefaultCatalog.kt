@@ -378,7 +378,6 @@ object DefaultCatalog {
         notes = "Flock Raven or ShotSpotter-style acoustic gunshot sensor, usually on a pole with cameras. BLE UUIDs 3100–3500 are the Raven radio. The XUNTONG battery manufacturer ID is Penguin, not this row. Current Flock-family poles are often quiet on Wi-Fi and BLE.",
         builtIn = true,
         rules = listOf(
-            name("RAVEN"),
             name("ShotSpotter"),
             name("SoundThinking"),
             name("Shot Spotter"),
@@ -388,6 +387,12 @@ object DefaultCatalog {
             uuid("3400"),
             uuid("3500"),
             oui("D4:11:D6"),
+            // P1-B5a: "RAVEN" anywhere hit "Ravenclaw" and "Ravens fan". A default "RAVEN-xxxx" name still matches.
+            // Last, as patchBuiltIn appends them, so an upgraded row equals stock.
+            glob("RAVEN-*"),
+            glob("RAVEN_*"),
+            // Its Wi-Fi Direct SSID, e.g. "DIRECT-rR-Raven-607" (SignatureExchangeTest.ravenWifiDirectSsidHitsRavenOnly).
+            wifiGlob("DIRECT-*-Raven-*"),
         ),
     )
 
@@ -1587,7 +1592,9 @@ object DefaultCatalog {
         rules = listOf(
             name("Vigilant Solutions"),
             name("Motorola Vigilant"),
-            name("Vigilant"),
+            // P1-B5a: "Vigilant" anywhere hit home alarms and "Vigilante". A default "Vigilant-xxxx" name still matches.
+            glob("Vigilant-*"),
+            glob("Vigilant_*"),
         ),
     )
 
@@ -3840,7 +3847,7 @@ object DefaultCatalog {
             listOf(
                 wifiName("Cradlepoint"),
                 wifiGlob("Cradlepoint*"),
-                wifiGlob("IBR*"),
+                // P1-B5a: bare "IBR*" hit any SSID starting IBR ("IBRAHIM-iPhone"). The model globs stay.
                 wifiGlob("IBR900*"),
                 wifiGlob("IBR1100*"),
                 wifiGlob("IBR1700*"),

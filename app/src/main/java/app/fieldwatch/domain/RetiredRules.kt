@@ -21,6 +21,10 @@ object RetiredRules {
         Entry("fleet-tile", MatchRule(RuleKind.SERVICE_UUID, text = "FEDD"), retiredIn = 99),
         // P1-B3: a bare Offline Finding record is any Find My device; "Find My device" takes it and routes by type.
         Entry("fleet-airtag", MatchRule(RuleKind.MANUFACTURER_DATA, companyId = 0x004C, dataPrefixHex = "12"), retiredIn = 100),
+        // P1-B5a: bare names that hit everyday devices ("Ravenclaw", a "Vigilant" home alarm, an "IBRAHIM" hotspot).
+        Entry("fleet-raven", MatchRule(RuleKind.NAME_CONTAINS, text = "RAVEN"), retiredIn = 101),
+        Entry("fleet-vigilant", MatchRule(RuleKind.NAME_CONTAINS, text = "Vigilant"), retiredIn = 101),
+        Entry("fleet-cradlepoint", MatchRule(RuleKind.NAME_GLOB, text = "IBR*", radio = RadioKind.WIFI), retiredIn = 101),
     )
 
     /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
