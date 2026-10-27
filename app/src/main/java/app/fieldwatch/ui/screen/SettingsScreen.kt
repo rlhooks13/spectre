@@ -679,6 +679,7 @@ fun SettingsScreen(
                     !flock.busy,
                 ) { on -> vm.updateSettings { it.copy(flockAlert = on) } }
             }
+            if (Features.OTHER_SENSORS_LAYER) {
             Spacer(Modifier.height(8.dp))
             SensorLayerBlock(
                 title = LanguageText.text("settings.layer.other"),
@@ -708,6 +709,7 @@ fun SettingsScreen(
                     settings.cameraAlert,
                     !sensors.busy,
                 ) { on -> vm.updateSettings { it.copy(cameraAlert = on) } }
+            }
             }
             Spacer(Modifier.height(8.dp))
             ExposedDropdownMenuBox(

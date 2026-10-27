@@ -2248,7 +2248,12 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     private fun layerFlow(list: SensorList): MutableStateFlow<FlockLayerUi> =
         if (list == SensorList.PLATES) _flockLayer else _sensorLayer
 
+    /** The "Other sensors" layer is off with [Features.OTHER_SENSORS_LAYER]; its entry points do nothing. */
+    private fun available(list: SensorList): Boolean =
+        list != SensorList.OTHER || Features.OTHER_SENSORS_LAYER
+
     private fun setSensorList(list: SensorList, on: Boolean) {
+        if (!available(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
         if (!on) {
@@ -2269,6 +2274,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun updateSensorList(list: SensorList) {
+        if (!available(list)) return
         val flow = layerFlow(list)
         val enabled = if (list == SensorList.PLATES) app.config.settings.flockLayer else app.config.settings.sensorLayer
         if (flow.value.busy || !enabled) return
@@ -2295,6 +2301,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun confirmSensorDownload(list: SensorList) {
+        if (!available(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
         flow.update {

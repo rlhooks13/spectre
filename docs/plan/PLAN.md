@@ -207,7 +207,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Add a region notice for camera alerts (DE/CH/FR restrictions).
    - Split into sub-steps:
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
-     - **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream.
+     - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
      - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation.
      - **P0-7d** Region notice for camera alerts.
 8. **CI.**
@@ -325,6 +325,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **P1-E4 Network:**
   - Download size caps.
   - OSM: at most 2 connections, no prefetch.
+- **P1-E5 Other-sensors layer returns** (off since P0-7b):
+  - Ship `scripts/build_sensors.py`: an Overpass query, the ODbL license file, and the "© OpenStreetMap contributors" credit in the UI and exports.
+  - Build and host the list from this repo (or a release asset); set `SensorList.OTHER.url` and `Features.OTHER_SENSORS_LAYER`.
+  - Gate the download through `NetworkPolicy`.
 
 **1F. Capture v1** (debug builds only; its own workstream, not a prerequisite for the fixes)
 - **P1-F1 Contents:** full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.
