@@ -9,6 +9,7 @@ import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureEngine
 import app.fieldwatch.domain.SignatureExchange
 import app.fieldwatch.domain.Sighting
+import app.fieldwatch.domain.matchKey
 import java.io.File
 import java.lang.reflect.Modifier
 
@@ -56,9 +57,8 @@ object ReleaseNotes {
         append(END).append('\n')
     }
 
-    /** What a rule matches, ignoring whether it is switched on. */
-    private fun matchKey(r: MatchRule): String =
-        listOf(r.kind.name, r.text.uppercase(), r.companyId, r.dataPrefixHex.uppercase(), r.radio?.name.orEmpty()).joinToString("|")
+    /** What a rule matches, ignoring whether it is switched on: the shared key (P1-B6). */
+    private fun matchKey(r: MatchRule): String = r.matchKey()
 
     /** The reproducible part: the catalog diff. */
     fun signatures(from: Int, to: Int, oldFleets: List<Fleet> = snapshot(from), newFleets: List<Fleet> = snapshot(to)): String = buildString {

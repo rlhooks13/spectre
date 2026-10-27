@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 103,
+    "catalogVersion": 104,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -671,14 +671,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "AirLink*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "AIRLINK*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -7483,23 +7475,7 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "ATTWifi*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "ATT-WIFI*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "ATT-Wifi*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -7547,23 +7523,7 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "ATT-Guest*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "2WIRE*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "2Wire*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -8305,14 +8265,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_GLOB",
-                    "text": "Axis-*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "AXIS-",
                     "companyId": 0,
@@ -8486,14 +8438,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "Belkin*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "belkin*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -20752,14 +20696,6 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "dlink*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "DIR-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -21520,14 +21456,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "DAHUA",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Dahua*",
                     "companyId": 0,
@@ -22060,14 +21988,6 @@
                     "dataPrefixHex": "",
                     "radio": "BLE",
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "ecoBee*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -22379,14 +22299,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "eero*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Eero*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -23554,14 +23466,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "eufy*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Eufy*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -25251,14 +25155,6 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "GL-Inet*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "GL-MT*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -25823,14 +25719,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "goTenna*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "gotenna*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -26706,14 +26594,6 @@
                 {
                     "kind": "NAME_CONTAINS",
                     "text": "Hikvision",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "HIKVISION",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -27889,24 +27769,8 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_GLOB",
-                    "text": "Huawei*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "HUAWEI",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Huawei",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -44765,14 +44629,6 @@
                     "dataPrefixHex": "",
                     "radio": "BLE",
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Igloohome*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -45452,14 +45308,6 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "linksys*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "Velop*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -45951,14 +45799,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "LOCKLY*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Lockly*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -47959,14 +47799,6 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "Netgear*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
                     "text": "Orbi*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -49849,14 +49681,6 @@
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Moto Tag",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -50153,22 +49977,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "PigVision",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "PIGVISION",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Pigvision*",
                     "companyId": 0,
@@ -50253,14 +50061,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "SuperPod*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Superpod*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -53154,14 +52954,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "DIRECT-roku*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "DIRECT-Roku*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -56791,14 +56583,6 @@
                     "dataPrefixHex": "",
                     "radio": "BLE",
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Salto*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -57015,14 +56799,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "Schlage*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "SCHLAGE*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -57662,14 +57438,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_GLOB",
-                    "text": "WattBox*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
                     "kind": "OUI",
                     "text": "14:3F:C3",
                     "companyId": 0,
@@ -57955,24 +57723,8 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_GLOB",
-                    "text": "Starlink*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "STARLINK",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Starlink",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -59127,14 +58879,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "TP-Link*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "TP-LINK*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -61390,14 +61134,6 @@
                     "dataPrefixHex": "",
                     "radio": "BLE",
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Tuya*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -63519,14 +63255,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Watchguard",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "WatchGuard*",
                     "companyId": 0,
@@ -63570,14 +63298,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "WAVLINK*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "Wavlink*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -63705,14 +63425,6 @@
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "WOLFCOM*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -63791,14 +63503,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "Xfinity*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "XFINITY*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",

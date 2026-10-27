@@ -246,6 +246,37 @@ data class MatchRule(
     val enabled: Boolean = true,
 )
 
+/** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
+private val BASE_UUID = Regex("""^0000([0-9A-F]{4})-0000-1000-8000-00805F9B34FB$""")
+
+/**
+ * What a rule matches, for "is this the same rule" everywhere (P1-B6): the stock overlay, the signature import, the
+ * catalog ladder and the retired list. It ignores whether the rule is switched on and the case of its text (name
+ * matching ignores case), and reads a long-form base UUID as its 16-bit alias. It doesn't trim: the engine matches
+ * the text as written, so "Tile " and "Tile" are different rules.
+ */
+fun MatchRule.matchKey(): String {
+    val t = text.uppercase().let { t ->
+        if (kind == RuleKind.SERVICE_UUID || kind == RuleKind.SERVICE_DATA) BASE_UUID.matchEntire(t)?.groupValues?.get(1) ?: t else t
+    }
+    return listOf(kind.name, t, companyId, dataPrefixHex.uppercase(), radio?.name.orEmpty()).joinToString("|")
+}
+
+/**
+ * The switch of one rule held as several copies (same [matchKey]). Exact copies, an older overlay's or import's
+ * duplicate of a stock rule beside the user's switched-off one, are off if any copy was: that was the user's choice.
+ * Variants that only differ in case ("Huawei*", "HUAWEI*") each matched before, so the rule stays on if any variant
+ * was on: merging them changes nothing the user had.
+ */
+fun List<MatchRule>.mergedSwitch(): Boolean = groupBy { it.text }.values.any { exact -> exact.all { it.enabled } }
+
+/** These rules with each held once, where it first appears, switched as [mergedSwitch] says. */
+fun List<MatchRule>.withoutDuplicates(): List<MatchRule> {
+    val copies = groupBy { it.matchKey() }
+    if (copies.size == size) return this
+    return copies.values.map { same -> same.first().copy(enabled = same.mergedSwitch()) }
+}
+
 @Serializable
 data class Fleet(
     val id: String,

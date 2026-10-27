@@ -63,16 +63,8 @@ object RetiredRules {
         Entry("fleet-unifi-ap", MatchRule(RuleKind.NAME_CONTAINS, text = "UBNT", radio = RadioKind.WIFI), retiredIn = 103),
     )
 
-    /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
-    private val BASE_UUID = Regex("""^0000([0-9A-F]{4})-0000-1000-8000-00805F9B34FB$""")
-
-    /** What a rule matches, ignoring whether it is switched on. A long-form base UUID reads as its 16-bit alias. */
-    private fun key(rule: MatchRule): String {
-        val text = rule.text.trim().uppercase().let { t ->
-            if (rule.kind == RuleKind.SERVICE_UUID || rule.kind == RuleKind.SERVICE_DATA) BASE_UUID.matchEntire(t)?.groupValues?.get(1) ?: t else t
-        }
-        return listOf(rule.kind.name, text, rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty()).joinToString("|")
-    }
+    /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */
+    private fun key(rule: MatchRule): String = rule.matchKey()
 
     private val keys: Map<String, Set<String>> = ALL.groupBy({ it.fleetId }, { key(it.rule) }).mapValues { it.value.toSet() }
 

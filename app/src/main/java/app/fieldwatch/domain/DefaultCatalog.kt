@@ -578,8 +578,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             name("Pigvision"),
-            name("PigVision"),
-            name("PIGVISION"),
             glob("Pigvision*"),
         ),
     )
@@ -1124,7 +1122,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("NETGEAR*"),
-                wifiGlob("Netgear*"),
                 wifiGlob("Orbi*"),
                 wifiName("NETGEAR"),
             ),
@@ -1144,7 +1141,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("TP-Link*"),
-                wifiGlob("TP-LINK*"),
                 wifiGlob("TPLink*"),
                 wifiGlob("Deco*"),
                 wifiName("TP-Link"),
@@ -1183,7 +1179,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("Linksys*"),
-                wifiGlob("linksys*"),
                 wifiGlob("Velop*"),
                 wifiName("Linksys"),
             ),
@@ -1203,7 +1198,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("eero*"),
-                wifiGlob("Eero*"),
             ),
             ApVendorOuis.EERO,
         ),
@@ -1239,9 +1233,7 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("HUAWEI*"),
-                wifiGlob("Huawei*"),
                 wifiName("HUAWEI"),
-                wifiName("Huawei"),
             ),
             ApVendorOuis.HUAWEI,
         ),
@@ -1261,7 +1253,6 @@ object DefaultCatalog {
                 wifiGlob("Plume*"),
                 wifiName("Plume"),
                 wifiGlob("SuperPod*"),
-                wifiGlob("Superpod*"),
             ),
             ApVendorOuis.PLUME,
         ),
@@ -1300,7 +1291,6 @@ object DefaultCatalog {
             listOf(
                 wifiGlob("D-Link*"),
                 wifiGlob("DLink*"),
-                wifiGlob("dlink*"),
                 wifiGlob("DIR-*"),
             ),
             ApVendorOuis.DLINK,
@@ -1331,7 +1321,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("Belkin*"),
-                wifiGlob("belkin*"),
                 wifiName("Belkin"),
             ),
             ApVendorOuis.BELKIN,
@@ -1353,7 +1342,6 @@ object DefaultCatalog {
                 wifiGlob("xfinitywifi*"),
                 wifiGlob("XFSETUP*"),
                 wifiGlob("Xfinity*"),
-                wifiGlob("XFINITY*"),
             ),
             ApVendorOuis.COMCAST,
         ),
@@ -1393,17 +1381,13 @@ object DefaultCatalog {
             listOf(
                 wifiName("attwifi"),
                 wifiGlob("ATTWIFI*"),
-                wifiGlob("ATTWifi*"),
                 wifiGlob("ATT-WIFI*"),
-                wifiGlob("ATT-Wifi*"),
                 wifiGlob("ATT???????"),
                 wifiGlob("ATT???????-*"),
                 wifiGlob("ATT???????_*"),
                 wifiGlob("ATT??????? *"),
                 wifiGlob("ATT-GUEST*"),
-                wifiGlob("ATT-Guest*"),
                 wifiGlob("2WIRE*"),
-                wifiGlob("2Wire*"),
             ),
             ApVendorOuis.ATT + ApVendorOuis.TWOWIRE,
         ),
@@ -1442,9 +1426,7 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("STARLINK*"),
-                wifiGlob("Starlink*"),
                 wifiName("STARLINK"),
-                wifiName("Starlink"),
             ),
             ApVendorOuis.SPACEX,
         ),
@@ -1480,7 +1462,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("GL-iNet*"),
-                wifiGlob("GL-Inet*"),
                 wifiGlob("GL-MT*"),
                 wifiGlob("GL-AR*"),
                 wifiGlob("GL-AXT*"),
@@ -1519,7 +1500,6 @@ object DefaultCatalog {
             name("Pebblebee"),
             glob("Pebblebee*"),
             name("moto tag"),
-            name("Moto Tag"),
         ),
     )
 
@@ -1603,7 +1583,6 @@ object DefaultCatalog {
         rules = listOf(
             name("EufyCam"),
             glob("eufy*"),
-            glob("Eufy*"),
         ),
     )
 
@@ -1716,7 +1695,6 @@ object DefaultCatalog {
             mfg(0x07D6),
             bleName("ecobee"),
             bleGlob("ecobee*"),
-            bleGlob("ecoBee*"),
         ),
     )
 
@@ -1786,7 +1764,6 @@ object DefaultCatalog {
             mfg(0x07D0),
             uuid("FD50"),
             bleGlob("TUYA*"),
-            bleGlob("Tuya*"),
         ),
     )
 
@@ -1840,7 +1817,6 @@ object DefaultCatalog {
             uuid("FCF4"),
             bleName("Schlage"),
             bleGlob("Schlage*"),
-            bleGlob("SCHLAGE*"),
         ),
     )
 
@@ -1876,7 +1852,6 @@ object DefaultCatalog {
             mfg(0x0199),
             bleName("SALTO"),
             bleGlob("SALTO*"),
-            bleGlob("Salto*"),
         ),
     )
 
@@ -1912,7 +1887,6 @@ object DefaultCatalog {
         rules = listOf(
             bleName("LOCKLY"),
             bleGlob("LOCKLY*"),
-            bleGlob("Lockly*"),
         ),
     )
 
@@ -1962,7 +1936,6 @@ object DefaultCatalog {
             mfg(0x05BA),
             bleName("igloohome"),
             bleGlob("igloohome*"),
-            bleGlob("Igloohome*"),
         ),
     )
 
@@ -2453,7 +2426,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             name("Hikvision"),
-            name("HIKVISION"),
             glob("Hikvision*"),
         ),
     )
@@ -2470,7 +2442,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             name("Dahua"),
-            name("DAHUA"),
             glob("Dahua*"),
         ),
     )
@@ -2550,7 +2521,6 @@ object DefaultCatalog {
             uuid("f0abaaee-ebfa-f96f-28da-076c35a521db"),
             bleName("goTenna"),
             bleGlob("goTenna*"),
-            bleGlob("gotenna*"),
         ),
     )
 
@@ -2769,7 +2739,6 @@ object DefaultCatalog {
         rules = listOf(
             oui("00:1D:96"),
             name("WatchGuard"),
-            name("Watchguard"),
             glob("WatchGuard*"),
             name("VISTA WiFi"),
             name("VISTA XLT"),
@@ -2830,7 +2799,6 @@ object DefaultCatalog {
         rules = listOf(
             name("Wolfcom"),
             glob("Wolfcom*"),
-            glob("WOLFCOM*"),
         ),
     )
 
@@ -2881,7 +2849,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             glob("AXIS-*"),
-            glob("Axis-*"),
             name("AXIS-"),
             name("Axis Camera"),
         ),
@@ -3565,7 +3532,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("DIRECT-roku*"),
-                wifiGlob("DIRECT-Roku*"),
                 wifiGlob("Roku-*"),
             ),
             ApVendorOuis.ROKU,
@@ -3865,7 +3831,6 @@ object DefaultCatalog {
             listOf(
                 wifiName("AirLink"),
                 wifiGlob("AirLink*"),
-                wifiGlob("AIRLINK*"),
             ),
             ApVendorOuis.AIRLINK,
         ),
@@ -4252,7 +4217,6 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("WAVLINK*"),
-                wifiGlob("Wavlink*"),
             ),
             ApVendorOuis.WINSTARS,
         ),
@@ -4451,7 +4415,6 @@ object DefaultCatalog {
             listOf(
                 wifiGlob("Control4*"),
                 wifiGlob("Wattbox*"),
-                wifiGlob("WattBox*"),
             ),
             ApVendorOuis.SNAPAV,
         ),
