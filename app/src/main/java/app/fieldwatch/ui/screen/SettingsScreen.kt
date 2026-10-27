@@ -24,8 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -64,14 +62,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import app.fieldwatch.R
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -1466,65 +1461,17 @@ private fun SettingsTopicRow(title: String, value: String, onClick: () -> Unit) 
 
 @Composable
 private fun CreditFooter() {
-    val context = LocalContext.current
-    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 14.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             LanguageText.text("ui.copyright.c.2026.off"),
             style = MaterialTheme.typography.labelSmall,
-            color = muted,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SocialChip(
-                icon = R.drawable.ic_instagram,
-                label = LanguageText.text("ui.offgridpete.label"),
-                tint = muted,
-                onClick = { openUrl(context, "https://instagram.com/OffGridPete") },
-            )
-            SocialChip(
-                icon = R.drawable.ic_x,
-                label = LanguageText.text("ui.ogridpete.label"),
-                tint = muted,
-                onClick = { openUrl(context, "https://x.com/OGridPete") },
-            )
-        }
-    }
-}
-
-@Composable
-private fun SocialChip(
-    icon: Int,
-    label: String,
-    tint: Color,
-    onClick: () -> Unit,
-) {
-    Surface(
-        shape = RoundedCornerShape(99.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
-        modifier = Modifier.clickable(onClick = onClick),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = label,
-                tint = tint,
-                modifier = Modifier.size(14.dp),
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(label, style = MaterialTheme.typography.labelMedium, color = tint)
-        }
     }
 }
 
@@ -1839,11 +1786,5 @@ private fun openAppBatteryPage(context: Context, highlightBackground: Boolean) {
     for (intent in attempts) {
         if (intent.resolveActivity(context.packageManager) == null) continue
         if (runCatching { context.startActivity(intent) }.isSuccess) return
-    }
-}
-
-private fun openUrl(context: android.content.Context, url: String) {
-    runCatching {
-        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
     }
 }

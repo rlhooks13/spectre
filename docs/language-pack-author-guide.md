@@ -1,16 +1,16 @@
-# Write a Fieldwatch language file
+# Write a Spectre language file
 
-A language pack is a JSON file. It does not replace the APK, and it is not a fork of Fieldwatch. You host the file. Fieldwatch does not publish it and does not download it.
+A language pack is a JSON file. It does not replace the APK, and it is not a fork of Spectre. You host the file. Spectre does not publish it and does not download it.
 
-Language packs are made by other people. They are not reviewed or certified by Off Grid Pete LLC. The app shows that sentence itself. The sentence is not in the template, and a pack cannot change it.
+Language packs are made by other people. They are not reviewed or certified by the Spectre contributors. The app shows that sentence itself. The sentence is not in the template, and a pack cannot change it.
 
-The available languages that ship inside the APK are a separate draft. They were translated with AI. A line can be wrong. Perfection is not guaranteed. They are already on the phone. Do not tell those users to import the bundled file. If a bundled line is wrong, open a GitHub issue: https://github.com/OffGridPete/Fieldwatch/issues
+The available languages that ship inside the APK are a separate draft. They were translated with AI. A line can be wrong. Perfection is not guaranteed. They are already on the phone. Do not tell those users to import the bundled file. If a bundled line is wrong, open a GitHub issue: https://github.com/rlhooks13/spectre/issues
 
-Off Grid Pete LLC is not adding more languages to this repository. To share a translation, put the file in a repository of your own. People import that file. This guide is for a language that is not in the APK, or for a replacement a person chooses to import.
+This repository is not adding more languages. To share a translation, put the file in a repository of your own. People import that file. This guide is for a language that is not in the APK, or for a replacement a person chooses to import.
 
 ## Start from the English template
 
-On the Fieldwatch version you are translating, open Settings → Language → Export English template. That file is the current English map.
+On the Spectre version you are translating, open Settings → Language → Export English template. That file is the current English map.
 
 Keep the keys. Edit the values. Delete any key you are not translating. Do not invent keys. Do not rename keys. Do not translate by searching the source for English sentences. A sentence that is not in the template cannot be translated.
 
@@ -47,14 +47,14 @@ For a tab or a class chip, pick a shorter word when the full word would pass 18 
 
 ## Words to leave as written
 
-Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Translate the ordinary words around them. Translate Fieldwatch terms such as sit, signature, and Extra attention into plain words.
+Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Translate the ordinary words around them. Translate Spectre terms such as sit, signature, and Extra attention into plain words.
 
-## After a Fieldwatch update
+## After a Spectre update
 
 Import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after `writtenFor` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` as the version of that template.
 
 ## What to tell the person who imports the file
 
-Tell them to import the file from Settings → Language, or from the first-run door when their phone language is not English and not one of the bundled languages. The in-app wording for phone users belongs in the Fieldwatch user manual. This guide does not replace that manual.
+Tell them to import the file from Settings → Language, or from the first-run door when their phone language is not English and not one of the bundled languages. The in-app wording for phone users belongs in the Spectre user manual. This guide does not replace that manual.
 
 A bundled language is already in the APK. Do not tell those users to import it.
