@@ -75,7 +75,7 @@ class CatalogLintTest {
     @Test
     fun generatedPositivesHitNoNewSignatures() {
         val positives = MatchCorpus.positives(fleets)
-        val hits = SignatureEngine().match(positives.map { it.sighting }, fleets)
+        val hits = SignatureEngine().match(positives.map { it.sighting }, fleets, now = app.fieldwatch.testing.Golden.NOW)
         val found = positives.mapNotNull { p ->
             val others = (hits.getValue(p.sighting.key) - p.fleetId).sorted()
             if (others.isEmpty()) null else "${p.id} -> ${others.joinToString(",")}"

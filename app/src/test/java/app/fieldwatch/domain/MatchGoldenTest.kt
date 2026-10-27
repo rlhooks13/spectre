@@ -7,9 +7,12 @@ import org.junit.Test
 
 /**
  * P1-A3: signature matching goldens over the match corpus and the stock catalog. They replace the hit sets
- * CatalogLintTest pinned by hand (P1-A5). A rule change shows up as a reviewable diff: every hand-written case's
- * full hit set with each signature's class and whether it carries an attention note, and every generated
- * positive that also hits another signature.
+ * CatalogLintTest pinned by hand (P1-A5). Each hand-written case shows what it must (or must not) hit, the step
+ * that fixes it if it's wrong today, and its full hit set with each signature's class and attention flag, so a
+ * 1B fix shows the hit and its marker change in one diff.
+ *
+ * Generated positives that also hit other signatures stay in CatalogLintTest's allowlist, which ties each one
+ * to a step or ADR.
  */
 class MatchGoldenTest {
     @get:Rule
@@ -18,35 +21,51 @@ class MatchGoldenTest {
     private val fleets = DefaultCatalog.fleets()
     private val byId = fleets.associateBy { it.id }
 
-    private fun describe(id: String): String {
+    private class Case(val group: String, val label: String, val sighting: Sighting, val expect: String)
+
+    private val cases: List<Case> =
+        MatchCorpus.targets.map {
+            Case("target", it.label, it.sighting, "expect ${it.fleetId}" + (it.knownUntil?.let { s -> ", missed until $s" } ?: ""))
+        } + MatchCorpus.nearMisses.map {
+            Case(
+                "near-miss", it.label, it.sighting,
+                "must not ${it.mustNotMatch.sorted().joinToString(", ")}" +
+                    (if (it.checkFinder) " (nor be a finder)" else "") + (it.knownUntil?.let { s -> ", wrong until $s" } ?: ""),
+            )
+        } + MatchCorpus.randomAddressOuiHits.map {
+            Case("random-oui", it.label, it.sighting, "hits by design until P1-B8 classifies the address")
+        }
+
+    private fun describe(ids: Set<String>): String = ids.sorted().joinToString("; ") { id ->
         val f = byId.getValue(id)
-        return "$id [${f.kind.name}${if (f.attentionNote.isNotBlank()) ", attention" else ""}]"
+        "$id [${f.kind.name}${if (f.attentionNote.isNotBlank()) ", attention" else ""}]"
+    }.ifEmpty { "(none)" }
+
+    private fun render(hits: (Case) -> Set<String>): String = cases.joinToString("\n", postfix = "\n") { c ->
+        "${c.sighting.key}\t${c.group}\t${c.label}\n  ${c.expect}\n  -> ${describe(hits(c))}"
     }
 
+    /** Each case alone, heard long before `now`: the per-device rules. */
     @Test
     fun corpusCases() {
-        val cases = MatchCorpus.targets.map { "target" to (it.label to it.sighting) } +
-            MatchCorpus.nearMisses.map { "near-miss" to (it.label to it.sighting) } +
-            MatchCorpus.randomAddressOuiHits.map { "random-oui" to (it.label to it.sighting) }
-        val hits = SignatureEngine().match(cases.map { it.second.second }, fleets, now = Golden.NOW)
-        val lines = cases.map { (group, case) ->
-            val (label, s) = case
-            val found = hits.getValue(s.key).sorted().joinToString("; ") { describe(it) }.ifEmpty { "(none)" }
-            "${s.key}\t$group\t$label\n  -> $found"
-        }
-        Golden.assertText("match/corpus.txt", lines.joinToString("\n", postfix = "\n"))
+        val hits = SignatureEngine().match(cases.map { it.sighting }, fleets, now = Golden.NOW)
+        Golden.assertText("match/corpus.txt", render { hits.getValue(it.sighting.key) })
     }
 
+    /**
+     * Each case as a live group of three, heard at `now` on consecutive addresses, so cluster signatures
+     * (min peers, OUI clusters, sequential MACs) can fire too. Each group is matched on its own.
+     */
     @Test
-    fun generatedPositivesThatHitOtherSignatures() {
-        val positives = MatchCorpus.positives(fleets)
-        val hits = SignatureEngine().match(positives.map { it.sighting }, fleets, now = Golden.NOW)
-        val lines = positives.mapNotNull { p ->
-            val others = (hits.getValue(p.sighting.key) - p.fleetId).sorted()
-            if (others.isEmpty()) null else "${p.id} -> ${others.joinToString(", ")}"
+    fun corpusCasesInALiveGroup() {
+        val engine = SignatureEngine()
+        val firstHits = cases.associate { c ->
+            val group = (1..3).map { n ->
+                val mac = c.sighting.mac.substring(0, 15) + "%02X".format(n)
+                c.sighting.copy(key = "${c.sighting.key}#$n", mac = mac, lastSeen = Golden.NOW, firstSeen = Golden.NOW - 30_000L)
+            }
+            c.sighting.key to engine.match(group, fleets, now = Golden.NOW).getValue(group.first().key)
         }
-        val missed = positives.count { p -> p.fleetId !in hits.getValue(p.sighting.key) }
-        val header = "${positives.size} generated positives, $missed miss their own signature, ${lines.size} also hit others"
-        Golden.assertText("match/positive-collisions.txt", (listOf(header) + lines).joinToString("\n", postfix = "\n"))
+        Golden.assertText("match/corpus-live-group.txt", render { firstHits.getValue(it.sighting.key) })
     }
 }
