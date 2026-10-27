@@ -1,6 +1,15 @@
 T:airtag	target	AirTag, Offline Finding status 0x10
   expect fleet-airtag
   -> fleet-airtag [FINDER]
+T:airtag-lowbatt	target	AirTag with low battery, status 0xD0
+  expect fleet-airtag
+  -> fleet-airtag [FINDER]
+T:findmy-accessory	target	Find My accessory, status 0x20
+  expect fleet-findmy
+  -> fleet-findmy [FINDER]
+T:findmy-short	target	Offline Finding record too short to read
+  expect fleet-findmy
+  -> fleet-findmy [FINDER]
 T:smarttag	target	SmartTag on FD5A
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
@@ -47,11 +56,11 @@ NM:buds	near-miss	Galaxy Buds advertising Samsung 0x0075
   must not fleet-smarttag (nor be a finder)
   -> (none)
 NM:iphone-of	near-miss	Separated iPhone, Offline Finding only
-  must not fleet-airtag, wrong until P1-B3
-  -> fleet-airtag [FINDER]
+  must not fleet-airtag, fleet-findmy (nor be a finder), still labeled a tracker until P1-B4
+  -> fleet-apple-device [PHONE]
 NM:airpods-of	near-miss	Powered-off AirPods, Offline Finding only
-  must not fleet-airtag, wrong until P1-B3
-  -> fleet-airtag [FINDER]
+  must not fleet-airtag, fleet-findmy (nor be a finder), still labeled a tracker until P1-B4
+  -> fleet-apple-audio [AUDIO]
 NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
   must not fleet-airtag
   -> fleet-apple-device [PHONE]

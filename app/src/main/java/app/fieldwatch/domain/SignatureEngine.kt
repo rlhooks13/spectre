@@ -4,6 +4,9 @@ class SignatureEngine {
     companion object {
         /** 802.11 WPA (Microsoft) and RSN (IEEE) vendor IE OUIs — not a product brand. */
         private val WIFI_PROTOCOL_IE_OUIS = setOf("0050F2", "000FAC")
+
+        /** The bare Offline Finding row, routed by device type (P1-B3). */
+        private const val FIND_MY = "fleet-findmy"
     }
 
     /**
@@ -33,6 +36,7 @@ class SignatureEngine {
             dropProtocolIBeacon(hits, compiled)
             dropDjiWhenSpecificRow(hits)
             dropGoProWhenPolar(hits)
+            routeOfflineFinding(hits, device, compiled)
             dropAirTagsWhenAppleDevice(hits, device)
             dropCiscoWhenMeraki(hits)
             byKey[device.key] = hits
@@ -324,6 +328,29 @@ class SignatureEngine {
         if (appleProduct || TrackerMatch.isAppleContinuity(device)) {
             hits.remove("fleet-airtag")
         }
+    }
+
+    /**
+     * P1-B3. An Offline Finding record (0x004C, `12 19 <status> …`) carries the device type in status bits 4-5, as
+     * AirGuard decodes it: 0 an Apple device (iPhone, Mac), 1 an AirTag, 2 a Find My accessory, 3 AirPods. A
+     * "Find My device" hit moves to the row that type names, when that row is on. A Find My accessory, a record too
+     * short to read, or a type whose row is off stays "Find My device": still a finder, never silently dropped.
+     */
+    private fun routeOfflineFinding(hits: MutableSet<String>, device: Sighting, compiled: Compiled) {
+        if (FIND_MY !in hits) return
+        val status = mfgRecords(device).firstNotNullOfOrNull { rec ->
+            val hex = hexOnly(rec.dataHex)
+            if (rec.companyId == 0x004C && hex.startsWith("1219") && hex.length >= 6) hex.substring(4, 6).toInt(16) else null
+        } ?: return
+        val target = when ((status shr 4) and 0x3) {
+            0 -> "fleet-apple-device"
+            1 -> "fleet-airtag"
+            3 -> "fleet-apple-audio"
+            else -> return
+        }
+        if (compiled.plans.none { it.id == target }) return
+        hits.remove(FIND_MY)
+        hits += target
     }
 
     private fun hasFindMyAccessoryUuid(device: Sighting): Boolean {

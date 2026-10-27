@@ -1215,6 +1215,17 @@ class ConfigStore internal constructor(private val file: File) {
             // (0x067C, the BLE-only name "Tile") are added by patchBuiltIn above, so this step only moves the version.
             version = CATALOG_V99
         }
+        if (version < CATALOG_V100) {
+            // P1-B3: AirTags' bare Offline Finding rule is retired (RetiredRules strips it on load); a new "Find My device"
+            // row takes that record and the engine routes it by its status byte. AirTags' rule labeled these records
+            // until now, so a user who turned AirTags off gets the new row off too.
+            val have = fleets.map { it.id }.toSet()
+            val airTagsOff = fleets.any { it.id == "fleet-airtag" && it.builtIn && !it.enabled }
+            val extras = ADDED_IN_V100.mapNotNull { catalog[it] }.filter { it.id !in have }
+                .map { if (airTagsOff) it.copy(enabled = false) else it }
+            if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
+            version = CATALOG_V100
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1261,7 +1272,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 99
+        const val CATALOG_VERSION = 100
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1358,7 +1369,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V96 = 96
         private const val CATALOG_V97 = 97
         private const val CATALOG_V98 = 98
-        private const val CATALOG_V99 = CATALOG_VERSION
+        private const val CATALOG_V99 = 99
+        private const val CATALOG_V100 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
@@ -1741,6 +1753,9 @@ class ConfigStore internal constructor(private val file: File) {
         )
         private val ADDED_IN_V97 = listOf(
             "fleet-bitchat",
+        )
+        private val ADDED_IN_V100 = listOf(
+            "fleet-findmy",
         )
     }
 }

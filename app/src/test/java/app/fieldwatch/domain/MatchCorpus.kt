@@ -135,6 +135,12 @@ object MatchCorpus {
     /** The real devices behind each confuser's signature. Pinned by hand, so a rule fix can't drop them. */
     val targets: List<Target> = listOf(
         Target("AirTag, Offline Finding status 0x10", sighting("T:airtag", mfg = apple(offlineFinding(0x10))), "fleet-airtag"),
+        // An AirTag's other status bits (battery level in bits 6-7) don't change its type.
+        Target("AirTag with low battery, status 0xD0", sighting("T:airtag-lowbatt", mfg = apple(offlineFinding(0xD0))), "fleet-airtag"),
+        // A third-party Find My accessory (type 0x20) is still a finder, under its own name.
+        Target("Find My accessory, status 0x20", sighting("T:findmy-accessory", mfg = apple(offlineFinding(0x20))), "fleet-findmy"),
+        // A record too short to read the status byte: type unknown, still a finder.
+        Target("Offline Finding record too short to read", sighting("T:findmy-short", mfg = apple("1219")), "fleet-findmy"),
         Target(
             "SmartTag on FD5A",
             sighting("T:smarttag", serviceUuids = listOf("FD5A"), serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
@@ -197,12 +203,14 @@ object MatchCorpus {
         NearMiss(
             "Separated iPhone, Offline Finding only",
             sighting("NM:iphone-of", mfg = apple(offlineFinding(0x00))),
-            setOf("fleet-airtag"), knownUntil = "P1-B3",
+            // Now an Apple device (P1-B3), but TrackerMatch still reads Apple phones as finders (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
         ),
         NearMiss(
             "Powered-off AirPods, Offline Finding only",
             sighting("NM:airpods-of", mfg = apple(offlineFinding(0x30))),
-            setOf("fleet-airtag"), knownUntil = "P1-B3",
+            // Now Apple audio (P1-B3), but TrackerMatch still reads carried Apple devices as finders (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
         ),
         // A phone carried by the user sends Continuity nearby-info next to Offline Finding. The Continuity
         // record is what keeps it off AirTag today (dropAirTagsWhenAppleDevice), so this exercises that filter.

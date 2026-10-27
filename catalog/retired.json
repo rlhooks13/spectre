@@ -53,6 +53,19 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-airtag",
+            "retiredIn": 100,
+            "step": "P1-B3",
+            "reason": "A bare Offline Finding record (0x12) is sent by every Find My device, iPhones and AirPods included. The new Find My device row takes it and routes it by the status byte's device type.",
+            "rule": {
+                "kind": "MANUFACTURER_DATA",
+                "text": "",
+                "companyId": 76,
+                "dataPrefixHex": "12",
+                "radio": null
+            }
         }
     ]
 }

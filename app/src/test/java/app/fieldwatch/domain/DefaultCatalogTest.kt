@@ -652,7 +652,7 @@ class DefaultCatalogTest {
         assertTrue(chipolo.rules.any { it.kind == RuleKind.SERVICE_UUID && it.text.equals("FE33", true) })
         assertFalse(chipolo.rules.any { it.text.equals("FE65", true) || it.text.equals("FE34", true) })
         assertTrue(DeviceExplain.uuidGloss("FE33")!!.contains("Chipolo"))
-        assertEquals(255, stock.size)
+        assertEquals(256, stock.size)
 
         val unnamed = ble(name = "", serviceUuids = listOf("FE33"))
             .copy(key = "BLE:c1", mac = "AA:BB:CC:DD:EE:41")

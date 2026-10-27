@@ -158,11 +158,21 @@ class SignatureExchangeTest {
         val tag = ble(
             name = "",
             manufacturerId = 0x004C,
-            manufacturerDataHex = "12" + "00".repeat(24),
+            // P1-B3: an Offline Finding record whose status byte says AirTag (bits 4-5 = 1).
+            manufacturerDataHex = "121910" + "00".repeat(24),
         )
         val hits = SignatureEngine().match(listOf(tag), stock).getValue(tag.key)
         assertTrue("AirTag OF", "fleet-airtag" in hits)
         assertFalse("not Continuity", "fleet-apple-device" in hits)
+        assertFalse("routed, not left on Find My device", "fleet-findmy" in hits)
+    }
+
+    /** P1-B3: a record too short to read its device type stays a finder, on "Find My device". */
+    @Test
+    fun unreadableOfflineFindingStaysFindMyDevice() {
+        val tag = ble(name = "", manufacturerId = 0x004C, manufacturerDataHex = "12" + "00".repeat(24))
+        val hits = SignatureEngine().match(listOf(tag), stock).getValue(tag.key)
+        assertEquals(setOf("fleet-findmy"), hits)
     }
 
     @Test
