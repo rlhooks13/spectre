@@ -4,6 +4,9 @@ T:airtag	target	AirTag, Offline Finding status 0x10
 T:smarttag	target	SmartTag on FD5A
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:smarttag-svcdata	target	SmartTag with FD5A in service data only
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
 T:tile-feed	target	Tile on FEED
   expect fleet-tile
   -> fleet-tile [FINDER]

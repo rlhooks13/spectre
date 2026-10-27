@@ -52,7 +52,7 @@ object SitFixture {
             target("T:flock").at(FLOCK, -4, -55, 0.0012, 0.0021, 40, channel = 6, vendor = "Flock Safety"),
             target("T:airtag").at(AIRTAG, -3, -67, 0.0013, 0.0022, 25),
             target("T:smarttag").at(SMARTTAG, -2, -72, 0.0014, 0.0023, 18),
-            // Wrongly matched "Samsung SmartTags" today (a severity-1 false label); P1-B1 clears it as a golden diff.
+            // A Galaxy phone: matched nothing since P1-B1 (until then, wrongly "Samsung SmartTags").
             nearMiss("NM:galaxy").at(GALAXY, -1, -80, 0.0015, 0.0024, 9),
             // Matches nothing and has no fix: empty signature cells, null lat/lon, and left out of map exports.
             // A non-ASCII name checks UTF-8 through every format.

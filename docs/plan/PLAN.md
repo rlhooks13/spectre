@@ -279,6 +279,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
   - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*, and every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015). Each becomes a longer name, or a prefix glob whose literal is 5+ characters or ends in a separator, or an ADR-0015 entry with a reason.
   - **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
+    - P1-B1 landed the core: `RetiredRules` (kept equal to `catalog/retired.json` by a test) strips retired rules on every config load, in `merge` and in `overlayStock`. B6 is left with the shared `ruleKey` (the three copies, two of which count `enabled`).
   - **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
   - **P1-B10 Bare vendor ids** (from P1-A5, ADR-0015).
     - **Rows:**
@@ -334,7 +335,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **P1-D7 Debrief text defects** (found by the P1-A3 Debrief goldens, which pin them; each fix re-blesses them):
   - A Transit leg's "along track" distance is longer than the whole path's (9.94 km against 7.99 km on the drive golden).
   - The header's `Classification` label runs into its value (`ClassificationOperationally sensitive`).
-  - A finder that isn't Apple's still gets "Find My / iPhone addresses rotate". P1-B1 took the Galaxy out of the finders, so no golden shows it now; a real SmartTag or Tile with you still gets it.
+  - A finder that isn't Apple's still gets "Find My / iPhone addresses rotate" (the SmartTag in `debrief/5-galaxy-phone-in-pocket.txt`).
   - The ATAK package stamps a drone's pilot event with the radio's last hear, not the pilot fix's own time (`payloadOpAt`); pinned in `atak/sit-package.txt`.
   - An observer note's newline splits a one-line "Working data" row in the sit AI prompt (`prompt/sit*.md`); single-line rows should flatten newlines.
 

@@ -27,6 +27,17 @@ class RetiredRulesFileTest {
         val entries = root.getValue("rules").jsonArray
         assertTrue(entries.isNotEmpty())
         val stock = DefaultCatalog.fleets().associateBy { it.id }
+        // The app's copy (RetiredRules) lists exactly these.
+        assertEquals(
+            RetiredRules.ALL.map { Triple(it.fleetId, SignatureExchange.ruleKey(it.rule), it.retiredIn) }.toSet(),
+            entries.map { it.jsonObject }.map { e ->
+                Triple(
+                    e.getValue("fleetId").jsonPrimitive.content,
+                    SignatureExchange.ruleKey(json.decodeFromJsonElement(MatchRule.serializer(), e.getValue("rule"))),
+                    e.getValue("retiredIn").jsonPrimitive.int,
+                )
+            }.toSet(),
+        )
         for (entry in entries.map { it.jsonObject }) {
             val fleetId = entry.getValue("fleetId").jsonPrimitive.content
             val retiredIn = entry.getValue("retiredIn").jsonPrimitive.int

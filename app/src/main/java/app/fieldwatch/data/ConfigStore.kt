@@ -13,6 +13,7 @@ import app.fieldwatch.domain.FilterState
 import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.MatchRule
 import app.fieldwatch.domain.PersistedConfig
+import app.fieldwatch.domain.RetiredRules
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureCandidates
 import app.fieldwatch.domain.SignatureClass
@@ -185,9 +186,11 @@ class ConfigStore internal constructor(private val file: File) {
 
     private fun patchBuiltIn(cfg: PersistedConfig): PersistedConfig {
         val catalog = DefaultCatalog.fleets().associateBy { it.id }
-        val next = cfg.fleets.map { fleet ->
+        val next = cfg.fleets.map { loaded ->
+            if (!loaded.builtIn) return@map loaded
+            // Retired rules go on every load, whatever version the file says (an overlay or import can bring one back).
+            val fleet = RetiredRules.strip(loaded)
             val stock = catalog[fleet.id] ?: return@map fleet
-            if (!fleet.builtIn) return@map fleet
             val have = fleet.rules.map { ruleKey(it) }.toSet()
             val missing = stock.rules.filter { ruleKey(it) !in have }
             val renamed = when {
@@ -1196,18 +1199,11 @@ class ConfigStore internal constructor(private val file: File) {
                 if (!fleet.builtIn) return@map fleet
                 val stock = catalog[fleet.id] ?: return@map fleet
                 when (fleet.id) {
-                    "fleet-smarttag" -> fleet.copy(
-                        rules = fleet.rules.filterNot {
-                            it.kind == RuleKind.MANUFACTURER_ID && it.companyId == 0x0075 && it.dataPrefixHex.isEmpty()
-                        },
-                    )
-                    in RENAMED_NOTES_V98 -> fleet.copy(
-                        notes = if (fleet.notes == stock.notes.replace("Spectre", "Fieldwatch")) stock.notes else fleet.notes,
-                        attentionNote = if (fleet.attentionNote == stock.attentionNote.replace("Spectre", "Fieldwatch")) {
-                            stock.attentionNote
-                        } else {
-                            fleet.attentionNote
-                        },
+                    // Already stripped on load (RetiredRules); kept here so the step reads as the change it is.
+                    "fleet-smarttag" -> RetiredRules.strip(fleet)
+                    in V97_NOTES -> fleet.copy(
+                        notes = if (fleet.notes == V97_NOTES.getValue(fleet.id)) stock.notes else fleet.notes,
+                        attentionNote = if (fleet.attentionNote == V97_ATTENTION[fleet.id]) stock.attentionNote else fleet.attentionNote,
                     )
                     else -> fleet
                 }
@@ -1358,8 +1354,20 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V97 = 97
         private const val CATALOG_V98 = CATALOG_VERSION
 
-        /** Fleets whose stock notes named Fieldwatch until v98 (P1-B1). */
-        private val RENAMED_NOTES_V98 = setOf("fleet-sony", "fleet-gotenna", "fleet-bluetoad", "fleet-hobby-ble", "fleet-cisco")
+        /**
+         * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
+         * equal to it is replaced; anything else is the user's and stays. Fixed text, so a later rewording can't move it.
+         */
+        private val V97_NOTES = mapOf(
+            "fleet-sony" to "Sony headphones, TV, or camera. Bravia TVs also send a generic iBeacon for Cast — Fieldwatch keeps Sony.",
+            "fleet-gotenna" to "goTenna Mesh or Pro companion radio. Pairs over BLE; the mesh itself is UHF and Fieldwatch cannot hear it. Pro is sold to agencies. Pattern match, not that operator.",
+            "fleet-bluetoad" to "Iteris roadside Bluetooth travel-time reader (Vantage Velocity, now BlueTOAD Spectra / Spectra CV). Samples phones, headsets, and in-car Bluetooth as vehicles pass; matching the same ID at two points gives speed. About 100 m. A sample, not a full count. Quiet or Ethernet-only cabinets may not advertise. Spectra CV also uses 5.9 GHz C-V2X, which Fieldwatch cannot hear. IEEE Iteris OUI can also hit other Iteris roadside kit. Pattern match, not that cabinet.",
+            "fleet-hobby-ble" to "Cheap hobby UART module advertised under a default name (HM-10, JDY, CC41, ESP32 BLE). Common on printers, cars, and DIY. Fieldwatch does not see Classic HC-05/HC-06.",
+            "fleet-cisco" to "Cisco Aironet / Catalyst / Business access point. Fieldwatch sees AP beacons, not phones or switches. Meraki has its own row.",
+        )
+        private val V97_ATTENTION = mapOf(
+            "fleet-hobby-ble" to "These default BLE serial names are cheap hobby modules. Some pump/ATM overlays have used boards like this so someone nearby can pull data over Bluetooth. The same modules show up on printers, cars, and DIY. If this radio is loud next to a card reader, treat it with caution and look with your eyes. Not proof of a skimmer. A miss is not a clean bill (name changed, Classic HC-05/HC-06, or cellular). Fieldwatch does not connect and does not try default PINs. Fieldwatch does not see Classic HC-05/HC-06.",
+        )
         private val GENERIC_GATT_UUIDS = setOf("180A", "180D", "180F")
         private val POLICY_FLEET_IDS = setOf(
             "fleet-flock-cameras",

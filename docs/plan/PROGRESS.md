@@ -70,7 +70,18 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - `catalog/retired.json` (P1-B6 wires it up), with `RetiredRulesFileTest`;
     - the dist pack regenerated;
     - the stock count is unchanged (255 fleets).
-  - **Tests:** `CatalogV98LadderTest` upgrades the real 1.1.32 config. The corpus markers, the lint exception and BrandGuard's temporary allowance are gone.
+  - **Retired rules can't come back:** `RetiredRules`, kept equal to `catalog/retired.json` by a test, strips retired rules:
+    - on every config load, whatever version the file says;
+    - in signature `merge`;
+    - in `overlayStock`.
+    - **Why:** the independent review found that a v97 install overlaid with the v98 pack, or an old pack imported, would keep the Samsung rule. This was BLOCKING, and it is fixed here instead of waiting for B6.
+    - The v98 note step compares against the exact v97 wording (`V97_NOTES`).
+  - **Tests:**
+    - `CatalogV98LadderTest` upgrades the real 1.1.32 config and covers the overlay, import and stale-v98 paths.
+    - A new corpus target is a SmartTag with FD5A in service data only.
+    - Frozen snapshots have pinned hashes.
+    - Debrief golden 5 now has a real SmartTag in the pocket beside the Galaxy.
+    - The corpus markers, the lint exception and BrandGuard's temporary allowance are gone.
   - **Goldens re-blessed:** the Galaxy loses "Samsung SmartTags" and its tracker warning everywhere.
   - **New build switch:** `-PwriteStockCatalog`, since env-var prefixes are denied to the agent.
 - 2026-10-27: **P1-A3 done: real 1.1.32 files, decoded by today's code.**

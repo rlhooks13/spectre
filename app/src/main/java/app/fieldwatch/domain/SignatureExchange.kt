@@ -135,9 +135,12 @@ object SignatureExchange {
         var renamed = 0
 
         for (raw in incoming) {
-            val fleet = raw.copy(
-                id = raw.id.ifBlank { UUID.randomUUID().toString() },
-                kind = raw.kind.folded(),
+            // A pack from before a rule was retired doesn't bring it back.
+            val fleet = RetiredRules.strip(
+                raw.copy(
+                    id = raw.id.ifBlank { UUID.randomUUID().toString() },
+                    kind = raw.kind.folded(),
+                ),
             )
             if (fleet.rules.isEmpty()) {
                 skipped++
@@ -227,6 +230,7 @@ object SignatureExchange {
      */
     fun overlayStock(existing: List<Fleet>, incoming: List<Fleet>): Pair<List<Fleet>, StockCatalogUpdateResult> {
         val stockIn = incoming.filter { it.builtIn || it.id.startsWith("fleet-") }
+            .map { RetiredRules.strip(it) }
             .filter { it.rules.isNotEmpty() }
             .map { it.copy(kind = it.kind.folded(), builtIn = true) }
         if (stockIn.isEmpty()) {
@@ -247,7 +251,8 @@ object SignatureExchange {
             val local = next[index]
             if (!local.builtIn) continue
             val stockKeys = stock.rules.map { ruleKey(it) }.toSet()
-            val extras = local.rules.filter { ruleKey(it) !in stockKeys }
+            // A retired stock rule isn't a user extra: it goes, not carried over.
+            val extras = local.rules.filter { ruleKey(it) !in stockKeys && !RetiredRules.isRetired(local.id, it) }
             val overlaid = stock.copy(
                 enabled = local.enabled,
                 rules = stock.rules + extras,

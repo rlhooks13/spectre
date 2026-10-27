@@ -135,6 +135,14 @@ object MatchCorpus {
             sighting("T:smarttag", serviceUuids = listOf("FD5A"), serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
             "fleet-smarttag",
         ),
+        // Since P1-B1, FD5A is SmartTag's only non-name signal, so pin the form where it comes as service data alone
+        // (no service-UUID list). A tag still in setup (Easy Setup on 0x0075 only, not yet registered) can't track
+        // anyone and is no longer labeled.
+        Target(
+            "SmartTag with FD5A in service data only",
+            sighting("T:smarttag-svcdata", serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
+            "fleet-smarttag",
+        ),
         Target("Tile on FEED", sighting("T:tile-feed", serviceUuids = listOf("FEED")), "fleet-tile"),
         Target(
             "Tile on its own company id 0x067C",

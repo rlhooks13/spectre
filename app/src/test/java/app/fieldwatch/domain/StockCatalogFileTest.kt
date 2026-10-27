@@ -76,17 +76,18 @@ class StockCatalogFileTest {
         })
     }
 
-    private fun writing(): Boolean =
-        System.getenv("WRITE_STOCK_CATALOG") == "1" || System.getProperty("spectre.writeStockCatalog") == "true"
+    /** Set by the build for testDebugUnitTest only (`WRITE_STOCK_CATALOG=1` or `-PwriteStockCatalog`), so variants can't race. */
+    private fun writing(): Boolean = System.getProperty("spectre.writeStockCatalog") == "true"
 
     /**
-     * One stock snapshot per catalog version (`catalog/snapshots/v<N>.json`, PLAN key decisions), for the importer's
-     * three-way diff and the release notes. The current version's is today's stock catalog, byte for byte; it's
-     * written with the dist pack. Older ones stay as they were committed.
+     * One stock snapshot per catalog version from v97, the first (`catalog/snapshots/v<N>.json`, PLAN key decisions),
+     * for the importer's three-way diff and the release notes. The current version's is today's stock catalog, byte
+     * for byte; it's written with the dist pack. Older ones are frozen: [FROZEN] pins their hashes, and a catalog bump
+     * adds the outgoing version's hash there.
      */
     @Test
     fun snapshotForEveryVersionAndCurrentMatchesStock() {
-        val dir = repoRoot().resolve("catalog/snapshots")
+        val dir = app.fieldwatch.testing.TestFiles.repoFile("../catalog/snapshots")
         val current = File(dir, "v${ConfigStore.CATALOG_VERSION}.json")
         val encoded = SignatureExchange.encode(
             SignatureExchange.pack(DefaultCatalog.fleets(), ConfigStore.CATALOG_VERSION, appVersion = "stock", exportedAt = ""),
@@ -97,17 +98,26 @@ class StockCatalogFileTest {
         }
         assertTrue("Missing ${current.path}. Run tests with WRITE_STOCK_CATALOG=1.", current.isFile)
         assertEquals("The v${ConfigStore.CATALOG_VERSION} snapshot isn't today's stock catalog", encoded, current.readText())
-        val files = dir.listFiles().orEmpty().filter { it.name.endsWith(".json") }
-        for (file in files) {
-            val n = Regex("""^v(\d+)\.json$""").matchEntire(file.name)?.groupValues?.get(1)?.toInt()
-            assertTrue("Snapshot names are v<N>.json: ${file.name}", n != null)
+        for (n in FIRST_SNAPSHOT..ConfigStore.CATALOG_VERSION) {
+            val file = File(dir, "v$n.json")
+            assertTrue("Missing snapshot ${file.name}", file.isFile)
             assertEquals(file.name, n, SignatureExchange.parse(file.readText()).catalogVersion)
         }
+        val extra = dir.listFiles().orEmpty().map { it.name } - (FIRST_SNAPSHOT..ConfigStore.CATALOG_VERSION).map { "v$it.json" }.toSet()
+        assertEquals("Unexpected files in catalog/snapshots", emptyList<String>(), extra.sorted())
+        for ((n, sha) in FROZEN) {
+            val bytes = File(dir, "v$n.json").readBytes()
+            val actual = java.security.MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
+            assertEquals("Snapshot v$n changed; snapshots are frozen once their version ships", sha, actual)
+        }
+        assertEquals("Every version below the current one is frozen", (FIRST_SNAPSHOT until ConfigStore.CATALOG_VERSION).toSet(), FROZEN.keys)
     }
 
-    private fun repoRoot(): File {
-        val cwd = File(System.getProperty("user.dir")!!)
-        return listOf(cwd, cwd.parentFile).first { File(it, "settings.gradle.kts").isFile }
+    private companion object {
+        const val FIRST_SNAPSHOT = 97
+        val FROZEN = mapOf(
+            97 to "dd932a77b805e9e04cfac29c1120544fed5e4ae7e4443280c432a0db90a78ac3",
+        )
     }
 
     private fun distPackFile(): File {
