@@ -76,6 +76,12 @@ object RetiredRules {
 
     private val keys: Map<String, Set<String>> = ALL.groupBy({ it.fleetId }, { key(it.rule) }).mapValues { it.value.toSet() }
 
+    /** The catalog version that retired [rule] on [fleetId], or null when it isn't retired. */
+    fun retiredIn(fleetId: String, rule: MatchRule): Int? {
+        val k = key(rule)
+        return ALL.firstOrNull { it.fleetId == fleetId && key(it.rule) == k }?.retiredIn
+    }
+
     fun isRetired(fleetId: String, rule: MatchRule): Boolean = keys[fleetId]?.contains(key(rule)) == true
 
     /** [fleet] without its retired rules (the same instance when it has none). */

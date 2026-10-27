@@ -62,7 +62,10 @@
 - Near miss: Home alarm named Vigilant: was Motorola Vigilant (surveillance, extra attention), now no signature.
 - Near miss: Phone hotspot named Ibrahim: was Apple Device (phone), Cradlepoint (law enforcement, extra attention), now Apple Device (phone).
 - Near miss: Car stereo named Audio: was Audi MMI (vehicle), now no signature.
-- Near miss: Guest network named Stanford: was Ford (vehicle), now no signature.
+- Near miss: BLE speaker named Bradford: was Ford (vehicle), now no signature.
+- Near miss: Speaker named Echoes: was Amazon (home), now no signature.
+- Near miss: Phone named for a Sonya: was Sony (audio), now no signature.
+- Near miss: TV wall mount with vw in its name: was Volkswagen (vehicle), now no signature.
 - Near miss: Scanner named Logistics: was Logitech (home), now no signature.
 - Near miss: Speaker named Entourage: was Oura (wearable), now no signature.
 - Near miss: Hotspot named Veeroo: was Eero (isp), now no signature.

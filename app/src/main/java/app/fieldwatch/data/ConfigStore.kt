@@ -13,6 +13,7 @@ import app.fieldwatch.domain.FilterState
 import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.MatchRule
 import app.fieldwatch.domain.PersistedConfig
+import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RetiredRules
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureCandidates
@@ -1244,20 +1245,20 @@ class ConfigStore internal constructor(private val file: File) {
             // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load), and patchBuiltIn above
             // appends their replacements switched on (ADDED_RULES_V101). A user who had switched the old rule off,
             // or had SSID keywords off (the v4 policy), gets the replacements off too.
-            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V101)
+            fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V101, ADDED_RULES_V101)
             version = CATALOG_V101
         }
         if (version < CATALOG_V102) {
             // P1-B5b: 18 short "contains" names are retired (RetiredRules strips them on load). Each row keeps the
             // anchored glob of the same brand and radio it already had; HP and MyQ also gain a glob (ADDED_RULES_V102)
             // that patchBuiltIn appends switched on, and that carries an "off" from the retired name.
-            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V102)
+            fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V102, ADDED_RULES_V102)
             version = CATALOG_V102
         }
         if (version < CATALOG_V103) {
             // P1-B5: the last short "contains" names are retired (RetiredRules strips them on load); patchBuiltIn appends
             // the brand-as-a-word globs that replace them, which carry an "off" from the retired name.
-            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V103)
+            fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V103, ADDED_RULES_V103)
             version = CATALOG_V103
         }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
@@ -1291,13 +1292,16 @@ class ConfigStore internal constructor(private val file: File) {
      * as loaded, before RetiredRules stripped it) had a retired rule switched off: the user's "off" on the rule a
      * catalog step replaced carries to its replacements.
      */
-    private fun carryRetiredOff(fleets: List<Fleet>, before: List<Fleet>, added: Map<String, Set<String>>): List<Fleet> =
+    private fun carryRetiredOff(fleets: List<Fleet>, before: List<Fleet>, version: Int, added: Map<String, List<MatchRule>>): List<Fleet> =
         fleets.map { fleet ->
-            val names = added[fleet.id]
-            if (names == null || !fleet.builtIn) return@map fleet
+            val rules = added[fleet.id]
+            if (rules == null || !fleet.builtIn) return@map fleet
             val old = before.firstOrNull { it.id == fleet.id } ?: return@map fleet
-            if (old.rules.none { RetiredRules.isRetired(fleet.id, it) && !it.enabled }) return@map fleet
-            fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in names) r.copy(enabled = false) else r })
+            // Only a rule this version retired: an older one switched off ("Yale", v102) says nothing about "Seos" (v103).
+            if (old.rules.none { !it.enabled && RetiredRules.retiredIn(fleet.id, it) == version }) return@map fleet
+            // By kind, text and radio: BMW's Wi-Fi "BMW_*" isn't the BLE "BMW_*" v103 added.
+            val keys = rules.map { ruleKey(it) }.toSet()
+            fleet.copy(rules = fleet.rules.map { r -> if (ruleKey(r) in keys) r.copy(enabled = false) else r })
         }
 
     private fun ruleKey(rule: MatchRule): String =
@@ -1810,28 +1814,42 @@ class ConfigStore internal constructor(private val file: File) {
         )
         private const val AIRTAGS = "fleet-airtag"
 
+        private fun globs(radio: RadioKind?, vararg texts: String): List<MatchRule> =
+            texts.map { MatchRule(RuleKind.NAME_GLOB, text = it, radio = radio) }
+
         /** The name globs v101 added in place of each retired name rule (P1-B5a), by fleet. */
         private val ADDED_RULES_V101 = mapOf(
-            "fleet-raven" to setOf("RAVEN", "RAVEN-*", "RAVEN_*", "DIRECT-??-Raven-*"),
-            "fleet-vigilant" to setOf("Vigilant", "Vigilant-*", "Vigilant_*"),
-            "fleet-cradlepoint" to setOf("IBR350*", "IBR1150*"),
+            "fleet-raven" to globs(null, "RAVEN", "RAVEN-*", "RAVEN_*") + globs(RadioKind.WIFI, "DIRECT-??-Raven-*"),
+            "fleet-vigilant" to globs(null, "Vigilant", "Vigilant-*", "Vigilant_*"),
+            "fleet-cradlepoint" to globs(RadioKind.WIFI, "IBR350*", "IBR1150*"),
         )
 
         /** The name globs v102 added beside the anchored globs that replace a retired short name (P1-B5b). */
         private val ADDED_RULES_V102 = mapOf(
-            "fleet-hp" to setOf("HP ENVY*"),
-            "fleet-myq" to setOf("MyQ"),
+            "fleet-hp" to globs(RadioKind.BLE, "HP ENVY*"),
+            "fleet-myq" to globs(RadioKind.BLE, "MyQ"),
         )
 
-        /** The brand-as-a-word globs v103 added in place of each retired short name (P1-B5). */
-        private val ADDED_RULES_V103: Map<String, Set<String>> = mapOf(
-            "fleet-amazon" to "Echo", "fleet-audi-mmi" to "Audi", "fleet-bmw" to "BMW", "fleet-bose" to "Bose",
-            "fleet-byd" to "BYD", "fleet-ford" to "Ford", "fleet-hobby-ble" to "BT05", "fleet-jbl" to "JBL",
-            "fleet-logitech" to "Logi", "fleet-microsoft" to "Xbox", "fleet-oura" to "Oura", "fleet-seos" to "Seos",
-            "fleet-sony" to "Sony", "fleet-volkswagen" to "VW",
-        ).mapValues { (id, brand) ->
-            DefaultCatalog.bleWordStart(brand).map { it.text }.toSet() + if (id == "fleet-bose") setOf("LE-Bose*") else emptySet()
-        }
+        /**
+         * The brand-as-a-word globs v103 added in place of each retired short name (P1-B5), all BLE. Written out, not
+         * built from DefaultCatalog.bleWordStart, so a later change to that helper can't rewrite what v103 added.
+         */
+        private val ADDED_RULES_V103 = mapOf(
+            "fleet-amazon" to globs(RadioKind.BLE, "Echo", "Echo *", "Echo-*", "Echo_*"),
+            "fleet-audi-mmi" to globs(RadioKind.BLE, "Audi", "Audi *", "Audi-*", "Audi_*"),
+            "fleet-bmw" to globs(RadioKind.BLE, "BMW", "BMW *", "BMW-*", "BMW_*"),
+            "fleet-bose" to globs(RadioKind.BLE, "Bose", "Bose *", "Bose-*", "Bose_*", "LE-Bose*"),
+            "fleet-byd" to globs(RadioKind.BLE, "BYD", "BYD *", "BYD-*", "BYD_*"),
+            "fleet-ford" to globs(RadioKind.BLE, "Ford", "Ford *", "Ford-*", "Ford_*"),
+            "fleet-hobby-ble" to globs(RadioKind.BLE, "BT05", "BT05 *", "BT05-*", "BT05_*"),
+            "fleet-jbl" to globs(RadioKind.BLE, "JBL", "JBL *", "JBL-*", "JBL_*"),
+            "fleet-logitech" to globs(RadioKind.BLE, "Logi", "Logi *", "Logi-*", "Logi_*"),
+            "fleet-microsoft" to globs(RadioKind.BLE, "Xbox", "Xbox *", "Xbox-*", "Xbox_*"),
+            "fleet-oura" to globs(RadioKind.BLE, "Oura", "Oura *", "Oura-*", "Oura_*"),
+            "fleet-seos" to globs(RadioKind.BLE, "Seos", "Seos *", "Seos-*", "Seos_*"),
+            "fleet-sony" to globs(RadioKind.BLE, "Sony", "Sony *", "Sony-*", "Sony_*"),
+            "fleet-volkswagen" to globs(RadioKind.BLE, "VW", "VW *", "VW-*", "VW_*"),
+        )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */
         private const val V99_AIRTAG_NOTES = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be " +

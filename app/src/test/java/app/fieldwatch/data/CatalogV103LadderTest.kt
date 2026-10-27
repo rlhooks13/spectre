@@ -3,6 +3,7 @@ package app.fieldwatch.data
 import app.fieldwatch.domain.DefaultCatalog
 import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.NetworkPolicy
+import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RetiredRules
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureExchange
@@ -59,7 +60,8 @@ class CatalogV103LadderTest {
         for (id in retired.map { it.fleetId }.toSet()) {
             val upgraded = cfg.fleets.single { it.id == id }
             if (!upgraded.builtIn) continue
-            assertEquals(id, stock.getValue(id).rules.map { SignatureExchange.ruleKey(it) }.toSet(), upgraded.rules.map { SignatureExchange.ruleKey(it) }.toSet())
+            // In order: the lint's collision keys use rule indices.
+            assertEquals(id, stock.getValue(id).rules.map { SignatureExchange.ruleKey(it) }, upgraded.rules.map { SignatureExchange.ruleKey(it) })
         }
     }
 
@@ -81,6 +83,41 @@ class CatalogV103LadderTest {
         assertEquals(4, ford.size)
         assertTrue(ford.none { it.enabled })
         assertTrue(loaded.single { it.id == "fleet-jbl" }.rules.filter { it.kind == RuleKind.NAME_GLOB }.all { it.enabled })
+    }
+
+    /** Only a rule v103 retired carries its "off": Seos's "Yale" (retired in v102) switched off leaves the Seos globs on. */
+    @Test
+    fun anOlderRetiredRuleOffDoesNotTurnTheV103GlobsOff() {
+        val old = ConfigUpgrade.fieldwatch1132().let { c ->
+            c.copy(
+                version = 101,
+                fleets = c.fleets.map { fleet ->
+                    if (fleet.id != "fleet-seos") return@map fleet
+                    val yale = RetiredRules.ALL.single { it.fleetId == "fleet-seos" && it.retiredIn == 102 }.rule.copy(enabled = false)
+                    fleet.copy(rules = fleet.rules.filterNot { RetiredRules.isRetired(fleet.id, it) } + yale)
+                },
+            )
+        }
+        val seos = ConfigUpgrade.load(old).fleets.single { it.id == "fleet-seos" }.rules
+        assertTrue(seos.filter { it.kind == RuleKind.NAME_GLOB && it.text.startsWith("Seos") }.all { it.enabled })
+    }
+
+    /** The carry is by kind, text and radio: BMW's Wi-Fi "BMW_*" hotspot rule isn't the BLE "BMW_*" v103 added. */
+    @Test
+    fun anOffBleNameLeavesTheWifiGlobOfTheSameTextOn() {
+        val old = ConfigUpgrade.fieldwatch1132().let { c ->
+            c.copy(
+                version = 102,
+                fleets = c.fleets.map { fleet ->
+                    if (fleet.id != "fleet-bmw") return@map fleet
+                    val stale = retired.single { it.fleetId == "fleet-bmw" }.rule.copy(enabled = false)
+                    fleet.copy(rules = fleet.rules.filterNot { RetiredRules.isRetired(fleet.id, it) } + stale)
+                },
+            )
+        }
+        val bmw = ConfigUpgrade.load(old).fleets.single { it.id == "fleet-bmw" }.rules
+        assertTrue(bmw.single { it.text == "BMW_*" && it.radio == RadioKind.WIFI }.enabled)
+        assertFalse(bmw.single { it.text == "BMW_*" && it.radio == RadioKind.BLE }.enabled)
     }
 
     @Test

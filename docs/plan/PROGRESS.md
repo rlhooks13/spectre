@@ -82,6 +82,14 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **Lint:**
     - `SHORT_NAME` is down to iPad (ADR-0015).
     - The UniFi AP collision keys shift down one with the row's rules. The lint list and ADR-0015's Accepted list both moved.
+  - **Review fixes:**
+    - `carryRetiredOff` matches by kind, text and radio, so BMW's Wi-Fi `BMW_*` stays on.
+    - It only follows rules retired in that same version (`RetiredRules.retiredIn`), so Seos's v102 "Yale" off doesn't switch off the v103 Seos globs.
+    - The v101, v102 and v103 maps are frozen literal rules, not built from `bleWordStart`.
+    - Upgraded rows are compared in order.
+    - New near misses for Echoes, Sonya and TVWALL; a "BT05-A" target.
+    - PLAN P1-B5d notes the no-separator and "LE-" forms that need captures.
+  - **Process:** CLAUDE.md says to end every commit message with `Agent: spectre-loop`, but my commits have put the Co-Authored-By line after it. From this commit on, `Agent: spectre-loop` is the last line.
 - 2026-10-27: **P1-B5b Redundant short names (catalog v102).** #61 (P1-B5a) merged as e9666a7.
   - **Triage:** of the 34 short "contains" names the lint lists, 18 sit on a row that already has an anchored glob of the same brand on the same radio (`Arlo*`, `DJI*`, `Net2*`, ...).
   - **The fix:**

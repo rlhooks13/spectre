@@ -85,6 +85,9 @@ T:xbox	target	Xbox controller
 T:bt05	target	Hobby BLE module by its default name
   expect fleet-hobby-ble
   -> fleet-hobby-ble [HACKING, attention]
+T:bt05-a	target	Hobby BLE module with a suffix
+  expect fleet-hobby-ble
+  -> fleet-hobby-ble [HACKING, attention]
 T:cradlepoint-1150	target	Cradlepoint IBR1150 router
   expect fleet-cradlepoint
   -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
@@ -136,8 +139,17 @@ NM:ibr	near-miss	Phone hotspot named Ibrahim
 NM:car-audio	near-miss	Car stereo named Audio
   must not fleet-audi-mmi
   -> (none)
-NM:stanford	near-miss	Guest network named Stanford
+NM:stanford	near-miss	BLE speaker named Bradford
   must not fleet-ford
+  -> (none)
+NM:echoes	near-miss	Speaker named Echoes
+  must not fleet-amazon
+  -> (none)
+NM:sonya	near-miss	Phone named for a Sonya
+  must not fleet-sony
+  -> (none)
+NM:tvwall	near-miss	TV wall mount with vw in its name
+  must not fleet-volkswagen
   -> (none)
 NM:logistics	near-miss	Scanner named Logistics
   must not fleet-logitech

@@ -881,8 +881,9 @@ object DefaultCatalog {
             mfg(0x009E),
             uuid("FE21"),
             uuid("FEBE"),
+        ) + bleWordStart("Bose") +
             // Bose earbuds advertise "LE-Bose …" (P1-B5).
-        ) + bleWordStart("Bose") + bleGlob("LE-Bose*"),
+            bleGlob("LE-Bose*"),
     )
 
     private fun garmin() = Fleet(
