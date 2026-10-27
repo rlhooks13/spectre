@@ -1,58 +1,52 @@
-FIELDWATCH — install for a test phone
+SPECTRE — install for a test phone
 ==================================
 Receive-only Wi-Fi access-point and Bluetooth LE watcher for Android.
-Package: app.fieldwatch
-Needs Android 10 or newer (API 29+). Tested on a Galaxy A54; meant for most Android 10+ phones.
+Spectre is an independent fork of Fieldwatch 1.1.32. It is not made,
+reviewed or endorsed by Off Grid Pete LLC.
+Needs Android 10 or newer (API 29+).
 
-This card
----------
-  Fieldwatch.apk                 the app (sideload build)
-  Fieldwatch_User_Manual.pdf     user manual v1.1.32 (screenshots: Privacy mode on; Live display shots BLE only)
-  instruction.txt             this file
+Where to get it
+---------------
+  The APK and the user manual are assets on each GitHub release:
+  https://github.com/rlhooks13/spectre/releases
+  Each release lists the APK's SHA-256 and the signing certificate's SHA-256.
+  Check both before you install.
 
-SHA-256 of Fieldwatch.apk:
-  a3bd60941d4e4ba5c1f280f42d36fc94fa2ed18144fa6edac9ea7a88c5e5bf50
-
-Signing certificate SHA-256 (Off Grid Pete LLC):
-  72f0da99823cdcb7a72b075a148a59cc3f01839734270f1ea59d597bd6732609
-
-Fieldwatch is experimental software. Use at your own risk. It does not guarantee
+Spectre is experimental software. Use at your own risk. It does not guarantee
 that trackers or other devices will be found. Each phone has radio limits
 this app cannot fix. Do not use it in any situation where safety is in
-question. Full notice: Fieldwatch_User_Manual.pdf, page after the cover.
+question. Full notice: the disclaimer the app shows on first launch.
 
-Fieldwatch is not on the Play Store. You install the APK yourself (sideload).
-It does not self-update. Keep this APK if you want the same build later.
+Spectre is not on the Play Store. You install the APK yourself (sideload),
+or let Obtainium track the GitHub releases for you.
 
-Copyright (c) 2026 Off Grid Pete LLC. All rights reserved.
+Copyright (c) 2026 Off Grid Pete LLC
+Copyright (c) 2026 the Spectre contributors
 
 License: MIT License. AndroidX/Kotlin remain Apache-2.0; IEEE and
 Bluetooth SIG lookup tables have their own terms (NOTICE). Full text:
-LICENSE, and the Notice page in Fieldwatch_User_Manual.pdf.
+LICENSE and NOTICE in the repository.
 
 
 1. Get the APK onto the phone
 -----------------------------
-If this microSD card fits the phone:
-  insert it, open Files (or My Files), open the card, tap Fieldwatch.apk.
-
-Otherwise copy Fieldwatch.apk to the phone (USB, Drive, AirDrop to Files, etc.)
-and tap it there.
+Download the APK from the release page on the phone, or copy it to the
+phone (USB, Drive, AirDrop to Files, etc.), and tap it.
 
 If Android blocks the install:
   Settings → Apps → Special app access → Install unknown apps
   (Samsung: Settings → Security and privacy → Install unknown apps)
   allow the app you used to open the APK (Files, Chrome, Drive, …)
-  then tap Fieldwatch.apk again.
+  then tap the APK again.
 
 Play Protect may warn that the app is not from Play. That is expected for
 a sideload. Choose Install anyway only if you trust this APK.
 
-If a previous Fieldwatch (1.0.4 or earlier) is already on the phone, uninstall
-it first. Those builds used a different signature; Android will not update
-over them. Settings and logs on that phone are wiped by uninstall.
+Spectre installs next to Fieldwatch; it does not update or replace it. To move
+custom signatures and settings, use Export signatures / Export settings in
+Fieldwatch and Import in Spectre.
 
-When it finishes, open Fieldwatch from the launcher.
+When it finishes, open Spectre from the launcher.
 
 
 2. Turn on the radios (system settings)
@@ -63,14 +57,14 @@ Before or right after first launch:
   • Wi-Fi     ON
   • Bluetooth ON
 
-Fieldwatch only listens to Wi-Fi access-point beacons and BLE advertisements.
+Spectre only listens to Wi-Fi access-point beacons and BLE advertisements.
 It does not join networks, pair, or scan Bluetooth Classic (HC-05 / HC-06
 will not appear).
 
 
-3. Grant what Fieldwatch asks
+3. Grant what Spectre asks
 --------------------------
-First screen: “Fieldwatch needs the radios” → Grant permissions.
+First screen: “Spectre needs the radios” → Grant permissions.
 
 Allow all of these (wording varies by Android version):
 
@@ -80,18 +74,18 @@ Allow all of these (wording varies by Android version):
     permission for live stamps. High-accuracy Location or the path stays 0.
 
   Nearby Wi-Fi devices   (Android 13+)
-    Lets Fieldwatch run Wi-Fi scans.
+    Lets Spectre run Wi-Fi scans.
 
   Nearby devices / Bluetooth scan + connect   (Android 12+)
     BLE observer. “Connect” is required by the stack to read some names.
-    Fieldwatch does not create a Bluetooth connection for detection.
+    Spectre does not create a Bluetooth connection for detection.
 
   Notifications   (Android 13+)
-    Persistent “Fieldwatch scanning” status, and optional watchlist alerts.
+    Persistent “Spectre scanning” status, and optional watchlist alerts.
 
-If you Deny any required item, Fieldwatch stays on the permission screen.
+If you Deny any required item, Spectre stays on the permission screen.
 You can also grant later:
-  Android Settings → Apps → Fieldwatch → Permissions
+  Android Settings → Apps → Spectre → Permissions
 
 
 4. First launch checklist
@@ -99,16 +93,16 @@ You can also grant later:
   1. First launch shows Disclaimer and license. Check “I have read this and I agree,”
      then Continue. Radios do not start until you do.
   2. Grant the permission screen. Radios do not start until that set is complete.
-  3. A notification “Fieldwatch scanning” appears. Leave it. Stop on that
-     notification (or swipe Fieldwatch out of Recents) ends collection.
+  3. A notification “Spectre scanning” appears. Leave it. Stop on that
+     notification (or swipe Spectre out of Recents) ends collection.
   4. Live should show Wi-Fi access points and BLE advertisers. Header:
      Wi-Fi, Bluetooth, and signatures icons with counts (a radio
      hint may follow).
   5. If both counts stay at zero: Location, Wi-Fi, and Bluetooth must be
-     on at the system level, not only inside Fieldwatch.
+     on at the system level, not only inside Spectre.
 
 After first launch (stay scanning):
-  • In Fieldwatch Settings turn on “Allow background usage” (Battery page,
+  • In Spectre Settings turn on “Allow background usage” (Battery page,
     that Android switch).
   • Then “Unrestricted battery”. Some phones do not open onto
     Unrestricted / Optimized / Restricted. If you only see Allow
@@ -118,16 +112,16 @@ After first launch (stay scanning):
     some phones park BLE when the screen locks. Turn it off when you pocket
     the phone.
   • If the phone has “Background usage limits” or “Put unused apps to
-    sleep,” do not sleep Fieldwatch.
+    sleep,” do not sleep Spectre.
 
 Max collection (battery is the cost) — full walk-through:
   User Manual §4.5. In short: Location Precise + Wi-Fi + Bluetooth on at
-  the system level; grant every Fieldwatch permission; Unrestricted battery
+  the system level; grant every Spectre permission; Unrestricted battery
   and do not sleep the app; Keep screen on while you watch; High
   performance (ships on). Optional: Developer options → Wi-Fi scan
-  throttling Off, then Fieldwatch → Faster Wi-Fi AP scans On (~8 s AP
-  batches on a drive). Leave the “Fieldwatch scanning” notification.
-  Swiping Fieldwatch out of Recents ends collection. The phone will get
+  throttling Off, then Spectre → Faster Wi-Fi AP scans On (~8 s AP
+  batches on a drive). Leave the “Spectre scanning” notification.
+  Swiping Spectre out of Recents ends collection. The phone will get
   warm. Pocket / overnight is Battery saver, not this list.
 
 
@@ -277,7 +271,7 @@ Max collection (battery is the cost) — full walk-through:
                Logging can be off. GPX/KML include this phone’s path as a
                track. Log export is the rotating session file — every hear
                while logging was on. Clearing the log does not delete sits.
-               Fieldwatch does not upload. Custom names replace
+               Spectre does not upload. Custom names replace
                advertised names on Debrief / Compare / Path / GPX / KML
                (WiGLE keeps the advertised SSID). Observer notes is a
                section after Where you were (Debrief) or Windows (Compare).
@@ -305,7 +299,7 @@ Max collection (battery is the cost) — full walk-through:
                Online place names and maps, Keep screen on, logging on/off and
                rotate size (rotating file is JSON lines; Format is on
                Reports → Log), Watchlist, Named radios (custom name +
-               Observer notes). Footer: Fieldwatch version · Catalog N.
+               Observer notes). Footer: Spectre version · Catalog N.
                Update stock catalog from GitHub needs internet; replaces
                stock rows (Extra attention too); bookmarks stay. Offline:
                Import signatures. GPS tagging, Online place names and maps, Keep screen
@@ -317,7 +311,7 @@ Max collection (battery is the cost) — full walk-through:
                row (Apple AirTags, Axon). Not Hunt. Test alert plays
                whatever is on. Jump works with beep, voice, or both. Faster Wi-Fi AP scans is off until you turn
                off Developer options → Wi-Fi scan throttling, then
-               flip the Fieldwatch switch (Android 11+; Fieldwatch checks
+               flip the Spectre switch (Android 11+; Spectre checks
                the OS flag first). About every 8 s AP batches instead
                of ~30 s — more chances to catch a signed AP (IBR*,
                AirLink, UniFi, Cisco, hidden fleet MAC) while driving.
@@ -414,7 +408,7 @@ caution) and which report to tap: User Manual chapter 12.
 
 7. Uninstall
 ------------
-  Android Settings → Apps → Fieldwatch → Uninstall
+  Android Settings → Apps → Spectre → Uninstall
   Uninstall deletes logs and config. Copy a Share log / Debrief off the
   phone first if you need them.
 
@@ -431,7 +425,7 @@ Limits
     same RAM, not the log. On a drive, tap Debrief more than once.
   • Sideload build: not Play-signed, no auto-update
 
-Read Fieldwatch_User_Manual.pdf for install / permissions / max collection (§4, §4.5),
+Read the user manual (a release asset) for install / permissions / max collection (§4, §4.5),
 Live Display (Sort, Title/Subtitle, extras, §5.3),
 filter presets (§8.4), the stock catalog and class colors (§9.5, Appendix B),
 Decode fields (how to type a map §9.6.1–§9.6.5, stock maps §9.6.6),
@@ -440,5 +434,6 @@ Signature candidates (§5.6.4, §11.5), Moving with you, New detections only,
 Field Playbooks, Debrief / AI Export (sit-level and one-radio on detail;
 RAM window and trip strategy §11.4.1).
 
-Off Grid Pete LLC    Instagram @OffGridPete    X @OGridPete
-Copyright (c) 2026 Off Grid Pete LLC. All rights reserved.
+Spectre    https://github.com/rlhooks13/spectre
+Copyright (c) 2026 Off Grid Pete LLC
+Copyright (c) 2026 the Spectre contributors

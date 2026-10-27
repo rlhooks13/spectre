@@ -1,8 +1,8 @@
-# Fieldwatch language pack
+# Spectre language pack
 
 Requirements for a later implementation. This document does not authorize that work by itself. Do not start it until asked. When asked, implement this document and stop there. Do not ship, tag, sideload, or open a GitHub Release unless that request says so.
 
-English in the APK is the source of truth. The APK also carries a bundled language for each available language listed below. Those files start as an AI draft. A missing line stays English. The phone language selects a bundled language when one matches. Every other language is a file the user imports. Fieldwatch does not download either kind. Off Grid Pete LLC does not review an imported pack. The app must say that before an imported pack is applied. A bundled language shows a different official sentence, the AI sentence below. The Language page also shows the author-guide sentence. A pack cannot hide any of these sentences.
+English in the APK is the source of truth. The APK also carries a bundled language for each available language listed below. Those files start as an AI draft. A missing line stays English. The phone language selects a bundled language when one matches. Every other language is a file the user imports. Spectre does not download either kind. Off Grid Pete LLC does not review an imported pack. The app must say that before an imported pack is applied. A bundled language shows a different official sentence, the AI sentence below. The Language page also shows the author-guide sentence. A pack cannot hide any of these sentences.
 
 ## Outcome
 
@@ -12,13 +12,13 @@ The pack changes words on the screen. It cannot add a control, change what a but
 
 ## No code, no injection
 
-This is a hard requirement. A language pack is untrusted data from someone Off Grid Pete LLC did not review. The implementation has to make code injection impossible, not unlikely.
+This is a hard requirement. A language pack is untrusted data from someone the Spectre contributors did not review. The implementation has to make code injection impossible, not unlikely.
 
 The JSON parser is the only thing that reads the file. Use the kotlinx.serialization parser the app already uses. Decode into one fixed data class whose `strings` field is a map of string to string. Do not write a custom parser. Do not enable polymorphic deserialization, and do not decode into a free-form tree that the app then interprets. Unknown fields are discarded. Strict JSON only: no comments, no trailing commas, no YAML, and no second document after the object.
 
 The parser's job ends when those strings exist. It does not decide whether a sentence is malicious. A line that contains `<script>` or a URL is still display text. After the parse, nothing in the app evaluates, compiles, interprets, or looks up code from a pack key or a pack value. There is no second pass that treats the text as a command.
 
-A denylist of words such as `script` or `javascript:` is not the protection. Those characters may appear on screen as text. The protection is that no Fieldwatch code path can execute them.
+A denylist of words such as `script` or `javascript:` is not the protection. Those characters may appear on screen as text. The protection is that no Spectre code path can execute them.
 
 These paths stay closed to pack text:
 
@@ -93,10 +93,10 @@ A line that inserts a number or a name is one sentence with a placeholder, such 
 
 These stay out of the pack:
 
-- The launcher name. `strings.xml` keeps `app_name` as Fieldwatch.
+- The launcher name. `strings.xml` keeps `app_name` as Spectre.
 - The user manual, `instruction.txt`, the changelog, and the README. Those are English documents.
 - The stock catalog and any catalog the user imports. Signature names stay English. Notes, Extra attention, and decode labels stay in the English catalog. The bundled languages in this pack do not translate them. A separate file, described in `docs/signature-localization-options.md`, can supply those translations. The user exports that file, translates it, and imports it. This pack does not include it, and this document does not build it. Class names and the short spoken class names are app sentences and are in this pack. The class chip uses the `classchip` slot.
-- Protocol and brand names, written as they are in English: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Ordinary words are translated. Fieldwatch terms such as sit, signature, and Extra attention are translated into plain words in that language.
+- Protocol and brand names, written as they are in English: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Ordinary words are translated. Spectre terms such as sit, signature, and Extra attention are translated into plain words in that language.
 - Anything heard on the air: names, SSIDs, manufacturer data, OUIs, MACs, RSSI.
 - Anything the user typed: observer notes, custom signature names, watch phrases, preset names, sit notes.
 - Machine-readable exports. WiGLE CSV, sit and log CSV column headers, TAK/CoT tags, and other protocol or file-format tokens stay English. A translated header would break a file someone already parses.
@@ -124,7 +124,7 @@ Every other case returns the English sentence:
 - The pack line drops a placeholder, or it adds a `{token}` the English line does not have.
 - The app is about to fill a placeholder and does not have a value for it.
 
-A translation that is present and complete is shown even when it was written for an older Fieldwatch. If the English sentence later changes under the same key, the old translation stays until that language is updated. The app does not compare the wording. If that English change adds or removes a placeholder, the placeholder rule above sends that one line back to English.
+A translation that is present and complete is shown even when it was written for an older Spectre. If the English sentence later changes under the same key, the old translation stays until that language is updated. The app does not compare the wording. If that English change adds or removes a placeholder, the placeholder rule above sends that one line back to English.
 
 An unknown key is ignored. A language file cannot create a label the app does not already have.
 
@@ -168,7 +168,7 @@ One JSON object, UTF-8. A leading byte-order mark is stripped before parsing. Un
 | `formatVersion` | Required positive integer. Version 1 is the version this app writes. A higher version still loads when `strings` is a string map. The confirm text says the pack format is newer and only the lines were used. |
 | `language` | Required display name, 1 to 40 characters after trim and cleaning. |
 | `languageTag` | Optional. Stored and shown. It does not change the Android locale, layout direction, or number formats. If it is not a short BCP 47 tag, ignore the tag and keep the pack. |
-| `writtenFor` | Optional, at most 32 characters. The Fieldwatch version the author used. Informational. A mismatch does not reject the pack. |
+| `writtenFor` | Optional, at most 32 characters. The Spectre version the author used. Informational. A mismatch does not reject the pack. |
 | `strings` | Required object. Key to line. Missing keys stay English. |
 
 Keys in the file use the same ids as the English map. A key is ASCII lowercase letters, digits, and dots, for example `settings.diagnostics` or `live.flood_hide`. The English sentence is not the key.
@@ -177,7 +177,7 @@ Reject the whole file, and leave any pack already on the phone in place, when:
 
 - The file is empty, is not UTF-8, or is larger than 264 KiB.
 - The root is not one JSON object.
-- `format` is missing or wrong. A settings pack gets "That is a settings pack. Use Import settings." A signature pack gets "That is a signature pack. Use Import signatures." Anything else gets "Not a Fieldwatch language pack."
+- `format` is missing or wrong. A settings pack gets "That is a settings pack. Use Import settings." A signature pack gets "That is a signature pack. Use Import signatures." Anything else gets "Not a Spectre language pack."
 - `formatVersion` is missing or not a positive integer.
 - `language` is missing or blank after cleaning.
 - `strings` is missing or is not an object, or any value in it is not a string.
@@ -205,7 +205,7 @@ Follow the bundled-language table. A match selects that language and shows the A
 
 Show the import door once, before the disclaimer, when the phone language is not English, no bundled language matches, no pack is loaded, and the user has not already dismissed it. Import opens the file picker immediately. If the user backs out of the picker, the door stays up. Continue in English closes the door and stores that choice. Do not show it again after an update. The Language page keeps Import language pack for later.
 
-The door says that Fieldwatch is in English, and that the user can import a language-pack file if they already have one. It does not say a pack is waiting to be downloaded.
+The door says that Spectre is in English, and that the user can import a language-pack file if they already have one. It does not say a pack is waiting to be downloaded.
 
 The door also shows this official sentence: "Language packs are made by other people. They are not reviewed or certified by Off Grid Pete LLC."
 
@@ -218,7 +218,7 @@ Language is its own page in Settings, on the same list as Appearance, Scanning, 
 The page does three jobs:
 
 - Set. Follow the phone, English, or one bundled language. Follow the phone is the usual choice. An explicit choice stays until the user changes it. Choosing English turns a bundled language off on this phone. It does not delete that language from the app.
-- Add. Import language pack… opens the file picker for a language that is not bundled. Fieldwatch does not download a language.
+- Add. Import language pack… opens the file picker for a language that is not bundled. Spectre does not download a language.
 - Remove. Remove language pack is shown only while an imported pack is loaded. It deletes that file. The page then returns to Follow the phone.
 
 Export English template is on this page for someone writing a file. It is not part of everyday use. Next to it, the page shows this compiled sentence: "To write a language file, export the English template and follow the author guide on GitHub." The link points at the author guide in this repo. The app does not download the guide. The sentence is not a pack key, and a pack cannot change it.
@@ -338,7 +338,7 @@ The implementation is done when these are true:
 - ATAK pin remarks and CoT tags stay English. A pack key cannot change them.
 - A Debrief PDF page draws a Cyrillic sentence, and the test fails if those characters are missing.
 - When `writtenFor` is an older known version, confirm reports how many keys were added after it and are not translated. When `writtenFor` is missing, that count is omitted and the pack still loads.
-- The launcher name stays Fieldwatch.
+- The launcher name stays Spectre.
 - A French phone selects bundled French without an import. A language that is not bundled stays English. Luxembourgish stays English. `fr-LU` selects French and `de-LU` selects German. Croatian, Montenegrin, and `sr-ME` select Croatian. Serbian (`sr` without `ME`) stays English.
 - A missing key in a bundled language stays English.
 - A class-chip line longer than 18 characters stays English. The spoken class name may be longer, up to its `control` cap.
@@ -352,16 +352,16 @@ Put the guide in this repo as documentation of the format. It does not contain t
 
 The guide needs to say:
 
-- A pack is a JSON file. It does not replace the APK, and it is not a fork. Off Grid Pete LLC does not review or certify it. The author hosts the file. Fieldwatch does not publish it or download it.
-- Start from Settings → Language → Export English template on the Fieldwatch version being translated. Keep the keys. Edit the values. Delete any key that is not being translated. Do not invent keys, rename keys, or translate by searching the source for English sentences. A sentence that is not in the template cannot be translated.
+- A pack is a JSON file. It does not replace the APK, and it is not a fork. The Spectre contributors do not review or certify it. The author hosts the file. Spectre does not publish it or download it.
+- Start from Settings → Language → Export English template on the Spectre version being translated. Keep the keys. Edit the values. Delete any key that is not being translated. Do not invent keys, rename keys, or translate by searching the source for English sentences. A sentence that is not in the template cannot be translated.
 - A missing or blank key stays English. That is expected.
 - Keep every `{token}` exactly as exported, including the braces and the token name. Do not add tokens. Do not use `%s`. A line that breaks this rule is shown in English.
 - There are no plural forms. One sentence has to read right for every count. In Polish, Czech, Latvian, and other Slavic or Baltic languages, that gets awkward. Use a form such as `count: {n}` rather than forcing the noun to agree with the number.
 - The text is display text. HTML, scripts, links, and format strings are shown as characters or dropped. They do not run.
 - Stay inside the slot for each key. A tab or a class chip is at most 18 characters. A chip, button, row, or spoken phrase is at most twice the English length and never more than 48 characters. A dialog or other long sentence is at most three times the English length and never more than 700 characters. The language name is at most 40 characters. The file is at most 264 KiB. A line that is too long is left in English. A newline is kept only when the English line has one.
 - For a tab or a class chip, pick a shorter word when the full word would pass 18 characters. A German compound is the usual case. A line over the cap stays English, and the confirm dialog only counts it. It does not point at the word.
-- Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Translate ordinary words. Translate Fieldwatch terms such as sit, signature, and Extra attention into plain words.
-- After a Fieldwatch update, import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after `writtenFor` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` as the version of that template.
+- Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Translate ordinary words. Translate Spectre terms such as sit, signature, and Extra attention into plain words.
+- After a Spectre update, import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after `writtenFor` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` as the version of that template.
 - Set `language` to the name users should see, and `writtenFor` to the version of the template. One pack replaces another. It does not merge.
 - The sentence that packs are not reviewed or certified is official text. It is not in the template, and a pack cannot change it.
 - Tell users to import the file from Settings, or from the first-run door when their phone language is not English and not one of the bundled languages. The guide can describe those steps. The in-app wording for phone users still belongs in the user manual. A bundled language is already in the APK. Do not tell those users to import it.

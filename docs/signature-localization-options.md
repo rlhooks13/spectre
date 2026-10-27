@@ -2,7 +2,7 @@
 
 Held for a later phase. This document does not authorize that work. Do not start it until asked. Phase 1 is the app language pack in `docs/language-pack-requirements.md`. Class names and the short spoken class names are already in that pack. This document does not change them, and it does not translate the catalog.
 
-English stays in the official files. A missing line stays English. A pack is display text. Off Grid Pete LLC does not review or certify translations.
+English stays in the official files. A missing line stays English. A pack is display text. The Spectre contributors do not review or certify translations.
 
 ## Held
 
@@ -94,7 +94,7 @@ A full translated catalog is a fork. It can change behavior. The language-pack r
 
 Reject this too.
 
-French notes in the stock file, or `notesFr` fields beside the English, would make Off Grid Pete LLC the publisher of those translations. Every catalog bump would carry every language. Older apps would have to ignore the extra fields. It contradicts the decision that translations are not reviewed and do not live in an official repo.
+French notes in the stock file, or `notesFr` fields beside the English, would make the Spectre contributors the publisher of those translations. Every catalog bump would carry every language. Older apps would have to ignore the extra fields. It contradicts the decision that translations are not reviewed and do not live in an official repo.
 
 ## Whole picture
 

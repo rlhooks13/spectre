@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-5 (language packs), PR #11 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-4f (README and docs rebrand), then P0-6 (BrandGuard).
-- Branch: `p0/5-language-packs`
+- Current step: P0-4f (README and docs rebrand), on branch `p0/4f-docs-rebrand`; check `gh pr list --head p0/4f-docs-rebrand` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-6 (BrandGuard).
+- Branch: `p0/4f-docs-rebrand`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T08:30Z
+- Last cycle: 2026-10-27T08:47Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,23 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-5 Language packs.** PR #11.
+- 2026-10-27: **P0-4f README and docs rebrand.** Branch `p0/4f-docs-rebrand`.
+  - **`README.md` rewritten for the fork:**
+    - Fork statement and install via GitHub Releases or Obtainium (no release yet).
+    - Build from source, the dist files, and a safety section that matches the app's disclaimer.
+    - Two copyright lines, and issues on `rlhooks13/spectre`.
+    - Upstream's first-person text and its 1.0.5 re-signing story are gone.
+  - **`docs/instruction.txt` and `dist/instruction.txt`** (still identical):
+    - The new header drops upstream's APK hash, signing certificate and APK and manual file names; each release now lists hashes.
+    - The upstream re-sign note is replaced with "installs next to Fieldwatch; export and import to move settings".
+    - Body rebranded; the footer social handles are gone and there are two copyright lines.
+  - **`docs/language-pack-requirements.md`, `docs/trusted-network-requirements.md`, `docs/signature-localization-options.md`:** product name rebranded. "Not reviewed or certified by" and "publisher" now name the Spectre contributors.
+    - The two quoted official sentences in `language-pack-requirements.md` are left to PR #10, which already changes them, to avoid a conflict.
+    - The `FIELDWATCH-SELF` UID stays.
+  - **`CHANGELOG.md`:** a note on top that Spectre's entries start at 0.1.0 and the rest is upstream history, kept as written.
+  - **PLAN:** P0-4a, 4b, 4c and 4f ticked; P0-4 stays open until 4d (owner) and 4e (owner) land.
+  - **Not in scope:** `docs/build_manual.py` (the 6,000-line manual source). It's rebuilt from screenshots in P8-3; until then it still says Fieldwatch and isn't shipped.
+- 2026-10-27: **P0-5 Language packs.** PR #11, merged as `fb7397b`.
   - New `scripts/rebrand_packs.py` (`python -I`, UTF-8, LF).
     - It rewrites only `"key": "value"` lines inside `strings`, and only where "Fieldwatch"/"FIELDWATCH" stands alone or starts a hyphen compound.
     - It leaves keys, metadata (`format`, `writtenFor`) and layout alone, checks the JSON before and after, and lists inflected forms per language.
