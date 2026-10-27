@@ -87,8 +87,8 @@ No listed camera was along this path.
 
 4. TRACKING ASSESSMENT
 Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
-Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
-No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (Garmin, Fitbit, Oura, Polar), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
+Callouts below are only radios that stayed with the path. Radios you passed (store fixtures, house tags) are omitted.
 
 5. PHONES WITH YOU
 Apple devices (phone, iPad, Mac, Watch, AirPods) that stayed loud with you. Usually your own or a companion's. A phone or iPad can be hidden too, so account for any you don't recognize.
@@ -124,4 +124,4 @@ A passive observer with the same radios would see 0 named/hidden APs and 1 BLE a
   · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
 
 —
-Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS path in this window.
+Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS path in this window. A phone or earbuds joined the sit and kept pace; account for it if you're alone: Apple Device (4E:11:22:33:44:0A).
