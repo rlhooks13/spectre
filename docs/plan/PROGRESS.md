@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-3, part 1 (build types), on branch `p0/3-build-types`; check `gh pr list --head p0/3-build-types` for the PR. Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
+- Current step: P0-3, part 1 (build types), PR #4 (waiting on CI, then squash-merge). Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
 - Branch: `p0/3-build-types`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -48,7 +48,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-3 Build, part 1.** Branch `p0/3-build-types`. P0-3 stays unticked until part 2 (dependency verification) lands.
+- 2026-10-27: **P0-3 Build, part 1.** PR #4. Follow-up for P0-8: `testReleaseUnitTest` also writes results, so the test-count guard must count one variant (debug), not sum every XML file. P0-3 stays unticked until part 2 (dependency verification) lands.
   - Added the version catalog `gradle/libs.versions.toml`. Same coordinates and versions, no new dependencies.
   - Build types now follow PLAN:
     - `debug`: debuggable, `.debug` suffix, no longer minified.
