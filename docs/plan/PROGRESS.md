@@ -2,16 +2,16 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-A7 (NetworkPolicy, ADR-0014), on branch `p1/a7-network-policy`; check `gh pr list --head p1/a7-network-policy` for the PR.
-  - **Then:** P1-A8 (lint errors), or P1-A5 once its corpus dependency (P1-A4) is clear.
+- Current step: P1-A8 (inherited lint errors), on branch `p1/a8-lint-errors`; check `gh pr list --head p1/a8-lint-errors` for the PR.
+  - **Then:** P1-A4 (match corpus), then P1-A5.
   - **Deferred:** P1-A1 and P1-A2 wait for #6, and P0-8d for P1-B1's snapshots.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a7-network-policy`
+- Branch: `p1/a8-lint-errors`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T12:45Z
+- Last cycle: 2026-10-27T13:20Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -64,7 +64,19 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-A7 NetworkPolicy (ADR-0014).** Branch `p1/a7-network-policy`.
+- 2026-10-27: **P1-A8 Inherited lint errors.** Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
+  - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
+  - **BLE hardening:** reading `BluetoothDevice.bluetoothClass` needs BLUETOOTH_CONNECT on Android 12+.
+    - **Before:** without the grant it threw, and `guardCallback` dropped the whole scan result.
+    - **When it can happen:** scanning only starts once CONNECT is granted, and a revoke normally kills the process. So this mostly affects a sticky `ScanService` restarting after CONNECT alone was revoked, or OEM permission splits.
+    - **Now:** `deviceClassOf()` catches `SecurityException` and leaves the class unknown.
+    - **No test yet:** it needs Robolectric or a fake `BluetoothDevice`, so it lands with P1-A1.
+  - **Location:** `FieldwatchApp.startLocationUpdates`/`seedLastKnown` get `@SuppressLint("MissingPermission")`, with the reason: each checks `hasFineLocation()` on entry (`seedLastKnown` now checks it itself too), and `runCatching` wraps each call.
+  - **API 30:** `CrashNotes.traceOf` and `WifiIeParser.ieBytes` get `@RequiresApi(R)`. Their callers already return before API 30, and lint now verifies that.
+  - **Compose:** `DeviceDetailScreen` collects `vm.ui` as state instead of reading `.value`, so the range to the payload follows the phone's fix. The decoded fields' `remember` now keys on `fleets` too, so they follow catalog edits.
+  - **#19:** drop `app/lint-baseline.xml`, the `lint {}` block, and the baseline-growth guard once this merges (the next #19 sync).
+- 2026-10-27: **P1-A7 merged** as `a852ad1` (PR #23).
+- 2026-10-27: **P1-A7 NetworkPolicy (ADR-0014).** PR #23. Branch `p1/a7-network-policy`.
   - **Survey:** a read-only survey found exactly five egress points: `PathTiles.fetchTile`, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher.send`. There's no WebView, DownloadManager or HTTP library.
   - **`NetworkPolicy.allows(Egress)`** is checked inside each, against the settings `ConfigStore` publishes on every change. It denies everything before settings load.
   - **Rules:**
