@@ -1,6 +1,8 @@
 package app.fieldwatch.data
 
 import android.content.Context
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -598,6 +600,7 @@ object PathTiles {
         file: File,
         hopsLeft: Int,
     ): Fetch {
+        if (!NetworkPolicy.allows(Egress.MAP_TILES)) return Fetch.Failed
         val conn = (URL(address).openConnection() as HttpURLConnection).apply {
             connectTimeout = 4000
             readTimeout = 4000

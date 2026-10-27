@@ -16,6 +16,8 @@ import app.fieldwatch.BuildConfig
 import app.fieldwatch.FieldwatchApp
 import app.fieldwatch.domain.AircraftTrail
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.MapBasemap
@@ -1134,7 +1136,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             val batch = try {
                 PathTiles.load(
                     app, samples,
-                    onlineLookup = true,
+                    onlineLookup = NetworkPolicy.allows(Egress.MAP_TILES),
                     basemap = basemap,
                     mapKey = keyFor(basemap),
                     overlays = overlays,
@@ -1227,7 +1229,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             val batch = try {
                 PathTiles.load(
                     app, samples,
-                    onlineLookup = true,
+                    onlineLookup = NetworkPolicy.allows(Egress.MAP_TILES),
                     basemap = basemap,
                     mapKey = keyFor(basemap),
                     overlays = overlays,
@@ -1398,7 +1400,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     north = ticket.north,
                     west = ticket.west,
                     east = ticket.east,
-                    onlineLookup = true,
+                    onlineLookup = NetworkPolicy.allows(Egress.MAP_TILES),
                     basemap = ticket.basemap,
                     mapKey = keyFor(ticket.basemap),
                     overlays = ticket.overlays,
@@ -1536,7 +1538,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     north = box[1],
                     west = box[2],
                     east = box[3],
-                    onlineLookup = true,
+                    onlineLookup = NetworkPolicy.allows(Egress.MAP_TILES),
                     basemap = ticket.basemap,
                     mapKey = keyFor(ticket.basemap),
                     overlays = ticket.overlays,
@@ -1657,7 +1659,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                         north = box[1],
                         west = box[2],
                         east = box[3],
-                        onlineLookup = true,
+                        onlineLookup = NetworkPolicy.allows(Egress.MAP_TILES),
                         basemap = basemap,
                         mapKey = keyFor(basemap),
                         overlays = overlays,

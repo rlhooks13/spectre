@@ -2,13 +2,16 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-8c (version from the git tag), on branch `p0/8c-version-from-tag`; check `gh pr list --head p0/8c-version-from-tag` for the PR. Next: P0-8d (release-notes generator). Waiting on the owner: PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
+- Current step: P1-A7 (NetworkPolicy, ADR-0014), on branch `p1/a7-network-policy`; check `gh pr list --head p1/a7-network-policy` for the PR.
+  - **Then:** P1-A8 (lint errors), or P1-A5 once its corpus dependency (P1-A4) is clear.
+  - **Deferred:** P1-A1 and P1-A2 wait for #6, and P0-8d for P1-B1's snapshots.
+  - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/8c-version-from-tag`
+- Branch: `p1/a7-network-policy`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T12:10Z
+- Last cycle: 2026-10-27T12:45Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -61,7 +64,25 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-8c Version from the git tag (ADR-0002).** Branch `p0/8c-version-from-tag`.
+- 2026-10-27: **P1-A7 NetworkPolicy (ADR-0014).** Branch `p1/a7-network-policy`.
+  - **Survey:** a read-only survey found exactly five egress points: `PathTiles.fetchTile`, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher.send`. There's no WebView, DownloadManager or HTTP library.
+  - **`NetworkPolicy.allows(Egress)`** is checked inside each, against the settings `ConfigStore` publishes on every change. It denies everything before settings load.
+  - **Rules:**
+    - tiles need `onlineLookup`;
+    - place names need `onlineLookup` and not Privacy;
+    - the catalog follows its feature flag;
+    - sensor lists are allowed, because the dialog is the consent;
+    - TAK publish needs `takEnabled` and not Privacy;
+    - TAK retract is always allowed, because it withdraws spots already sent.
+  - **Hard-coded tiles:** the five `onlineLookup = true` tile calls now pass `NetworkPolicy.allows(MAP_TILES)`. This also closes the gaps where a queued window or pan prefetch ran on a stale `online` snapshot.
+  - **Ladder:** the V17 (re-enable built-in signatures), V19 (`tagLocation`) and V20 (`keepScreenOn` + `onlineLookup`) bodies are deleted. The version bumps stay.
+  - **Tests:** `NetworkPolicyTest` and `EgressInventoryTest`, which covers files that touch the network, the policy call in each, and no hard-coded `onlineLookup = true`.
+  - **Lint:** 9 errors, all the inherited ones (no baseline on `main` until #19).
+  - **Follow-ups:**
+    - V30 still force-enables every fleet once.
+    - The OS network location provider is outside the policy (ADR-0014).
+- 2026-10-27: **P0-8c merged** as `3be1048` (PR #22). P0-8d now waits for P1-B1's catalog snapshots. P1-A1 and P1-A2 wait for #6, so new dependencies don't break its verification metadata.
+- 2026-10-27: **P0-8c Version from the git tag (ADR-0002).** PR #22. Branch `p0/8c-version-from-tag`.
   - **How:** `app/build.gradle.kts` reads git through `providers.exec`.
     - **Clean tagged commits:** a commit tagged `vX.Y.Z` or `dryrun/v0.0.Z` (Z ≥ 1) builds as that version.
     - **Which tag:** a tag-triggered CI run uses `GITHUB_REF_NAME`; otherwise the numerically highest valid tag on HEAD wins.

@@ -2,6 +2,7 @@ package app.fieldwatch.data
 
 import android.content.Context
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.withFeatureGates
 import app.fieldwatch.domain.DefaultCatalog
 import app.fieldwatch.domain.FilterEngine
@@ -47,6 +48,12 @@ class ConfigStore(context: Context) {
     private val _config = MutableStateFlow(seed())
     val config: StateFlow<PersistedConfig> = _config.asStateFlow()
 
+    /** Every config change goes through here, so NetworkPolicy always checks the settings in force. */
+    private fun publish(next: PersistedConfig) {
+        _config.value = next
+        NetworkPolicy.settings = next.settings
+    }
+
     val fleets: List<Fleet> get() = _config.value.fleets
     val filter: FilterState get() = _config.value.filter
     val settings: AppSettings get() = _config.value.settings
@@ -59,7 +66,7 @@ class ConfigStore(context: Context) {
             if (!file.exists()) {
                 val seeded = seed()
                 file.writeText(json.encodeToString(seeded))
-                _config.value = seeded
+                publish(seeded)
                 return@withContext
             }
             runCatching {
@@ -68,12 +75,12 @@ class ConfigStore(context: Context) {
                 if (loaded.fleets.isEmpty()) {
                     val seeded = seed()
                     file.writeText(json.encodeToString(seeded))
-                    _config.value = seeded
+                    publish(seeded)
                 } else {
                     val patched = TakInstall.ensure(patchBuiltIn(loaded)).let {
                         it.copy(settings = it.settings.offerLiveTourOnce().withOverlayBasemaps().withFeatureGates())
                     }
-                    _config.value = patched
+                    publish(patched)
                     if (patched != loaded) {
                         file.writeText(json.encodeToString(patched))
                     }
@@ -81,14 +88,14 @@ class ConfigStore(context: Context) {
             }.onFailure {
                 val seeded = seed()
                 file.writeText(json.encodeToString(seeded))
-                _config.value = seeded
+                publish(seeded)
             }
         }
     }
 
     suspend fun update(transform: (PersistedConfig) -> PersistedConfig) = mutex.withLock {
         val next = transform(_config.value).let { it.copy(settings = it.settings.withFeatureGates()) }
-        _config.value = next
+        publish(next)
         withContext(Dispatchers.IO) {
             val tmp = File(file.parentFile, "config.tmp")
             tmp.writeText(json.encodeToString(next))
@@ -124,7 +131,7 @@ class ConfigStore(context: Context) {
             return@withLock result
         }
         val next = _config.value.copy(fleets = merged)
-        _config.value = next
+        publish(next)
         withContext(Dispatchers.IO) {
             val tmp = File(file.parentFile, "config.tmp")
             tmp.writeText(json.encodeToString(next))
@@ -162,7 +169,7 @@ class ConfigStore(context: Context) {
             return@withLock StockCatalogUpdateResult(error = overlay.error)
         }
         val next = local.copy(fleets = fleets, version = pack.catalogVersion)
-        _config.value = next
+        publish(next)
         withContext(Dispatchers.IO) {
             val tmp = File(file.parentFile, "config.tmp")
             tmp.writeText(json.encodeToString(next))
@@ -355,12 +362,10 @@ class ConfigStore(context: Context) {
             fleets = (fleets + extras).sortedBy { it.name.lowercase() }
             version = CATALOG_V16
         }
-        if (version < CATALOG_V17) {
-            fleets = fleets.map { fleet ->
-                if (fleet.builtIn && !fleet.enabled) fleet.copy(enabled = true) else fleet
-            }
-            version = CATALOG_V17
-        }
+        // V17 used to turn every built-in signature the user had switched off back on; V19 and V20 did the
+        // same for tagLocation, keepScreenOn and onlineLookup (network). P1-A7 removed them: an upgrade keeps
+        // the user's choices. The versions still advance.
+        if (version < CATALOG_V17) version = CATALOG_V17
         var watchlist = cfg.watchlist
         if (version < CATALOG_V18) {
             val have = watchlist.mapNotNull { it.fleetId }.toSet()
@@ -369,16 +374,7 @@ class ConfigStore(context: Context) {
             version = CATALOG_V18
         }
         var settings = cfg.settings
-        if (version < CATALOG_V19) {
-            if (!settings.tagLocation) settings = settings.copy(tagLocation = true)
-            version = CATALOG_V19
-        }
-        if (version < CATALOG_V20) {
-            if (!settings.keepScreenOn || !settings.onlineLookup) {
-                settings = settings.copy(keepScreenOn = true, onlineLookup = true)
-            }
-            version = CATALOG_V20
-        }
+        if (version < CATALOG_V20) version = CATALOG_V20
         if (version < CATALOG_V21) {
             val have = fleets.map { it.id }.toSet()
             val extras = ADDED_IN_V21.mapNotNull { catalog[it] }.filter { it.id !in have }

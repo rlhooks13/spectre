@@ -2,6 +2,8 @@ package app.fieldwatch.radio
 
 import android.util.Log
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.CotEvent
 import app.fieldwatch.domain.Fleet
@@ -459,7 +461,7 @@ class TakPublisher {
             } else {
                 CotEvent.tombstoneXml(uid, spot.lat, spot.lon, now)
             }
-            if (!sendAll(dests, xml.toByteArray(Charsets.UTF_8))) return
+            if (!sendAll(dests, xml.toByteArray(Charsets.UTF_8), Egress.TAK_RETRACT)) return
             last.remove(uid)
             parked.remove(uid)
         }
@@ -479,12 +481,23 @@ class TakPublisher {
         return out.values.toList()
     }
 
-    private fun sendAll(dests: List<Pair<InetAddress, Int>>, bytes: ByteArray): Boolean {
+    /** [kind] is TAK_RETRACT only for tombstones of spots already sent; everything else publishes. */
+    private fun sendAll(
+        dests: List<Pair<InetAddress, Int>>,
+        bytes: ByteArray,
+        kind: Egress = Egress.TAK_PUBLISH,
+    ): Boolean {
+        if (!allowed(kind)) return false
         var ok = false
         for ((addr, port) in dests) {
             if (send(addr, port, bytes)) ok = true
         }
         return ok
+    }
+
+    private fun allowed(kind: Egress): Boolean = when (kind) {
+        Egress.TAK_RETRACT -> NetworkPolicy.allows(Egress.TAK_RETRACT)
+        else -> NetworkPolicy.allows(Egress.TAK_PUBLISH)
     }
 
     private fun send(addr: InetAddress, port: Int, bytes: ByteArray): Boolean {
