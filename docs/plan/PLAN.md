@@ -265,7 +265,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - One check inside `PathTiles` fetch, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher`.
   - Remove the 5 hard-coded `onlineLookup = true` calls.
   - Delete the V17/V19/V20 steps that force settings back on.
-- ✅ **P1-A8 Clear the lint baseline** (`app/lint-baseline.xml`, added in P0-8a). Fix the 9 inherited errors and delete the file. Done on `main` before #19 merged, so #19 drops its baseline instead:
+- ✅ **P1-A8 Clear the lint baseline** (`app/lint-baseline.xml`, added in P0-8a). Fix the 9 inherited errors and delete the file. Done on `main` before #19 merged, so #19 drops its baseline instead. The NewApi pair got `@RequiresApi(R)` instead of a second in-function SDK check: their callers already return below API 30, and lint now enforces that.
   - 4 × MissingPermission (`BleAdParser`, `FieldwatchApp`): check the permission or catch `SecurityException`.
   - 2 × NewApi on API 29 (`CrashNotes.traceOf`, `WifiIeParser.ieBytes`): already inside `runCatching`, so add an explicit SDK check.
   - 3 × `StateFlowValueCalledInComposition` (`DeviceDetailScreen`): collect the flow as state.

@@ -828,9 +828,10 @@ class FieldwatchApp : Application() {
         }
     }
 
-    // Callers check hasFineLocation() first, and each read sits in runCatching.
+    // Checks hasFineLocation() itself, and each read sits in runCatching.
     @SuppressLint("MissingPermission")
     private fun seedLastKnown(lm: LocationManager) {
+        if (!hasFineLocation()) return
         val now = System.currentTimeMillis()
         val cands = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
             .mapNotNull { runCatching { lm.getLastKnownLocation(it) }.getOrNull() }

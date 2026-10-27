@@ -525,7 +525,7 @@ fun DeviceDetailScreen(
                     }
                 }
                 val fleets = ui.fleets
-                val decoded = remember(device.key, device.facts, device.fleetIds) {
+                val decoded = remember(device.key, device.facts, device.fleetIds, fleets) {
                     SignatureFieldDecoder.decodeSighting(device, fleets)
                 }
                 val mapped = device.fleetIds.mapNotNull { id -> fleets.find { it.id == id && it.decode != null } }

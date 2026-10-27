@@ -66,11 +66,14 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 
 - 2026-10-27: **P1-A8 Inherited lint errors.** Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
   - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
-  - **BLE bug:** reading `BluetoothDevice.bluetoothClass` needs BLUETOOTH_CONNECT on Android 12+. Without the grant it threw, and `guardCallback` dropped the whole scan result, so the device never appeared. `deviceClassOf()` now catches `SecurityException` and leaves the class unknown.
+  - **BLE hardening:** reading `BluetoothDevice.bluetoothClass` needs BLUETOOTH_CONNECT on Android 12+.
+    - **Before:** without the grant it threw, and `guardCallback` dropped the whole scan result.
+    - **When it can happen:** scanning only starts once CONNECT is granted, and a revoke normally kills the process. So this mostly affects a sticky `ScanService` restarting after CONNECT alone was revoked, or OEM permission splits.
+    - **Now:** `deviceClassOf()` catches `SecurityException` and leaves the class unknown.
     - **No test yet:** it needs Robolectric or a fake `BluetoothDevice`, so it lands with P1-A1.
-  - **Location:** `FieldwatchApp.startLocationUpdates`/`seedLastKnown` get `@SuppressLint("MissingPermission")`, with the reason: `hasFineLocation()` on entry and `runCatching` around each call.
+  - **Location:** `FieldwatchApp.startLocationUpdates`/`seedLastKnown` get `@SuppressLint("MissingPermission")`, with the reason: each checks `hasFineLocation()` on entry (`seedLastKnown` now checks it itself too), and `runCatching` wraps each call.
   - **API 30:** `CrashNotes.traceOf` and `WifiIeParser.ieBytes` get `@RequiresApi(R)`. Their callers already return before API 30, and lint now verifies that.
-  - **Compose:** `DeviceDetailScreen` collects `vm.ui` as state instead of reading `.value`, so the range-to-payload and decoded fields follow the phone's fix and the catalog.
+  - **Compose:** `DeviceDetailScreen` collects `vm.ui` as state instead of reading `.value`, so the range to the payload follows the phone's fix. The decoded fields' `remember` now keys on `fleets` too, so they follow catalog edits.
   - **#19:** drop `app/lint-baseline.xml`, the `lint {}` block, and the baseline-growth guard once this merges (the next #19 sync).
 - 2026-10-27: **P1-A7 merged** as `a852ad1` (PR #23).
 - 2026-10-27: **P1-A7 NetworkPolicy (ADR-0014).** PR #23. Branch `p1/a7-network-policy`.
