@@ -680,6 +680,7 @@ fun SettingsScreen(
                     settings.flockAlert,
                     !flock.busy,
                 ) { on -> vm.updateSettings { it.copy(flockAlert = on) } }
+                CameraAlertNotice()
             }
             if (Features.OTHER_SENSORS_LAYER) {
                 Spacer(Modifier.height(8.dp))
@@ -711,6 +712,7 @@ fun SettingsScreen(
                         settings.cameraAlert,
                         !sensors.busy,
                     ) { on -> vm.updateSettings { it.copy(cameraAlert = on) } }
+                    CameraAlertNotice()
                 } // SensorLayerBlock
             } // OTHER_SENSORS_LAYER
             Spacer(Modifier.height(8.dp))
@@ -1372,6 +1374,15 @@ private fun SensorAlertRow(
         )
         FieldwatchSwitch(on, set, enabled = enabled)
     }
+}
+
+@Composable
+private fun CameraAlertNotice() {
+    Text(
+        LanguageText.text("settings.layer.alert.region"),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 private enum class SettingsTopic(val titleKey: String) {

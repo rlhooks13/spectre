@@ -232,6 +232,12 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.alert.speed", "Alert for speed cameras", LanguageSlot.CONTROL),
     en("settings.layer.alert.gun", "Alert for gunshot detectors", LanguageSlot.CONTROL),
     en("settings.layer.alert.camera", "Alert for other cameras", LanguageSlot.CONTROL),
+    // Under every camera alert (P0-7d). Names no statute, so it can't go stale on one.
+    en(
+        "settings.layer.alert.region",
+        "Some countries restrict apps that warn drivers about traffic cameras, including Germany, Switzerland and France. Check the law where you drive before you turn on an alert.",
+        LanguageSlot.BODY,
+    ),
     en("settings.layer.download.title", "Download license plate readers.", LanguageSlot.CONTROL),
     en("settings.layer.more", "Update to include every plate reader.", LanguageSlot.BODY),
     // Superseded by settings.layer.download.source (P0-7c): the dialog now names the source and its terms.
