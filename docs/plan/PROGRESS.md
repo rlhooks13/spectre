@@ -57,9 +57,19 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **Catalog update:** off via `Features.IN_APP_CATALOG_UPDATE = false`. The Settings button is hidden and the ViewModel entry point returns early. `CatalogRemote.STOCK_PACK_URL` now points at this repo's `dist/` copy instead of upstream, and P4-6 brings back a signed update.
   - **Install card:** the catalog-update line now says new catalogs ship inside app updates.
   - **BrandGuard:** the upstream-URL entry is narrowed to `FlockFiles` (until P0-7b), and the card's catalog line entry is removed.
-  - New `ReceiveOnlyCopyTest` (+2): no English line claims "nothing is transmitted" or "passively watch"; the flag is off; the URL isn't upstream.
-  - Result: 778 tests green. Staging cold-started with 0 `FATAL`.
-  - Not checked on the device: the permission screen sits behind the disclaimer.
+  - New `ReceiveOnlyCopyTest` (+2): no English line claims "nothing is transmitted" or calls the app passive; the flag is off; the URL isn't upstream.
+  - Review fixes:
+    - The copy is scoped to radios ("never joins Wi-Fi networks, and never connects to, pairs with, or advertises to nearby devices"), since the app does use the network for tiles and place names.
+    - The scan notification channel "Passive Wi-Fi and Bluetooth scan status" moves to new key `ui.scan.status.channel`.
+    - The Settings Signatures help text gets a no-update variant (`ui.export.shares.catalog.no.update`).
+    - README egress list and dist rows updated.
+    - `CatalogRemote` notes that the flag must not turn on without P4-6's signature check.
+  - Retired keys' translations are removed from all 26 packs with the new `scripts/drop_pack_keys.py`, because they exceeded the "Unused" cap and counted as ignored lines. The bundled-pack test now asserts 0 ignored lines.
+  - Result: 778 tests green.
+  - Device: debug build after `pm clear`, disclaimer accepted, screenshot of the permission screen. The new copy renders in full with no clipping.
+  - Seen in that screenshot: the title "Spectre needs the radios" is nearly invisible (dark on dark), the same contrast bug as the crash screen. P1-D6.
+  - Follow-up for P1-A7: record `CatalogRemote` as "disabled until P4-6" in the egress inventory.
+  - Optional copy follow-up: say that "Faster Wi-Fi AP scans" means more probe requests.
   - PLAN: P0-7 split into 7a to 7d.
 - 2026-10-27: **PR #10 synced with main** after #13. The P0-4d BrandGuard entries became permanent ones (SpectreDisclaimer liability and MIT notice, the About attribution, the retired keys' unused pack lines), and the README and card carry LICENSE's two copyright notices. 779 tests green on the branch. Owner notified in a PR comment.
 - 2026-10-27: **P0-6 BrandGuard.** PR #13, merged as `d5f965c`.

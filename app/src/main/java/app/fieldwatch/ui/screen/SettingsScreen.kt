@@ -73,6 +73,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import app.fieldwatch.domain.AlertVoiceWhat
 import app.fieldwatch.domain.LanguageText
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapFooter
 import app.fieldwatch.domain.MapOverlay
@@ -1059,7 +1060,10 @@ fun SettingsScreen(
             if (topic == SettingsTopic.SIGNATURES) {
             SectionCard(LanguageText.text("settings.topic.signatures"), showTitle = false) {
             Text(
-                LanguageText.text("ui.export.shares.catalog.including"),
+                LanguageText.text(
+                    if (Features.IN_APP_CATALOG_UPDATE) "ui.export.shares.catalog.including"
+                    else "ui.export.shares.catalog.no.update",
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -1077,7 +1081,7 @@ fun SettingsScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(LanguageText.text("ui.import.signatures")) }
-            if (app.fieldwatch.domain.Features.IN_APP_CATALOG_UPDATE) {
+            if (Features.IN_APP_CATALOG_UPDATE) {
                 FieldwatchActionButton(
                     onClick = vm::updateStockCatalogFromGitHub,
                     modifier = Modifier.fillMaxWidth(),
