@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: gate fix for the startup crash, on branch `p0/fix-viewmodel-init-order`; check `gh pr list --head p0/fix-viewmodel-init-order` for the PR. Next: P0-3 part 2 (dependency verification, protected PR). Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
+- Current step: gate fix for the startup crash, on branch `p0/fix-viewmodel-init-order`; check `gh pr list --head p0/fix-viewmodel-init-order` for the PR. Next: P0-3 part 2 (dependency verification, protected PR).
 - Branch: `p0/fix-viewmodel-init-order`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
