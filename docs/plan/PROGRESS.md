@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b5b-redundant-short-names`
+- Branch: `p1/b5-short-names-word-start`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -69,6 +69,19 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B5 Over-broad names, the last 16 (catalog v103).** #62 (P1-B5b) merged as ac21e0e.
+  - **The fix:**
+    - 14 short BLE "contains" names (Echo, Audi, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Seos, Sony, VW) become the brand as a whole word at the start: `DefaultCatalog.bleWordStart` gives the exact name plus `X *`, `X-*` and `X_*`. Bose also gets `LE-Bose*`.
+    - UBNT's row already had the anchored `UBNT*`; B5b's triage missed it because its output cut off at four names.
+    - iPad stays a contains-rule, as an ADR-0015 exception: Apple's default name puts it last ("Jane's iPad").
+    - The ladder carries an "off" (`ADDED_RULES_V103`, from `bleWordStart`).
+  - **Corpus:**
+    - targets "JBL Flip 5", "LE-Bose QC Earbuds", "Echo Dot-1AB", "Xbox Wireless Controller" and "BT05";
+    - new near misses "Stanford Guest", "Logistics Scanner" and "Entourage Speaker";
+    - "Car Audio BT" loses its `knownUntil`.
+  - **Lint:**
+    - `SHORT_NAME` is down to iPad (ADR-0015).
+    - The UniFi AP collision keys shift down one with the row's rules. The lint list and ADR-0015's Accepted list both moved.
 - 2026-10-27: **P1-B5b Redundant short names (catalog v102).** #61 (P1-B5a) merged as e9666a7.
   - **Triage:** of the 34 short "contains" names the lint lists, 18 sit on a row that already has an anchored glob of the same brand on the same radio (`Arlo*`, `DJI*`, `Net2*`, ...).
   - **The fix:**

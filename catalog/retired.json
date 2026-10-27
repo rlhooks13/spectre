@@ -339,6 +339,201 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-amazon",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Echoes\"); replaced by the brand as a whole word at the start: Echo, \"Echo *\", \"Echo-*\", \"Echo_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Echo",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-audi-mmi",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Car Audio\"); replaced by the brand as a whole word at the start: Audi, \"Audi *\", \"Audi-*\", \"Audi_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Audi",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-bmw",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: BMW, \"BMW *\", \"BMW-*\", \"BMW_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "BMW",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-bose",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: Bose, \"Bose *\", \"Bose-*\", \"Bose_*\", plus LE-Bose*.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Bose",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-byd",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: BYD, \"BYD *\", \"BYD-*\", \"BYD_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "BYD",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-ford",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Stanford\"); replaced by the brand as a whole word at the start: Ford, \"Ford *\", \"Ford-*\", \"Ford_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Ford",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-hobby-ble",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: BT05, \"BT05 *\", \"BT05-*\", \"BT05_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "BT05",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-jbl",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: JBL, \"JBL *\", \"JBL-*\", \"JBL_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "JBL",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-logitech",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Logistics\"); replaced by the brand as a whole word at the start: Logi, \"Logi *\", \"Logi-*\", \"Logi_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Logi",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-microsoft",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: Xbox, \"Xbox *\", \"Xbox-*\", \"Xbox_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Xbox",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-oura",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Entourage\"); replaced by the brand as a whole word at the start: Oura, \"Oura *\", \"Oura-*\", \"Oura_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Oura",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-seos",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name; replaced by the brand as a whole word at the start: Seos, \"Seos *\", \"Seos-*\", \"Seos_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Seos",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-sony",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (\"Sonya\"); replaced by the brand as a whole word at the start: Sony, \"Sony *\", \"Sony-*\", \"Sony_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Sony",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-volkswagen",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in a name (any name with \"vw\" in it); replaced by the brand as a whole word at the start: VW, \"VW *\", \"VW-*\", \"VW_*\".",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "VW",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-unifi-ap",
+            "retiredIn": 103,
+            "step": "P1-B5",
+            "reason": "Short name anywhere in an SSID; the row's anchored UBNT* stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "UBNT",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
         }
     ]
 }

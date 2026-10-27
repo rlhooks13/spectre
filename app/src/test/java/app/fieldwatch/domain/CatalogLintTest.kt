@@ -121,13 +121,8 @@ class CatalogLintTest {
             "fleet-dji/0x08AA" to "P1-B10",
         )
 
-        /** The short names P1-B5b left: none of these rows has an anchored glob of the same name to fall back on. */
-        private val SHORT_NAME: Map<String, String> = listOf(
-            "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-seos/Seos/BLE", "fleet-audi-mmi/Audi/BLE", "fleet-bmw/BMW/BLE",
-            "fleet-bose/Bose/BLE", "fleet-byd/BYD/BLE", "fleet-ford/Ford/BLE", "fleet-hobby-ble/BT05/BLE",
-            "fleet-jbl/JBL/BLE", "fleet-logitech/Logi/BLE", "fleet-microsoft/Xbox/BLE", "fleet-oura/Oura/BLE",
-            "fleet-sony/Sony/BLE", "fleet-unifi-ap/UBNT/WIFI", "fleet-volkswagen/VW/BLE",
-        ).associateWith { "P1-B5" }
+        /** Short "contains" names kept on purpose (P1-B5): Apple's default name puts "iPad" last ("Jane's iPad"). */
+        private val SHORT_NAME: Map<String, String> = mapOf("fleet-apple-device/iPad/ANY" to "ADR-0015")
 
         /** Generated positive → the other signatures it hits, with ADR-0015 or the fixing step. */
         private val ALLOWED_COLLISIONS = mapOf(
@@ -139,8 +134,8 @@ class CatalogLintTest {
             "fleet-novatel#0 -> fleet-inseego" to "ADR-0015",
             "fleet-unifi-ap#0 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#1 -> fleet-unifi" to "ADR-0015",
+            "fleet-unifi-ap#2 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#3 -> fleet-unifi" to "ADR-0015",
-            "fleet-unifi-ap#4 -> fleet-unifi" to "ADR-0015",
             "fleet-liteon-camera-radio#25 -> fleet-tplink" to "P1-B10",
         )
 

@@ -653,8 +653,7 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x0006),
             bleName("Surface"),
-            bleName("Xbox"),
-        ),
+        ) + bleWordStart("Xbox"),
     )
 
     private fun tesla() = Fleet(
@@ -690,9 +689,8 @@ object DefaultCatalog {
         notes = "Ford or Lincoln phone-as-key / infotainment. Not a dealer Wi-Fi name.",
         rules = listOf(
             mfg(0x0723),
-            bleName("Ford"),
             bleName("Lincoln"),
-        ),
+        ) + bleWordStart("Ford"),
     )
 
     private fun hondaMotor() = oemVehicle(
@@ -757,9 +755,8 @@ object DefaultCatalog {
         notes = "BMW phone-as-key or in-car hotspot. Factory BMW_ Wi-Fi is the car, not a dealer showroom.",
         rules = listOf(
             mfg(0x05EB),
-            bleName("BMW"),
             wifiGlob("BMW_*"),
-        ),
+        ) + bleWordStart("BMW"),
     )
 
     private fun volkswagen() = oemVehicle(
@@ -771,9 +768,8 @@ object DefaultCatalog {
             uuid("FE30"),
             uuid("FE31"),
             bleName("Volkswagen"),
-            bleName("VW"),
             wifiGlob("My VW*"),
-        ),
+        ) + bleWordStart("VW"),
     )
 
     private fun porsche() = oemVehicle(
@@ -805,8 +801,7 @@ object DefaultCatalog {
         notes = "BYD phone-as-key or vehicle BLE. Pattern match, not a specific model.",
         rules = listOf(
             mfg(0x0C34),
-            bleName("BYD"),
-        ),
+        ) + bleWordStart("BYD"),
     )
 
     private fun oemVehicle(
@@ -868,10 +863,9 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x012D),
-            bleName("Sony"),
             bleName("WH-1000"),
             bleName("WF-1000"),
-        ),
+        ) + bleWordStart("Sony"),
     )
 
     private fun bose() = Fleet(
@@ -887,8 +881,8 @@ object DefaultCatalog {
             mfg(0x009E),
             uuid("FE21"),
             uuid("FEBE"),
-            bleName("Bose"),
-        ),
+            // Bose earbuds advertise "LE-Bose …" (P1-B5).
+        ) + bleWordStart("Bose") + bleGlob("LE-Bose*"),
     )
 
     private fun garmin() = Fleet(
@@ -918,10 +912,9 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x0171),
-            bleName("Echo"),
             bleName("Amazon"),
             bleName("Fire TV"),
-        ),
+        ) + bleWordStart("Echo"),
     )
 
     private fun fitbit() = Fleet(
@@ -968,8 +961,7 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x02B2),
-            bleName("Oura"),
-        ),
+        ) + bleWordStart("Oura"),
     )
 
     private fun logitech() = Fleet(
@@ -985,8 +977,7 @@ object DefaultCatalog {
             mfg(0x01DA),
             uuid("FE61"),
             bleName("Logitech"),
-            bleName("Logi"),
-        ),
+        ) + bleWordStart("Logi"),
     )
 
     private fun jblHarman() = Fleet(
@@ -1000,9 +991,8 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x0057),
-            bleName("JBL"),
             bleName("Harman"),
-        ),
+        ) + bleWordStart("JBL"),
     )
 
     private fun sonos() = Fleet(
@@ -1814,9 +1804,8 @@ object DefaultCatalog {
             mfg(0x0BDE),
             uuid("FCBF"),
             uuid("00009800-0000-1000-8000-00177A000002"),
-            bleName("Seos"),
             bleGlob("Yale*"),
-        ),
+        ) + bleWordStart("Seos"),
     )
 
     private fun augustLock() = Fleet(
@@ -2993,7 +2982,6 @@ object DefaultCatalog {
         rules = buildList {
             add(wifiName("UniFi"))
             add(wifiName("Ubiquiti"))
-            add(wifiName("UBNT"))
             add(wifiGlob("UniFi*"))
             add(wifiGlob("UAP-*"))
             add(wifiGlob("UBNT*"))
@@ -3035,11 +3023,10 @@ object DefaultCatalog {
             bleName("JDY-16"),
             bleName("JDY-31"),
             bleGlob("JDY-*"),
-            bleName("BT05"),
             bleName("MLT-BT05"),
             bleName("ESP32"),
             bleGlob("ESP32-*"),
-        ),
+        ) + bleWordStart("BT05"),
     )
 
     private fun metaGlasses() = Fleet(
@@ -4363,10 +4350,9 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x010E),
-            bleName("Audi"),
             wifiGlob("Audi_MMI_*"),
             wifiGlob("Audi MMI*"),
-        ),
+        ) + bleWordStart("Audi"),
     )
 
     private fun extremeNetworks() = Fleet(
@@ -4740,6 +4726,14 @@ object DefaultCatalog {
         MatchRule(RuleKind.NAME_CONTAINS, text = text, radio = RadioKind.BLE)
     private fun bleGlob(pattern: String) =
         MatchRule(RuleKind.NAME_GLOB, text = pattern, radio = RadioKind.BLE)
+
+    /**
+     * P1-B5: a short brand as a whole word at the start of a BLE name: the exact name, or the brand then a space, `-`
+     * or `_`. Replaces a short "contains" rule ("Logi" hit "Logistics", "Oura" hit "Entourage"). Rows add these last,
+     * where patchBuiltIn appends them, so an upgraded row equals stock.
+     */
+    fun bleWordStart(brand: String): List<MatchRule> =
+        listOf(brand, "$brand *", "$brand-*", "${brand}_*").map { bleGlob(it) }
     private fun svcData(uuid: String, prefix: String) =
         MatchRule(RuleKind.SERVICE_DATA, text = uuid, dataPrefixHex = prefix, radio = RadioKind.BLE)
     /** Service data for [uuid] with any payload (DULT FCB2). */

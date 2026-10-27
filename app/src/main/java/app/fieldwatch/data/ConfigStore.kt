@@ -1254,6 +1254,12 @@ class ConfigStore internal constructor(private val file: File) {
             fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V102)
             version = CATALOG_V102
         }
+        if (version < CATALOG_V103) {
+            // P1-B5: the last short "contains" names are retired (RetiredRules strips them on load); patchBuiltIn appends
+            // the brand-as-a-word globs that replace them, which carry an "off" from the retired name.
+            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V103)
+            version = CATALOG_V103
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1314,7 +1320,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 102
+        const val CATALOG_VERSION = 103
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1414,7 +1420,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V99 = 99
         private const val CATALOG_V100 = 100
         private const val CATALOG_V101 = 101
-        private const val CATALOG_V102 = CATALOG_VERSION
+        private const val CATALOG_V102 = 102
+        private const val CATALOG_V103 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
@@ -1815,6 +1822,16 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-hp" to setOf("HP ENVY*"),
             "fleet-myq" to setOf("MyQ"),
         )
+
+        /** The brand-as-a-word globs v103 added in place of each retired short name (P1-B5). */
+        private val ADDED_RULES_V103: Map<String, Set<String>> = mapOf(
+            "fleet-amazon" to "Echo", "fleet-audi-mmi" to "Audi", "fleet-bmw" to "BMW", "fleet-bose" to "Bose",
+            "fleet-byd" to "BYD", "fleet-ford" to "Ford", "fleet-hobby-ble" to "BT05", "fleet-jbl" to "JBL",
+            "fleet-logitech" to "Logi", "fleet-microsoft" to "Xbox", "fleet-oura" to "Oura", "fleet-seos" to "Seos",
+            "fleet-sony" to "Sony", "fleet-volkswagen" to "VW",
+        ).mapValues { (id, brand) ->
+            DefaultCatalog.bleWordStart(brand).map { it.text }.toSet() + if (id == "fleet-bose") setOf("LE-Bose*") else emptySet()
+        }
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */
         private const val V99_AIRTAG_NOTES = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be " +
