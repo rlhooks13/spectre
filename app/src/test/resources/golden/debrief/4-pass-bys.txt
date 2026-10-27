@@ -1,0 +1,116 @@
+SPECTRE SIT — Market walk
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Market walk” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Market walk
+Window        sit Market walk (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        2
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 1.10 km along path · span 1.10 km · 21 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Market walk Spectre heard 0 Wi-Fi access points and 2 BLE advertisers (2 signature-matched, 0 hidden SSIDs, 2 randomized BLE). Overall distance traveled: 1.10 km along the GPS path (straight-line span 1.10 km). No finder tag clearly stayed with the GPS path in this window.
+Finder tags  2
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 1.10 km along-track, span 1.10 km, 21 fixes.
+
+1. Stay  11:40–11:41 UTC  (1m0s)
+   0.00100, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+2. Stay  11:41–11:42 UTC  (1m0s)
+   0.00149, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+3. Stay  11:42–11:43 UTC  (1m0s)
+   0.00199, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+4. Stay  11:43–11:44 UTC  (1m0s)
+   0.00248, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+5. Stay  11:44–11:45 UTC  (1m0s)
+   0.00298, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+6. Stay  11:45–11:46 UTC  (1m0s)
+   0.00347, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+7. Stay  11:46–11:47 UTC  (1m0s)
+   0.00396, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+8. Stay  11:47–11:48 UTC  (1m0s)
+   0.00446, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+9. Stay  11:48–11:49 UTC  (1m0s)
+   0.00495, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+10. Stay  11:49–11:50 UTC  (1m0s)
+   0.00545, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Samsung SmartTags
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -84 dBm
+
+3. TRACKING ASSESSMENT
+Overall distance traveled: 1.10 km along the GPS path (21 samples). Straight-line span 1.10 km.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
+
+4. ENVIRONMENT
+Mixed or under-sampled environment.  (0 APs, 2 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)
+
+5. NETWORKS (WI-FI ACCESS POINTS)
+Heard 0 AP(s); 0 hidden SSID; 0 sat most of the window.
+
+6. BLUETOOTH LE
+Heard 2 advertiser(s); 2 with randomized addresses; 2 signature-matched.
+
+7. SIGNATURE HITS
+Samsung SmartTags  1
+Tile Trackers  1
+
+8. PERSISTENCE
+Sat most of this window: 1
+First seen in this window: 2
+
+9. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+10. PRIVACY
+A passive observer with the same radios would see 0 named/hidden APs and 2 BLE advertisers (2 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+11. RECOMMENDED ACTIONS
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS path in this window.

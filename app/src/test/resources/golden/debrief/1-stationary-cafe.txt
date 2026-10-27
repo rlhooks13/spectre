@@ -1,0 +1,82 @@
+SPECTRE SIT — Café stop
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Café stop” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Café stop
+Window        sit Café stop (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        2
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 77 m along path · span 5 m · 21 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Café stop Spectre heard 1 Wi-Fi access points and 1 BLE advertisers (2 signature-matched, 0 hidden SSIDs, 1 randomized BLE). Overall distance traveled: 77 m along the GPS path (straight-line span 5 m). GPS displacement was only 5 m — too short to test whether a tracker is following. Walk farther with tagging on.
+Finder tags  1
+Surveillance  1
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 77 m along-track, span 5 m, 21 fixes.
+
+1. Stay  11:40–12:00 UTC  (20m0s)
+   0.00103, 0.00200  (operator phone)
+   Heard here: 1 AP(s), 1 BLE  ·  Apple AirTags, Flock Safety Cameras
+   · 7A:11:22:33:44:01  7A:11:22:33:44:01  -58 dBm
+   · Flock-1A2B  B4:1E:52:0A:0B:0C  -66 dBm
+
+One stay — you did not move far enough in this window to split locations.
+
+3. TRACKING ASSESSMENT
+Overall distance traveled: 77 m along the GPS path (21 samples). Straight-line span 5 m.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+Insufficient movement to distinguish a radio that stayed with you from one you passed. Walk or drive farther and re-run.
+
+4. ENVIRONMENT
+Likely a dwelling or small office — few sitting APs, limited BLE.  (1 APs, 1 BLE, 1 persistent APs, traveled 77 m, span 5 m.)
+
+5. NETWORKS (WI-FI ACCESS POINTS)
+Heard 1 AP(s); 0 hidden SSID; 1 sat most of the window.
+unknown  1  strongest -66 dBm
+
+6. BLUETOOTH LE
+Heard 1 advertiser(s); 1 with randomized addresses; 1 signature-matched.
+
+7. SIGNATURE HITS
+Apple AirTags  1
+Flock Safety Cameras  1
+
+8. PERSISTENCE
+Sat most of this window: 2
+First seen in this window: 2
+
+9. EXTRA ATTENTION
+Pattern match, not identity, not a skimmer detector, not a safety finding.
+  · Flock-1A2B  B4:1E:52:0A:0B:0C  -66 dBm  [Flock Safety Cameras]
+    Flock-style roadside ALPR / camera pole — reads plates and can be used to locate a vehicle. IEEE B4:1E:52 or a Flock-* SSID is the strong hit. Current poles are often quiet on Wi-Fi and BLE. Pattern match, not that camera. Look with your eyes.
+
+10. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+11. PRIVACY
+A passive observer with the same radios would see 1 named/hidden APs and 1 BLE advertisers (1 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+12. RECOMMENDED ACTIONS
+  · Walk farther (50+ m) with GPS tagging on, then re-run Debrief.
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: Not enough GPS movement (5 m) to test following; walk and re-run Debrief.
