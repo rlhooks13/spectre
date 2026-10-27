@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 0 # the lint-baseline guard reads the base branch's copy
+          fetch-depth: 0 # tags, so the build carries X.Y.Z-dev+<sha> (ADR-0002)
           persist-credentials: false
 
       - name: Validate the Gradle wrapper
@@ -81,12 +81,10 @@ jobs:
         if: success() || failure()
         run: ./gradlew lintDebug --stacktrace
 
-      # app/lint-baseline.xml holds the inherited errors (P1-A8 clears it). A PR may shrink it, never grow
-      # it, and the report must hold no error the baseline doesn't cover (catches abortOnError = false).
-      - name: Lint-baseline guard
+      # P1-A8 fixed the inherited errors, so there is no lint baseline. The report must hold no error
+      # (catches abortOnError = false), and no baseline file or setting may come back to hide one.
+      - name: Lint guard
         if: success() || failure()
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
           set -euo pipefail
           report=app/build/reports/lint-results-debug.xml
@@ -95,17 +93,14 @@ jobs:
             exit 1
           fi
           if grep -Eq 'severity="(Error|Fatal)"' "$report"; then
-            echo "::error::The lint report has errors the baseline doesn't cover."
+            echo "::error::The lint report has errors."
             exit 1
           fi
-          issue='<issue([[:space:]]|$)' # not the <issues> root
-          head_n=$(grep -cE "$issue" app/lint-baseline.xml 2>/dev/null || true)
-          base_n=$(git show "$BASE_SHA:app/lint-baseline.xml" 2>/dev/null | grep -cE "$issue" || true)
-          if git cat-file -e "$BASE_SHA:app/lint-baseline.xml" 2>/dev/null && [ "${head_n:-0}" -gt "${base_n:-0}" ]; then
-            echo "::error::app/lint-baseline.xml grew from $base_n to $head_n entries."
+          if find . -name 'lint-baseline*.xml' -not -path './*/build/*' | grep -q . \
+            || grep -rqsE '^[^/]*\b(baseline|abortOnError|ignoreWarnings|disable)\b' --include='*.gradle.kts' . ; then
+            echo "::error::A lint baseline or lint opt-out was added. Fix the issue instead."
             exit 1
           fi
-          echo "Lint baseline: ${head_n:-0} entries (base ${base_n:-none})."
 
       - name: Upload reports
         if: always()
