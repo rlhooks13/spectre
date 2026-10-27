@@ -66,7 +66,7 @@ object OfficialSentences {
     const val AUTHOR_GUIDE =
         "To write a language file, export the English template and follow the author guide on GitHub."
     const val AUTHOR_GUIDE_URL =
-        "https://github.com/OffGridPete/Fieldwatch/blob/main/docs/language-pack-author-guide.md"
+        "${Brand.REPO_URL}/blob/main/docs/language-pack-author-guide.md"
 }
 
 /** Export of the English map. Compiled, not pack keys, so a translation cannot rename what is exported. */

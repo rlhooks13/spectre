@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4b (English copy values), PR #8 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4c (upstream social links).
-- Branch: `p0/4b-english-copy`
+- Current step: P0-4c (upstream social links), on branch `p0/4c-social-links`; check `gh pr list --head p0/4c-social-links` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-5 (language packs). P0-4d is a protected PR the agent drafts for the owner.
+- Branch: `p0/4c-social-links`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T07:48Z
+- Last cycle: 2026-10-27T08:03Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,12 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4b English copy values.** PR #8.
+- 2026-10-27: **P0-4c Upstream social links.** Branch `p0/4c-social-links`.
+  - Removed the Settings credit footer's Instagram (`instagram.com/OffGridPete`) and X (`x.com/OGridPete`) chips, the now-unused `SocialChip` composable, and `ic_instagram.xml` and `ic_x.xml`. The footer keeps the copyright line, which P0-4d settles.
+  - The language keys `ui.offgridpete.label` and `ui.ogridpete.label` stay (keys are never removed); they're unused now.
+  - The language-pack author-guide link now points to this repo's `docs/language-pack-author-guide.md` (`Brand.REPO_URL`); one test updated.
+  - Result: tests green; staging cold-started with 0 `FATAL`.
+- 2026-10-27: **P0-4b English copy values.** PR #8, merged as `ca0676a`.
   - "Fieldwatch"/"FIELDWATCH" → "Spectre"/"SPECTRE" in English values only:
     - `ChromeLines` (49) and `LanguageCopy` (7).
     - The hard-coded copy in `GnssInterference` (5) and `PlaceLookup` (1).

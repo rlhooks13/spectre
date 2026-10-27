@@ -1466,65 +1466,17 @@ private fun SettingsTopicRow(title: String, value: String, onClick: () -> Unit) 
 
 @Composable
 private fun CreditFooter() {
-    val context = LocalContext.current
-    val muted = MaterialTheme.colorScheme.onSurfaceVariant
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 14.dp, bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             LanguageText.text("ui.copyright.c.2026.off"),
             style = MaterialTheme.typography.labelSmall,
-            color = muted,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            SocialChip(
-                icon = R.drawable.ic_instagram,
-                label = LanguageText.text("ui.offgridpete.label"),
-                tint = muted,
-                onClick = { openUrl(context, "https://instagram.com/OffGridPete") },
-            )
-            SocialChip(
-                icon = R.drawable.ic_x,
-                label = LanguageText.text("ui.ogridpete.label"),
-                tint = muted,
-                onClick = { openUrl(context, "https://x.com/OGridPete") },
-            )
-        }
-    }
-}
-
-@Composable
-private fun SocialChip(
-    icon: Int,
-    label: String,
-    tint: Color,
-    onClick: () -> Unit,
-) {
-    Surface(
-        shape = RoundedCornerShape(99.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.65f),
-        modifier = Modifier.clickable(onClick = onClick),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = label,
-                tint = tint,
-                modifier = Modifier.size(14.dp),
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(label, style = MaterialTheme.typography.labelMedium, color = tint)
-        }
     }
 }
 
