@@ -1104,7 +1104,6 @@
     "settings.layer.alert.camera": "Alert dla innych kamer",
     "settings.layer.download.title": "Pobierz czytniki tablic.",
     "settings.layer.more": "Aktualizacja doda każdy czytnik tablic.",
-    "settings.layer.download.body": "Pobranie to lista czytników tablic Stanów Zjednoczonych, około 37 MB. Później można ją zaktualizować. Zostaje w tym telefonie.",
     "settings.layer.other.download.title": "Pobierz inne czujniki.",
     "settings.layer.other.download.body": "Około 1 MB. Później można ją zaktualizować. Zostaje w tym telefonie.",
     "settings.layer.download.action": "Pobierz",

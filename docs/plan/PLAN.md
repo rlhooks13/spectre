@@ -191,6 +191,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - **P0-4e** applicationId `io.github.rlhooks13.spectre`. The charter's hard stops forbid the agent from changing the applicationId, so this waits for the owner's explicit go-ahead in the session.
      - Catalog `notes` that mention Fieldwatch go through the catalog change checklist, or onto BrandGuard's allowlist (P0-6).
      - ✅ **P0-4f** README and docs rebrand: `README.md`, `docs/language-pack-requirements.md`, the instruction cards (`dist/` and `docs/instruction.txt`), and the other user-facing docs that still name Fieldwatch or present Off Grid Pete LLC as the publisher. Upstream's history and attribution stay.
+     - **P0-4g** Language-pack file cap follows the English map (ADR-0011). The Phase 0 copy pushed the worst-case pack past the cap's test margin. Must land before P0-4d.
 5. ✅ **Language packs.**
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.
@@ -208,7 +209,9 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Split into sub-steps:
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
      - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
-     - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation.
+     - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation. **Partial (stays open):**
+       - Done: the dialog and the layer note name the source host, say Spectre doesn't run it, point to its terms and credit OpenStreetMap (ODbL). The download must come from that host over HTTPS (redirects elsewhere fail). Parse limits cover depth, string length, unpacked size and duplicates.
+       - Open: the operator's name and the terms themselves (needs-human). Then strict GeoJSON type checks, an atomic install, and download tests against a local server.
      - **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.

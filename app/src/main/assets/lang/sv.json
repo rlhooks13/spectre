@@ -1097,7 +1097,6 @@
     "settings.layer.alert.camera": "Varning för andra kameror",
     "settings.layer.download.title": "Hämta skyltläsare.",
     "settings.layer.more": "Uppdatera för att ta med varje registreringsskyltsläsare.",
-    "settings.layer.download.body": "Hämtningen är USA:s lista över skyltläsare, ungefär 37 MB. Du kan uppdatera den senare. Den stannar på den här telefonen.",
     "settings.layer.other.download.title": "Hämta andra sensorer.",
     "settings.layer.other.download.body": "Ungefär 1 MB. Du kan uppdatera den senare. Den stannar på den här telefonen.",
     "settings.layer.download.action": "Hämta",

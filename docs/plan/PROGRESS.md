@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7b (sensor layer off), PR #15 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced with main after #14 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7c (dontgetflocked).
-- Branch: `p0/7b-sensor-layer-off`
+- Current step: P0-4g language-pack cap (ADR-0011), on branch `p0/4g-language-pack-cap`; check `gh pr list --head p0/4g-language-pack-cap` for the PR. It must merge **before PR #10**: with #10 on top of `main` (after #16), the full-slot pack test trips. After it merges, re-sync #10 with `main`. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; **don't merge until the cap PR lands and #10 is re-synced**), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c). Next: P0-7d (camera-alert region notice).
+- Branch: `p0/4g-language-pack-cap`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T09:55Z
+- Last cycle: 2026-10-27T10:35Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -21,6 +21,10 @@
 - **Phone screen sleeps.** At 06:22Z the screen was dozing while USB-powered, even with `stay_on_while_plugged_in=7`, so the screenshots came out black until `input keyevent KEYCODE_WAKEUP`. Check the screen timeout and Samsung's power settings.
 - **PR #6 (P0-3 part 2, protected): sign and merge.** It adds `gradle/verification-metadata.xml` (SHA-256, trust on first use) and raises `test-baseline.txt` to 767. CI's `Unit tests` and `APK` pass with verification on; `Protected paths` fails only for want of your signature. After #6 lands, the baseline can go to 769 (P0-4a adds `BrandTest`).
 - **P0-4e applicationId go-ahead.** CHARTER's identity decision names `io.github.rlhooks13.spectre`, but its hard stops say the agent never changes the applicationId. The agent won't make that change until you confirm in this session. Changing it means a fresh install: data from `app.fieldwatch` doesn't carry over unless the user exports and imports it.
+- **dontgetflocked operator and license (P0-7c).**
+  - The agent couldn't verify who runs `data.dontgetflocked.com` or what terms or license cover `cameras.geojson.gz`. A web search found nothing authoritative, and `WebFetch` is denied.
+  - The download dialog therefore names only the host and says "Spectre does not run that site; check it for its terms before you download".
+  - Please confirm the operator and terms, or add a WebFetch allow rule for `dontgetflocked.com` so the agent can read them. If the data is OpenStreetMap-derived (ODbL), the dialog should also credit "© OpenStreetMap contributors".
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -50,7 +54,39 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7b Sensor layer off.** PR #15.
+- 2026-10-27: **P0-4g Language-pack cap 264 → 280 KiB (ADR-0011).** Branch `p0/4g-language-pack-cap` (the first push went to `p0/language-pack-cap`, which has no PR; delete it once a branch-delete rule exists).
+  - **Found when** re-syncing PR #10 after #16: `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` failed. A pack with every line at its slot cap must be either accepted, or refused and within 8 KiB of `LanguagePack.MAX_BYTES`.
+  - **Why it tripped:** the Phase 0 copy fixes added English lines, so the worst-case pack (main plus #10) is 278,802 bytes, 274 bytes past 264 KiB plus 8 KiB.
+  - **Decision:** the test's margin is a tripwire, so it stays unchanged. The first draft took the cap to 272 KiB, which kept the worst case refused. Both reviews pointed out that this still refuses a pack that follows every slot rule, so the cap goes to 280 KiB instead. The worst case is now accepted, and the test's line-by-line branch runs for the first time. The author guide and the requirements doc are updated. A new test, `packDocsStateTheFileCap`, ties every "KiB" figure in both docs to `MAX_BYTES`.
+  - **Checks:** tests pass on `main` with the change, and on `main` + #10 + the change.
+  - #10 stays unmerged until this lands and #10 is re-synced.
+- 2026-10-27: **P0-7c Plate-list source and terms (partial).** PR #16, merged as `a3e6dcb`.
+  - **Dialog:** the plate-reader download dialog uses new key `settings.layer.download.source`: "…from {host}. Spectre does not run that site; check it for its terms before you download. The list is crowdsourced and not complete…".
+    - `{host}` comes from the download URL via the new `FlockFiles.sourceHost()`, so the copy can't drift from the real source.
+    - The old key `settings.layer.download.body` is retired ("Unused"), and its translations are dropped from the 26 packs.
+  - **Layer note:** under the plate layer's note, a new line `settings.layer.source` ("From {host}, which Spectre does not run. OpenStreetMap data, © OpenStreetMap contributors.") means people who already have the list see the source too.
+  - **OpenStreetMap credit:** the dialog credits "© OpenStreetMap contributors, ODbL". The basis is in the code: upstream's compiled credit says the camera locations are OSM data, and the parser keys cameras by `osm_id`. `{size}` comes from `expectedBytes`.
+  - **Network cap:** 80 MB, about 2× the published 37.7 MB. `download()` stops reading past it, Content-Length or not. The test checks only the constants; a download test against a local server is a follow-up.
+  - **Source host enforced:** after redirects, the response must come from the named host or a subdomain, over HTTPS, or probe and download fail (`servedFromSource`, tested).
+  - **Parser limits** (both reviewers found the old parser could crash the app):
+    - nesting depth 64;
+    - strings 64 KB;
+    - unpacked size 512 MB, because the gzip bytes could otherwise expand without bound;
+    - total feature-loop steps, so a list repeating one id is rejected;
+    - a backstop turning `StackOverflowError` and `OutOfMemoryError` into a parse failure, since those Errors slipped past `catch (Exception)` and would have taken down the scanning process.
+    - New `FlockParseLimitsTest` (+3) checks each limit, using a lazily generated endless reader.
+  - A bad parse never replaces a saved list (unchanged).
+  - **Counts and hashes only:** the agent didn't download the dataset.
+  - **Step stays open:** the operator's name and the terms are unverified (needs-human above).
+  - **Follow-ups:**
+    - strict GeoJSON `type` checks;
+    - an atomic install with fsync, and no copy-over fallback;
+    - download tests against a local server;
+    - translations of the new dialog key (non-English users see it in English for now);
+    - a device screenshot of the dialog. It sits behind the disclaimer, the permission grant and Settings navigation, so it waits for UI tests in P1-A.
+  - New `PlateListSourceTest` (+3). Result: 787 tests green.
+- 2026-10-27: **PR #10 re-synced after #15.** The BrandGuard allowlist conflict is resolved (neither side's removed entries stay). 784 tests green on the branch.
+- 2026-10-27: **P0-7b Sensor layer off.** PR #15, merged as `271db7e`.
   - **Why off:** PLAN's two options were a build script or the layer off. A build script means fetching and replacing a 40,112-row ODbL dataset that a test pins, so the layer is off for now. P1-E5 (new) brings it back with `scripts/build_sensors.py` and a list this project hosts.
   - **What's off:**
     - `Features.OTHER_SENSORS_LAYER = false`.

@@ -52,7 +52,8 @@ private data class LanguageTemplateFile(
 )
 
 object LanguagePack {
-    const val MAX_BYTES = 264 * 1024
+    /** Above a pack with every line at its slot cap in a two-byte script, so that pack is accepted (ADR-0011). */
+    const val MAX_BYTES = 280 * 1024
     const val MAX_KEYS = 2000
     const val MAX_NAME = 40
     const val MAX_WRITTEN_FOR = 32

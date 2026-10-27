@@ -1053,7 +1053,6 @@
     "settings.layer.alert.camera": "Alarm për kamera të tjera",
     "settings.layer.download.title": "Shkarko lexues targash.",
     "settings.layer.more": "Përditësoni për të përfshirë çdo lexues targash.",
-    "settings.layer.download.body": "Shkarkimi është lista e lexuesve të targave të Shteteve të Bashkuara, rreth 37 MB. Më vonë mund ta përditësoni. Ajo qëndron në këtë telefon.",
     "settings.layer.other.download.title": "Shkarko sensorë të tjerë.",
     "settings.layer.other.download.body": "Rreth 1 MB. Më vonë mund ta përditësoni. Ajo qëndron në këtë telefon.",
     "settings.layer.download.action": "Shkarko",

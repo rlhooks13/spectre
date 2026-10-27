@@ -261,8 +261,8 @@ class LanguagePackTest {
                 assertEquals(EnglishCopy.cap(line), LanguageText.text(line.key).length)
             }
         } else {
-            // Every line at its slot cap, written with a two-byte letter, is over 264 KiB.
-            // The file cap stays. That whole file is refused. The packs in the app are smaller.
+            // The English map outgrew the file cap: this whole file is refused. It must stay
+            // within 8 KiB of the cap until the cap is revisited (ADR-0011).
             assertReject(parsed)
             assertEquals(LanguageErrors.LARGE, (parsed as LanguageParse.Reject).messageKey)
             assertTrue(bytes.size < LanguagePack.MAX_BYTES + 8 * 1024)
@@ -606,7 +606,17 @@ class LanguagePackTest {
         assertTrue(text.contains("count: {n}"))
         assertTrue(text.contains("not reviewed or certified"))
         assertTrue(text.contains("Wi-Fi"))
-        assertTrue(text.contains("264 KiB"))
+        assertTrue(text.contains("${LanguagePack.MAX_BYTES / 1024} KiB"))
+    }
+
+    @Test
+    fun packDocsStateTheFileCap() {
+        val cap = "${LanguagePack.MAX_BYTES / 1024} KiB"
+        for (path in listOf("../docs/language-pack-author-guide.md", "../docs/language-pack-requirements.md")) {
+            val sizes = Regex("\\d+ KiB").findAll(repoFile(path).readText()).map { it.value }.toList()
+            assertTrue(path, sizes.isNotEmpty())
+            assertEquals(path, listOf(cap), sizes.distinct())
+        }
     }
 
     @Test

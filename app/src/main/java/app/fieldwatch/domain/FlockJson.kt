@@ -29,7 +29,10 @@ fun parseFlock(reader: Reader): List<FlockCamera> {
 
 private fun JsonPull.readFeatures(out: LinkedHashMap<Long, FlockCamera>) {
     expect('[')
+    // Duplicates don't grow [out], so the kept cap alone wouldn't bound a list that repeats one id.
+    var seen = 0L
     while (true) {
+        if (++seen > MAX_SEEN) throw FlockParseException("too many features")
         skipWs()
         when (peek()) {
             ']'.code -> {
@@ -303,9 +306,20 @@ internal fun plateBrand(brand: String, operatorName: String): String {
 
 private const val MAX_KEPT = 400_000
 
+/** Loop steps over the feature array (features plus separators), duplicates included. */
+private const val MAX_SEEN = 8L * MAX_KEPT
+
 private class JsonPull(private val reader: Reader) {
     private var cur = reader.read()
     private val sb = StringBuilder()
+    private var depth = 0
+
+    private companion object {
+        /** The list nests a few levels deep; anything past this is not a camera list. */
+        const val MAX_DEPTH = 64
+        /** Tag values are short; one huge string would only exhaust memory. */
+        const val MAX_STRING = 64 * 1024
+    }
 
     fun peek(): Int = cur
 
@@ -460,22 +474,34 @@ private class JsonPull(private val reader: Reader) {
 
     private fun skipObject() {
         expect('{')
-        while (nextName() != null) skipValue()
+        nested { while (nextName() != null) skipValue() }
     }
 
     private fun skipArray() {
         expect('[')
-        while (true) {
-            skipWs()
-            when (cur) {
-                ']'.code -> {
-                    bump()
-                    return
+        nested {
+            while (true) {
+                skipWs()
+                when (cur) {
+                    ']'.code -> {
+                        bump()
+                        return@nested
+                    }
+                    ','.code -> bump()
+                    -1 -> throw FlockParseException("truncated")
+                    else -> skipValue()
                 }
-                ','.code -> bump()
-                -1 -> throw FlockParseException("truncated")
-                else -> skipValue()
             }
+        }
+    }
+
+    /** Recursion is bounded so a deeply nested file fails the parse instead of the stack. */
+    private inline fun nested(body: () -> Unit) {
+        if (++depth > MAX_DEPTH) throw FlockParseException("nested too deep")
+        try {
+            body()
+        } finally {
+            depth--
         }
     }
 
@@ -505,6 +531,7 @@ private class JsonPull(private val reader: Reader) {
         bump()
         sb.setLength(0)
         while (cur >= 0) {
+            if (sb.length > MAX_STRING) throw FlockParseException("string too long")
             when (cur) {
                 '"'.code -> {
                     bump()
