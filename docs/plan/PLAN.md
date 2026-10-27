@@ -195,7 +195,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.
    - Until the translated disclaimer is reviewed in the protected disclaimer PR, the English disclaimer is shown.
-6. **`BrandGuardTest`** (a build-logic task). It checks values, not keys. Allowlisted: LICENSE/NOTICE, legacy format ids, the About attribution.
+6. ✅ **`BrandGuardTest`** (a build-logic task). It checks values, not keys. Allowlisted: LICENSE/NOTICE, legacy format ids, the About attribution.
+   - Until build-logic exists (Phase 2, blocked on approved build plugins), it's a JVM unit test (`app/src/test/.../BrandGuardTest.kt`) so CI enforces it now. It moves to build-logic in P2-1.
+   - Temporary allowlist entries name the step that removes them (P0-4d, P0-7, P1-B1). Remove each entry in that step's PR; the test fails on any entry that no longer matches.
+   - P1-B1, the first catalog-version PR, also rewords the six catalog notes that still say "Fieldwatch".
 7. **Copy and legal fixes.**
    - The "Nothing is transmitted" line (`ChromeLines.kt:556`) becomes accurate copy about receive-only scanning.
    - Disable the in-app GitHub catalog update until Phase 4.
