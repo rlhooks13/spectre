@@ -668,6 +668,14 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
         super.onCleared()
     }
 
+    // Declared before init: init's coroutines reach cachedCameraReport on Dispatchers.Default
+    // before the constructor finishes, and a lock initialized below init was still null there.
+    private val cameraCacheLock = Any()
+    private var cameraCacheStamp = Long.MIN_VALUE
+    private var cameraCache: PathCameras.Report? = null
+
+    // Keep every property above this block: its coroutines can run before the constructor
+    // finishes, and ViewModelInitOrderTest fails on any property declared below it.
     init {
         viewModelScope.launch(Dispatchers.IO) {
             val header = FlockFiles.peek(app.filesDir, SensorList.PLATES)
@@ -3316,10 +3324,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             }
         }
     }
-
-    private val cameraCacheLock = Any()
-    private var cameraCacheStamp = Long.MIN_VALUE
-    private var cameraCache: PathCameras.Report? = null
 
     /** Length and time of the two list files. A change reloads them. */
     private fun cameraStamp(): Long {
