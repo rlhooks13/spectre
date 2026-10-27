@@ -2,18 +2,19 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-A5 (`CatalogLintTest`, ADR-0015), on branch `p1/a5-catalog-lint`; check `gh pr list --head p1/a5-catalog-lint` for the PR.
-  - **Then:** the first unblocked step in 1C or 1D.
+- Current step: P1-F1 (Capture v1, ADR-0016), on branch `p1/f1-capture-v1`; check `gh pr list --head p1/f1-capture-v1` for the PR.
+  - **Then:** P1-F2 (scrubber) and P1-F3 (leak test), both pure JVM.
   - **Deferred:**
-    - 1B waits for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
+    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
+    - 1F is the plan's independent workstream, so it goes now.
     - P0-8d waits for P1-B1's snapshots.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a5-catalog-lint`
+- Branch: `p1/f1-capture-v1`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T14:40Z
+- Last cycle: 2026-10-27T15:00Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -66,7 +67,31 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-A5 CatalogLintTest (ADR-0015).** Branch `p1/a5-catalog-lint`.
+- 2026-10-27: **P1-F1 Capture v1 (ADR-0016).** Branch `p1/f1-capture-v1`.
+  - **Format:** `CaptureRecord`, newline-delimited JSON with header, ble, wifi and fix records. It keeps elapsed-realtime ns from the radio's own stamps, full ScanRecord hex, every Wi-Fi IE, and the raw PHY, address-type, SID, width and standard ints.
+  - **Hooks:** `Capture.sink`, null by default, sits in `BleRadio.emit`, in `WifiRadio.emitResults` (before the 350 ms throttle), and in `onProviderFix` (before `acceptFix`).
+  - **Debug only:** a new debug source set holds `CaptureRecorder` and `CaptureInstaller` (a non-exported provider).
+    - It records only while `files/capture/ENABLED` exists: 8 MB parts, 64 MB total, Wi-Fi deduped by (BSSID, timestamp).
+    - The release dex has no recorder or installer classes (checked), and `CaptureFormatTest` pins the recorder to `src/debug`.
+  - **Device** (RFCX205JR3K, API 36):
+    - The debug app's runtime permissions were granted with `pm grant`, and the app was launched with the flag on.
+    - One file came out: 1 header, 1,978 BLE records (all with addrType), and 142 Wi-Fi records (all with IEs). There were no fix records: the GPS had no fix indoors, so the fix path is unverified on the device.
+    - Recording was then turned off, and the raw capture deleted (bystander data, no scrubber yet). No crashes.
+  - **Follow-ups:**
+    - a recorder mapping test with Robolectric (P1-A1);
+    - device-verify the fix path outdoors;
+    - in-app start, stop and export once the owner records ground-truth captures.
+  - **Note:** the app's existing log (`loggingEnabled` defaults to true) also stores bystander data, sampled. That's a P1-E2 privacy item, along with `dataExtractionRules` for device transfer.
+  - **After both reviews:**
+    - **Main thread:** callbacks now only queue a record (bounded 8,192, drops counted in `stats` lines). One writer thread encodes, writes, flushes every second and rotates.
+    - **Hooks:** `Capture.record {}` swallows sink failures, so recording can't drop a real observation.
+    - **Fixes:** last-known fixes are captured (`lastKnown`). Non-finite floats become null. Records are encoded before a part opens.
+    - **Format:** BLE `legacy` and `dataStatus`; Wi-Fi `ssidHex`, `mld` and `linkId`; header `elapsedNs`, `bootCount` and `part`; Fix `wallMs` is receipt time, with `fixTimeMs` added.
+    - **Files:** it pauses below 256 MB free and after write errors. Parts are named `capture-<wallMs>-<part>`. Each Wi-Fi IE is guarded on its own.
+    - **Tests:** `decodeOrNull` skips truncated and unknown lines. The test also checks nothing outside debug installs or implements a sink.
+    - **Re-run on the device:** 1 header (with `bootCount`), 1,002 BLE (all with `legacy`), 116 Wi-Fi (all with `ssidHex`), no fixes indoors. The file was non-empty within seconds, which shows the flush. Raw data deleted again; no crashes.
+- 2026-10-27: **P1-A5 merged** as `48cadf2` (PR #26).
+- 2026-10-27: **P1-A5 CatalogLintTest (ADR-0015).** PR #26. Branch `p1/a5-catalog-lint`.
   - **`RadioDb`:** an internal `initFrom(bytes)` (under the lock) and `resetForTest()` let JVM tests load `radiodb.bin` (built 2026-08-24). `@AfterClass` unloads it, so later test classes don't depend on run order. `parse` stays private.
   - **Lint rules:**
     - company ids must be in the SIG tables;
