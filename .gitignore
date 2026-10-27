@@ -9,6 +9,8 @@ app/build/
 local.properties
 *.jks
 *.keystore
+# The staging test key is public on purpose (PLAN: Build types); it never signs a release.
+!app/signing/staging-test.jks
 
 # IDE
 .idea/
