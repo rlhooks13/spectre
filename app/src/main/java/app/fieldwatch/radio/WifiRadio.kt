@@ -148,6 +148,8 @@ class WifiRadio(
         try {
             val nowWall = System.currentTimeMillis()
             val results = runCatching { wifi.scanResults }.getOrDefault(emptyList())
+            // Before the 350 ms throttle; the recorder dedupes by (BSSID, timestamp). Debug builds only (ADR-0016).
+            if (results.isNotEmpty()) app.fieldwatch.data.Capture.sink?.wifi(results)
             if (results.isEmpty()) {
                 if (awaitingScan.get()) {
                     main.removeCallbacks(poll)

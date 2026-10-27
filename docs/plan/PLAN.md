@@ -353,7 +353,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Gate the download through `NetworkPolicy`.
 
 **1F. Capture v1** (debug builds only; its own workstream, not a prerequisite for the fixes)
-- **P1-F1 Contents:** full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.
+- ✅ **P1-F1 Contents** (ADR-0016; debug-only recorder, started over adb): full ScanRecord and IE bytes, addressType, `elapsedRealtimeNanos`, RSSI, TX power, PHY, connectable, `ScanResult.timestamp`, GPS.
 - **P1-F2 Scrubber v1, field-level:**
   - Names, SSIDs and WPS fields are replaced.
   - MACs embedded in payloads (both byte orders) and rotating Find My / FD5A / FEAA ids are remapped.

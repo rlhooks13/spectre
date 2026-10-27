@@ -817,6 +817,7 @@ class FieldwatchApp : Application() {
     }
 
     private fun onProviderFix(loc: android.location.Location, gps: Boolean) {
+        app.fieldwatch.data.Capture.sink?.fix(loc) // every fix, before acceptFix filters it; debug builds only (ADR-0016)
         acceptFix(loc, gps)
         if (::gnss.isInitialized) gnss.onTaggedFix(loc, gps)
     }

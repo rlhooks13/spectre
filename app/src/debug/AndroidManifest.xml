@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: the Capture v1 recorder (ADR-0016). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <provider
+            android:name="app.fieldwatch.capture.CaptureInstaller"
+            android:authorities="${applicationId}.capture"
+            android:exported="false" />
+    </application>
+</manifest>
