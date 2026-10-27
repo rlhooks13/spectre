@@ -304,6 +304,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 - **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK.
 - **P1-C2 Storage:**
   - LogStore resumes from the highest existing index.
+  - LogStore reads, exports and merges parts oldest first, not by file name. After the index wraps (or a restart, until the line above lands), the newest part sorts first. `readRadios` then merges an older part's position and RSSI over a newer hear, and exports are out of time order. The P1-A3 log goldens (`export/log.*`) pin today's order, so this fix shows as a golden diff.
   - `AtomicFiles` replaces the 7 copies and `SitStore.writeFile`.
   - Corrupt config or sit files move to `.corrupt-<ts>` and a notice is shown.
 - **P1-C3 Alerter:** single-thread confinement.
