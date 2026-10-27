@@ -33,6 +33,7 @@ object DebriefPrompt {
         cameras: PathCameras.Report? = null,
     ): String {
         val names = fleets.associate { it.id to it.name }
+        val classes = fleets.associate { it.id to it.kind }
         val win = window ?: DebriefWindow(now - WINDOW_MS, now)
         val windowStart = win.startAt
         val windowEnd = win.endAt
@@ -56,7 +57,7 @@ object DebriefPrompt {
             d.attentionNotes(fleets).map { (sig, note) -> Triple(d, sig, note) }
         }
         val finders = in15.filter {
-            it.key !in mineKeys && TrackerMatch.kind(it, names) == TrackerMatch.Kind.FINDER
+            it.key !in mineKeys && TrackerMatch.kind(it, names, classes) == TrackerMatch.Kind.FINDER
         }
         val sigFamilies = signed.groupBy { d ->
             d.fleetIds.joinToString("+") { names[it] ?: it }

@@ -253,17 +253,16 @@ object DebriefReport {
             PathCameras.tally(path, source.plates, source.others, source.near)
         }
         val cameraBody = cameraTally?.let { PathCameras.text(it) }
-        val trackers = inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.FINDER }
-        val follow = followAssessments(trackers, names, path, windowStart, windowEnd, TrackerMatch.Kind.FINDER)
-        val beaconFollow = followAssessments(
-            inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.BEACON },
-            names, path, windowStart, windowEnd, TrackerMatch.Kind.BEACON,
+        val classes = fleets.associate { it.id to it.kind }
+        fun assess(kind: TrackerMatch.Kind) = followAssessments(
+            inWin.filter { TrackerMatch.kind(it, names, classes) == kind },
+            names, classes, path, windowStart, windowEnd, kind,
         )
-        val wearableFollow = followAssessments(
-            inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.WEARABLE },
-            names, path, windowStart, windowEnd, TrackerMatch.Kind.WEARABLE,
-        )
-        val assessed = follow + beaconFollow + wearableFollow
+        val follow = assess(TrackerMatch.Kind.FINDER)
+        val beaconFollow = assess(TrackerMatch.Kind.BEACON)
+        val wearableFollow = assess(TrackerMatch.Kind.WEARABLE)
+        val phoneFollow = assess(TrackerMatch.Kind.PHONE)
+        val assessed = follow + beaconFollow + wearableFollow + phoneFollow
         fun List<FollowHit>.open(): List<FollowHit> = filter { it.device.key !in mineKeys }
         val following = follow.filter { it.verdict == Verdict.FOLLOWING }.open()
         val withYou = follow.filter { it.verdict == Verdict.MOVED_WITH_YOU }.open()
@@ -271,12 +270,13 @@ object DebriefReport {
         val wholeSit = ownLikely + withYou
         val beaconsWithYou = stayedWithYou(beaconFollow).open()
         val wearablesWithYou = stayedWithYou(wearableFollow).open()
+        val phonesWithYou = stayedWithYou(phoneFollow).open()
         val mineHeard = inWin.count { it.key in mineKeys }
         val placeBody = if (!settings.placeWatch || placeRecords.isEmpty()) {
             null
         } else {
             PlaceMemory.section(
-                inWin, placeRecords, names, customNames, mineKeys, windowEnd,
+                inWin, placeRecords, names, classes, customNames, mineKeys, windowEnd,
                 demo = settings.demoMode,
                 streets = places.namesByCell,
             )
@@ -537,6 +537,15 @@ object DebriefReport {
                     ),
                 )
             }
+            if (phonesWithYou.isNotEmpty()) {
+                add(
+                    DebriefSection(
+                        next(),
+                        LanguageText.text("ui.phones.with.you.label"),
+                        trackerCallout(LanguageText.text("ui.phones.with.you.body"), phonesWithYou, customNames),
+                    ),
+                )
+            }
             if (!placeBody.isNullOrBlank()) {
                 add(DebriefSection(next(), LanguageText.text("ui.seen.more.than.one"), placeBody))
             }
@@ -717,20 +726,15 @@ object DebriefReport {
         val pathSpan = Geo.spanM(path)
         val pathLen = Geo.pathLengthM(path)
         val inWin = devices.filter { it.lastSeen >= windowStart || it.firstSeen >= windowStart }
-        val trackers = inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.FINDER }
-        val follow = followAssessments(trackers, names, path, windowStart, windowEnd, TrackerMatch.Kind.FINDER)
-        val beaconsMd = stayedWithYou(
-            followAssessments(
-                inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.BEACON },
-                names, path, windowStart, windowEnd, TrackerMatch.Kind.BEACON,
-            ),
+        val classes = fleets.associate { it.id to it.kind }
+        fun assess(kind: TrackerMatch.Kind) = followAssessments(
+            inWin.filter { TrackerMatch.kind(it, names, classes) == kind },
+            names, classes, path, windowStart, windowEnd, kind,
         )
-        val wearablesMd = stayedWithYou(
-            followAssessments(
-                inWin.filter { TrackerMatch.kind(it, names) == TrackerMatch.Kind.WEARABLE },
-                names, path, windowStart, windowEnd, TrackerMatch.Kind.WEARABLE,
-            ),
-        )
+        val follow = assess(TrackerMatch.Kind.FINDER)
+        val beaconsMd = stayedWithYou(assess(TrackerMatch.Kind.BEACON))
+        val wearablesMd = stayedWithYou(assess(TrackerMatch.Kind.WEARABLE))
+        val phonesMd = stayedWithYou(assess(TrackerMatch.Kind.PHONE))
 
         appendLine(LanguageText.text("ui.where.were.operator.gps"))
         appendLine("- Tag detections with GPS: ${if (settings.tagLocation) "on" else "off"}.")
@@ -765,7 +769,8 @@ object DebriefReport {
         }.open()
         val beaconsOpen = beaconsMd.open()
         val wearablesOpen = wearablesMd.open()
-        if (followingMd.isEmpty() && wholeSitMd.isEmpty() && beaconsOpen.isEmpty() && wearablesOpen.isEmpty()) {
+        val phonesOpen = phonesMd.open()
+        if (followingMd.isEmpty() && wholeSitMd.isEmpty() && beaconsOpen.isEmpty() && wearablesOpen.isEmpty() && phonesOpen.isEmpty()) {
             appendLine(LanguageText.text("ui.none.stayed.path"))
         } else {
             fun dump(title: String, rows: List<FollowHit>) {
@@ -797,6 +802,10 @@ object DebriefReport {
                 LanguageText.text("ui.wearables.garmin.fitbit.oura"),
                 wearablesOpen,
             )
+            dump(
+                LanguageText.text("ui.phones.with.you.heading"),
+                phonesOpen,
+            )
         }
     }
 
@@ -821,6 +830,7 @@ object DebriefReport {
     private fun followAssessments(
         trackers: List<Sighting>,
         names: Map<String, String>,
+        classes: Map<String, SignatureClass>,
         operatorPath: List<GpsSample>,
         windowStart: Long,
         now: Long,
@@ -829,7 +839,7 @@ object DebriefReport {
         val opSpan = Geo.spanM(operatorPath)
         val opLen = Geo.pathLengthM(operatorPath)
         return trackers.map { d ->
-            val label = TrackerMatch.label(d, names)
+            val label = TrackerMatch.label(d, names, classes)
             val trail = d.gpsTrail.filter { it.at >= windowStart }
             val span = Geo.spanM(trail)
             val trailLen = Geo.pathLengthM(trail)
@@ -897,6 +907,8 @@ object DebriefReport {
                 LanguageText.text("ui.location.beacons.do.not")
             TrackerMatch.Kind.WEARABLE ->
                 LanguageText.text("ui.typical.watch.ring.companion")
+            TrackerMatch.Kind.PHONE ->
+                LanguageText.text("ui.typical.phone.carried")
         }
         return when {
             decoded != null -> "$base $decoded"
@@ -948,6 +960,8 @@ object DebriefReport {
                         LanguageText.text("ui.unusual.retail.location.beacon")
                     TrackerMatch.Kind.WEARABLE ->
                         LanguageText.text("ui.typical.watch.joined.sit")
+                    TrackerMatch.Kind.PHONE ->
+                        LanguageText.text("ui.typical.phone.joined.sit")
                 }
                 Verdict.FOLLOWING to stats + note
             }

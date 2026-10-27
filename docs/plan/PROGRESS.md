@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B4 Apple phones** (TrackerMatch uses the matched fleets' class), after P1-B3 (catalog v100) merges. It removes the `finderKnownUntil = "P1-B4"` markers (Tattile, iPhone-of, AirPods-of). Then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B4b Finder wording**, after P1-B4 merges. Then B4c, then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,12 +13,12 @@
   - **Waiting on the owner:** signing #43; the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b3-offline-finding-type`
+- Branch: `p1/b4-apple-phones-not-finders`
 - Phone serial: RFCX205JR3K
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T20:01Z
+- Last cycle: 2026-10-27T20:45Z
 
 ## Needs human (owner)
 **For the owner:**
@@ -64,6 +64,19 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B4 Apple phones.** #56 (P1-B3) merged as dd938cc.
+  - **The fix:** `TrackerMatch.kind` takes each fleet's `SignatureClass`. A FINDER-class match is a finder, whatever the name, so "Tattile" is no longer one. A loud carried Apple phone, Mac or AirPods is the new `Kind.PHONE`, never FINDER. With no signature at all, an Offline Finding record still reads as a finder unless its status byte says Apple device or AirPods.
+  - **Debrief:** phones get their own "Phones with you" section and Markdown list, with milder wording (5 new keys at revision 6). They don't reach the summary, actions or takeaway.
+  - **Callers:** DebriefReport, DebriefPrompt, PlaceMemory and PlaceStore pass a class map beside `names`.
+  - **Corpus:** the three `finderKnownUntil = "P1-B4"` markers come off (iPhone-of, AirPods-of, Tattile).
+  - **Goldens:**
+    - corpus and release notes drop their "until P1-B4" notes;
+    - new `debrief/7-iphone-in-pocket.txt`;
+    - no existing Debrief golden changed (none had an Apple phone).
+  - **Scoped out (new PLAN steps):**
+    - B4b: three Debrief lines still say "loud pocket Apple"; changing them means new keys and editing 26 bundled packs.
+    - B4c: beacons and wearables by class.
+  - **Process note:** I changed `PlaceMemory.kt` with a `python -I` script instead of the Edit tool, against CLAUDE.md. The change is correct and in the diff. I used Edit for everything after that.
 - 2026-10-27: **P1-B3 AirTag (catalog v100).**
   - **The fix:** AirTags no longer match a bare Offline Finding record (0x004C, prefix 12). A new "Find My device" finder row (`fleet-findmy`) does. `SignatureEngine.routeOfflineFinding` reads status bits 4-5 of a `12 19 <status>` record and moves the hit by type:
     - 0 → Apple Device;

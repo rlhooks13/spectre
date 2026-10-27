@@ -200,6 +200,25 @@ class DebriefGoldenTest {
     }
 
     /**
+     * P1-B4: your own iPhone in a pocket for a whole errand (Continuity plus Offline Finding of type "Apple device").
+     * It is assessed as a phone with you, never as a finder tag.
+     */
+    @Test
+    fun iphoneInPocket() {
+        val path = path(55.0)
+        Golden.assertText(
+            "debrief/7-iphone-in-pocket.txt",
+            debrief(
+                "Errands",
+                listOf(
+                    heard("NM:iphone", "4E:11:22:33:44:09", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -44 - (it.toInt() % 4) },
+                ),
+                path,
+            ),
+        )
+    }
+
+    /**
      * A drive past two roadside cameras with your own AirTag in the car, marked mine and named, an observer note
      * on one camera, and one mapped plate reader beside the road. Each camera is heard along one stretch.
      */

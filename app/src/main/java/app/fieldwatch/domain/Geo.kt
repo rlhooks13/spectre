@@ -764,7 +764,8 @@ object CoTravel {
 }
 
 object TrackerMatch {
-    enum class Kind { FINDER, BEACON, WEARABLE }
+    /** [PHONE]: a carried Apple phone, Mac or AirPods. Assessed for co-travel with milder wording, never as a finder (P1-B4). */
+    enum class Kind { FINDER, BEACON, WEARABLE, PHONE }
 
     private val finderTokens = listOf(
         "airtag", "smarttag", "tile", "chipolo", "pebblebee", "moto tag", "find my",
@@ -819,8 +820,23 @@ object TrackerMatch {
         return device.facts.mfgRecords.any { it.companyId == 0x004C }
     }
 
-    fun isTracker(device: Sighting, names: Map<String, String>): Boolean =
-        kind(device, names) == Kind.FINDER
+    /**
+     * An Offline Finding record no signature labeled, whose status byte doesn't say Apple device or AirPods (P1-B3's
+     * types 0 and 3): a tag, an accessory, or a record too short to read. The finder fallback when the Find My device
+     * row's rule is off.
+     */
+    private fun isUnlabeledFindMyTag(device: Sighting): Boolean {
+        if (!isFindMyPayload(device)) return false
+        val recs = device.facts.mfgRecords.ifEmpty {
+            val id = device.manufacturerId ?: return true
+            listOf(MfgRecord(id, device.manufacturerDataHex))
+        }
+        val status = recs.firstNotNullOfOrNull { rec ->
+            if (rec.companyId == 0x004C) AdvPayloadDecoder.offlineFindingStatus(rec.dataHex.filter { it.isLetterOrDigit() }.uppercase()) else null
+        } ?: return true
+        val type = (status shr 4) and 0x3
+        return type != 0 && type != 3
+    }
 
     /**
      * Pocket iPhone / Continuity: loud Apple BLE that stayed loud.
@@ -835,22 +851,31 @@ object TrackerMatch {
         return device.fleetIds.any { id -> (names[id] ?: "").contains("apple", ignoreCase = true) }
     }
 
-    fun kind(device: Sighting, names: Map<String, String>): Kind? {
-        if (nameHits(device, names, finderTokens).isNotEmpty() || isFindMyPayload(device)) return Kind.FINDER
+    /**
+     * A matched fleet's class decides FINDER, not words in its name (P1-B4): "Tattile" is a camera, and a carried
+     * iPhone is [Kind.PHONE]. With no signature at all, an Offline Finding tag record still reads as a finder.
+     * Beacons and wearables still go by name tokens until their own step.
+     */
+    fun kind(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): Kind? {
+        if (finderHits(device, names, classes).isNotEmpty()) return Kind.FINDER
+        if (device.fleetIds.none { it in classes } && isUnlabeledFindMyTag(device)) return Kind.FINDER
         if (nameHits(device, names, beaconTokens).isNotEmpty()) return Kind.BEACON
         if (nameHits(device, names, wearableTokens).isNotEmpty()) return Kind.WEARABLE
-        if (isCarriedApple(device, names)) return Kind.FINDER
+        if (isCarriedApple(device, names)) return Kind.PHONE
         return null
     }
 
-    fun label(device: Sighting, names: Map<String, String>): String {
-        val finder = nameHits(device, names, finderTokens)
+    private fun finderHits(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): List<String> =
+        device.fleetIds.filter { classes[it] == SignatureClass.FINDER }.map { names[it] ?: it }
+
+    fun label(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): String {
+        val finder = finderHits(device, names, classes)
         if (finder.isNotEmpty()) return finder.joinToString(" + ")
         val beacon = nameHits(device, names, beaconTokens)
         if (beacon.isNotEmpty()) return beacon.joinToString(" + ")
         val wear = nameHits(device, names, wearableTokens)
         if (wear.isNotEmpty()) return wear.joinToString(" + ")
-        if (isFindMyPayload(device)) return "Apple Find My / Offline Finding"
+        if (device.fleetIds.none { it in classes } && isUnlabeledFindMyTag(device)) return "Apple Find My / Offline Finding"
         if (isCarriedApple(device, names)) return "Apple BLE (phone / Continuity)"
         return "tracker-like"
     }

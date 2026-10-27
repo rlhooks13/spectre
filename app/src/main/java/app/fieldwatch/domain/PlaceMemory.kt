@@ -74,6 +74,7 @@ object PlaceMemory {
     fun accept(
         device: Sighting,
         names: Map<String, String>,
+        classes: Map<String, SignatureClass>,
         mineKeys: Set<String>,
         generic: Boolean = false,
     ): String? {
@@ -84,7 +85,7 @@ object PlaceMemory {
             return if (generic) "wifi:${device.mac}" else null
         }
         if (MacUtil.isRandomized(device.mac)) return null
-        val finder = TrackerMatch.kind(device, names) == TrackerMatch.Kind.FINDER
+        val finder = TrackerMatch.kind(device, names, classes) == TrackerMatch.Kind.FINDER
         if (!finder && !generic) return null
         return "ble:${device.mac}"
     }
@@ -171,6 +172,7 @@ object PlaceMemory {
         devices: List<Sighting>,
         records: List<Record>,
         names: Map<String, String>,
+        classes: Map<String, SignatureClass>,
         customNames: Map<String, String>,
         mineKeys: Set<String>,
         now: Long,
@@ -184,7 +186,7 @@ object PlaceMemory {
         val seen = HashSet<String>()
         val blocks = ArrayList<Pair<Int, String>>()
         for (device in devices) {
-            val id = accept(device, names, mineKeys) ?: continue
+            val id = accept(device, names, classes, mineKeys) ?: continue
             if (!seen.add(id)) continue
             val record = byId[id] ?: continue
             val lines = detailLines(record, now, zone, demo, streets)

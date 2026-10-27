@@ -21,9 +21,9 @@
 - Target: Tattile camera name: was Tattile (surveillance, extra attention), Tile Trackers (finder), now Tattile (surveillance, extra attention).
 - Near miss: Galaxy phone advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
 - Near miss: Galaxy Buds advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
-- Near miss: Separated iPhone, Offline Finding only (its signature is right, but it is still read as a tracker until P1-B4): was Apple AirTags (finder), now Apple Device (phone).
-- Near miss: Powered-off AirPods, Offline Finding only (its signature is right, but it is still read as a tracker until P1-B4): was Apple AirTags (finder), now Apple audio (audio).
-- Near miss: Tattile camera name (its signature is right, but it is still read as a tracker until P1-B4): was Tattile (surveillance, extra attention), Tile Trackers (finder), now Tattile (surveillance, extra attention).
+- Near miss: Separated iPhone, Offline Finding only: was Apple AirTags (finder), now Apple Device (phone).
+- Near miss: Powered-off AirPods, Offline Finding only: was Apple AirTags (finder), now Apple audio (audio).
+- Near miss: Tattile camera name: was Tattile (surveillance, extra attention), Tile Trackers (finder), now Tattile (surveillance, extra attention).
 - Near miss: Quuppa tag on 0x00C7: was Tile Trackers (finder), now no signature.
 - Near miss: Wi-Fi network named Tile: was Tile Trackers (finder), now no signature.
 
