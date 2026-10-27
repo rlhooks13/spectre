@@ -4,6 +4,9 @@ T:airtag	target	AirTag, Offline Finding status 0x10
 T:smarttag	target	SmartTag on FD5A
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:smarttag-svcdata	target	SmartTag with FD5A in service data only
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
 T:tile-feed	target	Tile on FEED
   expect fleet-tile
   -> fleet-tile [FINDER]
@@ -29,11 +32,11 @@ T:cradlepoint	target	Cradlepoint IBR900 router
   expect fleet-cradlepoint
   -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
 NM:galaxy	near-miss	Galaxy phone advertising Samsung 0x0075
-  must not fleet-smarttag (nor be a finder), wrong until P1-B1
-  -> fleet-smarttag [FINDER]
+  must not fleet-smarttag (nor be a finder)
+  -> (none)
 NM:buds	near-miss	Galaxy Buds advertising Samsung 0x0075
-  must not fleet-smarttag (nor be a finder), wrong until P1-B1
-  -> fleet-smarttag [FINDER]
+  must not fleet-smarttag (nor be a finder)
+  -> (none)
 NM:iphone-of	near-miss	Separated iPhone, Offline Finding only
   must not fleet-airtag, wrong until P1-B3
   -> fleet-airtag [FINDER]

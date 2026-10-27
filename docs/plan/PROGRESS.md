@@ -2,10 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B1 SmartTag** (drop `mfg(0x0075)`, keep FD5A), the first 1B fix, now that the 1A safety net (A1–A5) is in.
-  - It follows the catalog change checklist (CLAUDE.md).
-  - It re-blesses the goldens its PLAN line names; each diff shows the Galaxy near-miss losing "Samsung SmartTags".
-  - Then B2 onward, and P0-8d after B1.
+- Current step: **P1-B2 Tile**, after P1-B1 (catalog v98) merges. Then B3 onward. **P0-8d** (release-notes generator) is unblocked once B1 merges: `catalog/snapshots/v97.json` and `v98.json` exist.
   - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2 and A3 added about 52 tests above 858, so the next protected PR raises the baseline again.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **P0-8d** after P1-B1.
@@ -65,6 +62,28 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B1 SmartTag (catalog v98).** #52 merged first (P1-A3 done).
+  - **The fix:** `fleet-smarttag` drops the bare Samsung company-id rule (0x0075, on every Galaxy phone and Buds) and keeps FD5A and its names. The six catalog notes that named Fieldwatch now say Spectre.
+  - **Checklist:**
+    - `CATALOG_VERSION` 98, with a v98 ladder step that removes only the stock rule and replaces notes only while they're still stock;
+    - the first snapshots, `catalog/snapshots/v97.json` and `v98.json`;
+    - `catalog/retired.json` (P1-B6 wires it up), with `RetiredRulesFileTest`;
+    - the dist pack regenerated;
+    - the stock count is unchanged (255 fleets).
+  - **Retired rules can't come back:** `RetiredRules`, kept equal to `catalog/retired.json` by a test, strips retired rules:
+    - on every config load, whatever version the file says;
+    - in signature `merge`;
+    - in `overlayStock`.
+    - **Why:** the independent review found that a v97 install overlaid with the v98 pack, or an old pack imported, would keep the Samsung rule. This was BLOCKING, and it is fixed here instead of waiting for B6.
+    - The v98 note step compares against the exact v97 wording (`V97_NOTES`).
+  - **Tests:**
+    - `CatalogV98LadderTest` upgrades the real 1.1.32 config and covers the overlay, import and stale-v98 paths.
+    - A new corpus target is a SmartTag with FD5A in service data only.
+    - Frozen snapshots have pinned hashes.
+    - Debrief golden 5 now has a real SmartTag in the pocket beside the Galaxy.
+    - The corpus markers, the lint exception and BrandGuard's temporary allowance are gone.
+  - **Goldens re-blessed:** the Galaxy loses "Samsung SmartTags" and its tracker warning everywhere.
+  - **New build switch:** `-PwriteStockCatalog`, since env-var prefixes are denied to the agent.
 - 2026-10-27: **P1-A3 done: real 1.1.32 files, decoded by today's code.**
   - #51 (prompts and packs) merged.
   - **Fixtures:** the five files under `fixtures/fieldwatch-1.1.32/` were written by the 1.1.32 code itself (a worktree at 819365d, each store's own Json) from synthetic inputs: config, a saved sit, places, and both share packs. The generator is in the folder's README.

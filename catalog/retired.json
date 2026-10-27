@@ -1,0 +1,19 @@
+{
+    "format": "spectre-retired-rules",
+    "formatVersion": 1,
+    "rules": [
+        {
+            "fleetId": "fleet-smarttag",
+            "retiredIn": 98,
+            "step": "P1-B1",
+            "reason": "Samsung's company id is on every Galaxy phone and Buds, so it labeled them as SmartTags. SmartTag keeps FD5A and its names.",
+            "rule": {
+                "kind": "MANUFACTURER_ID",
+                "text": "",
+                "companyId": 117,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        }
+    ]
+}

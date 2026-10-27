@@ -70,11 +70,11 @@ Places        off
 ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS, advertised aircraft track
 
 1. EXECUTIVE SUMMARY
-In sit Golden sit Spectre heard 2 Wi-Fi access points and 4 BLE advertisers (5 signature-matched, 1 marked mine, 0 hidden SSIDs, 4 randomized BLE). Overall distance traveled: 62 m along the GPS path (straight-line span 62 m). No finder tag clearly stayed with the GPS path in this window.  Advertised position: TESTSERIAL0000000001.
-Finder tags  3
+In sit Golden sit Spectre heard 2 Wi-Fi access points and 4 BLE advertisers (4 signature-matched, 1 marked mine, 0 hidden SSIDs, 4 randomized BLE). Overall distance traveled: 62 m along the GPS path (straight-line span 62 m). No finder tag clearly stayed with the GPS path in this window.  Advertised position: TESTSERIAL0000000001.
+Finder tags  2
 Surveillance  1
 Drones  1
-Unmatched  1
+Unmatched  2
 
 2. WHERE YOU WERE
 Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
@@ -135,17 +135,19 @@ ch 6  1  strongest -55 dBm
 ch 11  1  strongest -86 dBm
 
 10. BLUETOOTH LE
-Heard 4 advertiser(s); 4 with randomized addresses; 4 signature-matched.
+Heard 4 advertiser(s); 4 with randomized addresses; 3 signature-matched.
+Named or marked:
+  · Galaxy S23  6E:11:22:33:44:03  RAND  -80 dBm  dwell 11m0s
+    Marked mine
 
 11. SIGNATURE HITS
-Samsung SmartTags  2
 Apple AirTags  1
 Flock Safety Cameras  1
 Remote ID  1
+Samsung SmartTags  1
 Named or marked:
   · Flock-1A2B  B4:1E:52:0A:0B:0C  -55 dBm
   · Tom's "bag", left & <right>  7A:11:22:33:44:01  -67 dBm
-  · Galaxy S23  6E:11:22:33:44:03  -80 dBm  Marked mine
 
 12. PERSISTENCE
 Sat most of this window: 1
@@ -171,11 +173,11 @@ Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS
 
 ## Working data (for the addendum — do not copy rosters into the answer)
 
-15 min: Wi-Fi 2  BLE 4  signed 5  hidden SSIDs 0  RAND BLE 4/4 (100%)  first-seen 6 (0.4/min)  persistent 1  gone/quiet 4
-5 min: Wi-Fi 2  BLE 4  signed 5  first-seen 0
+15 min: Wi-Fi 2  BLE 4  signed 4  hidden SSIDs 0  RAND BLE 4/4 (100%)  first-seen 6 (0.4/min)  persistent 1  gone/quiet 4
+5 min: Wi-Fi 2  BLE 4  signed 4  first-seen 0
 BLE RSSI (n=4): ≥−50 0  −51..−70 1  −71..−85 3  <−85 0
 Wi-Fi RSSI (n=2): ≥−50 0  −51..−70 1  −71..−85 0  <−85 1
-Signature families (count): Samsung SmartTags=2, Flock Safety Cameras=1, Apple AirTags=1, Remote ID=1
+Signature families (count): Flock Safety Cameras=1, Apple AirTags=1, Samsung SmartTags=1, Remote ID=1
 GPS path: tagging on  fixes 3  length 62 m  span 62 m  places off
 
 Extra attention:

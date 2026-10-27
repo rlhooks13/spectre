@@ -191,7 +191,13 @@ tasks.withType<Test>().configureEach {
             providers.gradleProperty("updateGolden").orNull?.let { it.isEmpty() || it == "true" } == true
         )
     systemProperty("spectre.updateGolden", updateGolden.toString())
-    if (updateGolden) outputs.upToDateWhen { false }
+    // Writing the stock catalog pack and its snapshot (CLAUDE.md): `WRITE_STOCK_CATALOG=1`, or `-PwriteStockCatalog`.
+    val writeStock = name == "testDebugUnitTest" && (
+        System.getenv("WRITE_STOCK_CATALOG") == "1" ||
+            providers.gradleProperty("writeStockCatalog").orNull?.let { it.isEmpty() || it == "true" } == true
+        )
+    systemProperty("spectre.writeStockCatalog", writeStock.toString())
+    if (updateGolden || writeStock) outputs.upToDateWhen { false }
 }
 
 // Robolectric brings BouncyCastle and Conscrypt onto the test classpath. They are approved there only

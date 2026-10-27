@@ -128,7 +128,7 @@ ENTRIES
 [no final newline]
 
 ==== golden-package/FIELDWATCH-AB23-HERE-BLE-6E1122334403.cot
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-6E1122334403" type="a-u-G" time="2026-10-27T11:58:30.000Z" start="2026-10-27T11:58:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Samsung SmartTags (here)"/><__group name="Cyan" role="Team Member"/><remarks>Samsung SmartTags (here)&#10;BLE  6E:11:22:33:44:03  -80 dBm&#10;heard here (operator GPS)&#10;Galaxy S23&#10;via Spectre-AB23</remarks></detail></event>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><event version="2.0" uid="FIELDWATCH-AB23-HERE-BLE-6E1122334403" type="a-u-G" time="2026-10-27T11:58:30.000Z" start="2026-10-27T11:58:30.000Z" stale="2036-10-24T12:00:00.000Z" how="m-g"><point lat="0.0015" lon="0.0024" hae="9999999" ce="9999999" le="9999999"/><detail><contact callsign="Galaxy S23 (here)"/><__group name="Cyan" role="Team Member"/><remarks>Galaxy S23 (here)&#10;BLE  6E:11:22:33:44:03  -80 dBm&#10;heard here (operator GPS)&#10;via Spectre-AB23</remarks></detail></event>
 [no final newline]
 
 ==== golden-package/FIELDWATCH-GNSS-AB23-1793102160000-spoofing.cot

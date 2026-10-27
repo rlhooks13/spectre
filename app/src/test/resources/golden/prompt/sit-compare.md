@@ -81,10 +81,10 @@ Radios you marked mine. Heard in either window. Still listed.
   · BLE  6E:11:22:33:44:03  Galaxy S23  this sit
 
 5. ONLY IN THIS SIT (4)
-Samsung SmartTags  2
+Unmatched  2
 Remote ID  1
-Unmatched  1
-BLE   6E:11:22:33:44:03  Galaxy S23  Marked mine  Samsung SmartTags
+Samsung SmartTags  1
+BLE   6E:11:22:33:44:03  Galaxy S23  Marked mine
 
 6. ONLY IN SECOND SIT (0)
 (none)

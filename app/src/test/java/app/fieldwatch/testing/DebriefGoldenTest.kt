@@ -179,9 +179,9 @@ class DebriefGoldenTest {
     }
 
     /**
-     * A Galaxy phone in a pocket for the whole walk. Today it is wrongly matched as a Samsung SmartTag, so the
-     * Debrief calls it a tracker with you (severity 1) and adds the Find My rotation sentence. P1-B1 fixes the
-     * match and re-blesses this golden.
+     * A Galaxy phone and a SmartTag (on FD5A) in the same pocket for the whole walk. Since P1-B1 the phone matches
+     * nothing; until then it was wrongly a SmartTag. The real SmartTag is a finder with you, and still gets the
+     * Find My rotation sentence meant for Apple (P1-D7).
      */
     @Test
     fun galaxyPhoneInPocket() {
@@ -190,7 +190,10 @@ class DebriefGoldenTest {
             "debrief/5-galaxy-phone-in-pocket.txt",
             debrief(
                 "Errands",
-                listOf(heard("NM:galaxy", "6E:11:22:33:44:03", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -45 - (it.toInt() % 4) }),
+                listOf(
+                    heard("NM:galaxy", "6E:11:22:33:44:03", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -45 - (it.toInt() % 4) },
+                    heard("T:smarttag", "5E:11:22:33:44:08", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -48 - (it.toInt() % 3) },
+                ),
                 path,
             ),
         )
