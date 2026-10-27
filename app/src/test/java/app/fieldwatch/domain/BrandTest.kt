@@ -56,12 +56,11 @@ class BrandTest {
         ).first { it.isDirectory }
         val packs = BundledLanguages.all.map { java.io.File(dir, "${it.tag}.json") }
         assertTrue(packs.all { it.isFile })
-        val upstream = Regex("(?i)field\\s?watch")
         val stale = packs.flatMap { pack ->
             val strings = kotlinx.serialization.json.Json.parseToJsonElement(pack.readText(Charsets.UTF_8))
                 .let { it as kotlinx.serialization.json.JsonObject }["strings"] as kotlinx.serialization.json.JsonObject
             // Values only: keys keep the legacy spelling. The app id changed in P0-4e, so no exemption is left.
-            strings.filter { (_, v) -> upstream.containsMatchIn(v.toString()) }
+            strings.filter { (_, v) -> UPSTREAM.containsMatchIn(v.toString()) }
                 .keys.map { "${pack.name}: $it" }
         }
         assertEquals(emptyList<String>(), stale)
@@ -69,8 +68,12 @@ class BrandTest {
 
     @Test
     fun noEnglishLineNamesTheUpstreamApp() {
-        val stale = EnglishCopy.lines.filter { Regex("(?i)field\\s?watch").containsMatchIn(it.text) }
+        val stale = EnglishCopy.lines.filter { UPSTREAM.containsMatchIn(it.text) }
             .map { it.key }
         assertEquals(emptyList<String>(), stale)
+    }
+
+    private companion object {
+        val UPSTREAM = Regex("(?i)field\\s?watch")
     }
 }

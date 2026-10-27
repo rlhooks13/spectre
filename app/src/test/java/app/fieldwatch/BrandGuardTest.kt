@@ -9,7 +9,7 @@ import org.junit.Test
  * BrandGuard (PLAN P0-6): the upstream name and owner must not reach anything Spectre ships,
  * except where an allowlist entry says why. It checks values, not identifiers: every line of
  * every text file under `app/src/main`, `app/build.gradle.kts` and `dist/`, case-insensitively.
- * Stable ids (language keys, the package and app id, format ids, notification channels,
+ * Stable ids (language keys, the Kotlin package, format ids, notification channels,
  * resource names, TAK UIDs) and CamelCase class names are masked first. Comment lines are
  * skipped. LICENSE and NOTICE live at the repo root and aren't scanned.
  *
@@ -121,7 +121,7 @@ class BrandGuardTest {
         /** Stable ids that keep the legacy spelling on purpose. Masked before matching, in this order. */
         val ID_TOKENS = listOf(
             Regex(""""[a-z0-9]+(?:\.[a-z0-9]+)+""""), // language keys (before the app id, which they can contain)
-            Regex("""app\.fieldwatch\b"""), // package and application id
+            Regex("""app\.fieldwatch\b"""), // the Kotlin package and namespace (the application id changed in P0-4e)
             Regex("""\bfieldwatch_[a-z0-9_]+"""), // notification channel ids
             Regex("""\b[a-z0-9_]+_fieldwatch\b"""), // resource names, e.g. ic_stat_fieldwatch
             Regex("""\bfieldwatch-(?:settings|signatures|signature-text|sit|places|language|sensors|class|%03d)\b"""), // format ids, file names, the TTS utterance id
