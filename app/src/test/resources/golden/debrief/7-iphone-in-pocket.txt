@@ -1,0 +1,127 @@
+SPECTRE SIT — Errands
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Errands” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Errands
+Window        sit Errands (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        1
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 1.10 km along path · span 1.10 km · 241 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Errands Spectre heard 0 Wi-Fi access points and 1 BLE advertisers (1 signature-matched, 0 hidden SSIDs, 1 randomized BLE). Overall distance traveled: 1.10 km along the GPS path (straight-line span 1.10 km). No finder tag clearly stayed with the GPS path in this window.
+Phones / PCs  1
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 1.10 km along-track, span 1.10 km, 241 fixes.
+
+1. Stay  11:40–11:40 UTC  (45s)
+   0.00116, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+2. Stay  11:40–11:41 UTC  (45s)
+   0.00154, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+3. Stay  11:41–11:42 UTC  (45s)
+   0.00191, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+4. Stay  11:42–11:43 UTC  (45s)
+   0.00228, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+5. Stay  11:43–11:43 UTC  (45s)
+   0.00265, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+6. Stay  11:43–11:44 UTC  (45s)
+   0.00302, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+7. Stay  11:44–11:45 UTC  (45s)
+   0.00339, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+8. Stay  11:45–11:46 UTC  (45s)
+   0.00376, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+9. Stay  11:46–11:46 UTC  (45s)
+   0.00413, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+10. Stay  11:46–11:47 UTC  (45s)
+   0.00450, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple Device
+   · 4E:11:22:33:44:09  4E:11:22:33:44:09  -44 dBm
+
+3. KNOWN CAMERAS ON PATH
+Within about 150 m
+
+No listed camera was along this path.
+
+4. TRACKING ASSESSMENT
+Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
+
+5. PHONES WITH YOU
+Apple devices (phone, iPad, Mac, Watch, AirPods) that stayed loud with you. Usually your own or a companion's. A phone or iPad can be hidden too, so account for any you don't recognize.
+
+  • Apple Device
+    4E:11:22:33:44:09  4E:11:22:33:44:09  RSSI -44 dBm (min -47 / max -44)
+    Stayed loud with you the whole sit (-44 to -47 dBm, 40 GPS stamps). Typical of a phone or earbuds you or a companion carry. Usually not planted, but account for it if it isn't yours.
+
+6. ENVIRONMENT
+Mixed or under-sampled environment.  (0 APs, 1 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)
+
+7. NETWORKS (WI-FI ACCESS POINTS)
+Heard 0 AP(s); 0 hidden SSID; 0 sat most of the window.
+
+8. BLUETOOTH LE
+Heard 1 advertiser(s); 1 with randomized addresses; 1 signature-matched.
+
+9. SIGNATURE HITS
+Apple Device  1
+
+10. PERSISTENCE
+Sat most of this window: 1
+First seen in this window: 0
+
+11. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+12. PRIVACY
+A passive observer with the same radios would see 0 named/hidden APs and 1 BLE advertisers (1 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+13. RECOMMENDED ACTIONS
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS path in this window.

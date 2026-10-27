@@ -70,6 +70,9 @@ object LanguageKeyRevisions {
             "ui.permissions.receive.only", "ui.scan.status.channel", "ui.export.shares.catalog.no.update",
             "settings.layer.download.source", "settings.layer.source", "settings.layer.alert.region",
             "ui.copyright.spectre", "ui.footer.operationally.sensitive",
+            // P1-B4: carried Apple phones are assessed as phones, not finders.
+            "ui.phones.with.you.label", "ui.phones.with.you.body", "ui.phones.with.you.heading",
+            "ui.typical.phone.carried", "ui.typical.phone.joined.sit",
         )) put(key, 6)
     }
 

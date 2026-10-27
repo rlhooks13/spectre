@@ -11,6 +11,7 @@ import app.fieldwatch.domain.PathCameras
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.Sighting
 import app.fieldwatch.domain.SitRadio
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -197,6 +198,57 @@ class DebriefGoldenTest {
                 path,
             ),
         )
+    }
+
+    /**
+     * P1-B4: your own iPhone in a pocket for a whole errand (Continuity plus Offline Finding of type "Apple device").
+     * It is assessed as a phone with you, never as a finder tag.
+     */
+    @Test
+    fun iphoneInPocket() {
+        val path = path(55.0)
+        Golden.assertText(
+            "debrief/7-iphone-in-pocket.txt",
+            debrief(
+                "Errands",
+                listOf(
+                    heard("NM:iphone", "4E:11:22:33:44:09", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -44 - (it.toInt() % 4) },
+                ),
+                path,
+            ),
+        )
+    }
+
+    /**
+     * P1-B4: someone's iPhone fell in behind you four minutes into the walk, stayed loud across most of the path, and
+     * dropped away four minutes before the end. A phone, not a finder, but it followed: the report still alerts.
+     */
+    @Test
+    fun iphoneJoinsAndFollows() {
+        val path = path(55.0)
+        val phone = heard("NM:iphone", "4E:11:22:33:44:0A", path, 4.0, 16.0) { -46 - (it.toInt() % 3) }
+        val saved = SitFixture.saved(SitFixture.matched(listOf(phone), fleets), fleets)
+        val doc = DebriefReport.document(
+            devices = saved,
+            fleets = fleets,
+            settings = AppSettings(tagLocation = true),
+            operatorPath = path,
+            now = Golden.NOW,
+            window = DebriefWindow(start, Golden.NOW, "Walk"),
+            cameras = cameras(),
+        )
+        assertTrue("a following phone raises the tracking alert", doc.trackingAlert)
+        Golden.assertText("debrief/8-iphone-joins-and-follows.txt", doc.toPlainText())
+        val markdown = DebriefReport.gpsAnalystMarkdown(
+            devices = saved,
+            fleets = fleets,
+            settings = AppSettings(tagLocation = true),
+            operatorPath = path,
+            now = Golden.NOW,
+            window = DebriefWindow(start, Golden.NOW, "Walk"),
+        )
+        assertTrue(markdown.contains("### Phones with you (Apple phone"))
+        assertTrue(markdown.contains("4E:11:22:33:44:0A"))
     }
 
     /**

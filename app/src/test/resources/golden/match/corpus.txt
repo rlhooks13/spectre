@@ -59,10 +59,10 @@ NM:buds	near-miss	Galaxy Buds advertising Samsung 0x0075
   must not fleet-smarttag (nor be a finder)
   -> (none)
 NM:iphone-of	near-miss	Separated iPhone, Offline Finding only
-  must not fleet-airtag, fleet-findmy (nor be a finder), still labeled a tracker until P1-B4
+  must not fleet-airtag, fleet-findmy (nor be a finder)
   -> fleet-apple-device [PHONE]
 NM:airpods-of	near-miss	Powered-off AirPods, Offline Finding only
-  must not fleet-airtag, fleet-findmy (nor be a finder), still labeled a tracker until P1-B4
+  must not fleet-airtag, fleet-findmy (nor be a finder)
   -> fleet-apple-audio [AUDIO]
 NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
   must not fleet-airtag, fleet-findmy
@@ -71,7 +71,7 @@ NM:iphone-short-of	near-miss	Companion iPhone with an unreadable Offline Finding
   must not fleet-airtag, fleet-findmy
   -> fleet-apple-device [PHONE]
 NM:tattile	near-miss	Tattile camera name
-  must not fleet-tile (nor be a finder), still labeled a tracker until P1-B4
+  must not fleet-tile (nor be a finder)
   -> fleet-tattile [SURVEILLANCE, attention]
 NM:quuppa	near-miss	Quuppa tag on 0x00C7
   must not fleet-tile (nor be a finder)

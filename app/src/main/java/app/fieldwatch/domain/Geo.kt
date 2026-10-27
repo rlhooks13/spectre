@@ -764,7 +764,8 @@ object CoTravel {
 }
 
 object TrackerMatch {
-    enum class Kind { FINDER, BEACON, WEARABLE }
+    /** [PHONE]: a carried Apple phone, Mac or AirPods. Assessed for co-travel with milder wording, never as a finder (P1-B4). */
+    enum class Kind { FINDER, BEACON, WEARABLE, PHONE }
 
     private val finderTokens = listOf(
         "airtag", "smarttag", "tile", "chipolo", "pebblebee", "moto tag", "find my",
@@ -789,9 +790,6 @@ object TrackerMatch {
             val low = n.lowercase()
             if (tokens.any { it in low }) n else null
         }
-
-    fun fleetHits(device: Sighting, names: Map<String, String>): List<String> =
-        nameHits(device, names, finderTokens)
 
     fun isFindMyPayload(device: Sighting): Boolean {
         if (isAppleContinuity(device)) return false
@@ -819,8 +817,46 @@ object TrackerMatch {
         return device.facts.mfgRecords.any { it.companyId == 0x004C }
     }
 
-    fun isTracker(device: Sighting, names: Map<String, String>): Boolean =
-        kind(device, names) == Kind.FINDER
+    /**
+     * Each fleet's class for [kind] and [label]. A stock row keeps its own class, so "Tattile" stays a camera. A
+     * signature the user made defaults to OTHER (the editor and "make a signature" don't ask), so one whose name is a
+     * finder word ("My Tile", "Chipolo ONE") still counts as a finder: a tag the catalog misses is exactly when users
+     * make one.
+     */
+    fun classesOf(fleets: Collection<Fleet>): Map<String, SignatureClass> = fleets.associate { fleet ->
+        val custom = !fleet.builtIn && fleet.kind == SignatureClass.OTHER
+        fleet.id to if (custom && isTrackerFleet(fleet.name)) SignatureClass.FINDER else fleet.kind
+    }
+
+    /**
+     * The device type in an Apple Offline Finding record's status bits 4-5, as AirGuard decodes it: [OF_APPLE_DEVICE]
+     * (iPhone, Mac), [OF_AIRTAG], 2 a Find My accessory, [OF_AIRPODS]. Null when no record is readable. One decode
+     * for the engine's routing (SignatureEngine.routeOfflineFinding, P1-B3) and for [kind].
+     */
+    fun offlineFindingType(device: Sighting): Int? {
+        val recs = device.facts.mfgRecords.ifEmpty {
+            val id = device.manufacturerId ?: return null
+            listOf(MfgRecord(id, device.manufacturerDataHex))
+        }
+        val status = recs.firstNotNullOfOrNull { rec ->
+            if (rec.companyId == 0x004C) AdvPayloadDecoder.offlineFindingStatus(rec.dataHex.filter { it.isLetterOrDigit() }.uppercase()) else null
+        } ?: return null
+        return (status shr 4) and 0x3
+    }
+
+    const val OF_APPLE_DEVICE = 0
+    const val OF_AIRTAG = 1
+    const val OF_AIRPODS = 3
+
+    private fun isPhoneOrAirPodsRecord(device: Sighting): Boolean =
+        offlineFindingType(device).let { it == OF_APPLE_DEVICE || it == OF_AIRPODS }
+
+    /**
+     * An Offline Finding record whose type isn't Apple device or AirPods: a tag, an accessory, or a record too short
+     * to read. A finder whatever else matched it, so an AirTag stays a finder when the Find My rows are off.
+     */
+    private fun isFindMyTagRecord(device: Sighting): Boolean =
+        isFindMyPayload(device) && !isPhoneOrAirPodsRecord(device)
 
     /**
      * Pocket iPhone / Continuity: loud Apple BLE that stayed loud.
@@ -835,23 +871,41 @@ object TrackerMatch {
         return device.fleetIds.any { id -> (names[id] ?: "").contains("apple", ignoreCase = true) }
     }
 
-    fun kind(device: Sighting, names: Map<String, String>): Kind? {
-        if (nameHits(device, names, finderTokens).isNotEmpty() || isFindMyPayload(device)) return Kind.FINDER
+    /**
+     * A matched fleet's class decides FINDER, not words in its name (P1-B4): "Tattile" is a camera, and a carried
+     * iPhone is [Kind.PHONE]. An Offline Finding tag record reads as a finder whatever matched it. [classes] comes from
+     * [classesOf]. Beacons and wearables still go by name tokens until their own step (P1-B4c).
+     */
+    fun kind(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): Kind? {
+        if (finderHits(device, names, classes).isNotEmpty()) return Kind.FINDER
+        if (isFindMyTagRecord(device)) return Kind.FINDER
         if (nameHits(device, names, beaconTokens).isNotEmpty()) return Kind.BEACON
         if (nameHits(device, names, wearableTokens).isNotEmpty()) return Kind.WEARABLE
-        if (isCarriedApple(device, names)) return Kind.FINDER
+        if (isCarriedApple(device, names)) return Kind.PHONE
         return null
     }
 
-    fun label(device: Sighting, names: Map<String, String>): String {
-        val finder = nameHits(device, names, finderTokens)
+    /**
+     * FINDER-class matches. "Find My device" whose record says Apple device or AirPods is left out: the engine leaves
+     * it there only when that type's row is missing, and the radio is still a phone or buds, not a tag.
+     */
+    private fun finderHits(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): List<String> =
+        device.fleetIds.filter { id ->
+            classes[id] == SignatureClass.FINDER && !(id == SignatureEngine.FIND_MY && isPhoneOrAirPodsRecord(device))
+        }.map { names[it] ?: it }
+
+    fun label(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): String {
+        val finder = finderHits(device, names, classes)
         if (finder.isNotEmpty()) return finder.joinToString(" + ")
         val beacon = nameHits(device, names, beaconTokens)
         if (beacon.isNotEmpty()) return beacon.joinToString(" + ")
         val wear = nameHits(device, names, wearableTokens)
         if (wear.isNotEmpty()) return wear.joinToString(" + ")
-        if (isFindMyPayload(device)) return "Apple Find My / Offline Finding"
-        if (isCarriedApple(device, names)) return "Apple BLE (phone / Continuity)"
+        if (isFindMyTagRecord(device)) return "Apple Find My / Offline Finding"
+        if (isCarriedApple(device, names)) {
+            val matched = device.fleetIds.filter { it != SignatureEngine.FIND_MY }.mapNotNull { names[it] }
+            return matched.ifEmpty { listOf("Apple BLE (phone / Continuity)") }.joinToString(" + ")
+        }
         return "tracker-like"
     }
 }

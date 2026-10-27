@@ -208,14 +208,14 @@ object MatchCorpus {
         NearMiss(
             "Separated iPhone, Offline Finding only",
             sighting("NM:iphone-of", mfg = apple(offlineFinding(0x00))),
-            // Now an Apple device (P1-B3), but TrackerMatch still reads Apple phones as finders (P1-B4).
-            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
+            // An Apple device (P1-B3), and not a finder: TrackerMatch goes by the matched class (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true,
         ),
         NearMiss(
             "Powered-off AirPods, Offline Finding only",
             sighting("NM:airpods-of", mfg = apple(offlineFinding(0x30))),
-            // Now Apple audio (P1-B3), but TrackerMatch still reads carried Apple devices as finders (P1-B4).
-            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
+            // Apple audio (P1-B3), and not a finder (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true,
         ),
         // A phone carried by the user sends Continuity nearby-info next to Offline Finding. The Continuity
         // record is what keeps it off AirTag today (dropAirTagsWhenAppleDevice), so this exercises that filter.
@@ -234,8 +234,8 @@ object MatchCorpus {
         NearMiss(
             "Tattile camera name",
             sighting("NM:tattile", name = "Tattile Vega"),
-            // No longer matches Tile (P1-B2), but TrackerMatch still reads "tile" in the name as a tracker (P1-B4).
-            setOf("fleet-tile"), checkFinder = true, finderKnownUntil = "P1-B4",
+            // No longer matches Tile (P1-B2), and "tile" in the name no longer reads as a tracker (P1-B4).
+            setOf("fleet-tile"), checkFinder = true,
         ),
         // Quuppa positioning tags share company id 0x00C7 with old Tile rows.
         NearMiss(

@@ -6,7 +6,7 @@ class SignatureEngine {
         private val WIFI_PROTOCOL_IE_OUIS = setOf("0050F2", "000FAC")
 
         /** The bare Offline Finding row, routed by device type (P1-B3). */
-        private const val FIND_MY = "fleet-findmy"
+        const val FIND_MY = "fleet-findmy"
     }
 
     /**
@@ -341,13 +341,10 @@ class SignatureEngine {
      */
     private fun routeOfflineFinding(hits: MutableSet<String>, device: Sighting, compiled: Compiled) {
         if (FIND_MY !in hits) return
-        val status = mfgRecords(device).firstNotNullOfOrNull { rec ->
-            if (rec.companyId == 0x004C) AdvPayloadDecoder.offlineFindingStatus(hexOnly(rec.dataHex)) else null
-        } ?: return
-        val target = when ((status shr 4) and 0x3) {
-            0 -> "fleet-apple-device"
-            1 -> "fleet-airtag"
-            3 -> "fleet-apple-audio"
+        val target = when (TrackerMatch.offlineFindingType(device) ?: return) {
+            TrackerMatch.OF_APPLE_DEVICE -> "fleet-apple-device"
+            TrackerMatch.OF_AIRTAG -> "fleet-airtag"
+            TrackerMatch.OF_AIRPODS -> "fleet-apple-audio"
             else -> return
         }
         if (target !in compiled.planIds) return

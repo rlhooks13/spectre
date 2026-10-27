@@ -607,7 +607,11 @@ class DefaultCatalogTest {
         assertFalse("heart rate alone", "fleet-polar" in ids(hrOnly))
         assertEquals(
             TrackerMatch.Kind.WEARABLE,
-            TrackerMatch.kind(h10.copy(fleetIds = setOf("fleet-polar")), mapOf("fleet-polar" to "Polar")),
+            TrackerMatch.kind(
+                h10.copy(fleetIds = setOf("fleet-polar")),
+                mapOf("fleet-polar" to "Polar"),
+                mapOf("fleet-polar" to SignatureClass.WEARABLE),
+            ),
         )
     }
 

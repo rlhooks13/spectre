@@ -11,6 +11,7 @@ class MatchCorpusTest {
     private val fleets = DefaultCatalog.fleets()
     private val byId = fleets.associateBy { it.id }
     private val names = fleets.associate { it.id to it.name }
+    private val classes = TrackerMatch.classesOf(fleets)
     private val engine = SignatureEngine()
 
     /** Against a copy of the signature with only that rule, so a sibling rule can't hide a broken one. */
@@ -74,7 +75,7 @@ class MatchCorpusTest {
             val got = hits.getValue(miss.sighting.key)
             val wrong = got intersect miss.mustNotMatch
             val finder = miss.checkFinder &&
-                TrackerMatch.kind(miss.sighting.copy(fleetIds = got), names) == TrackerMatch.Kind.FINDER
+                TrackerMatch.kind(miss.sighting.copy(fleetIds = got), names, classes) == TrackerMatch.Kind.FINDER
             if (miss.knownUntil == null) {
                 assertEquals(miss.label, emptySet<String>(), wrong)
                 if (miss.finderKnownUntil == null) {

@@ -18,6 +18,10 @@ class PlaceMemoryTest {
     private val t0 = day.toEpochMilli()
     private val localDay = day.atZone(zone).toLocalDate().toEpochDay()
     private val names = mapOf("tile" to "Tile")
+    private val classes = mapOf("tile" to SignatureClass.FINDER)
+
+    /** A finder by class: since P1-B4 the name alone doesn't make a tracker. */
+    private val tileFleet = Fleet(id = "tile", name = "Tile", kind = SignatureClass.FINDER)
 
     @Test
     fun trackerAtThreePlacesAlerts() {
@@ -35,6 +39,7 @@ class PlaceMemoryTest {
             devices = listOf(heard),
             records = listOf(record),
             names = names,
+            classes = classes,
             customNames = emptyMap(),
             mineKeys = emptySet(),
             now = end,
@@ -44,7 +49,7 @@ class PlaceMemoryTest {
         assertTrue(text.contains(heard.mac))
         val doc = DebriefReport.document(
             devices = listOf(heard),
-            fleets = listOf(Fleet(id = "tile", name = "Tile")),
+            fleets = listOf(tileFleet),
             settings = AppSettings(tagLocation = true),
             operatorPath = emptyList(),
             now = end,
@@ -72,7 +77,7 @@ class PlaceMemoryTest {
         val heard = tile().copy(firstSeen = t0, lastSeen = end)
         val doc = DebriefReport.document(
             devices = listOf(heard),
-            fleets = listOf(Fleet(id = "tile", name = "Tile")),
+            fleets = listOf(tileFleet),
             settings = AppSettings(tagLocation = true),
             operatorPath = emptyList(),
             now = end,
@@ -85,7 +90,7 @@ class PlaceMemoryTest {
         assertTrue(plain.contains("38.00000, -77.00000"))
         val privateDoc = DebriefReport.document(
             devices = listOf(heard),
-            fleets = listOf(Fleet(id = "tile", name = "Tile")),
+            fleets = listOf(tileFleet),
             settings = AppSettings(tagLocation = true, demoMode = true),
             operatorPath = emptyList(),
             now = end,
@@ -117,8 +122,8 @@ class PlaceMemoryTest {
     @Test
     fun onePlaceBssidDoesNotAlert() {
         val wifi = radio(RadioKind.WIFI, "00:11:22:33:44:66", fleetIds = emptySet())
-        assertNull(PlaceMemory.accept(wifi, names, emptySet(), generic = false))
-        val id = PlaceMemory.accept(wifi, names, emptySet(), generic = true)!!
+        assertNull(PlaceMemory.accept(wifi, names, classes, emptySet(), generic = false))
+        val id = PlaceMemory.accept(wifi, names, classes, emptySet(), generic = true)!!
         var record: PlaceMemory.Record? = null
         repeat(6) { i ->
             record = PlaceMemory.note(record, hear(id, t0 + i * MINUTE, home))
@@ -130,14 +135,14 @@ class PlaceMemoryTest {
     @Test
     fun rotatingBleDoesNotAlert() {
         val rotating = radio(RadioKind.BLE, "02:11:22:33:44:55", fleetIds = setOf("tile"))
-        assertNull(PlaceMemory.accept(rotating, names, emptySet()))
+        assertNull(PlaceMemory.accept(rotating, names, classes, emptySet()))
     }
 
     @Test
     fun mineDoesNotAlert() {
         val device = tile()
-        assertNull(PlaceMemory.accept(device, names, setOf(device.key)))
-        assertEquals("ble:${device.mac}", PlaceMemory.accept(device, names, emptySet()))
+        assertNull(PlaceMemory.accept(device, names, classes, setOf(device.key)))
+        assertEquals("ble:${device.mac}", PlaceMemory.accept(device, names, classes, emptySet()))
     }
 
     @Test
@@ -173,6 +178,7 @@ class PlaceMemoryTest {
                 devices = listOf(tile()),
                 records = listOf(record),
                 names = names,
+                classes = classes,
                 customNames = emptyMap(),
                 mineKeys = emptySet(),
                 now = t0 + 10 * MINUTE,
