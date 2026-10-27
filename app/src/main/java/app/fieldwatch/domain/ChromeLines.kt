@@ -402,7 +402,7 @@ internal object ChromeLines {
         en("ui.off.label", "Off", LanguageSlot.CONTROL),
         en("ui.paused.label", "Paused", LanguageSlot.CONTROL),
         en("ui.export.import", "Export and import", LanguageSlot.CONTROL),
-        en("ui.copyright.c.2026.off", "Copyright (c) 2026 Off Grid Pete LLC. All rights reserved.", LanguageSlot.BODY),
+        en("ui.copyright.c.2026.off", "Copyright (c) 2026 Off Grid Pete LLC and the Spectre contributors. MIT License.", LanguageSlot.BODY),
         // Upstream's social chips are gone (P0-4c); the keys stay because keys are never removed.
         en("ui.offgridpete.label", "Unused", LanguageSlot.CONTROL),
         en("ui.ogridpete.label", "Unused", LanguageSlot.CONTROL),
@@ -949,7 +949,7 @@ internal object ChromeLines {
         en("ui.operator.label.2", "Operator", LanguageSlot.CONTROL),
         en("ui.second.gnss", "Second GNSS", LanguageSlot.CONTROL),
         en("ui.path.key", "Path key", LanguageSlot.CONTROL),
-        en("ui.off.grid.pete.llc", "Off Grid Pete LLC  ·  operationally sensitive", LanguageSlot.CONTROL),
+        en("ui.off.grid.pete.llc", "Spectre  ·  operationally sensitive", LanguageSlot.CONTROL),
         en("ui.fieldwatch.watchlist", "Spectre watchlist", LanguageSlot.CONTROL),
 
         en("ui.appearing.signatures.devices.watchlist", "Appearing signatures and devices on your watchlist. Beep is played separately.", LanguageSlot.BODY),

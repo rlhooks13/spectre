@@ -199,7 +199,7 @@ object DebriefPrompt {
         else body.take(MAX_CHARS) + "\n\n[truncated for share-sheet size]\n"
     }
 
-    fun experimentalDisclaimerMarkdown(): String = FieldwatchDisclaimer.experimentalMarkdown()
+    fun experimentalDisclaimerMarkdown(): String = SpectreDisclaimer.experimentalMarkdown()
 
     private fun row(
         d: Sighting,

@@ -60,7 +60,7 @@ object BundledLanguages {
 /** Compiled sentences a pack cannot replace. Not keys. */
 object OfficialSentences {
     const val NOT_REVIEWED =
-        "Language packs are made by other people. They are not reviewed or certified by Off Grid Pete LLC."
+        "Language packs are made by other people. They are not reviewed or certified by the Spectre contributors."
     const val AI =
         "This language was translated with AI. If a line is wrong, please open a GitHub issue."
     const val AUTHOR_GUIDE =

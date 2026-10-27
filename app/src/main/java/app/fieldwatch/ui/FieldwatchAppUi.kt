@@ -123,7 +123,7 @@ import app.fieldwatch.domain.wifiHeader
 import app.fieldwatch.domain.ListSort
 import app.fieldwatch.domain.StrengthSort
 import app.fieldwatch.domain.ViewMode
-import app.fieldwatch.domain.FieldwatchDisclaimer
+import app.fieldwatch.domain.SpectreDisclaimer
 import app.fieldwatch.domain.disclaimerOk
 import app.fieldwatch.radio.RadioPermissions
 import app.fieldwatch.ui.screen.LanguageDoor
@@ -204,26 +204,26 @@ private fun DisclaimerGate(onAccept: () -> Unit) {
             modifier = Modifier.padding(top = 20.dp),
         )
         Text(
-            FieldwatchDisclaimer.firstRunDisclaimer,
+            SpectreDisclaimer.firstRunDisclaimer,
             style = MaterialTheme.typography.bodyMedium,
             color = ink,
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            FieldwatchDisclaimer.LICENSE_TITLE,
+            SpectreDisclaimer.LICENSE_TITLE,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
             color = ink,
             modifier = Modifier.padding(top = 24.dp),
         )
         Text(
-            FieldwatchDisclaimer.LICENSE_BODY,
+            SpectreDisclaimer.LICENSE_BODY,
             style = MaterialTheme.typography.bodyMedium,
             color = ink,
             modifier = Modifier.padding(top = 8.dp),
         )
         Text(
-            FieldwatchDisclaimer.ACCEPT,
+            SpectreDisclaimer.ACCEPT,
             style = MaterialTheme.typography.bodyMedium,
             color = ink,
             modifier = Modifier.padding(top = 20.dp),

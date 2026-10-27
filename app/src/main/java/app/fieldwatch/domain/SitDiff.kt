@@ -255,7 +255,7 @@ object SitDiff {
             generatedUtc = "",
             windowLine = "${thisSit.name} vs ${second.name}",
             meta = meta,
-            disclaimer = FieldwatchDisclaimer.compare(),
+            disclaimer = SpectreDisclaimer.compare(),
             trackingAlert = extraHits.isNotEmpty(),
             takeaway = compareTakeaway(onlyThis.size, onlySecond.size, both.size, mineCount(thisSit, second)),
             sections = sections,
