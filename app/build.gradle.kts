@@ -154,3 +154,10 @@ dependencies {
     // Real org.json on the JVM test classpath; the android.jar bundled JSONObject is a stub.
     testImplementation(libs.json)
 }
+
+// Capture scrub tool (P1-F4, docs/capture-runbook.md): `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`.
+// Without them the tool's test is skipped, so CI and ordinary runs never touch capture files.
+tasks.withType<Test>().configureEach {
+    systemProperty("spectre.scrubIn", providers.gradleProperty("scrubIn").getOrElse(""))
+    systemProperty("spectre.scrubOut", providers.gradleProperty("scrubOut").getOrElse(""))
+}
