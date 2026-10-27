@@ -65,6 +65,15 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Owner update (in session), and P1-A3's AI prompts and packs.**
+  - **Usage gate:** #50 (3bd5de2) merged. Work runs only while the weekly window is under 80% and the five-hour window under 90%. Pre-flight step 5 runs `tools/usage-watch.sh --gate`, and a paused wakeup is cheap. The watcher was restarted from the new script, and the gate was open (five-hour 16/90, weekly 50/80).
+  - **CI flake:** main CI was red on ba09e1f (#48). The APK job's dependency verification fetched `org.jetbrains.kotlin.android.gradle.plugin-2.0.21.pom` from the Gradle Plugin Portal: an auto-generated copy (681 bytes, sha256 9d841037…) where Maven Central's matches the pin (61ffa872…). The owner re-ran the job, and main is green. **Don't change `verification-metadata.xml` for it; if it happens again, tell the owner.**
+  - **#49 (ATAK package) merged.**
+  - **Prompts and packs:**
+    - Goldens for the sit AI prompt and the one-radio prompt, each also in Privacy mode, which masks MAC tails and coordinates (checked: no full address or coordinate in the privacy goldens).
+    - The sit-compare prompt.
+    - The settings pack, and a small user-made signature pack. The full stock signature pack is `dist/fieldwatch-signatures-v2.json`, which StockCatalogFileTest pins.
+  - **Left in P1-A3:** decoding real 1.1.32 files.
 - 2026-10-27: **P1-A3, the ATAK package:**
   - The Debrief goldens merged as #48.
   - `atak/sit-package.txt` pins the zip's entries, manifest and every entry: phone-scoped HERE pins, the self and path events, and `tracks.kml` with the operator path and a drone track. It uses `SitFixture` plus a synthetic Remote ID drone (FFFA, made-up serial, advertised position, heading, speed and pilot).

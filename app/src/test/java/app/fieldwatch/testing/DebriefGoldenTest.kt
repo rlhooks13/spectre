@@ -83,12 +83,7 @@ class DebriefGoldenTest {
         )
     }
 
-    /** A camera report as the app passes one: plate-reader list present, holding [cameras]. */
-    private fun cameras(vararg cameras: FlockCamera): PathCameras.Report {
-        val index = FlockIndex()
-        if (cameras.isNotEmpty()) index.replace(cameras.toList())
-        return PathCameras.Report(plates = true, others = false, near = index::near)
-    }
+    private fun cameras(vararg cameras: FlockCamera): PathCameras.Report = SitFixture.cameraReport(*cameras)
 
     private fun debrief(
         name: String,
@@ -99,7 +94,7 @@ class DebriefGoldenTest {
         mineKeys: Set<String> = emptySet(),
         cameras: PathCameras.Report = cameras(),
     ): String {
-        val saved = SitFixture.matched(devices, fleets).map { SitRadio.from(it, fleets).toSighting() }
+        val saved = SitFixture.saved(SitFixture.matched(devices, fleets), fleets)
         return DebriefReport.document(
             devices = saved,
             fleets = fleets,

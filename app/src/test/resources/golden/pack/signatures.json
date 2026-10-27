@@ -1,0 +1,114 @@
+{
+    "appVersion": "0.0.0-golden",
+    "catalogVersion": 97,
+    "exportedAt": "2026-10-27T12:00:00Z",
+    "fleets": [
+        {
+            "attentionNote": "",
+            "builtIn": false,
+            "clusterByOui": false,
+            "colorIndex": 0,
+            "enabled": true,
+            "id": "fleet-user-golden",
+            "kind": "CAMERA",
+            "matchAny": true,
+            "minPeers": 0,
+            "name": "Test doorbell",
+            "notes": "Made on this phone.",
+            "peerWindowSec": 60,
+            "rules": [
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "NAME_CONTAINS",
+                    "radio": null,
+                    "text": "Doorbell-TEST"
+                }
+            ],
+            "sequentialMac": false
+        },
+        {
+            "attentionNote": "",
+            "builtIn": true,
+            "clusterByOui": false,
+            "colorIndex": 3,
+            "decode": {
+                "companyId": null,
+                "fields": [
+                    {
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "endian": "le",
+                        "enum": null,
+                        "id": "private_id",
+                        "label": "Private ID",
+                        "length": 8,
+                        "modulo": null,
+                        "offset": 0,
+                        "offsetAdd": null,
+                        "scale": null,
+                        "type": "hex",
+                        "unit": null,
+                        "when": null
+                    }
+                ],
+                "serviceUuid": "FEED",
+                "source": "serviceData"
+            },
+            "enabled": false,
+            "id": "fleet-tile",
+            "kind": "FINDER",
+            "matchAny": true,
+            "minPeers": 0,
+            "name": "Tile Trackers",
+            "notes": "Tile item finder. Decoded fields can show a rotating private id — not a serial.",
+            "peerWindowSec": 60,
+            "rules": [
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "NAME_CONTAINS",
+                    "radio": null,
+                    "text": "Tile"
+                },
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "SERVICE_UUID",
+                    "radio": null,
+                    "text": "FEED"
+                },
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "SERVICE_UUID",
+                    "radio": null,
+                    "text": "FEEC"
+                },
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "SERVICE_UUID",
+                    "radio": null,
+                    "text": "FEDD"
+                },
+                {
+                    "companyId": 199,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "MANUFACTURER_ID",
+                    "radio": null,
+                    "text": ""
+                }
+            ],
+            "sequentialMac": false
+        }
+    ],
+    "format": "fieldwatch-signatures",
+    "formatVersion": 1
+}

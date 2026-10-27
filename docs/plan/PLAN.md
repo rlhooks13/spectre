@@ -336,6 +336,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - The header's `Classification` label runs into its value (`ClassificationOperationally sensitive`).
   - A finder that isn't Apple's still gets "Find My / iPhone addresses rotate" (the Galaxy golden; it goes with P1-B1).
   - The ATAK package stamps a drone's pilot event with the radio's last hear, not the pilot fix's own time (`payloadOpAt`); pinned in `atak/sit-package.txt`.
+  - An observer note's newline splits a one-line "Working data" row in the sit AI prompt (`prompt/sit*.md`); single-line rows should flatten newlines.
 
 **1E. Exports and privacy**
 - **P1-E1 Export formats:**

@@ -74,6 +74,20 @@ object SitFixture {
     fun corpus(key: String): Sighting =
         (MatchCorpus.targets.map { it.sighting } + MatchCorpus.nearMisses.map { it.sighting }).first { it.key == key }
 
+    /** [devices] as a saved sit holds them (`SitRadio.from(...).toSighting()`, as SitStore.debriefSource gives them). */
+    fun saved(devices: List<Sighting>, fleets: List<Fleet>): List<Sighting> =
+        devices.map { app.fieldwatch.domain.SitRadio.from(it, fleets).toSighting() }
+
+    /** A camera report as the app passes one: plate-reader list present, holding [cameras]. */
+    fun cameraReport(vararg cameras: app.fieldwatch.domain.FlockCamera): app.fieldwatch.domain.PathCameras.Report {
+        val index = app.fieldwatch.domain.FlockIndex()
+        if (cameras.isNotEmpty()) index.replace(cameras.toList())
+        return app.fieldwatch.domain.PathCameras.Report(plates = true, others = false, near = index::near)
+    }
+
+    /** A mapped plate reader on the operator path's middle fix, so the camera-on-path lines are pinned. */
+    val mappedFlock = app.fieldwatch.domain.FlockCamera(key = 7L, lat = 0.0013, lon = 0.0022, facings = emptyList(), flock = true)
+
     /** [devices] with their signatures from the real matcher at [Golden.NOW]. */
     fun matched(devices: List<Sighting>, fleets: List<Fleet>): List<Sighting> {
         val hits = SignatureEngine().match(devices, fleets, now = Golden.NOW)
@@ -113,6 +127,33 @@ object SitFixture {
             longitude = lon,
         )
     }
+
+    /**
+     * A Remote ID drone matched through FFFA (not in [build]'s sit; add it where a test needs one), decoded
+     * mid-flight with its pilot's live GPS. The serial is made up. Its times all differ, so goldens show which one
+     * each event uses: last hear NOW-5 s, newest flight fix and decode NOW-9 s, pilot fix NOW-12 s.
+     */
+    fun drone(): Sighting = Sightings.sighting(
+        key = "BLE:4E:11:22:33:44:07",
+        mac = "4E:11:22:33:44:07",
+        serviceUuids = listOf("FFFA"),
+    ).copy(
+        rssi = -74, rssiMin = -82, rssiMax = -70,
+        firstSeen = Golden.NOW - 6 * 60_000L, lastSeen = Golden.NOW - 5_000L, hitCount = 120,
+        latitude = 0.0015, longitude = 0.0024,
+        gpsTrail = listOf(GpsSample(Golden.NOW - 5_000L, 0.0015, 0.0024, -74)),
+        payloadUasId = "TESTSERIAL0000000001",
+        payloadLat = 0.0021, payloadLon = 0.0031, payloadAlt = 86.0, payloadHeading = 270.0, payloadSpeed = 6.5,
+        payloadAt = Golden.NOW - 9_000L,
+        payloadOpLat = 0.0018, payloadOpLon = 0.0029, payloadOpKind = 1, payloadOpAlt = 4.0,
+        payloadOpAt = Golden.NOW - 12_000L,
+        // The advertised flight so far, ending at the current position.
+        payloadTrail = listOf(
+            app.fieldwatch.domain.PayloadFix(Golden.NOW - 129_000L, 0.0019, 0.0035, 80.0, 270.0, 6.0),
+            app.fieldwatch.domain.PayloadFix(Golden.NOW - 69_000L, 0.0020, 0.0033, 84.0, 270.0, 6.3),
+            app.fieldwatch.domain.PayloadFix(Golden.NOW - 9_000L, 0.0021, 0.0031, 86.0, 270.0, 6.5),
+        ),
+    )
 
     /** The operator's path across the sit, ending at NOW. */
     val track: List<GpsSample> = listOf(
