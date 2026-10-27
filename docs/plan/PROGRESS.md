@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4g language-pack cap (ADR-0011), on branch `p0/4g-language-pack-cap`; check `gh pr list --head p0/4g-language-pack-cap` for the PR. It must merge **before PR #10**: with #10 on top of `main` (after #16), the full-slot pack test trips. After it merges, re-sync #10 with `main`. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; **don't merge until the cap PR lands and #10 is re-synced**), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c). Next: P0-7d (camera-alert region notice).
-- Branch: `p0/4g-language-pack-cap`
+- Current step: P0-7d (camera-alert region notice), on branch `p0/7d-camera-region-notice`; check `gh pr list --head p0/7d-camera-region-notice` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #17 and ready to sign once its CI is green), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c).
+- Branch: `p0/7d-camera-region-notice`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T10:35Z
+- Last cycle: 2026-10-27T11:05Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -54,7 +54,8 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4g Language-pack cap 264 → 280 KiB (ADR-0011).** Branch `p0/4g-language-pack-cap` (the first push went to `p0/language-pack-cap`, which has no PR; delete it once a branch-delete rule exists).
+- 2026-10-27: **P0-4g Re-synced PR #10** with `main` after #17 (merge `83b0722`). Unit tests pass locally. The owner was told #10 can be reviewed and signed once its CI is green.
+- 2026-10-27: **P0-4g Language-pack cap 264 → 280 KiB (ADR-0011).** PR #17, merged as `3a8ca3d`. Branch `p0/4g-language-pack-cap` (the first push went to `p0/language-pack-cap`, which has no PR; delete it once a branch-delete rule exists).
   - **Found when** re-syncing PR #10 after #16: `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` failed. A pack with every line at its slot cap must be either accepted, or refused and within 8 KiB of `LanguagePack.MAX_BYTES`.
   - **Why it tripped:** the Phase 0 copy fixes added English lines, so the worst-case pack (main plus #10) is 278,802 bytes, 274 bytes past 264 KiB plus 8 KiB.
   - **Decision:** the test's margin is a tripwire, so it stays unchanged. The first draft took the cap to 272 KiB, which kept the worst case refused. Both reviews pointed out that this still refuses a pack that follows every slot rule, so the cap goes to 280 KiB instead. The worst case is now accepted, and the test's line-by-line branch runs for the first time. The author guide and the requirements doc are updated. A new test, `packDocsStateTheFileCap`, ties every "KiB" figure in both docs to `MAX_BYTES`.
