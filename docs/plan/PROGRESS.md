@@ -10,6 +10,10 @@
 - Last cycle: 2026-10-27T11:05Z
 
 ## Needs human (owner)
+- P0-8b (PR to come):
+  - Review `docs/setup/workflows/release.yml`, sign it, and copy it to `.github/workflows/release.yml`.
+  - Add `dryrun/v*` to the `release` environment's allowed deployment tags.
+  - Leave `dryrun/v*` out of the `release-tags` ruleset, so scratch tags can be deleted.
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
@@ -53,6 +57,19 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
+
+- 2026-10-27: **P0-8b Release workflow draft** (protected; the owner signs it and copies it to `.github/workflows/release.yml`). Branch `p0/8b-release-workflow-draft`, based on `main`. It may conflict with #19 in this file only.
+  - **Tags:** `vX.Y.Z` for a real pre-release, and `dryrun/vX.Y.Z` for a draft-only scratch run (the Phase 0 exit check).
+  - **Job A "Build"** (no secrets):
+    - The tag must be SemVer with Y and Z ≤ 999, sit on `main`, and (for `v*`) be the next version after the last `v*` tag, or 0.1.0 for the first release.
+    - Builds the unsigned release APK and checks with aapt2 that its versionCode and versionName match the tag.
+    - A real release needs `docs/release-notes/X.Y.Z.md`.
+  - **Job B "Sign and publish"** (`release` environment, no checkout, no Gradle):
+    - Downloads the artifact, re-derives the version from the tag, signs with the PKCS12 secret and deletes the key file.
+    - Requires exactly one signer whose SHA-256 equals `vars.SPECTRE_CERT_SHA256`.
+    - Publishes with `gh release create --verify-tag`: a pre-release for `v*`, a draft for dry runs. The notes end with the APK and certificate SHA-256 values.
+  - **Blocked on P0-8c:** the build still hard-codes versionName 1.1.32 and versionCode 42, so the APK version check fails closed until P0-8c (version from the git tag, ADR-0002) lands. P0-8c is next. Its PLAN line will be added once #19 merges, to avoid conflicts.
+  - **Not yet:** the release-notes generator (every label and verdict change), and pinning the SDK packages.
 
 - 2026-10-27: **P0-7d Camera-alert region notice.** Branch `p0/7d-camera-region-notice`.
   - New key `settings.layer.alert.region` (BODY). It says some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving, so check the law before turning on an alert.
