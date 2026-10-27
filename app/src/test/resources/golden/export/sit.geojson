@@ -1,0 +1,101 @@
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    0.0021,
+                    0.0012
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "WIFI B4:1E:52:0A:0B:0C · Flock Safety · -55 dBm · ch 6 · Observer: On the pole by the gate,\nfacing the road · Heard at this phone. Not a radio fix.",
+                "kind": "WIFI",
+                "mac": "B4:1E:52:0A:0B:0C",
+                "name": "Flock-1A2B",
+                "rssi": -55,
+                "time": "2026-10-27T11:56:00Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    0.0022,
+                    0.0013
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "BLE 7A:11:22:33:44:01 · -67 dBm · Heard at this phone. Not a radio fix.",
+                "kind": "BLE",
+                "mac": "7A:11:22:33:44:01",
+                "name": "Tom's \"bag\", left & <right>",
+                "rssi": -67,
+                "time": "2026-10-27T11:57:00Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    0.0023,
+                    0.0014
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "BLE 5E:11:22:33:44:02 · -72 dBm · Heard at this phone. Not a radio fix.",
+                "kind": "BLE",
+                "mac": "5E:11:22:33:44:02",
+                "name": "5E:11:22:33:44:02",
+                "rssi": -72,
+                "time": "2026-10-27T11:58:00Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    0.0024,
+                    0.0015
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "BLE 6E:11:22:33:44:03 · -80 dBm · Heard at this phone. Not a radio fix.",
+                "kind": "BLE",
+                "mac": "6E:11:22:33:44:03",
+                "name": "Galaxy S23",
+                "rssi": -80,
+                "time": "2026-10-27T11:59:00Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        0.002,
+                        0.0011
+                    ],
+                    [
+                        0.0022,
+                        0.0013
+                    ],
+                    [
+                        0.0024,
+                        0.0015
+                    ]
+                ],
+                "type": "LineString"
+            },
+            "properties": {
+                "name": "Operator path"
+            },
+            "type": "Feature"
+        }
+    ],
+    "name": "Spectre 0.0.0-golden export",
+    "type": "FeatureCollection"
+}

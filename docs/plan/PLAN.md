@@ -235,11 +235,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 
 **1A. Safety net** (lands before any fix)
 - **P1-A1 Test libraries:** (waits for PR #6, dependency verification, so new dependencies land in its metadata instead of breaking it; P1-A2 needs Robolectric and waits too) coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
-- **P1-A2 Golden rule:** goldens live under a `golden/` directory (for example `app/src/test/resources/golden/`), so `.gitattributes` keeps them `-text`.
+- ✅ **P1-A2 Golden rule:** goldens live under a `golden/` directory (for example `app/src/test/resources/golden/`), so `.gitattributes` keeps them `-text`.
   - Pins TimeZone and Locale, resets the LanguageText overlay, and passes `now` explicitly.
   - JSON goldens are compared **after parsing**, plus one Robolectric test that pins the device's byte order.
   - One localized golden.
-- **P1-A3 Goldens:**
+- **P1-A3 Goldens:** (split into PRs: sit exports and live CoT first, then the rotating-log exports (`LogStore` CSV/JSONL and the log map export), signature matching, Debrief, the ATAK package, AI prompts and packs, 1.1.32 decoding)
   - signature matching
   - Debrief text for 6 sits, including late-joining and tag-in-bag-from-start cases
   - every export format, CoT, the 3 AI prompts, and both packs

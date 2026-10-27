@@ -2,30 +2,30 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: none open for the agent; two protected PRs wait for the owner's signature:
-  - **P0-4e** is PR #39. The owner also copies its release.yml hunk into `.github/workflows/release.yml`; until then a release fails at the aapt2 package check.
-  - **P1-A1** is PR #38 (verification metadata, approved dependencies, baseline 807). A2 → A3 → 1B–1E follow once it merges.
-  - Whichever of #38 and #39 merges second is rebased, and #39 raises the baseline by 1 for its `ApplicationIdTest`.
-  - **P2-1** (build-logic) is unblocked by the dependency list, but it moves `app/build.gradle.kts` config that #38 and #39 both change, so it starts after they merge.
+- Current step: **P1-A3 Goldens**, split into PRs:
+  - first, exports and CoT (`ExportGoldenTest`, `SitFixture`);
+  - then signature matching, Debrief for 6 sits, the ATAK package, the AI prompts and both packs, and 1.1.32 decoding.
+  - Then 1B–1E.
+  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. The baseline goes up again for A2 and A3's tests in the next protected PR.
+  - **P2-1** (build-logic) is unblocked; it starts after 1A, so its build move doesn't collide with the golden work.
   - **P0-8d** after P1-B1.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** signing #38 (P1-A1) and #39 (P0-4e); the P0-7c layer choice.
+  - **Waiting on the owner:** signing #43; the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `main` (no work in progress)
+- Branch: `p1/a3a-export-goldens`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T15:49Z
+- Last cycle: 2026-10-27T16:36Z
 
 ## Needs human (owner)
 **For the owner:**
-- **Sign and merge #39 (P0-4e, applicationId).** In the same signed merge, apply its `docs/setup/workflows/release.yml` hunk to `.github/workflows/release.yml` (the agent's token can't push workflows). Until then, every release fails at the aapt2 package check, which still expects `app.fieldwatch`.
-- **Sign and merge #38 (P1-A1).** It adds `android-all-instrumented` and Robolectric's test-only transitive crypto (BouncyCastle, Conscrypt) to `approved-dependencies.md`. Robolectric pins SDK 34 because SDK 35 needs Java 21 and CI runs 17. Moving CI to Java 21 would allow 35.
+- **Sign and merge #43 (P1-A1 follow-ups).** CI is green on Java 17 with Robolectric on SDK 35. The earlier "SDK 35 needs Java 21" note was wrong: a test run showed `java.version` 17.0.20.1 on SDK 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
@@ -65,6 +65,15 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-A2 merged (#44); P1-A3 started.**
+  - **Owner merges:** #38 → #41 and #39 → #42, owner-signed. #42 also copied release.yml into `.github/workflows/`. Main was f14917c.
+  - **#43, P1-A1 follow-ups (protected):** Robolectric runs on SDK 35, the targetSdk. The SDK 34 jar is dropped, the crypto guard runs on `preBuild`, and the baseline is 858. CI is green on Java 17, which disproves the "SDK 35 needs Java 21" premise from the P1-A1 review.
+  - **#44, P1-A2:** `testing/Golden.kt` and `GoldenRule`.
+    - JSON is compared after parsing: keys in any order, numbers by value. Files are stored with sorted keys.
+    - The device bytes are pinned on Robolectric, and there's a German labels golden.
+    - Re-blessing uses `UPDATE_GOLDEN=1` or `-PupdateGolden`. The agent uses the latter, since env-var prefixes are denied. Only testDebugUnitTest writes.
+    - 864 tests.
+  - **P1-A3, first PR:** exports and CoT goldens from `SitFixture`, which takes the match corpus's devices through the real matcher. The Galaxy near-miss shows "Samsung SmartTags" until P1-B1.
 - 2026-10-27: **Bookkeeping and P0-4e.**
   - Ticked P0-3 (Build; #32), P0-4d (#33), P0-8a (#37) and P0-8b (#34) in PLAN.
   - **P0-4e** opened as PR #39 (protected):
