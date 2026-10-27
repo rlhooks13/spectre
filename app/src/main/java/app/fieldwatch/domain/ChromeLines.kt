@@ -375,7 +375,7 @@ internal object ChromeLines {
         en("ui.share.save.reset.clear", "Share, Save, and Reset / clear log are on the Reports tab.", LanguageSlot.BODY),
         en("ui.export.shares.catalog.including", "Export shares the catalog, including signatures you added. Import adds rows and does not delete any. Update stock catalog from GitHub refreshes the stock signatures and leaves yours, your bookmarks, and your settings. It needs internet. Restore defaults puts the stock catalog, colors, bookmarks, filters, and switches back. Signatures and filters you added are deleted.", LanguageSlot.BODY),
         // Shown while Features.IN_APP_CATALOG_UPDATE is off (P0-7a); the line above describes the update.
-        en("ui.export.shares.catalog.no.update", "Export shares the catalog, including signatures you added. Import adds rows and does not delete any. New stock signatures arrive with app updates. Restore defaults puts the stock catalog, colors, bookmarks, filters, and switches back. Signatures and filters you added are deleted.", LanguageSlot.BODY),
+        en("ui.export.shares.catalog.no.update", "Export shares the catalog, including signatures you added. Import adds rows and does not delete any. New stock signatures arrive with app updates. Restore defaults puts the stock catalog, colors, bookmarks, filters, and switches back. Signatures and filters you added are deleted.", LanguageSlot.BODY, revision = 2),
         en("ui.export.signatures", "Export signatures", LanguageSlot.CONTROL),
         en("ui.save.signatures.sd.card", "Save signatures to SD card / storage…", LanguageSlot.CONTROL),
         en("ui.import.signatures", "Import signatures…", LanguageSlot.CONTROL),
@@ -564,6 +564,7 @@ internal object ChromeLines {
                 "Spectre never joins Wi-Fi networks, and never connects to, pairs with, or advertises to nearby devices. " +
                 "Wi-Fi and Bluetooth scans can send the probe and scan requests Android makes when it scans.",
             LanguageSlot.BODY,
+            revision = 2,
         ),
         en("ui.grant.permissions", "Grant permissions", LanguageSlot.CONTROL),
         en("ui.sit.compare", "sit compare", LanguageSlot.CONTROL),
@@ -968,6 +969,6 @@ internal object ChromeLines {
         en("ui.fieldwatch.scanning", "Spectre scanning", LanguageSlot.CONTROL),
         // Superseded by ui.scan.status.channel (P0-7a): the scans are not passive.
         en("ui.passive.wi.fi.bluetooth", "Unused", LanguageSlot.CONTROL),
-        en("ui.scan.status.channel", "Wi-Fi and Bluetooth scan status", LanguageSlot.CONTROL),
+        en("ui.scan.status.channel", "Wi-Fi and Bluetooth scan status", LanguageSlot.CONTROL, revision = 2),
     )
 }

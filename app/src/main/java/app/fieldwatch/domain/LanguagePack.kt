@@ -35,6 +35,8 @@ data class LanguageFile(
     val languageTag: String? = null,
     val writtenFor: String? = null,
     val strings: Map<String, String> = emptyMap(),
+    /** Newest key revision the template had (ADR-0013). Absent in Fieldwatch packs. */
+    val keyRevision: Int? = null,
 )
 
 @Serializable
@@ -47,6 +49,7 @@ private data class LanguageTemplateFile(
     val language: String,
     val languageTag: String,
     val writtenFor: String,
+    val keyRevision: Int,
     val slots: Map<String, String>,
     val strings: Map<String, String>,
 )
@@ -101,11 +104,9 @@ object LanguagePack {
         val written = file.writtenFor?.trim()?.takeIf { it.isNotEmpty() && it.length <= MAX_WRITTEN_FOR }
         val (accepted, ignored) = acceptLines(file.strings)
         if (accepted.isEmpty()) return LanguageParse.Reject(LanguageErrors.NONE)
-        val writtenVersion = written?.let { parseVersion(it) }
-        val newSince = writtenVersion?.let { version ->
-            EnglishCopy.lines.count { line ->
-                line.key !in accepted && versionOf(line.addedIn)?.let { compareVersion(it, version) > 0 } == true
-            }
+        val since = file.keyRevision?.takeIf { it >= 1 } ?: legacyRevision(written?.let { parseVersion(it) })
+        val newSince = since?.let { revision ->
+            EnglishCopy.lines.count { line -> line.key !in accepted && line.revision > revision }
         }
         return LanguageParse.Ok(
             LanguagePreview(
@@ -145,6 +146,7 @@ object LanguagePack {
             language = "English",
             languageTag = "en",
             writtenFor = versionName,
+            keyRevision = EnglishCopy.KEY_REVISION,
             slots = slots,
             strings = strings,
         )
@@ -237,7 +239,16 @@ object LanguagePack {
         return 0
     }
 
-    private fun versionOf(raw: String): List<Int>? = parseVersion(raw)
+    /**
+     * A pack with no keyRevision came from Fieldwatch 1.x, whose writtenFor maps to a revision (ADR-0013).
+     * 1.1.27 or later had every revision-1 key; earlier 1.x versions had none of this map. Any other version
+     * (a hand-edited 0.x, say) gives no count.
+     */
+    private fun legacyRevision(version: List<Int>?): Int? = when {
+        version == null || version.firstOrNull() != 1 -> null
+        compareVersion(version, listOf(1, 1, 27)) >= 0 -> 1
+        else -> 0
+    }
 
     private fun acceptLines(strings: Map<String, String>): Pair<Map<String, String>, Int> {
         val accepted = LinkedHashMap<String, String>()

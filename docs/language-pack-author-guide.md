@@ -18,7 +18,7 @@ A key is lowercase letters, digits, and dots, as in `tab.live` or `language.conf
 
 A missing or blank key stays English. That is expected.
 
-Set `language` to the name people should see. It can be at most 40 characters. Set `writtenFor` to the version written on the template you exported. Leave `writtenFor` as the version of that template. One pack replaces another. It does not merge.
+Set `language` to the name people should see. It can be at most 40 characters. Leave `writtenFor` and `keyRevision` as the template you exported has them. `keyRevision` tells the app which keys are newer than your pack. One pack replaces another. It does not merge.
 
 The template also has a `slots` object, one slot name for each key. That object is there so you can see where the line sits. Import ignores it. The app uses the slot compiled into the version that reads the file.
 
@@ -51,7 +51,7 @@ Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, 
 
 ## After a Spectre update
 
-Import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after `writtenFor` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` as the version of that template.
+Import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after your pack's `keyRevision` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` and `keyRevision` as that template has them.
 
 ## What to tell the person who imports the file
 

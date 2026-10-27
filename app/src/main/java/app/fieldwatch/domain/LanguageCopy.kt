@@ -10,8 +10,11 @@ data class EnglishLine(
     val key: String,
     val text: String,
     val slot: LanguageSlot,
-    /** versionName that added this key. The first map shares one version. */
-    val addedIn: String,
+    /**
+     * Key revision that added this key (ADR-0013): 1 is the map Fieldwatch 1.1.27 shipped, 2 is Spectre
+     * Phase 0. It replaces the old versionName, which stopped working as a sort key when Spectre restarted at 0.x.
+     */
+    val revision: Int,
 )
 
 data class BundledLanguage(val tag: String, val name: String, val english: String)
@@ -89,7 +92,8 @@ object LanguageAiCopy {
 }
 
 object EnglishCopy {
-    const val ADDED_IN = "1.1.27"
+    /** The newest key revision. Raise it, and give new keys this value, in the first PR after a release. */
+    const val KEY_REVISION = 2
     const val FORMAT = "fieldwatch-language"
     const val FORMAT_VERSION = 1
 
@@ -104,7 +108,7 @@ object EnglishCopy {
         for (line in lines) {
             require(seen.add(line.key)) { "Duplicate language key ${line.key}" }
             require(keyRe.matches(line.key)) { "Bad language key ${line.key}" }
-            require(line.addedIn == ADDED_IN)
+            require(line.revision in 1..KEY_REVISION) { "Bad revision for ${line.key}" }
             var i = 0
             while (i < line.text.length) {
                 val brace = line.text.indexOf('{', i)
@@ -145,8 +149,8 @@ object LanguageErrors {
     const val NONE = "language.err.none"
 }
 
-internal fun en(key: String, text: String, slot: LanguageSlot) =
-    EnglishLine(key, text, slot, EnglishCopy.ADDED_IN)
+internal fun en(key: String, text: String, slot: LanguageSlot, revision: Int = 1) =
+    EnglishLine(key, text, slot, revision)
 
 private fun buildLines(): List<EnglishLine> = listOf(
     en("tab.live", "Live", LanguageSlot.TAB),
@@ -222,6 +226,7 @@ private fun buildLines(): List<EnglishLine> = listOf(
         "settings.layer.source",
         "From {host}, which Spectre does not run. OpenStreetMap data, © OpenStreetMap contributors.",
         LanguageSlot.BODY,
+        revision = 2,
     ),
     en("settings.layer.other", "Other sensors", LanguageSlot.CONTROL),
     en("settings.layer.other.note", "Speed cameras, red lights, gunshot detectors, and other cameras. Alerts for each type are below.", LanguageSlot.BODY),
@@ -237,6 +242,7 @@ private fun buildLines(): List<EnglishLine> = listOf(
         "settings.layer.alert.region",
         "Some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving. Check the law where you drive before you turn on an alert.",
         LanguageSlot.BODY,
+        revision = 2,
     ),
     en("settings.layer.download.title", "Download license plate readers.", LanguageSlot.CONTROL),
     en("settings.layer.more", "Update to include every plate reader.", LanguageSlot.BODY),
@@ -248,6 +254,7 @@ private fun buildLines(): List<EnglishLine> = listOf(
             "The camera locations are OpenStreetMap data (© OpenStreetMap contributors, ODbL). " +
             "The list is crowdsourced and not complete. It stays on this phone, and you can update it later.",
         LanguageSlot.BODY,
+        revision = 2,
     ),
     en("settings.layer.other.download.title", "Download other sensors.", LanguageSlot.CONTROL),
     en("settings.layer.other.download.body", "About 1 MB. You can update it later. It stays on this phone.", LanguageSlot.BODY),
