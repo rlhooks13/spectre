@@ -1905,7 +1905,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun compareSubject(doc: DebriefDoc): String =
-        if (doc.windowLine.isNotBlank()) "Fieldwatch sit compare — ${doc.windowLine}"
+        if (doc.windowLine.isNotBlank()) "${Brand.NAME} sit compare — ${doc.windowLine}"
         else LanguageText.text("ui.fieldwatch.sit.compare")
 
     fun startSitCompareAiExport() {
@@ -1922,7 +1922,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        "Fieldwatch sit compare AI export — ${thisSide.name} vs ${second.name}",
+                        "${Brand.NAME} sit compare AI export —${thisSide.name} vs ${second.name}",
                     )
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
@@ -2572,7 +2572,9 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun suggestedSignaturesName(): String {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
             .format(java.util.Date())
-        return "${Brand.FILE_PREFIX}-signatures-$stamp.json"
+        // Not "spectre-signatures-…": that is upstream's legacy format id (ADR-0001), and the
+        // file name shouldn't look like it.
+        return "${Brand.FILE_PREFIX}-signature-pack-$stamp.json"
     }
 
     private fun signaturePackJson(): String {
@@ -3366,7 +3368,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun debriefSubject(doc: DebriefDoc): String =
-        if (doc.heading.startsWith("FIELDWATCH SIT")) doc.heading else LanguageText.text("ui.fieldwatch.field.debrief.last")
+        if (DebriefReport.isSitHeading(doc.heading)) doc.heading else LanguageText.text("ui.fieldwatch.field.debrief.last")
 
     private suspend fun fieldDebriefDoc(): DebriefDoc {
         publishExport(0.08f, LanguageText.text("ui.gathering.sit"))
@@ -3489,7 +3491,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        if (window != null) "Fieldwatch AI export — sit ${window.sitName}"
+                        if (window != null) "${Brand.NAME} AI export — sit ${window.sitName}"
                         else LanguageText.text("ui.fieldwatch.ai.export.last"),
                     )
                     putExtra(Intent.EXTRA_TEXT, text)
@@ -3571,7 +3573,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 )
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "Fieldwatch AI export — $title")
+                    putExtra(Intent.EXTRA_SUBJECT, "${Brand.NAME} AI export — $title")
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
             }.onSuccess { intent ->
@@ -3627,7 +3629,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 )
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "Fieldwatch device detail — $title")
+                    putExtra(Intent.EXTRA_SUBJECT, "${Brand.NAME} device detail — $title")
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
             }.onSuccess { intent ->

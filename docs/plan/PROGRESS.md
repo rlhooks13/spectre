@@ -62,8 +62,15 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - User-Agent `Spectre/<ver> (+https://github.com/rlhooks13/spectre)` on tiles, the sensor list and the catalog fetch.
     - Logcat tags; the Settings "about" line; the "Not a … pack" errors.
   - Kept on purpose: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names, upstream download URLs (P0-7 disables or replaces them), and language copy (P0-4b).
-  - 12 tests updated to the new strings (none removed). New `BrandTest` (+2) pins the User-Agent and the kept stable ids.
-  - Result: 769 tests green. Staging installed and cold-started on the phone with 0 `FATAL`.
+  - 12 tests updated to the new strings (none removed). New `BrandTest` (+3) pins the User-Agent, the kept stable ids and sit-heading detection.
+  - Review fixes:
+    - Debrief share subject: `debriefSubject` checked `startsWith("FIELDWATCH SIT")`, which the rename would have broken. Now `DebriefReport.isSitHeading` with a shared prefix.
+    - Two spaces that edits dropped are restored.
+    - Last `"Fieldwatch · gone"` tombstone; shared `CotEvent.TOMBSTONE_REMARKS`.
+    - Missed share subjects and the device-detail header.
+    - Three TAK tests that would now pass whatever happens assert `Brand.NAME`.
+    - The signature export is `spectre-signature-pack-…`, so it can't be confused with the legacy `spectre-signatures` id.
+  - Result: 770 tests green. Staging installed and cold-started on the phone with 0 `FATAL`.
 - 2026-10-27: **P0-3 Build, part 2 (dependency verification).** PR #6, protected, waiting for the owner's signature.
   - The first metadata came from a warm cache and left out the `junit-bom` 5.9.2/5.9.3 `.module` files, so CI failed verification.
   - Regenerating with an empty `--gradle-user-home` added them plus one `kotlinx-serialization-bom` pom. Every other checksum matched.

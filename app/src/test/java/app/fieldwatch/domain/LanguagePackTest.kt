@@ -130,7 +130,7 @@ class LanguagePackTest {
         assertTrue(EnglishCopy.lines.none { it.text == OfficialSentences.AI })
         assertTrue(EnglishCopy.lines.none { it.text == OfficialSentences.AUTHOR_GUIDE })
         assertEquals("Export English template", LanguageExportCopy.BUTTON)
-        assertEquals("Fieldwatch English template", LanguageExportCopy.SHARE)
+        assertEquals("Spectre English template", LanguageExportCopy.SHARE)
         assertEquals("Could not export the English template", LanguageExportCopy.FAILED)
         assertTrue(EnglishCopy.lines.none { it.key == "language.export" || it.key == "ui.fieldwatch.english.template" || it.key == "ui.could.not.export.english" })
     }

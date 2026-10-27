@@ -923,13 +923,15 @@ object CotEvent {
         },
     )
 
+    const val TOMBSTONE_REMARKS = "${Brand.NAME} · gone"
+
     fun tombstoneXml(
         uid: String,
         lat: Double,
         lon: Double,
         now: Long,
         callsign: String = Brand.NAME,
-        remarks: String = "${Brand.NAME} · gone",
+        remarks: String = TOMBSTONE_REMARKS,
     ): String = eventXml(
         uid = uid,
         cotType = "a-u-G",

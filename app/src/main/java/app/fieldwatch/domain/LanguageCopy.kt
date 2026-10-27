@@ -72,7 +72,7 @@ object OfficialSentences {
 /** Export of the English map. Compiled, not pack keys, so a translation cannot rename what is exported. */
 object LanguageExportCopy {
     const val BUTTON = "Export English template"
-    const val SHARE = "Fieldwatch English template"
+    const val SHARE = "${Brand.NAME} English template"
     const val FAILED = "Could not export the English template"
 }
 

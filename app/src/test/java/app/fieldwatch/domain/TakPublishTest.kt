@@ -306,7 +306,7 @@ class TakPublishTest {
         )
         assertTrue(xml.contains("&#10;"))
         assertTrue(xml.contains("Axon (here)&#10;BLE  AA:BB:CC:DD:EE:01  -60 dBm"))
-        assertFalse(xml.contains("Fieldwatch · "))
+        assertFalse(xml.contains("${Brand.NAME} · "))
     }
 
     @Test
@@ -718,7 +718,7 @@ class TakPublishTest {
             remarks = "Axon (here)\nBLE",
         )
         assertTrue(named.contains("callsign=\"Axon (here)\""))
-        assertFalse(named.contains("Fieldwatch"))
+        assertFalse(named.contains(Brand.NAME))
     }
 
     @Test
@@ -738,7 +738,7 @@ class TakPublishTest {
         )
         assertTrue(xml.contains("callsign=\"Axon (here)\""))
         assertTrue(xml.contains("stale=\"1970-01-01T01:00:00.000Z\""))
-        assertFalse(xml.contains("Fieldwatch"))
+        assertFalse(xml.contains(Brand.NAME))
         val face = CotEvent.face(cam, fleets, emptyList(), advertised = false, tag = tag)
         val again = CotEvent.render(
             uid = CotEvent.uid(cam, tag),
