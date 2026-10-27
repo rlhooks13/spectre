@@ -79,6 +79,8 @@ object LanguageKeyRevisions {
             // P1-B4c: wearable lines that cover AI recorders, not only Garmin / Fitbit / Oura / Polar.
             "ui.wearable.radios.stayed", "ui.wearables.usually.move", "ui.wearables.with.you.kinds",
             "ui.typical.wearable.companion", "ui.typical.wearable.joined.sit", "ui.wearable.s.stayed.kinds",
+            "ui.co.travel.split.kinds", "ui.wearables.own.kit.recorder", "ui.wearable.s.path.recorder",
+            "ui.they.do.not.typically.recorder",
         )) put(key, 6)
     }
 

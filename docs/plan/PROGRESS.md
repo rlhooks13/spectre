@@ -74,7 +74,20 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - Six AI recorder pendants (Bee, Fieldy, Friend, Limitless, Omi, Plaud) and Pokémon GO Plus are now wearables.
     - `classesOf` keeps a user signature named for a beacon or wearable in that class, as for finders.
     - The carried-Apple check skips any beacon-class match.
-  - **Wording:** six wearable lines named Garmin / Fitbit / Oura / Polar or "watch or ring". New keys cover watches, rings, bands and AI recorders, and say a recorder you don't recognize is worth a look. The old keys are "Unused", and `-PpruneLanguagePacks` removed 138 lines from the 26 packs. `ui.co.travel.split.phones` (unreleased and in no pack) changed in place.
+  - **Wording:** ten wearable lines named Garmin / Fitbit / Oura / Polar, said "watch or ring", or called every wearable "usually own kit":
+    - the section body and heading;
+    - the per-device notes;
+    - the summary, actions and takeaway lines;
+    - the AI-export intro;
+    - the class line, which gets the new key `ui.co.travel.split.kinds`.
+
+    The new keys cover watches, rings, bands, AI recorders and game wristbands, and say a recorder you don't recognize is worth a look. The old keys are "Unused", and `-PpruneLanguagePacks` removed 198 lines from the 26 packs. Revision 6 now holds 29 keys.
+  - **Review fixes:**
+    - A wearable that joins and keeps pace raises `trackingAlert`, like a phone.
+    - User-signature names match whole words, so "Polaroid" and "Textile" no longer hit.
+    - `classesOf` folds BODYWORN into WEARABLE.
+    - `label` checks in the same order as `kind`.
+  - **Open (field question):** Target's cart tag is now a beacon. A pushed cart co-travels and gets the "unusual" beacon alert. The markdown heading already says a pushed cart co-travels; whether carts need their own wording waits for a capture.
   - **Corpus:** new target `T:plaud`.
   - **Goldens:**
     - new `debrief/9-recorder-pendant-with-you.txt`;
