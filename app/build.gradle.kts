@@ -5,35 +5,50 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-// ADR-0002: the git tag is the version. A commit tagged vX.Y.Z (or dryrun/v0.0.Z, the release workflow's
-// scratch run) builds as X.Y.Z; any other commit builds as X.Y.Z-dev+<sha> from the last v* tag it descends
-// from, or 0.0.0 before the first release. versionCode is X·1,000,000 + Y·1,000 + Z. The release workflow
-// checks the APK against the tag, so this can't publish a wrong version.
+// ADR-0002: the git tag is the version.
+// - A clean commit tagged vX.Y.Z, or dryrun/v0.0.Z (the release workflow's scratch run), builds as X.Y.Z.
+//   In a tag-triggered CI run the triggering tag wins (GITHUB_REF_NAME), so a revert release that adds a
+//   second tag to an old commit builds as the new version. Otherwise the highest valid tag on HEAD wins.
+// - Any other build is X.Y.Z-dev+<sha>[.dirty] from the highest valid v* tag HEAD descends from, or 0.0.0.
+// versionCode is X·1,000,000 + Y·1,000 + Z. Before the first release, dev builds use 43, one above the
+// inherited 1.1.32 build (42), so they still install over it. The release workflow checks the APK against
+// the tag, so a wrong answer here fails the release instead of publishing it.
 data class AppVersion(val name: String, val code: Int)
 
 val appVersion: AppVersion = run {
     val part = "(0|[1-9][0-9]{0,2})"
     val release = Regex("^v$part\\.$part\\.$part$")
-    val dryRun = Regex("^dryrun/v(0)\\.(0)\\.$part$")
-    fun git(vararg args: String): List<String> {
+    val dryRun = Regex("^dryrun/v(0)\\.(0)\\.([1-9][0-9]{0,2})$") // 0.0.0 would be versionCode 0
+    fun git(vararg args: String): List<String>? = try {
         val result = providers.exec {
             commandLine("git", *args)
             isIgnoreExitValue = true
         }
-        if (result.result.get().exitValue != 0) return emptyList()
-        return result.standardOutput.asText.get().lines().map { it.trim() }.filter { it.isNotEmpty() }
+        if (result.result.get().exitValue != 0) {
+            logger.warn("Version: git ${args.joinToString(" ")} failed: ${result.standardError.asText.get().trim()}")
+            null
+        } else {
+            result.standardOutput.asText.get().lines().map { it.trim() }.filter { it.isNotEmpty() }
+        }
+    } catch (e: Exception) {
+        logger.warn("Version: git is not available (${e.message}); building as 0.0.0-dev+unknown.")
+        null
     }
-    fun code(m: MatchResult): Int = m.groupValues.drop(1).map { it.toInt() }.let { (x, y, z) -> x * 1_000_000 + y * 1_000 + z }
-    fun name(m: MatchResult): String = m.groupValues.drop(1).joinToString(".")
+    fun parts(m: MatchResult): List<Int> = m.groupValues.drop(1).map { it.toInt() }
+    fun code(m: MatchResult): Int = parts(m).let { (x, y, z) -> x * 1_000_000 + y * 1_000 + z }
+    fun name(m: MatchResult): String = parts(m).joinToString(".")
+    fun tagged(tag: String): MatchResult? = release.matchEntire(tag) ?: dryRun.matchEntire(tag)
 
-    val here = git("tag", "--points-at", "HEAD")
-    val exact = here.firstNotNullOfOrNull { release.matchEntire(it) } ?: here.firstNotNullOfOrNull { dryRun.matchEntire(it) }
+    val here = git("tag", "--points-at", "HEAD").orEmpty()
+    val dirty = git("status", "--porcelain", "--untracked-files=no")?.isNotEmpty() ?: true
+    val trigger = System.getenv("GITHUB_REF_NAME")?.takeIf { System.getenv("GITHUB_REF_TYPE") == "tag" && it in here }
+    val exact = (trigger?.let(::tagged) ?: here.mapNotNull(::tagged).maxByOrNull(::code))?.takeIf { !dirty }
     if (exact != null) {
         AppVersion(name(exact), code(exact))
     } else {
-        val last = git("describe", "--tags", "--abbrev=0", "--match", "v[0-9]*").firstOrNull()?.let { release.matchEntire(it) }
-        val sha = git("rev-parse", "--short=12", "HEAD").firstOrNull() ?: "unknown"
-        AppVersion("${last?.let(::name) ?: "0.0.0"}-dev+$sha", maxOf(1, last?.let(::code) ?: 0))
+        val last = git("tag", "--merged", "HEAD", "--list", "v*").orEmpty().mapNotNull { release.matchEntire(it) }.maxByOrNull(::code)
+        val sha = git("rev-parse", "--short=12", "HEAD")?.firstOrNull() ?: "unknown"
+        AppVersion("${last?.let(::name) ?: "0.0.0"}-dev+$sha${if (dirty) ".dirty" else ""}", last?.let(::code) ?: 43)
     }
 }
 
