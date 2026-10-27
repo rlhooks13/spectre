@@ -1189,6 +1189,31 @@ class ConfigStore internal constructor(private val file: File) {
             if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
             version = CATALOG_V97
         }
+        if (version < CATALOG_V98) {
+            // P1-B1: Samsung's company id is on every Galaxy phone and Buds, so SmartTag keeps only its own
+            // signals (FD5A and names). The six notes that named Fieldwatch change only where still stock.
+            fleets = fleets.map { fleet ->
+                if (!fleet.builtIn) return@map fleet
+                val stock = catalog[fleet.id] ?: return@map fleet
+                when (fleet.id) {
+                    "fleet-smarttag" -> fleet.copy(
+                        rules = fleet.rules.filterNot {
+                            it.kind == RuleKind.MANUFACTURER_ID && it.companyId == 0x0075 && it.dataPrefixHex.isEmpty()
+                        },
+                    )
+                    in RENAMED_NOTES_V98 -> fleet.copy(
+                        notes = if (fleet.notes == stock.notes.replace("Spectre", "Fieldwatch")) stock.notes else fleet.notes,
+                        attentionNote = if (fleet.attentionNote == stock.attentionNote.replace("Spectre", "Fieldwatch")) {
+                            stock.attentionNote
+                        } else {
+                            fleet.attentionNote
+                        },
+                    )
+                    else -> fleet
+                }
+            }
+            version = CATALOG_V98
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1235,7 +1260,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 97
+        const val CATALOG_VERSION = 98
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1330,7 +1355,11 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V94 = 94
         private const val CATALOG_V95 = 95
         private const val CATALOG_V96 = 96
-        private const val CATALOG_V97 = CATALOG_VERSION
+        private const val CATALOG_V97 = 97
+        private const val CATALOG_V98 = CATALOG_VERSION
+
+        /** Fleets whose stock notes named Fieldwatch until v98 (P1-B1). */
+        private val RENAMED_NOTES_V98 = setOf("fleet-sony", "fleet-gotenna", "fleet-bluetoad", "fleet-hobby-ble", "fleet-cisco")
         private val GENERIC_GATT_UUIDS = setOf("180A", "180D", "180F")
         private val POLICY_FLEET_IDS = setOf(
             "fleet-flock-cameras",

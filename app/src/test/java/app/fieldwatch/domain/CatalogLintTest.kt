@@ -115,7 +115,6 @@ class CatalogLintTest {
         private val UNKNOWN_COMPANY = mapOf("fleet-huf/0x070A" to "P1-B10")
 
         private val BARE_MEGA_VENDOR = mapOf(
-            "fleet-smarttag/0x0075" to "P1-B1",
             "fleet-google/0x00E0" to "P1-B10",
             "fleet-microsoft/0x0006" to "P1-B10",
             "fleet-fitbit/0x018E" to "P1-B10",

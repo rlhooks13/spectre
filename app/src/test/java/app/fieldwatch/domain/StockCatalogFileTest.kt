@@ -23,7 +23,7 @@ class StockCatalogFileTest {
                 exportedAt = "",
             ),
         )
-        if (System.getenv("WRITE_STOCK_CATALOG") == "1") {
+        if (writing()) {
             dest.parentFile?.mkdirs()
             dest.writeText(encoded)
         }
@@ -74,6 +74,40 @@ class StockCatalogFileTest {
         assertTrue(pack.fleets.single { it.id == "fleet-parrot" }.rules.any {
             it.kind == RuleKind.NAME_GLOB && it.text == "Skycontroller*"
         })
+    }
+
+    private fun writing(): Boolean =
+        System.getenv("WRITE_STOCK_CATALOG") == "1" || System.getProperty("spectre.writeStockCatalog") == "true"
+
+    /**
+     * One stock snapshot per catalog version (`catalog/snapshots/v<N>.json`, PLAN key decisions), for the importer's
+     * three-way diff and the release notes. The current version's is today's stock catalog, byte for byte; it's
+     * written with the dist pack. Older ones stay as they were committed.
+     */
+    @Test
+    fun snapshotForEveryVersionAndCurrentMatchesStock() {
+        val dir = repoRoot().resolve("catalog/snapshots")
+        val current = File(dir, "v${ConfigStore.CATALOG_VERSION}.json")
+        val encoded = SignatureExchange.encode(
+            SignatureExchange.pack(DefaultCatalog.fleets(), ConfigStore.CATALOG_VERSION, appVersion = "stock", exportedAt = ""),
+        )
+        if (writing()) {
+            dir.mkdirs()
+            current.writeText(encoded)
+        }
+        assertTrue("Missing ${current.path}. Run tests with WRITE_STOCK_CATALOG=1.", current.isFile)
+        assertEquals("The v${ConfigStore.CATALOG_VERSION} snapshot isn't today's stock catalog", encoded, current.readText())
+        val files = dir.listFiles().orEmpty().filter { it.name.endsWith(".json") }
+        for (file in files) {
+            val n = Regex("""^v(\d+)\.json$""").matchEntire(file.name)?.groupValues?.get(1)?.toInt()
+            assertTrue("Snapshot names are v<N>.json: ${file.name}", n != null)
+            assertEquals(file.name, n, SignatureExchange.parse(file.readText()).catalogVersion)
+        }
+    }
+
+    private fun repoRoot(): File {
+        val cwd = File(System.getProperty("user.dir")!!)
+        return listOf(cwd, cwd.parentFile).first { File(it, "settings.gradle.kts").isFile }
     }
 
     private fun distPackFile(): File {

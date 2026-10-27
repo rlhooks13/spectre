@@ -168,12 +168,12 @@ object MatchCorpus {
         NearMiss(
             "Galaxy phone advertising Samsung 0x0075",
             sighting("NM:galaxy", name = "Galaxy S23", mfg = listOf(MfgRecord(0x0075, "0100020001"))),
-            setOf("fleet-smarttag"), knownUntil = "P1-B1", checkFinder = true,
+            setOf("fleet-smarttag"), checkFinder = true,
         ),
         NearMiss(
             "Galaxy Buds advertising Samsung 0x0075",
             sighting("NM:buds", name = "Galaxy Buds2 Pro", mfg = listOf(MfgRecord(0x0075, "42098102"))),
-            setOf("fleet-smarttag"), knownUntil = "P1-B1", checkFinder = true,
+            setOf("fleet-smarttag"), checkFinder = true,
         ),
         // Offline Finding (0x12) is sent by separated or powered-off iPhones and AirPods too.
         NearMiss(

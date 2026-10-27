@@ -141,16 +141,14 @@ class BrandGuardTest {
                 "the About attribution (ui.copyright.spectre)"),
             Allow(Regex(""".*/domain/(Settings|Signature)Exchange\.kt"""), Regex("""exported from \$\{Brand\.NAME\} or Fieldwatch"""),
                 "import hint: files exported from upstream still import"),
+            Allow(Regex(""".*/data/ConfigStore\.kt"""), Regex("""\.replace\("Spectre", "Fieldwatch"\)"""),
+                "the v98 ladder step (P1-B1) recognizes the stock notes' pre-v98 wording, so it only replaces untouched notes"),
             Allow(Regex(""".*/domain/SitTakPackage\.kt"""), Regex("""ifBlank \{ "fieldwatch" }"""),
                 "folder name inside the TAK package zip; kept as an id (P0-4b)"),
             Allow(Regex("""dist/instruction\.txt"""), Regex("""fork of Fieldwatch 1\.1\.32|endorsed by Off Grid Pete LLC|next to Fieldwatch;|settings in Fieldwatch and Import"""),
                 "fork statement and migration notes name upstream on purpose"),
             Allow(Regex("""dist/fieldwatch-sensors\.txt"""), Regex("""built by upstream Fieldwatch"""),
                 "data credit to upstream"),
-            // Temporary.
-            Allow(Regex(""".*/domain/DefaultCatalog\.kt"""),
-                Regex("""Fieldwatch (keeps Sony|cannot hear it|cannot hear\b|does not see Classic|does not connect|sees AP beacons)"""),
-                "six catalog notes; they change only with a catalog version bump, ladder step and snapshot", until = "P1-B1"),
         )
     }
 }
