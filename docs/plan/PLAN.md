@@ -190,7 +190,8 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
        - `OfficialSentences.NOT_REVIEWED` on the language screen.
      - **P0-4e** applicationId `io.github.rlhooks13.spectre`. The charter's hard stops forbid the agent from changing the applicationId, so this waits for the owner's explicit go-ahead in the session.
      - Catalog `notes` that mention Fieldwatch go through the catalog change checklist, or onto BrandGuard's allowlist (P0-6).
-5. **Language packs.**
+     - **P0-4f** README and docs rebrand: `README.md`, `docs/language-pack-requirements.md`, the instruction cards (`dist/` and `docs/instruction.txt`), and the other user-facing docs that still name Fieldwatch or present Off Grid Pete LLC as the publisher. Upstream's history and attribution stay.
+5. ✅ **Language packs.**
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.
    - Until the translated disclaimer is reviewed in the protected disclaimer PR, the English disclaimer is shown.
