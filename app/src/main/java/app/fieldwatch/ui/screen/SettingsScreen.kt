@@ -680,37 +680,37 @@ fun SettingsScreen(
                 ) { on -> vm.updateSettings { it.copy(flockAlert = on) } }
             }
             if (Features.OTHER_SENSORS_LAYER) {
-            Spacer(Modifier.height(8.dp))
-            SensorLayerBlock(
-                title = LanguageText.text("settings.layer.other"),
-                note = LanguageText.text("settings.layer.other.note"),
-                state = sensors,
-                checked = settings.sensorLayer,
-                onChecked = vm::setSensorLayer,
-                onUpdate = vm::updateSensorLayer,
-            ) {
-                SensorAlertRow(
-                    LanguageText.text("settings.layer.alert.speed"),
-                    settings.speedAlert,
-                    !sensors.busy,
-                ) { on -> vm.updateSettings { it.copy(speedAlert = on) } }
-                SensorAlertRow(
-                    LanguageText.text("settings.layer.alert.red"),
-                    settings.redAlert,
-                    !sensors.busy,
-                ) { on -> vm.updateSettings { it.copy(redAlert = on) } }
-                SensorAlertRow(
-                    LanguageText.text("settings.layer.alert.gun"),
-                    settings.gunshotAlert,
-                    !sensors.busy,
-                ) { on -> vm.updateSettings { it.copy(gunshotAlert = on) } }
-                SensorAlertRow(
-                    LanguageText.text("settings.layer.alert.camera"),
-                    settings.cameraAlert,
-                    !sensors.busy,
-                ) { on -> vm.updateSettings { it.copy(cameraAlert = on) } }
-            }
-            }
+                Spacer(Modifier.height(8.dp))
+                SensorLayerBlock(
+                    title = LanguageText.text("settings.layer.other"),
+                    note = LanguageText.text("settings.layer.other.note"),
+                    state = sensors,
+                    checked = settings.sensorLayer,
+                    onChecked = vm::setSensorLayer,
+                    onUpdate = vm::updateSensorLayer,
+                ) {
+                    SensorAlertRow(
+                        LanguageText.text("settings.layer.alert.speed"),
+                        settings.speedAlert,
+                        !sensors.busy,
+                    ) { on -> vm.updateSettings { it.copy(speedAlert = on) } }
+                    SensorAlertRow(
+                        LanguageText.text("settings.layer.alert.red"),
+                        settings.redAlert,
+                        !sensors.busy,
+                    ) { on -> vm.updateSettings { it.copy(redAlert = on) } }
+                    SensorAlertRow(
+                        LanguageText.text("settings.layer.alert.gun"),
+                        settings.gunshotAlert,
+                        !sensors.busy,
+                    ) { on -> vm.updateSettings { it.copy(gunshotAlert = on) } }
+                    SensorAlertRow(
+                        LanguageText.text("settings.layer.alert.camera"),
+                        settings.cameraAlert,
+                        !sensors.busy,
+                    ) { on -> vm.updateSettings { it.copy(cameraAlert = on) } }
+                } // SensorLayerBlock
+            } // OTHER_SENSORS_LAYER
             Spacer(Modifier.height(8.dp))
             ExposedDropdownMenuBox(
                 expanded = positionMenu,

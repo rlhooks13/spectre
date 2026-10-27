@@ -55,7 +55,8 @@ class PathCamerasTest {
         assertEquals(1, tally.counts.single().near)
         assertEquals(listOf(7L), tally.cameras.map { it.key })
         val text = PathCameras.text(tally)
-        assertTrue(text, text.contains("The other-camera list is not on this phone."))
+        // The missing-list line is shown only while the Other-sensors layer is offered (P0-7b).
+        assertEquals(text, Features.OTHER_SENSORS_LAYER, text.contains("The other-camera list is not on this phone."))
         assertTrue(text, text.contains("Flock\n  0 facing the path\n  1 on the path with no direction"))
         assertFalse(text, text.contains("pointed toward"))
     }

@@ -56,13 +56,20 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - `Features.OTHER_SENSORS_LAYER = false`.
     - `SensorList.OTHER.url` is now `""`. The existing blank-URL guard in `FlockFiles.probe` and `download` fails without opening a connection.
     - The Settings "Other sensors" block is hidden.
-    - The ViewModel entry points (set, update, confirm download) return early.
-    - `FieldwatchApp.syncFlock` doesn't load the list.
-    - The plate-reader layer (dontgetflocked) is unchanged; that's P0-7c.
+    - The ViewModel turn-on, update and confirm entry points return early; turning it off still works.
+  - **One gate for every reader:** `AppSettings.withFeatureGates()`, applied in `ConfigStore.load()` and `update()` (which covers import and restore), makes a saved `sensorLayer = true` read as false.
+    - So alerts, voice, map overlays, the Reports path figure and `syncFlock` all see "off".
+    - Why: both reviewers found that the first version only gated `syncFlock`'s `showOther`. Its stale-result guard then compared the raw setting and never loaded the plate-reader layer for anyone with the old setting on, and the hidden toggle couldn't turn it off. That's fixed by this one gate.
+  - **Leftover upstream data:** any old `road-sensors.bin` is deleted at startup. `cameraReport()` skips the list while the layer is off. The Debrief no longer says "The other-camera list is not on this phone" for a list that isn't offered.
+  - The plate-reader layer (dontgetflocked) is unchanged; that's P0-7c.
   - BrandGuard's last upstream-URL entry is removed. No upstream URL is left in the app.
   - README dist row and egress list updated.
-  - New `SensorLayerOffTest` (+2): the flag is off and no list has an upstream URL; probe and download fail with no progress and no files written.
-  - Result: 780 tests green.
+  - New `SensorLayerOffTest` (+3):
+    - The flag is off and no list has an upstream URL.
+    - A saved `sensorLayer` reads as off while the plate layer and alert prefs stay.
+    - Blank-URL probe and download fail with no progress or files.
+  - `PathCamerasTest` now ties the missing-list line to the flag; ported, not removed.
+  - Result: 781 tests green. Staging cold-started with 0 `FATAL`.
 - 2026-10-27: **PR #10 re-synced after #14.** Resolved the BrandGuard allowlist conflict. Dropped #10's two retired keys from all 26 packs with `drop_pack_keys.py`, so the 0-ignored-lines check passes. 781 tests green on the branch.
 - 2026-10-27: **P0-7a Receive-only copy and catalog update off.** PR #14, merged as `ed942a2`.
   - **Permission copy:** "Nothing is transmitted" was untrue, because scans send OS probe and scan requests (CHARTER invariant 3). The safety meaning changes, so the line gets a new key (invariant 7).

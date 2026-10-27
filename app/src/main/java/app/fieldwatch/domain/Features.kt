@@ -15,3 +15,10 @@ object Features {
      */
     const val OTHER_SENSORS_LAYER = false
 }
+
+/**
+ * Settings as the app may act on them: a switch for a feature that is off reads as off. Applied
+ * where settings are loaded and updated (ConfigStore), so every reader sees the same value.
+ */
+fun AppSettings.withFeatureGates(): AppSettings =
+    if (sensorLayer && !Features.OTHER_SENSORS_LAYER) copy(sensorLayer = false) else this

@@ -22,7 +22,6 @@ import app.fieldwatch.data.FlockFiles
 import app.fieldwatch.data.SensorList
 import app.fieldwatch.data.LanguageStore
 import app.fieldwatch.domain.LanguageText
-import app.fieldwatch.domain.Features
 import app.fieldwatch.data.DeviceStore
 import app.fieldwatch.data.GnssProfileStore
 import app.fieldwatch.data.GnssRawFiles
@@ -901,7 +900,7 @@ class FieldwatchApp : Application() {
         if (!::config.isInitialized) return
         val settings = config.settings
         val showPlates = settings.flockLayer
-        val showOther = settings.sensorLayer && Features.OTHER_SENSORS_LAYER
+        val showOther = settings.sensorLayer
         if (!settings.anySensorAlert()) {
             flockLatch.clear()
             if (::alerter.isInitialized) alerter.clearFlockNote()

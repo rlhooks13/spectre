@@ -1,6 +1,9 @@
 package app.fieldwatch.data
 
+import app.fieldwatch.domain.AppSettings
 import app.fieldwatch.domain.Features
+import app.fieldwatch.domain.anySensorAlert
+import app.fieldwatch.domain.withFeatureGates
 import java.io.File
 import java.nio.file.Files
 import org.junit.Assert.assertEquals
@@ -18,7 +21,18 @@ class SensorLayerOffTest {
     }
 
     @Test
-    fun probeAndDownloadFailWithoutOpeningAConnection() {
+    fun aSavedLayerSwitchReadsAsOffSoThePlateLayerStillLoads() {
+        val saved = AppSettings(flockLayer = true, sensorLayer = true, speedAlert = true)
+        val gated = saved.withFeatureGates()
+        assertFalse(gated.sensorLayer)
+        assertTrue(gated.flockLayer)
+        assertTrue(gated.speedAlert) // kept for when the layer returns; inert while it's off
+        assertFalse(gated.anySensorAlert() && !gated.flockAlert)
+        assertEquals(gated, gated.withFeatureGates())
+    }
+
+    @Test
+    fun probeAndDownloadFailOnTheBlankUrlWithoutProgressOrFiles() {
         val dir: File = Files.createTempDirectory("sensors").toFile()
         try {
             assertEquals(FlockFiles.Probe.FAILED, FlockFiles.probe(dir, SensorList.OTHER))
