@@ -2,16 +2,16 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-A8 (inherited lint errors), on branch `p1/a8-lint-errors`; check `gh pr list --head p1/a8-lint-errors` for the PR.
-  - **Then:** P1-A4 (match corpus), then P1-A5.
+- Current step: P1-A4 (match corpus), on branch `p1/a4-match-corpus`; check `gh pr list --head p1/a4-match-corpus` for the PR.
+  - **Then:** P1-A5 (`CatalogLintTest`).
   - **Deferred:** P1-A1 and P1-A2 wait for #6, and P0-8d for P1-B1's snapshots.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a8-lint-errors`
+- Branch: `p1/a4-match-corpus`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T13:20Z
+- Last cycle: 2026-10-27T14:10Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -64,7 +64,40 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-A8 Inherited lint errors.** Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
+- 2026-10-27: **P1-A4 Match corpus.** Branch `p1/a4-match-corpus`. Test-only.
+  - **Shared builders:** `testing/Sightings.kt` holds `sighting()` and `mac()`, the first of P1-A1's shared builders.
+  - **Positives:**
+    - `MatchCorpus.positives()` makes one sighting per enabled rule of every built-in signature, or one sighting with every rule for the all-rules row. That's 6,974 positives from 255 signatures; the clustered count is pinned at 0.
+    - Each rule must hit a copy of its signature that holds only that rule, so a sibling rule can't hide a broken one.
+    - Each must also hit its signature in the full catalog. There's an allowlist for post-filter misses; it's empty, and a stale or unresolvable entry fails the test.
+  - **Near-misses** (hand-written confusers, each with the signatures it must not hit):
+
+    | Confusers | Hit today? | Fixed by |
+    |---|---|---|
+    | Galaxy phone and Buds on 0x0075 | yes | P1-B1 |
+    | Separated iPhone (Offline Finding status 0x00) and powered-off AirPods (status 0x30) | yes | P1-B3 |
+    | "Tattile" and a Quuppa 0x00C7 tag | yes | P1-B2 |
+    | "RAVENCLAW", "Vigilant Home Alarm" and the "IBRAHIM-iPhone" hotspot | yes | P1-B5 |
+    | Companion iPhone (Continuity 0x10 next to 0x12) | no; must not hit AirTag | |
+
+    - **Strict:** a known near-miss that stops hitting fails the test until its fix removes the `knownUntil` marker.
+    - **Offline Finding records** are the full 25 bytes. Their status-byte types follow AirGuard's layout, which P1-B3 confirms against a capture.
+  - **Random-address OUI hits are separate** (`randomAddressOuiHits`: Axon 00:25:DF, LiteOn 70:C9:4E, Arlo 48:62:64, `addressType` "Random").
+    - Matching still hits these by design. P1-B8 changes how they're shown, not the match, so the test asserts they hit and that each MAC's top bits are a real random address.
+    - Flock's B4:1E:52 starts with the reserved bits 10, so no random address can collide with it.
+  - **Also from review:**
+    - **BLE OUI positives:** unscoped OUI and MAC-prefix rules also get a public BLE positive. That's 7,020 positives, and the count is asserted exactly, so a dropped rule or signature fails.
+    - **All-rules negatives:** each rule left out must stop the hit (RayNeo).
+    - **Real-device targets** (hand-pinned devices a fix must keep hitting): AirTag status 0x10, SmartTag FD5A, Tile FEED, Tile 0x067C (misses until P1-B2), Axon BLE on its public OUI, Flock Wi-Fi BSSID, Tattile, ShotSpotter, Motorola Vigilant, IBR900.
+    - **FINDER label:** the Galaxy, Buds, Quuppa and Tattile near-misses are also checked against `TrackerMatch.kind`. The 0x12 cases aren't: whether a type-unknown Find My device stays FINDER is P1-B3's call.
+    - **Open steps only:** each `knownUntil` must name an existing PLAN step that isn't ticked.
+    - **Test UUID:** SERVICE_DATA filler uses a test-only UUID that no catalog row may use.
+  - **Rebutted:**
+    - **Sharing the engine's private cluster test:** the clustered-count pin catches drift.
+    - **Full-length Samsung/Quuppa payloads:** P1-B1 and P1-B2 drop those company-id rules, so the bytes don't matter. A capture can replace them later.
+  - **For P1-A5:** a golden of each case's full hit set waits for P1-A2's golden rule. It would show new cross-signature collisions as a diff.
+- 2026-10-27: **P1-A8 merged** as `f3d5d47` (PR #24). #19 synced: the lint baseline, `lint {}` and the growth guard are gone, replaced by a "Lint guard" step that fails on report errors or a baseline or opt-out coming back. The test baseline goes 790 → 804. #19 now touches only `docs/setup/workflows/android.yml` and `docs/plan/test-baseline.txt`.
+- 2026-10-27: **P1-A8 Inherited lint errors.** PR #24. Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
   - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
   - **BLE hardening:** reading `BluetoothDevice.bluetoothClass` needs BLUETOOTH_CONNECT on Android 12+.
     - **Before:** without the grant it threw, and `guardCallback` dropped the whole scan result.
