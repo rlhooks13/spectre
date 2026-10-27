@@ -760,7 +760,7 @@ object SitPathPlot {
             }
             .groupBy { it.key }
             .forEach { (_, group) ->
-                val d = group.maxBy { it.rssi }
+                val d = group.maxBy { Rssi.rank(it.rssi) }
                 val pin = if (alertsOnly) advertisedFix(d) else null
                 val fix = pin ?: loudestFix(d) ?: return@forEach
                 val bookmarked = d.key in bookmarkedKeys

@@ -708,14 +708,20 @@ object CoTravel {
         if (!ctx.ready || ctx.here == null) return false
         if (now - device.lastSeen > HEARD_MS) return false
         // Last packet can dip on a highway; the cheap reject is the trail floor, not −70 instant.
-        if (device.rssi < TRAIL_LOUD_DBM) return false
+        if (!Rssi.atLeast(device.rssi, TRAIL_LOUD_DBM)) return false
         val trail = device.gpsTrail
         if (trail.size < 2) return false
         val geom = geomFor(device.key, trail) ?: return false
         if (geom.bbox < MOVE_M * 0.6) return false
+        // Loudness over the stamps that have a received level (P1-B7): an unmeasured 0 is neither loud nor quiet.
+        var heard = 0
         var loud = 0
-        for (s in trail) if (s.rssi >= TRAIL_LOUD_DBM) loud++
-        if (loud < (trail.size * 2 + 2) / 3) return false
+        for (s in trail) {
+            if (!Rssi.measured(s.rssi)) continue
+            heard++
+            if (s.rssi >= TRAIL_LOUD_DBM) loud++
+        }
+        if (heard < 2 || loud < (heard * 2 + 2) / 3) return false
         if (geom.len < MOVE_M * 0.6) return false
         val last = trail.last()
         val moved = Geo.meters(ctx.here.lat, ctx.here.lon, last.lat, last.lon)
@@ -875,7 +881,7 @@ object TrackerMatch {
      */
     private fun isCarriedApple(device: Sighting, names: Map<String, String>): Boolean {
         if (device.kind != RadioKind.BLE) return false
-        if (device.rssiMax < -55 || device.rssiMin < -70) return false
+        if (!Rssi.atLeast(device.rssiMax, -55) || !Rssi.atLeast(device.rssiMin, -70)) return false
         if (isAppleCompany(device)) return true
         return device.fleetIds.any { id -> (names[id] ?: "").contains("apple", ignoreCase = true) }
     }

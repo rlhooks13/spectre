@@ -124,10 +124,11 @@ object SitExport {
 
     fun rows(devices: List<Sighting>, radios: LogExportRadios): List<Sighting> =
         devices.filter { radios.matches(it.kind) }
-            .sortedWith(compareByDescending<Sighting> { it.rssi }.thenBy { it.mac })
+            .sortedWith(compareByDescending<Sighting> { Rssi.rank(it.rssi) }.thenBy { it.mac })
 
     fun hearPoint(d: Sighting): GpsSample? {
-        val loudest = d.gpsTrail.maxByOrNull { it.rssi }
+        // The loudest measured stamp, as SitPathPlot.loudestFix picks it; a trail with none measured falls back to its last.
+        val loudest = d.gpsTrail.filter { Rssi.measured(it.rssi) }.maxByOrNull { it.rssi } ?: d.gpsTrail.lastOrNull()
         if (loudest != null) return loudest
         val lat = d.latitude
         val lon = d.longitude

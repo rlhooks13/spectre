@@ -8,6 +8,12 @@ package app.fieldwatch.domain
 object Rssi {
     fun measured(rssi: Int): Boolean = rssi in -127..-1
 
+    /** At least [floor] dBm, as received: an unmeasured reading (0, 127) never passes a loudness bar. */
+    fun atLeast(rssi: Int, floor: Int): Boolean = measured(rssi) && rssi >= floor
+
+    /** For "loudest first" ordering: an unmeasured reading ranks below every received one, not above. */
+    fun rank(rssi: Int): Int = if (measured(rssi)) rssi else Int.MIN_VALUE
+
     fun sessionRange(min: Int, max: Int, history: List<RssiSample> = emptyList()): String {
         val vals = ArrayList<Int>(history.size + 2)
         if (measured(min)) vals += min

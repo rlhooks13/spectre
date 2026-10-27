@@ -3,6 +3,7 @@ package app.fieldwatch.data
 import android.content.Context
 import app.fieldwatch.domain.Egress
 import app.fieldwatch.domain.NetworkPolicy
+import app.fieldwatch.domain.Rssi
 import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
@@ -156,7 +157,7 @@ object PlaceLookup {
             if (path.size > 1) add("Path end", path.last().lat, path.last().lon)
         }
         if (out.size < 8) {
-            devices.filter { it.gpsTrail.isNotEmpty() && it.rssi >= -70 }
+            devices.filter { it.gpsTrail.isNotEmpty() && Rssi.atLeast(it.rssi, -70) }
                 .sortedByDescending { it.rssi }
                 .take(4)
                 .forEach { d ->

@@ -48,22 +48,26 @@ fun List<LiveDecodeChip>.reportLabels(): List<String> =
  * Not a matcher — [SignatureEngine.match] still decides the label.
  */
 object SignatureFieldDecoder {
-    /** Parses kept, most recently used first out (P1-B7): rotating payloads never repeat, so this must not grow. */
-    const val CACHE_LIMIT = 512
+    /**
+     * Parses kept (P1-B7). Past this many, the least recently used is evicted: rotating payloads never repeat, so the
+     * cache must not grow with the scan. Sized above a busy site's live set (devices × decoding rows), so a full list
+     * redraw doesn't evict what the next one needs.
+     */
+    const val CACHE_LIMIT = 2048
 
-    private val cache = object : LinkedHashMap<String, List<DecodedFieldValue>>(CACHE_LIMIT, 0.75f, true) {
+    private val cache = object : LinkedHashMap<String, List<DecodedFieldValue>>(256, 0.75f, true) {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<DecodedFieldValue>>): Boolean =
             size > CACHE_LIMIT
     }
 
-    private fun cached(key: String, parse: () -> List<DecodedFieldValue>): List<DecodedFieldValue> {
-        synchronized(cache) { cache[key] }?.let { return it }
-        val parsed = parse()
-        synchronized(cache) { cache[key] = parsed }
-        return parsed
-    }
+    // Parsing is cheap and pure, so it runs under the lock: one parse per new key, one lock per lookup.
+    private fun cached(key: String, parse: () -> List<DecodedFieldValue>): List<DecodedFieldValue> =
+        synchronized(cache) { cache.getOrPut(key, parse) }
 
     internal fun cacheSizeForTests(): Int = synchronized(cache) { cache.size }
+
+    internal fun cachedForTests(fleet: Fleet, hex: String): Boolean =
+        synchronized(cache) { cache.containsKey(cacheKey(fleet, fleet.decode!!, hex)) }
 
     internal fun clearCacheForTests() = synchronized(cache) { cache.clear() }
 
@@ -103,7 +107,7 @@ object SignatureFieldDecoder {
         val out = ArrayList<DecodedFieldValue>()
         val seen = HashSet<String>()
         for ((bytes, hex) in candidates) {
-            val key = cacheKey(fleet.id, decode, hex)
+            val key = cacheKey(fleet, decode, hex)
             val parsed = cached(key) { parse(fleet, decode, bytes) }
             for (row in parsed) {
                 if (seen.add(row.id)) out += row
@@ -112,12 +116,9 @@ object SignatureFieldDecoder {
         return out
     }
 
-    private fun cacheKey(fleetId: String, decode: FleetDecode, hex: String): String {
-        val fp = decode.fields.joinToString(",") {
-            "${it.id}:${it.offset}:${it.type}:${it.resolvedLength()}:${it.live}:${it.liveEmphasis}:${it.enumNotes}"
-        }
-        return "$fleetId|${decode.source}|$hex|$fp"
-    }
+    // The whole decode (a data class, so every field: endian, scale, gate, labels, ...) and the row's name, which parse
+    // reads: an edited field never returns the old parse.
+    private fun cacheKey(fleet: Fleet, decode: FleetDecode, hex: String): String = "${fleet.id}|${fleet.name}|$hex|$decode"
 
     private fun payloads(decode: FleetDecode, device: Sighting): List<Pair<ByteArray, String>> {
         val hexes: List<String> = when (decode.source) {

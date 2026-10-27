@@ -119,6 +119,29 @@ class GeoPrivacyTest {
         assertTrue(CoTravel.withYou(ble, ctx, now))
     }
 
+    /** P1-B7: stamps with no received level (stored as 0) are neither loud nor quiet; all-unmeasured isn't "with you". */
+    @Test
+    fun unmeasuredStampsAreNotLoud() {
+        val now = 1_000_000L
+        val path = listOf(
+            GpsSample(now - 60_000, 37.7700, -122.4200),
+            GpsSample(now - 30_000, 37.7710, -122.4200),
+            GpsSample(now, 37.7720, -122.4200),
+        )
+        val ctx = CoTravel.Ctx.of(path)
+        val unmeasured = listOf(
+            GpsSample(now - 50_000, 37.7702, -122.4200, rssi = 0),
+            GpsSample(now - 20_000, 37.7712, -122.4200, rssi = 0),
+            GpsSample(now - 1_000, 37.7719, -122.4200, rssi = 0),
+        )
+        assertFalse(CoTravel.withYou(radio(RadioKind.BLE, unmeasured, now).copy(rssi = -60), ctx, now))
+        // Two loud measured stamps and one unmeasured: loud over what was measured.
+        val mixed = unmeasured.mapIndexed { i, s -> if (i == 1) s else s.copy(rssi = -58) }
+        assertTrue(CoTravel.withYou(radio(RadioKind.BLE, mixed, now).copy(rssi = -58), ctx, now))
+        // A current reading that was never measured doesn't pass the loudness floor.
+        assertFalse(CoTravel.withYou(radio(RadioKind.BLE, mixed, now).copy(rssi = 0), ctx, now))
+    }
+
     private fun radio(kind: RadioKind, trail: List<GpsSample>, now: Long): Sighting {
         val last = trail.last()
         return Sighting(

@@ -73,6 +73,21 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **RSSI:** `Rssi.measured` is −127..−1. It used to be −127..126, so 0 (an unset or missing level) and the positive values no radio reports counted as hears, and a 0 read as the strongest signal in ranges and the latest reading. `SitPathPlot`'s own `rssi == 0` check is now redundant and gone.
   - **Decoder cache:** `SignatureFieldDecoder`'s parse cache is a synchronized LRU of 512. It was an unbounded `ConcurrentHashMap` keyed by payload, and rotating payloads never repeat.
   - **Tests:** `RssiTest` and `theParseCacheIsBoundedAndKeepsTheRecentOnes`, written first and seen failing (3 tests). No golden changed.
+  - **Review fixes (both reviewers):** the consumers of a reading follow the rule too. `DeviceStore` saves an unmeasured hear's GPS stamp as `rssi = 0`, and these places counted it as loud:
+    - `CoTravel.withYou` (the "with you" / tail check): the floor and the loud share now count measured stamps only;
+    - `TrackerMatch.isCarriedApple`;
+    - the Debrief's `possibleTail` (peak, fade, loud share; under two measured stamps it is "not enough");
+    - the Debrief's notable and loud-unknown lists, and the channel chart's "strongest";
+    - `PlaceLookup`;
+    - `SitExport.hearPoint`, which now picks the loudest measured stamp, as the plot does;
+    - the RSSI filter, where an unmeasured reading passes only at the −100 floor;
+    - 16 "loudest first" sorts, through `Rssi.rank`.
+
+    New helpers are `Rssi.atLeast` and `Rssi.rank`. The decoder cache:
+    - is keyed on the whole decode plus the row name, so an edited field never serves the old parse;
+    - uses one lock with `getOrPut`;
+    - holds 2,048 entries, above a busy site's live set;
+    - has an LRU test that checks which entry goes.
 - 2026-10-27: **P1-B6 Shared rule key (catalog v104).** #63 (P1-B5) merged as 411ef9d.
   - **Already done before this step:** `catalog/retired.json` was already subtracted in merge, overlay and load (P1-B1 to B5).
   - **The bug:** three rule keys disagreed.
