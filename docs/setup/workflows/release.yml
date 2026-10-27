@@ -59,8 +59,9 @@ jobs:
           fi
           x=${BASH_REMATCH[1]}; y=${BASH_REMATCH[2]}; z=${BASH_REMATCH[3]}
           # Dry runs are signed with the release key too, so they stay in 0.0.x, a range no release uses.
-          if [ "$kind" = dryrun ] && [ "$x.$y" != 0.0 ]; then
-            echo "::error::Dry-run tags must be dryrun/v0.0.Z."
+          # Z starts at 1: 0.0.0 would be versionCode 0, and the build rejects it.
+          if [ "$kind" = dryrun ] && { [ "$x.$y" != 0.0 ] || [ "$z" = 0 ]; }; then
+            echo "::error::Dry-run tags must be dryrun/v0.0.Z with Z at least 1."
             exit 1
           fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
@@ -110,8 +111,8 @@ jobs:
         # No daemon, so no build code keeps running to swap the APK after the checks below.
         run: ./gradlew --no-daemon assembleRelease --stacktrace
 
-      # The APK must carry the tag's version. Until the build derives it from the tag (P0-8c), this fails
-      # closed: the hard-coded 1.1.32 never matches a 0.x tag.
+      # The APK must carry the tag's version. The build derives it from the triggering tag (P0-8c, via
+      # GITHUB_REF_NAME), and a dirty tree or a mismatch fails here, before any tag is signed.
       - name: Check the APK's version
         env:
           VERSION: ${{ steps.tag.outputs.version }}
@@ -192,8 +193,8 @@ jobs:
             exit 1
           fi
           x=${BASH_REMATCH[1]}; y=${BASH_REMATCH[2]}; z=${BASH_REMATCH[3]}
-          if [ "$kind" = dryrun ] && [ "$x.$y" != 0.0 ]; then
-            echo "::error::Dry-run tags must be dryrun/v0.0.Z."
+          if [ "$kind" = dryrun ] && { [ "$x.$y" != 0.0 ] || [ "$z" = 0 ]; }; then
+            echo "::error::Dry-run tags must be dryrun/v0.0.Z with Z at least 1."
             exit 1
           fi
           code=$((x * 1000000 + y * 1000 + z))
