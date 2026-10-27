@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7b (sensor layer off), on branch `p0/7b-sensor-layer-off`; check `gh pr list --head p0/7b-sensor-layer-off` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced with main after #14 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7c (dontgetflocked).
+- Current step: P0-7b (sensor layer off), PR #15 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced with main after #14 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7c (dontgetflocked).
 - Branch: `p0/7b-sensor-layer-off`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -50,7 +50,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7b Sensor layer off.** Branch `p0/7b-sensor-layer-off`.
+- 2026-10-27: **P0-7b Sensor layer off.** PR #15.
   - **Why off:** PLAN's two options were a build script or the layer off. A build script means fetching and replacing a 40,112-row ODbL dataset that a test pins, so the layer is off for now. P1-E5 (new) brings it back with `scripts/build_sensors.py` and a list this project hosts.
   - **What's off:**
     - `Features.OTHER_SENSORS_LAYER = false`.
