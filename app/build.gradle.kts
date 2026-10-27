@@ -20,8 +20,20 @@ android {
     }
 
     // Release builds are never signed here: the CI sign job signs them.
-    // Staging uses the per-machine debug key until the owner commits the non-secret staging test
-    // keystore (PLAN: Build types); the guard blocks the agent from generating one.
+    // Staging uses the committed, non-secret test keystore once the owner adds it (PLAN: Build
+    // types); until then it falls back to the per-machine debug key.
+    val stagingKeystore = file("signing/staging-test.jks")
+    signingConfigs {
+        if (stagingKeystore.isFile) {
+            create("stagingTest") {
+                storeFile = stagingKeystore
+                storePassword = "spectre-staging"
+                keyAlias = "staging"
+                keyPassword = "spectre-staging"
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -30,12 +42,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            signingConfig = null
         }
         create("staging") {
             initWith(getByName("release"))
             applicationIdSuffix = ".staging"
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("stagingTest") ?: signingConfigs.getByName("debug")
             matchingFallbacks += "release"
         }
         debug {
@@ -62,6 +73,16 @@ android {
     }
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    }
+}
+
+androidComponents {
+    // Staging shares release's code; running its unit tests again would only inflate the test count.
+    beforeVariants(selector().withBuildType("staging")) { it.enableUnitTest = false }
+    finalizeDsl { android ->
+        check(android.buildTypes.getByName("release").signingConfig == null) {
+            "Release must stay unsigned in Gradle; the CI sign job signs it."
+        }
     }
 }
 
