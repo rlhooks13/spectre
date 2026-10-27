@@ -254,7 +254,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - a Quuppa 0x00C7 tag
     - RAVEN, Vigilant, IBR\*
     - random BLE addresses that collide with BLE-applicable OUIs (Axon, Flock, LiteOn/Arlo)
-- **P1-A5 `CatalogLintTest`.**
+- ✅ **P1-A5 `CatalogLintTest`** (ADR-0015). Corpus collisions are checked by pinning each hand-written case's full hit set; a golden replaces the pin once P1-A2 lands.
   - Company ids must exist in radiodb (expose `RadioDb.parse` as `internal`).
   - Bare mega-vendor MANUFACTURER_ID rules are banned (Apple, Samsung, Google, Microsoft, DJI).
   - NAME_CONTAINS needs at least 5 characters.
@@ -276,9 +276,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - **P1-B2 Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
   - **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
   - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
-  - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*.
+  - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*, and every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015): an anchored glob, a longer name, or an ADR-0015 entry with a reason.
   - **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
   - **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
+  - **P1-B10 Bare vendor ids** (from P1-A5, ADR-0015): `fleet-dji` (DRONE class on all of DJI 0x08AA) and `fleet-fitbit` (on 0x018E, Google LLC) move to payload-prefix rules backed by captures. Until a capture exists, open `field-capture` issues and keep the rows.
 - **Shipped behind flags** (default off; acceptance checks listed in the Decision policy):
   - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.

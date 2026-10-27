@@ -155,7 +155,8 @@ object RadioDb {
         return String(nameBlob, start, end - start, StandardCharsets.UTF_8)
     }
 
-    private fun parse(bytes: ByteArray) {
+    /** Internal so JVM tests (CatalogLintTest) can load `assets/lookups/radiodb.bin` without a Context. */
+    internal fun parse(bytes: ByteArray) {
         val buf = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
         val magic = ByteArray(4)
         buf.get(magic)
@@ -214,6 +215,7 @@ object RadioDb {
         val nstrAt = sections["nstr"] ?: error("missing nstr")
         val last = nameOff.last()
         nameBlob = bytes.copyOfRange(nstrAt, nstrAt + last)
+        ready = true
     }
 
     private fun isPhoneHouseVendor(vendor: String): Boolean {
