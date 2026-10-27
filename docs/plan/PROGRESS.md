@@ -52,16 +52,26 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 
 - 2026-10-27: **P0-6 BrandGuard.** Branch `p0/6-brand-guard`.
   - New `BrandGuardTest`: a JVM unit test for now, because build-logic is blocked on the approved-dependency plugins; it moves in P2-1.
-    - It scans the string literals of every `app/src/main` `.kt` file, plus `res`/manifest/text-asset lines and `dist/` text.
-    - It matches `Fieldwatch|FIELDWATCH|OffGridPete|OGridPete|Off Grid Pete`. It's case-sensitive, so lowercase legacy ids don't match.
-    - Skipped: lang packs (covered by BrandTest), `dist/CHANGELOG.md` (history) and the `dist/*.json` legacy catalog packs.
-  - The allowlist gives a reason for every entry:
-    - **Permanent:** TAK UIDs, the "exported from Spectre or Fieldwatch" import hints, the upstream MIT copyright line, the manifest app-class and theme identifiers, the disclaimer's liability parties, and the install card's fork and migration notes.
-    - **Temporary:**
-      - P0-7: upstream catalog and sensor URLs.
-      - P0-4d / PR #10: "Do not use Fieldwatch", the `ui.off.grid.pete.llc` key, `NOT_REVIEWED`.
-      - Catalog-checklist PR: the `DefaultCatalog` notes.
-  - A second test checks that the matcher catches a literal and ignores identifiers.
+    - **What it scans:** every line of every text file under `app/src/main` (language packs included), `app/build.gradle.kts` and `dist/`.
+    - **What it matches**, case-insensitively: `field[\s_-]?watch`, `off[\s-]?grid[\s-]?pete`, `ogridpete`.
+    - **Masked first:** stable ids (language keys, `app.fieldwatch`, channel and resource names, format ids, the TTS utterance id, TAK UIDs) and CamelCase class names.
+    - **Skipped:** comment lines; `dist/CHANGELOG.md` (history); the legacy `dist/fieldwatch-signatures*.json` packs (until P4-1).
+    - **Unknown file types:** an extension outside the text or binary lists fails a second test.
+  - **Allowlist:** every entry gives a reason, and temporary ones name their step.
+    - Permanent: the MIT copyright line (only in the disclaimer and the card), the import hints, the TAK zip folder id, the card's fork and migration notes, and the sensors data credit.
+    - Temporary:
+      - P0-7: upstream URLs and the card's catalog-update line.
+      - P0-4d (PR #10): the old disclaimer text, the copyright and footer lines, `NOT_REVIEWED`, and the two retired keys' pack lines.
+      - P1-B1: the six catalog notes, matched by phrase.
+    - An entry that no longer matches anything fails the test.
+  - A self-test pins the cases the reviewers raised: raw strings with quotes, nested template literals, `'"'`, raw-string middle lines, "FieldWatch"/"Field Watch", "Off-Grid Pete", `fieldwatch-export-`. It also checks that ids and comments are ignored.
+  - Also fixed a P0-4a miss the guard found: the shared log export file was `fieldwatch-export-…`; it's now `${Brand.FILE_PREFIX}-export-…`.
+  - **Next action when PR #10 is ready to merge:** merge `main` into `p0/4d-spectre-disclaimer`, then:
+    - drop the P0-4d allowlist entries;
+    - add a permanent "About attribution" entry for `ui.copyright.spectre`;
+    - point the disclaimer copyright entry at `SpectreDisclaimer.kt`;
+    - remove the retired keys' lines from the 26 packs.
+    - Otherwise `main` turns red after #10 merges.
 - 2026-10-27: **P0-4f README and docs rebrand.** PR #12, merged as `0e27a1e`.
   - **`README.md` rewritten for the fork:**
     - Fork statement; the separate-app claim is conditional on the P0-4e app id.

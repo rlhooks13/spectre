@@ -140,7 +140,8 @@ class LogStore(context: Context) {
             mutex.withLock {
                 withContext(Dispatchers.IO) {
                     flushWriter()
-                    val out = File(dir, "fieldwatch-export-${System.currentTimeMillis()}.${exportExtension(asJsonl)}")
+                    // Shared through the share sheet, so it carries the display prefix; logParts() skips it.
+                    val out = File(dir, "${app.fieldwatch.domain.Brand.FILE_PREFIX}-export-${System.currentTimeMillis()}.${exportExtension(asJsonl)}")
                     out.outputStream().buffered(64 * 1024).use { dest ->
                         writeExport(dest, asJsonl, radios, onProgress)
                     }
