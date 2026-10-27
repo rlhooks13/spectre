@@ -1,45 +1,38 @@
 # Spectre progress
 
 ## Resume pointer
-- State: RUNNING (waiting: nothing is unblocked; hourly checks)
-- Current step: none. Every open step waits on the owner. Next, in order, once each unblocks:
-  - P1-A1 (after #6) → A2 → A3 → 1B–1E;
-  - re-sync #10 if `main` moves;
-  - P0-8d after P1-B1.
+- State: RUNNING
+- Current step: **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved; unblocked now that #33 merged). Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`. Also:
+  - **P1-A1** is PR #38, a protected PR (verification metadata, approved dependencies, baseline 807) waiting for the owner's signature. A2 → A3 → 1B–1E follow once it merges.
+  - **P2-1** (build-logic) is unblocked by the dependency list.
+  - **P0-8d** after P1-B1.
+  - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
-    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
+    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
+  - **Waiting on the owner:** signing #38 (P1-A1); the P0-7c layer choice.
+  - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `main` (no work in progress)
 - Phone serial: RFCX205JR3K
-- Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
+- Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
 - Last cycle: 2026-10-27T16:40Z
 
 ## Needs human (owner)
-- PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
-- PR #20 (P0-8b):
-  - Review `docs/setup/workflows/release.yml`, sign it, and copy it to `.github/workflows/release.yml`.
-  - Add `dryrun/v*` to the `release` environment's allowed deployment tags.
-  - Leave `dryrun/v*` out of the `release-tags` ruleset, so scratch tags can be deleted.
-- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys go in `LanguageKeyRevisions` at the newest revision, and the first key-adding PR after a release raises `NEWEST` (ADR-0013). Also, after P0-8c, dev builds are versionCode 43 until the first release. The phone's staging build is still code 42 and installs over normally. Nothing else needs a downgrade.
+**For the owner:**
+- **Sign and merge #38 (P1-A1).** It adds `android-all-instrumented` and Robolectric's test-only transitive crypto (BouncyCastle, Conscrypt) to `approved-dependencies.md`. Robolectric pins SDK 34 because SDK 35 needs Java 21 and CI runs 17. Moving CI to Java 21 would allow 35.
+- **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
+- **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
+
+**Still open:**
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
-- `approved-dependencies.md` (protected) is missing build plugins the plan needs: `com.android.library`, `org.jetbrains.kotlin.jvm`, and for `build-logic` the `com.android.tools.build:gradle` and `org.jetbrains.kotlin:kotlin-gradle-plugin` artifacts. Plugins already in use (`com.android.application`, `org.jetbrains.kotlin.android`, `.plugin.compose`, `.plugin.serialization`) and `androidx.compose.ui:ui-tooling` aren't listed by name either. This blocks P2-1. The agent will push a draft branch for the owner to sign before Phase 2.
 - On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
-- Permission rules: `gh pr merge --delete-branch` was silently denied while a plain `gh pr merge --squash` worked, and `cat` and some piped `git ls-files` commands are denied too. Merged agent branches stay on the remote until a rule allows `git push origin --delete p<phase>/*` or `gh pr merge --delete-branch`. Remote branches `p0/1-agent-scaffolding` and `p0/2-repo-hygiene` are waiting for that.
-- **Staging test keystore (P0-3).** The guard hook blocks `keytool -genkeypair` ("signing locally"), so the agent can't create the committed, non-secret staging test keystore that PLAN's Build types call for. Until then, staging is signed with each machine's debug key, so a CI staging APK can't update a locally built one. Either generate `app/signing/staging-test.jks` on the host and commit it (add `!app/signing/staging-test.jks` to `.gitignore`; use alias `staging` and store and key password `spectre-staging`, which the build already expects), or confirm that the debug key is acceptable for staging.
-- **Phone screen sleeps.** At 06:22Z the screen was dozing while USB-powered, even with `stay_on_while_plugged_in=7`, so the screenshots came out black until `input keyevent KEYCODE_WAKEUP`. Check the screen timeout and Samsung's power settings.
-- **PR #6 (P0-3 part 2, protected): sign and merge.** It adds `gradle/verification-metadata.xml` (SHA-256, trust on first use) and raises `test-baseline.txt` to 767. CI's `Unit tests` and `APK` pass with verification on; `Protected paths` fails only for want of your signature. After #6 lands, the baseline can go to 769 (P0-4a adds `BrandTest`).
-- **P0-4e applicationId go-ahead.** CHARTER's identity decision names `io.github.rlhooks13.spectre`, but its hard stops say the agent never changes the applicationId. The agent won't make that change until you confirm in this session. Changing it means a fresh install: data from `app.fieldwatch` doesn't carry over unless the user exports and imports it.
-- **dontgetflocked operator and license (P0-7c).**
-  - The agent couldn't verify who runs `data.dontgetflocked.com` or what terms or license cover `cameras.geojson.gz`. A web search found nothing authoritative, and `WebFetch` is denied.
-  - The download dialog therefore names only the host and says "Spectre does not run that site; check it for its terms before you download".
-  - Please confirm the operator and terms, or add a WebFetch allow rule for `dontgetflocked.com` so the agent can read them. If the data is OpenStreetMap-derived (ODbL), the dialog should also credit "© OpenStreetMap contributors".
+- **P0-7c layer choice:** an OpenStreetMap-sourced plate-reader layer, or dropping the download. The dontgetflocked terms (Open Road Labs LLC) forbid automated or bulk requests, so the agent never downloads from it.
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -68,6 +61,33 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
+
+- 2026-10-27: **Owner PRs all merged** (relayed): #32 (#6), #33 (#10), #34 (#20), #35 (CLAUDE.md key rule, build plugins), #36 (staging test keystore), #37 (#19). #6, #10, #19 and #20 are closed. Main is e8ff4a6. #37 also raised `org.gradle.jvmargs` to `-Xmx4g -XX:MaxMetaspaceSize=1g` and `kotlin.daemon.jvmargs` to `-Xmx4g`, after the APK job's three-variant build ran out of memory at 2 GB. CI reports 854 passing tests against the 804 baseline. The release environment accepts `dryrun/v*`. P0-4e, P1-A1 and P2-1 are unblocked. P1-A1 opened as #38 (protected).
+- 2026-10-27: **Owner update,** relayed the same way:
+  1. #32 (the owner-signed #6, P0-3 dependency verification) merged and #6 is closed, so **P1-A1 is unblocked**. #33 (#10), #34 (#20), #37 (#19: CI workflow, baseline 804, lint baseline protected), #35 (CLAUDE.md key rule and build plugins) and #36 (staging test keystore) are in CI; the owner merges each when green.
+  2. **Correction to point 3 below:** no branch-delete allow rule is coming, and none is needed. GitHub auto-deletes merged head branches; the stale branches were remote-tracking refs, cleaned with `git fetch --prune`. The only leftover remote agent branch, `p0/language-pack-cap` (no PR), was superseded by P0-4g (#17) and is listed for the owner to delete.
+  3. **Phone:** screen timeout at maximum, stay-awake forced on (`svc power stayon true`).
+  4. **dontgetflocked:** undecided. The existing user-triggered download stays unchanged until the owner decides.
+- 2026-10-27: **Owner decisions,** relayed into this session by the owner's Windows-host session at the owner's request:
+  1. **P0-4e approved:** change the applicationId to `io.github.rlhooks13.spectre`. Start it after the owner PR that adopts #10 merges, to avoid conflicts. Draft its protected parts (such as release.yml's aapt2 package check) in `docs/setup/workflows/` as usual.
+  2. **PRs #6, #10, #19 and #20** are being adopted from the host as owner-signed PRs, along with:
+     - both workflows copied into `.github/workflows/`;
+     - `dryrun/v*` added to the release environment;
+     - `app/lint-baseline.xml` added to the protected paths.
+
+     The agent doesn't push to those four branches; the owner closes them once the owner PRs merge.
+  3. **Also coming as signed PRs:**
+     - the CLAUDE.md language-key rule;
+     - the build plugins in `approved-dependencies.md`;
+     - the staging test keystore (alias `staging`, password `spectre-staging`);
+     - an allow rule for `gh pr merge --delete-branch`.
+
+     The owner deletes the remote branches that are already merged.
+  4. **Phone screen timeout:** the owner is setting it over adb.
+  5. **dontgetflocked:**
+     - Its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers, so the agent never downloads from it.
+     - The owner is choosing between an OpenStreetMap-sourced layer and dropping the download, and P0-7c stays parked until then.
+     - **Note:** the app still offers the user-initiated plate-reader download (P0-7c's dialog). Whether that stays depends on the owner's choice, and the agent doesn't change it before then.
 
 - 2026-10-27: **P1-F4 merged** as `0049184` (PR #29). Phase 1F is done. Nothing is unblocked:
   - **Phase 1 fixes (1B–1E)** wait on the 1A safety net. P1-A1 needs #6 merged (so new test dependencies land in its verification metadata), and A2 and A3 build on A1.
