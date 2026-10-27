@@ -28,7 +28,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
-          protected='^(\.github/|\.claude/|CLAUDE\.md$|docs/plan/(CHARTER\.md|test-baseline\.txt|quarantine\.txt|LOOP_PROMPT\.md|approved-dependencies\.md|review-prompts/)|docs/setup/|gradle/verification-metadata\.xml$|tools/(usage-watch\.|statusline\.|hooks/)|.*Disclaimer\.kt$)'
+          protected='^(\.github/|\.claude/|CLAUDE\.md$|docs/plan/(CHARTER\.md|test-baseline\.txt|quarantine\.txt|LOOP_PROMPT\.md|approved-dependencies\.md|review-prompts/)|docs/setup/|gradle/verification-metadata\.xml$|app/lint-baseline\.xml$|tools/(usage-watch\.|statusline\.|hooks/)|.*Disclaimer\.kt$)'
           base=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
           hits=$(git diff --name-only --no-renames "$base" "$HEAD_SHA" | grep -E "$protected" || true)
           if [ -z "$hits" ]; then
