@@ -37,6 +37,7 @@
   - A capture with any leak doesn't leave the machine. P1-F4's tool enforces this.
 
 ## Residual risk
+- **Commit times:** corpus commit times would date a capture, so the runbook coarsens them to the first of the month (P1-F4).
 - **Route shape:** the kept route keeps its shape and spacing. Map-matching it against street data could find where it was, and the trimmed ends then point near home and work. The private repo (P1-F4) is the control for that. Captures are for the agent and the owner only.
 - **Linkable records:**
   - **Kept data:** everything not listed above stays, and can link records across parts or to a place: the full set of Wi-Fi capabilities and other vendor IEs (an AP fingerprint), OUIs, name lengths, and Eddystone TLM counters.

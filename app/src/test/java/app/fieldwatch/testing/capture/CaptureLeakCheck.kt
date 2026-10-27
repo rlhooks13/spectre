@@ -22,12 +22,27 @@ object CaptureLeakCheck {
     /** WPS text attributes that can name a person or a unit: device name, model name, serial. */
     private val WPS_TEXT = setOf(0x1011, 0x1023, 0x1042)
 
-    fun leaks(original: List<String>, scrubbed: List<String>): List<String> {
-        val before = original.mapNotNull(CaptureRecord::decodeOrNull)
+    /**
+     * One leaked identifier. [value] is raw bystander data: tests on synthetic captures may show it, but the
+     * scrub tool reports only [kind] counts, so no value reaches a console, a test report or a chat.
+     */
+    data class Leak(val kind: String, val value: String) {
+        override fun toString() = "$kind $value"
+    }
+
+    /** Readable form for tests on synthetic data. */
+    fun leaks(original: List<String>, scrubbed: List<String>): List<String> = find(original, scrubbed).map(Leak::toString)
+
+    /**
+     * Searches [scrubbed] for every identifier in [original], plus [alsoOriginal]: the other parts of the same
+     * capture, since an address that is a device in one part can sit inside a payload in another.
+     */
+    fun find(original: List<String>, scrubbed: List<String>, alsoOriginal: List<String> = emptyList()): List<Leak> {
+        val before = (original + alsoOriginal).mapNotNull(CaptureRecord::decodeOrNull)
         val after = scrubbed.mapNotNull(CaptureRecord::decodeOrNull)
         val texts = after.flatMap(::textFields).map { it.lowercase() }
         val payloads = after.flatMap(::payloads)
-        val found = mutableListOf<String>()
+        val found = mutableListOf<Leak>()
 
         for (address in addresses(before)) {
             val bytes = macBytes(address) ?: continue
@@ -35,16 +50,19 @@ object CaptureLeakCheck {
             if (texts.any { canonical in it } ||
                 payloads.any { contains(it, bytes) || contains(it, bytes.reversedArray()) }
             ) {
-                found += "address $address"
+                found += Leak("address", address)
             }
         }
         for (name in names(before)) {
             val text = String(name, Charsets.UTF_8)
             val asText = !text.contains('�') && text.lowercase().let { t -> texts.any { t in it } }
-            if (asText || payloads.any { contains(it, name) }) found += "name \"$text\""
+            if (asText || payloads.any { contains(it, name) }) found += Leak("name", "\"$text\"")
         }
         return found.distinct()
     }
+
+    /** Every address in [lines], for scrubbing the other parts of the same capture. */
+    fun addressesIn(lines: List<String>): Set<String> = addresses(lines.mapNotNull(CaptureRecord::decodeOrNull))
 
     private fun textFields(r: CaptureRecord): List<String> = when (r) {
         is CaptureRecord.Header -> listOf(r.app, r.model)

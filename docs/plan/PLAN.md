@@ -359,7 +359,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - MACs embedded in payloads (both byte orders) and rotating Find My / FD5A / FEAA ids are remapped.
   - Timestamps are shifted, the first and last 500 m are trimmed, and the path is rotated.
 - ✅ **P1-F3 Leak test** (`CaptureLeakCheck`): searches the output for every original address, in both byte orders, and every original name.
-- **P1-F4 Storage:** the corpus lives in a **private repo**; raw captures are deleted after scrubbing.
+- ✅ **P1-F4 Storage** (`CaptureScrubTool`, `docs/capture-runbook.md`): the corpus lives in a **private repo**; raw captures are deleted after scrubbing.
 
 - **Exit:**
   - Every verified bug is closed or has an issue explaining the deferral.

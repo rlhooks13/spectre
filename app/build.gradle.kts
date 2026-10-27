@@ -154,3 +154,14 @@ dependencies {
     // Real org.json on the JVM test classpath; the android.jar bundled JSONObject is a stub.
     testImplementation(libs.json)
 }
+
+// Capture scrub tool (P1-F4, docs/capture-runbook.md): `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`.
+// Without them the tool's test is skipped, so CI and ordinary runs never touch capture files. With them,
+// the task never counts as up to date: its real input is the raw folder, which Gradle doesn't track.
+tasks.matching { it.name == "testDebugUnitTest" }.withType<Test>().configureEach {
+    val scrubIn = providers.gradleProperty("scrubIn").getOrElse("")
+    systemProperty("spectre.scrubIn", scrubIn)
+    systemProperty("spectre.scrubOut", providers.gradleProperty("scrubOut").getOrElse(""))
+    systemProperty("spectre.rootDir", rootDir.absolutePath)
+    if (scrubIn.isNotBlank()) outputs.upToDateWhen { false }
+}

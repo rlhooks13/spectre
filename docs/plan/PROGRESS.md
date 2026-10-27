@@ -2,19 +2,19 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-F2 and P1-F3 (capture scrubber and leak test, ADR-0017), on branch `p1/f2-capture-scrubber`; check `gh pr list --head p1/f2-capture-scrubber` for the PR.
-  - **Then:** P1-F4 (private-repo storage, plus a scrub-and-check tool that deletes raw captures).
+- Current step: P1-F4 (capture storage tool and runbook), on branch `p1/f4-capture-storage`; check `gh pr list --head p1/f4-capture-storage` for the PR.
+  - **Then:** nothing is unblocked. The rest of Phase 1 waits on the owner.
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
-    - 1F is the plan's independent workstream, so it goes now.
     - P0-8d waits for P1-B1's snapshots.
+    - 1F is done.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/f2-capture-scrubber`
+- Branch: `p1/f4-capture-storage`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T15:30Z
+- Last cycle: 2026-10-27T16:10Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -67,7 +67,36 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-F2 and P1-F3: capture scrubber and leak test (ADR-0017).** Branch `p1/f2-capture-scrubber`. Test-side code only, in `testing/capture/`.
+- 2026-10-27: **P1-F4 Capture storage.** Branch `p1/f4-capture-storage`.
+  - **`CaptureScrubTool`:** an opt-in test, run with `-PscrubIn=<raw dir> -PscrubOut=<corpus dir>`. `build.gradle.kts` passes those Gradle properties as system properties, and the test is skipped without them, so CI never runs it.
+    - It scrubs each part with its own secret and leak-checks it.
+    - If any part leaks, it writes nothing and keeps the raw files.
+    - Otherwise it writes `<out>/<random id>/part-NNNN.ndjson`, with no timestamps in names, and deletes the raw parts.
+  - **`CaptureScrubToolTest`:**
+    - a clean capture goes to a random id, with raw deleted and no original address or name in the output;
+    - a capture that repeats its SSID in an unknown vendor IE is blocked, with nothing written and raw kept.
+  - **`docs/capture-runbook.md`:** record, pull into a fresh folder, scrub and store, delete raw on the phone and locally, commit to the private `rlhooks13/spectre-corpus`. Scenario notes are generic.
+  - **The corpus repo** is confirmed private and empty. No capture has been stored yet; the first real one comes from the owner.
+  - **After both reviews** (both flagged B1: leak values in the failure message would land in test reports and the console):
+    - **Reports:** counts per part and kind only. Values go to `LEAKS.txt` in the raw folder, kept and deleted with the raw data. A test asserts the report has no value.
+    - **Cross-part addresses:** each part is scrubbed with every part's addresses and leak-checked against every part's identifiers.
+    - **Order:** parts sort by full name (start time, then part), so they keep time order across app restarts.
+    - **Atomic writes:** to `.tmp-<id>`, then renamed into place; raw is deleted only after.
+    - **Path safety:**
+      - absolute paths only;
+      - the output must exist inside a git clone;
+      - the raw folder must not be in a git tree;
+      - neither folder inside the other or inside the Spectre checkout;
+      - only capture-named regular files allowed (no links or strays).
+    - **Gradle:** scoped to `testDebugUnitTest`, never up to date when `scrubIn` is set, and passes the project root.
+    - **Runbook:**
+      - wait 10 s, pull with a `tar` stream (no redirection), and compare sha256 on the phone and locally;
+      - delete on the phone only after the corpus push;
+      - commit dates go to the first of the month;
+      - a raw folder awaiting a fix goes within 7 days.
+    - **Tests:** 5 tool tests: clean store, redacted leak block, restart ordering, cross-part address, unsafe folders and strays refused.
+- 2026-10-27: **P1-F2/F3 merged** as `35c53bc` (PR #28).
+- 2026-10-27: **P1-F2 and P1-F3: capture scrubber and leak test (ADR-0017).** PR #28. Branch `p1/f2-capture-scrubber`. Test-side code only, in `testing/capture/`.
   - **Keyed stand-ins:** HMAC-SHA256 with a fresh 32-byte secret per capture, never stored. Stand-ins are consistent within a capture and unlinkable across captures.
   - **Addresses:** remapped, keeping the OUI on universal and public addresses and the type bits on random BLE. Their copies inside payloads, in either byte order, get the same stand-in.
   - **Names, SSIDs and WPS identity:** same-length printable stand-ins.
