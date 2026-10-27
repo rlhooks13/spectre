@@ -2,16 +2,19 @@
 
 - **Status:** Accepted, 2026-10-27
 - **Context:**
-  - An imported language pack is untrusted data. `LanguagePack.MAX_BYTES` refuses a file over the cap before parsing it.
-  - Upstream set the cap at 264 KiB, just under the theoretical worst case: every English line translated to its slot cap with a two-byte letter. `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` keeps that relationship. The worst-case pack must be either accepted whole, or refused and within 8 KiB of the cap.
-  - Phase 0 added English lines (new keys for changed safety and legal copy, in P0-7a, P0-7c and P0-4d). With PR #10 on top of `main`, the worst-case pack is 278,802 bytes. The 264 KiB cap (270,336 bytes) plus the 8 KiB margin gives 278,528, so the test fails.
+  - An imported language pack is untrusted data. `LanguagePack.MAX_BYTES` refuses a file over the cap before parsing it, both at import (`LanguageFiles.readCapped`) and in `LanguagePack.parse`.
+  - The inherited cap was 264 KiB. Nothing records why upstream chose it. `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` builds the worst-case pack: every English line at its slot cap, written with a two-byte letter. That pack must be either accepted whole, with every line shown at its cap, or refused and within 8 KiB of the cap. At 264 KiB it was refused, so the line-by-line branch never ran.
+  - Phase 0 added English lines (new keys for changed safety and legal copy, in P0-7a, P0-7c and P0-4d). With PR #10 on top of `main`, the worst-case pack is 278,802 bytes. That is more than 8 KiB over 264 KiB (278,528 bytes), so the test fails.
 
 ## Decision
-- **Raise the cap to 272 KiB (278,528 bytes).** The worst-case pack (278,802 bytes) is still refused, and it's within the 8 KiB margin of the new cap.
-- **The test stays unchanged.** Its 8 KiB margin is the tripwire that forces this decision each time the English map grows enough.
-- **The author guide and the requirements doc** say 272 KiB.
+- **Raise the cap to 280 KiB (286,720 bytes).** The worst-case pack fits, so a translator who keeps every line inside its slot, in a two-byte script, is no longer refused for file size. The test's accepted branch now runs and checks every line renders at its cap.
+- **Considered and rejected: 272 KiB,** just under the worst case. It keeps the test green but keeps refusing a pack that follows every documented slot rule, and it trips again after about 7.9 KB of growth.
+- **The test's logic and its 8 KiB margin are unchanged.** Only the literals around it moved: a comment, and the author-guide check now derives the number from `MAX_BYTES`. A new test checks that every "KiB" figure in the author guide and the requirements doc equals the cap.
+- **The author guide and the requirements doc** say 280 KiB.
 
 ## Consequences
-- Real packs are far smaller: a bundled pack is about 100 KiB. The change only matters for a pack written at every line's cap.
-- The parse still caps the language name (40 characters) and the map (2,000 keys), so the protection against a huge or abusive file stays.
-- When the English map grows again and the test trips, repeat this decision. Raise the cap in KiB steps, or trim English, and record it here.
+- Bundled packs are at most about 130 KiB (`el.json`, 132,948 bytes), so the change only matters for a pack written near every line's cap.
+- The 16 KiB raise is negligible for memory and parse time. The name cap (40 characters) and the key cap (2,000 keys) still apply on top of the byte cap.
+- Headroom: the worst-case pack can grow by about 7.9 KB before it is refused, and by 8 KiB more before the test trips. One long body line at its cap adds up to about 1.4 KB, so this is roughly 11 more long English lines. Phase 1 adds copy, so expect to revisit this.
+- Only the two-byte case is sized. A pack in a three-byte script (CJK, Devanagari, Thai) with every long line near its cap can still pass 280 KiB and be refused whole. No bundled pack uses such a script. If one is added, size the cap for three-byte text.
+- When the test trips again, repeat this decision: raise the cap in KiB steps, or trim English, and record it here.
