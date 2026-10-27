@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Spectre 0.0.0-golden" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="0.001200" lon="0.002100">
+    <time>2026-10-27T11:56:00Z</time>
+    <name>Flock-1A2B</name>
+    <desc>WIFI B4:1E:52:0A:0B:0C · Flock Safety · -55 dBm · ch 6 · Heard at this phone. Not a radio fix.</desc>
+    <type>WIFI</type>
+  </wpt>
+  <wpt lat="0.001300" lon="0.002200">
+    <time>2026-10-27T11:57:00Z</time>
+    <name>Tom&apos;s &quot;bag&quot;, left &amp; &lt;right&gt;</name>
+    <desc>BLE 7A:11:22:33:44:01 · -67 dBm · Heard at this phone. Not a radio fix.</desc>
+    <type>BLE</type>
+  </wpt>
+  <wpt lat="0.001400" lon="0.002300">
+    <time>2026-10-27T11:58:00Z</time>
+    <name>5E:11:22:33:44:02</name>
+    <desc>BLE 5E:11:22:33:44:02 · -72 dBm · Heard at this phone. Not a radio fix.</desc>
+    <type>BLE</type>
+  </wpt>
+  <wpt lat="0.001500" lon="0.002400">
+    <time>2026-10-27T11:59:00Z</time>
+    <name>Galaxy S23</name>
+    <desc>BLE 6E:11:22:33:44:03 · -80 dBm · Heard at this phone. Not a radio fix.</desc>
+    <type>BLE</type>
+  </wpt>
+</gpx>
