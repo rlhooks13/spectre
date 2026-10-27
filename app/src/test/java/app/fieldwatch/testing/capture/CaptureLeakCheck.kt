@@ -1,37 +1,68 @@
 package app.fieldwatch.testing.capture
 
 import app.fieldwatch.domain.CaptureRecord
+import app.fieldwatch.testing.capture.CaptureScrubber.Companion.NAME_AD_TYPES
 import app.fieldwatch.testing.capture.CaptureScrubber.Companion.forEachAd
-import app.fieldwatch.testing.capture.CaptureScrubber.Companion.hex
+import app.fieldwatch.testing.capture.CaptureScrubber.Companion.forEachWpsAttribute
+import app.fieldwatch.testing.capture.CaptureScrubber.Companion.join
 import app.fieldwatch.testing.capture.CaptureScrubber.Companion.macBytes
 import app.fieldwatch.testing.capture.CaptureScrubber.Companion.unhex
 
 /**
- * Leak test (P1-F3): every original address, in either byte order, and every original name must be gone
- * from the scrubbed capture, whether as text or as bytes inside a payload. Run on every capture before it
- * leaves the machine; a non-empty result blocks it (ADR-0017).
+ * Leak test (P1-F3, ADR-0017): every original address, in either byte order, and every original name must be
+ * gone from the scrubbed capture. It searches field values and whole-byte positions in payloads (including a
+ * WPS element reassembled across IEs), not the JSON text, so a name like "WiFi" doesn't match the
+ * `"type":"wifi"` key. Names are compared as bytes, so non-UTF-8 names count too. It finds the identifiers
+ * these parsers know about; a non-empty result blocks the capture.
  */
 object CaptureLeakCheck {
-    /** Names shorter than this are too common to search for (a 2-letter name matches everywhere). */
+    /** Names shorter than this are too common to search for. */
     private const val MIN_NAME = 3
 
+    /** WPS text attributes that can name a person or a unit: device name, model name, serial. */
+    private val WPS_TEXT = setOf(0x1011, 0x1023, 0x1042)
+
     fun leaks(original: List<String>, scrubbed: List<String>): List<String> {
-        val records = original.mapNotNull(CaptureRecord::decodeOrNull)
-        val out = scrubbed.joinToString("\n")
-        val outUpper = out.uppercase()
+        val before = original.mapNotNull(CaptureRecord::decodeOrNull)
+        val after = scrubbed.mapNotNull(CaptureRecord::decodeOrNull)
+        val texts = after.flatMap(::textFields).map { it.lowercase() }
+        val payloads = after.flatMap(::payloads)
         val found = mutableListOf<String>()
 
-        for (address in addresses(records)) {
+        for (address in addresses(before)) {
             val bytes = macBytes(address) ?: continue
-            val forward = hex(bytes)
-            val reversed = hex(bytes.reversedArray())
-            if (address.uppercase() in outUpper || forward in outUpper || reversed in outUpper) found += "address $address"
+            val canonical = bytes.joinToString(":") { "%02x".format(it) }
+            if (texts.any { canonical in it } ||
+                payloads.any { contains(it, bytes) || contains(it, bytes.reversedArray()) }
+            ) {
+                found += "address $address"
+            }
         }
-        for (name in names(records)) {
-            val asHex = hex(name.toByteArray(Charsets.UTF_8))
-            if (name.lowercase() in out.lowercase() || asHex in outUpper) found += "name \"$name\""
+        for (name in names(before)) {
+            val text = String(name, Charsets.UTF_8)
+            val asText = !text.contains('�') && text.lowercase().let { t -> texts.any { t in it } }
+            if (asText || payloads.any { contains(it, name) }) found += "name \"$text\""
         }
         return found.distinct()
+    }
+
+    private fun textFields(r: CaptureRecord): List<String> = when (r) {
+        is CaptureRecord.Header -> listOf(r.app, r.model)
+        is CaptureRecord.Ble -> listOf(r.addr)
+        is CaptureRecord.Wifi -> listOfNotNull(r.bssid, r.ssid, r.mld, r.capabilities)
+        is CaptureRecord.Fix -> listOf(r.provider)
+        is CaptureRecord.Stats -> emptyList()
+    }
+
+    private fun payloads(r: CaptureRecord): List<ByteArray> = when (r) {
+        is CaptureRecord.Ble -> listOf(unhex(r.adv))
+        is CaptureRecord.Wifi -> {
+            val ies = r.ies.map { unhex(it.hex) }
+            val wps = ArrayList<ByteArray>()
+            forEachWpsAttribute(r.ies.filter { it.id == 221 }.map { unhex(it.hex) }) { _, chunks -> wps += join(chunks) }
+            ies + wps + listOfNotNull(r.ssidHex?.let(::unhex))
+        }
+        else -> emptyList()
     }
 
     private fun addresses(records: List<CaptureRecord>): Set<String> = records.flatMap { r ->
@@ -40,42 +71,42 @@ object CaptureLeakCheck {
             is CaptureRecord.Wifi -> listOfNotNull(r.bssid, r.mld)
             else -> emptyList()
         }
-    }.filter { it.isNotBlank() }.toSet()
+    }.filter { it.isNotBlank() }.map { it.uppercase() }.toSet()
 
-    private fun names(records: List<CaptureRecord>): Set<String> = records.flatMap { r ->
+    private fun names(records: List<CaptureRecord>): List<ByteArray> = records.flatMap { r ->
         when (r) {
             is CaptureRecord.Ble -> bleNames(r)
             is CaptureRecord.Wifi -> wifiNames(r)
             else -> emptyList()
         }
-    }.filter { it.trim().length >= MIN_NAME }.toSet()
+    }.filter { n -> n.count { it.toInt() != 0 && it.toInt() != 0x20 } >= MIN_NAME }
+        .distinctBy { CaptureScrubber.hex(it) }
 
-    private fun bleNames(r: CaptureRecord.Ble): List<String> {
+    private fun bleNames(r: CaptureRecord.Ble): List<ByteArray> {
         val adv = unhex(r.adv)
-        val names = mutableListOf<String>()
-        forEachAd(adv) { type, start, len ->
-            if (type == 0x08 || type == 0x09) names += String(adv, start, len, Charsets.UTF_8)
+        val names = mutableListOf<ByteArray>()
+        forEachAd(adv) { type, start, len -> if ((type in NAME_AD_TYPES || type == 0x24) && len > 0) names += adv.copyOfRange(start, start + len) }
+        return names
+    }
+
+    private fun wifiNames(r: CaptureRecord.Wifi): List<ByteArray> {
+        val names = mutableListOf<ByteArray>()
+        val ssid = r.ssidHex?.let(::unhex) ?: r.ssid.removeSurrounding("\"").toByteArray(Charsets.UTF_8)
+        names += ssid
+        r.ies.filter { it.id == 0 }.forEach { names += unhex(it.hex) }
+        forEachWpsAttribute(r.ies.filter { it.id == 221 }.map { unhex(it.hex) }) { type, chunks ->
+            if (type in WPS_TEXT) names += join(chunks)
         }
         return names
     }
 
-    private fun wifiNames(r: CaptureRecord.Wifi): List<String> {
-        val names = mutableListOf<String>()
-        val ssid = r.ssidHex?.let { String(unhex(it), Charsets.UTF_8) } ?: r.ssid.removeSurrounding("\"")
-        if (ssid.isNotBlank()) names += ssid
-        for (ie in r.ies.filter { it.id == 221 }) {
-            val data = unhex(ie.hex)
-            if (data.size < 4 || hex(data.copyOf(4)) != "0050F204") continue
-            var i = 4
-            while (i + 4 <= data.size) {
-                val type = ((data[i].toInt() and 0xFF) shl 8) or (data[i + 1].toInt() and 0xFF)
-                val len = ((data[i + 2].toInt() and 0xFF) shl 8) or (data[i + 3].toInt() and 0xFF)
-                if (i + 4 + len > data.size) break
-                // Device name, model name, serial: the text fields that can name a person or a unit.
-                if (type == 0x1011 || type == 0x1023 || type == 0x1042) names += String(data, i + 4, len, Charsets.UTF_8)
-                i += 4 + len
-            }
+    /** Whole-byte search: [needle] at any byte offset of [hay]. */
+    private fun contains(hay: ByteArray, needle: ByteArray): Boolean {
+        if (needle.isEmpty() || needle.size > hay.size) return false
+        outer@ for (i in 0..hay.size - needle.size) {
+            for (j in needle.indices) if (hay[i + j] != needle[j]) continue@outer
+            return true
         }
-        return names
+        return false
     }
 }

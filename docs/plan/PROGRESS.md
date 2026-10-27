@@ -85,7 +85,31 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - the path is trimmed to 21 of 31 fixes and the 2.2 km spacing survives;
     - a short path keeps no fixes;
     - different captures get different stand-ins.
-  - **Known v1 gaps (ADR-0017):** Continuity types other than 0x12, other vendors' rotating ids, free text in non-WPS IEs. They go to v2, using the owner's first real captures.
+  - **After both reviews** (B1 path trim, location re-identification, scrubber and leak-check gaps, false positives, performance). These replaced parts of the above:
+    - **Path:**
+      - only reliable GPS fixes (gps, ≤50 m, not last-known) are kept or used;
+      - anchors are the medians of the first and last 5;
+      - the window runs from the last time the track is within 500 m (straight line) of the start to the first time it comes within 500 m of the end;
+      - fixes within 500 m of either anchor are dropped, so jitter at home never counts as travel.
+    - **Times and altitude:** a sub-day time shift (the time of day moves) and a secret altitude shift.
+    - **One part, one secret:** `scrubPart` makes a fresh secret per call and refuses a second header.
+    - **Also remapped:**
+      - AD 0x30 and 0x24 names, AD 0x1B identity addresses;
+      - WPS 0x1020 and 0x1049, with WPS walked across split IEs;
+      - P2P and WFD IEs, RNR (with Short SSID), Multiple BSSID, Mesh ID, Interworking, Multi-Link, Cisco 133;
+      - Apple TLVs wherever they sit: 0x12 key, 0x05 and 0x0F hashes, 0x10 auth tag.
+    - **Padding and placeholders:** zero-length AD bytes are stepped over (scan response after padding), and truncated ADs are clipped. Placeholder addresses don't rewrite padding.
+    - **Address remap:** one pass with a hash map, and collision-free.
+    - **Leak check:** searches field values and whole-byte payload positions (no JSON keys, so no false hits), compares names as bytes (non-UTF-8 too), and searches reassembled WPS.
+    - **Tests:** 21, including jitter at home, an outlier network fix, a lowercase BSSID, address-only-in-payload detection, padding then scan response, P2P and RNR, a placeholder address, and moved header times and bearings.
+  - **Known v1 gaps (ADR-0017 Residual risk):**
+    - route shape can be map-matched (the private repo is the control);
+    - AP fingerprints and other unscrubbed IEs link records;
+    - Fast Pair and CDP payloads aren't remapped;
+    - free text in other vendors' IEs isn't searched;
+    - the leak test only finds identifiers its parsers know.
+
+    They go to v2, using the owner's first real captures.
 - 2026-10-27: **P1-F1 merged** as `c06ec57` (PR #27).
 - 2026-10-27: **P1-F1 Capture v1 (ADR-0016).** PR #27. Branch `p1/f1-capture-v1`.
   - **Format:** `CaptureRecord`, newline-delimited JSON with header, ble, wifi and fix records. It keeps elapsed-realtime ns from the radio's own stamps, full ScanRecord hex, every Wi-Fi IE, and the raw PHY, address-type, SID, width and standard ints.

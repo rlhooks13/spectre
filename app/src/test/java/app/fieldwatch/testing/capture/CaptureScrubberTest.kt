@@ -59,7 +59,7 @@ class CaptureScrubberTest {
         listOf(CaptureRecord.Header(app = "t", sdk = 36, model = "SM-S911U", wallMs = 1L, bootCount = 7)) +
             fixList +
             listOf(
-                ble(2 * sec, "4A:1B:2C:3D:4E:5F", 1, flags, aliceName, offlineFinding), // first 200 m: trimmed
+                ble(2 * sec, "4A:1B:2C:3D:4E:5F", 1, flags, aliceName, offlineFinding), // at 220 m: trimmed
                 ble(10 * sec, "4A:1B:2C:3D:4E:5F", 1, flags, aliceName, offlineFinding),
                 ble(11 * sec, "00:25:DF:11:22:33", 0, flags, ownMacReversed),
                 ble(12 * sec, "7E:00:11:22:33:44", 1, flags, smartTag, eid, tlm),
@@ -69,7 +69,7 @@ class CaptureScrubberTest {
             )
         ).map(CaptureRecord::encode)
 
-    private fun scrub(lines: List<String>, seed: Long = 42) = CaptureScrubber(java.util.Random(seed)).scrub(lines)
+    private fun scrub(lines: List<String>, seed: Long = 42) = CaptureScrubber.scrubPart(lines, java.util.Random(seed))
     private fun records(lines: List<String>) = lines.map(CaptureRecord::decode)
 
     @Test
@@ -139,16 +139,17 @@ class CaptureScrubberTest {
         assertEquals(null, header.bootCount)
 
         val fixesOut = out.filterIsInstance<CaptureRecord.Fix>()
-        // 0..3300 m in 110 m steps; fixes within 500 m of either end are gone: 550 m..2750 m stay.
-        assertEquals(21, fixesOut.size)
-        // The radio record from the first 220 m went with them.
+        // 0..3300 m in 110 m steps. The anchors are the medians of the first and last five fixes (220 m and
+        // 3080 m); fixes within 500 m of either are gone, so 770 m..2530 m stay.
+        assertEquals(17, fixesOut.size)
+        // The radio record from 220 m went with them.
         assertEquals(6, out.filterIsInstance<CaptureRecord.Ble>().size + out.filterIsInstance<CaptureRecord.Wifi>().size)
         // Spacing survives, the place doesn't (synthetic origin), and times shift by one offset.
         val a = fixesOut.first()
         val b = fixesOut.last()
-        assertEquals(2200.0, meters(a, b), 2.0)
+        assertEquals(1760.0, meters(a, b), 2.0)
         assertTrue(kotlin.math.abs(a.lat) < 1 && kotlin.math.abs(a.lon) < 1)
-        assertEquals(20 * sec, b.tNs - a.tNs)
+        assertEquals(16 * sec, b.tNs - a.tNs)
         val ble = out.filterIsInstance<CaptureRecord.Ble>()
         assertEquals(1 * sec, ble[1].tNs - ble[0].tNs)
         assertNotEquals(10 * sec, ble[0].tNs)
@@ -168,6 +169,154 @@ class CaptureScrubberTest {
         val one = records(scrub(original, seed = 1)).filterIsInstance<CaptureRecord.Wifi>().first().bssid
         val two = records(scrub(original, seed = 2)).filterIsInstance<CaptureRecord.Wifi>().first().bssid
         assertNotEquals(one, two)
+    }
+
+    @Test
+    fun jitterAtHomeDoesNotCountAsTravel() {
+        // Five minutes at 1 Hz, wandering a few metres around the door (adds ~1.5 km along the path), then a walk.
+        val rnd = java.util.Random(7)
+        val home = (0 until 300).map { i ->
+            CaptureRecord.Fix(tNs = i * sec, wallMs = i * 1000L, provider = "gps",
+                lat = 47.6 + (rnd.nextDouble() - 0.5) * 9e-5, lon = -122.3 + (rnd.nextDouble() - 0.5) * 9e-5)
+        }
+        val walk = fixes().map { it.copy(tNs = it.tNs + 300 * sec) }
+        val original = (home + walk).map(CaptureRecord::encode)
+        val kept = records(scrub(original)).filterIsInstance<CaptureRecord.Fix>()
+        // The start anchor is home (median of the jitter); the walk's fixes from 550 m to 2530 m survive.
+        assertEquals(19, kept.size)
+        assertTrue(kept.all { it.tNs >= 300 * sec })
+    }
+
+    @Test
+    fun offlineFindingIsFoundWhereverItSitsAndOnlyItIsRemapped() {
+        val key = ByteArray(22) { (0x20 + it).toByte() }
+        val payload = byteArrayOf(0x4C, 0x00, 0x10, 0x02, 0x05, 0x03) + // Continuity 0x10 first
+            byteArrayOf(0x12, 0x19, 0x00) + key + byteArrayOf(0x01, 0x7F) + // Offline Finding second
+            byteArrayOf(0x07, 0x03, 0x0A, 0x0B, 0x0C) // a TLV after it
+        val out = records(scrub(listOf(CaptureRecord.encode(ble(10 * sec, "4A:1B:2C:3D:4E:5F", 1, flags, ad(0xFF, payload))))))
+            .filterIsInstance<CaptureRecord.Ble>().single()
+        assertTrue(!out.adv.contains(hex(key)))
+        assertTrue(out.adv.contains("4C0010020503" + "121900"))
+        assertTrue(out.adv.endsWith("07030A0B0C"))
+    }
+
+    @Test
+    fun aTruncatedNameIsStillScrubbedAndChecked() {
+        val name = "Alice's AirPods".toByteArray()
+        // Length byte promises 2 more bytes than the record holds (DATA_TRUNCATED).
+        val truncated = byteArrayOf((name.size + 3).toByte(), 0x09) + name
+        val original = listOf(CaptureRecord.encode(ble(10 * sec, "4A:1B:2C:3D:4E:5F", 1, flags, truncated)))
+        assertTrue(CaptureLeakCheck.leaks(original, original).any { "Alice" in it })
+        assertEquals(emptyList<String>(), CaptureLeakCheck.leaks(original, scrub(original)))
+    }
+
+    @Test
+    fun aWpsNameSplitAcrossTwoIesIsScrubbed() {
+        val body = byteArrayOf(0x10, 0x11, 0x00, 12) + "Smith-Laptop".toByteArray()
+        val head = byteArrayOf(0x00, 0x50, 0xF2.toByte(), 0x04)
+        val ies = listOf(
+            CaptureRecord.Ie(221, null, hex(head + body.copyOfRange(0, 9))), // the name breaks after "Smith"
+            CaptureRecord.Ie(221, null, hex(head + body.copyOfRange(9, body.size))),
+        )
+        val original = listOf(CaptureRecord.encode(wifi(14 * sec).copy(ies = ies)))
+        assertTrue(CaptureLeakCheck.leaks(original, original).any { "Smith-Laptop" in it })
+        assertEquals(emptyList<String>(), CaptureLeakCheck.leaks(original, scrub(original)))
+    }
+
+    @Test
+    fun aCommonNameIsNotAFalseLeak() {
+        // "wifi" is in every Wi-Fi line's JSON key; only field values and payload bytes count.
+        val original = listOf(CaptureRecord.encode(wifi(14 * sec).copy(ssid = "\"wifi\"", ssidHex = hex("wifi".toByteArray()), ies = emptyList())))
+        assertEquals(emptyList<String>(), CaptureLeakCheck.leaks(original, scrub(original)))
+    }
+
+    @Test
+    fun timeOfDayAndAltitudeMoveToo() {
+        val withAlt = fixes().map { it.copy(alt = 1600.0 + it.tNs / sec) }
+        val original = capture(withAlt)
+        val kept = records(scrub(original)).filterIsInstance<CaptureRecord.Fix>()
+        val day = 86_400_000L
+        assertNotEquals(withAlt[7].wallMs % day, kept.first().wallMs % day)
+        assertNotEquals(withAlt[7].alt!!, kept.first().alt!!, 1.0)
+        assertEquals(16.0, kept.last().alt!! - kept.first().alt!!, 1e-6)
+    }
+
+    @Test
+    fun networkAndLastKnownFixesNeverSurviveOrAnchor() {
+        // A coarse network fix far from home at the very start would move a naive trim onto the home fix.
+        val outlier = CaptureRecord.Fix(tNs = 0, wallMs = 0, provider = "network", lat = 47.62, lon = -122.3, acc = 900f)
+        val lastKnown = fixes()[15].copy(tNs = 15 * sec + 1, lastKnown = true)
+        val original = capture(listOf(outlier) + fixes().map { it.copy(tNs = it.tNs + 1) } + lastKnown)
+        val kept = records(scrub(original)).filterIsInstance<CaptureRecord.Fix>()
+        assertEquals(17, kept.size)
+        assertTrue(kept.all { it.provider == "gps" && it.lastKnown == null })
+    }
+
+    @Test
+    fun theLeakCheckCatchesAnAddressOnlyInsideAPayload() {
+        // The address appears nowhere as a field: only reversed, and only forward, inside other payloads.
+        val hidden = unhex("A1B2C3D4E5F6")
+        val reversedOnly = ble(10 * sec, "4A:1B:2C:3D:4E:5F", 1, ad(0xFF, byteArrayOf(0x34, 0x12) + hidden.reversedArray()))
+        val carrier = ble(11 * sec, "A1:B2:C3:D4:E5:F6", 1, flags)
+        val original = listOf(carrier, reversedOnly).map(CaptureRecord::encode)
+        val tampered = listOf(carrier.copy(addr = "00:00:00:00:00:01"), reversedOnly).map(CaptureRecord::encode)
+        assertTrue(CaptureLeakCheck.leaks(original, tampered).any { "A1:B2:C3:D4:E5:F6" in it })
+        assertEquals(emptyList<String>(), CaptureLeakCheck.leaks(original, scrub(original)))
+    }
+
+    @Test
+    fun aNameAfterZeroPaddingAndAnIdentityAddressAreScrubbed() {
+        // 31-byte legacy advertising data padded with zeros, then the scan response with the name.
+        val padded = flags + ByteArray(31 - flags.size)
+        val identity = ad(0x1B, unhex("665544332211") + byteArrayOf(0x00)) // public identity 11:22:33:44:55:66
+        val original = listOf(CaptureRecord.encode(ble(10 * sec, "4A:1B:2C:3D:4E:5F", 1, padded, aliceName, identity)))
+        val out = scrub(original)
+        assertEquals(emptyList<String>(), CaptureLeakCheck.leaks(original, out))
+        val adv = (records(out).single() as CaptureRecord.Ble).adv
+        assertTrue(!adv.contains(hex("Alice's AirPods".toByteArray())))
+        assertTrue(!adv.contains("665544332211") && !adv.contains("112233445566"))
+    }
+
+    @Test
+    fun wifiDirectAndNeighborReportsAreRemappedAndAddressesStayLowercaseSafe() {
+        val p2p = byteArrayOf(0x50, 0x6F, 0x9A.toByte(), 0x09) + "DIRECT-Bobs-TV".toByteArray()
+        val rnr = byteArrayOf(0x00, 0x04, 0x51, 0x24) + unhex("0099887766554433") // with a neighbor BSSID
+        val r = wifi(14 * sec).copy(
+            bssid = bssid.lowercase(),
+            ies = listOf(CaptureRecord.Ie(221, null, hex(p2p)), CaptureRecord.Ie(201, null, hex(rnr))),
+        )
+        val out = records(scrub(listOf(CaptureRecord.encode(r)))).single() as CaptureRecord.Wifi
+        assertTrue(out.bssid.uppercase().startsWith("00:11:22:") && !out.bssid.equals(bssid, ignoreCase = true))
+        val p2pOut = unhex(out.ies[0].hex)
+        assertEquals("506F9A09", hex(p2pOut.copyOf(4)))
+        assertTrue(!out.ies[0].hex.contains(hex("Bobs".toByteArray())))
+        assertNotEquals(hex(rnr), out.ies[1].hex)
+    }
+
+    @Test
+    fun aPlaceholderAddressDoesNotRewritePadding() {
+        val padded = flags + ByteArray(20)
+        val r = ble(10 * sec, "02:00:00:00:00:00", 1, padded)
+        val out = records(scrub(listOf(CaptureRecord.encode(r)))).single() as CaptureRecord.Ble
+        assertTrue(out.adv.endsWith("00".repeat(20)))
+    }
+
+    @Test
+    fun headerTimesAndBearingsMove() {
+        val original = capture(fixes().map { it.copy(bearing = 0f, fixTimeMs = it.wallMs) })
+        val out = records(scrub(original))
+        val header = out.first() as CaptureRecord.Header
+        assertNotEquals(1L, header.wallMs)
+        val kept = out.filterIsInstance<CaptureRecord.Fix>()
+        assertEquals(1, kept.map { it.bearing }.toSet().size) // one rotation for all
+        assertNotEquals(0f, kept.first().bearing!!, 1e-3f)
+        assertEquals(kept.first().wallMs, kept.first().fixTimeMs)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun onePartAtATime() {
+        val header = CaptureRecord.encode(CaptureRecord.Header(app = "t", sdk = 36, model = "m", wallMs = 1L))
+        scrub(listOf(header, header))
     }
 
     private fun meters(a: CaptureRecord.Fix, b: CaptureRecord.Fix): Double {
