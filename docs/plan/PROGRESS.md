@@ -2,10 +2,9 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B2 Tile**, after P1-B1 (catalog v98) merges. Then B3 onward. **P0-8d** (release-notes generator) is unblocked once B1 merges: `catalog/snapshots/v97.json` and `v98.json` exist.
-  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2 and A3 added about 52 tests above 858, so the next protected PR raises the baseline again.
+- Current step: **P1-B2 Tile** (catalog v99), after P0-8d merges. Then B3 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
-  - **P0-8d** after P1-B1.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - P1-A6 waits for build-logic (P2-1).
@@ -62,6 +61,19 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P0-8d Release-notes generator.** #53 (P1-B1) merged first.
+  - **What it generates.** `testing/ReleaseNotes` lists every label and verdict change between two frozen catalog snapshots:
+    - **Signatures:** added or removed, renamed, reclassed, on or off, attention notes, rules added or retired, decodes, notes.
+    - **Verdicts:** every match-corpus case whose hits differ.
+    - **Switches:** the Features flag states.
+  - **How it's used:**
+    - `-PreleaseNotes=X.Y.Z -PreleaseFromCatalog=<N>` writes the block into `docs/release-notes/X.Y.Z.md`, which release.yml already publishes. Hand-written text around the block is kept.
+    - `ReleaseNotesTest` checks every committed notes file's signature section against the snapshots.
+    - The golden `release/since-v97.md` shows the next release's list, so catalog PRs show their changes there.
+  - **Build:** `catalog/` and `docs/release-notes/` are now Test task inputs. Before this, a hand edit to them left the tests up to date and unchecked; found while testing this check.
+  - **Owner follow-ups** (protected files):
+    - release.yml's comment still says notes are hand-written until P0-8d;
+    - CLAUDE.md's command table could list `-PreleaseNotes` and `-PwriteStockCatalog`.
 - 2026-10-27: **P1-B1 SmartTag (catalog v98).** #52 merged first (P1-A3 done).
   - **The fix:** `fleet-smarttag` drops the bare Samsung company-id rule (0x0075, on every Galaxy phone and Buds) and keeps FD5A and its names. The six catalog notes that named Fieldwatch now say Spectre.
   - **Checklist:**

@@ -197,7 +197,14 @@ tasks.withType<Test>().configureEach {
             providers.gradleProperty("writeStockCatalog").orNull?.let { it.isEmpty() || it == "true" } == true
         )
     systemProperty("spectre.writeStockCatalog", writeStock.toString())
-    if (updateGolden || writeStock) outputs.upToDateWhen { false }
+    // Tests read these repo files (catalog snapshots, retired rules, release notes), so a change to them reruns the tests.
+    inputs.files(rootProject.fileTree("catalog"), rootProject.fileTree("docs/release-notes"))
+        .withPropertyName("repoDataFiles").withPathSensitivity(PathSensitivity.RELATIVE)
+    // Release notes' generated block (P0-8d): `-PreleaseNotes=X.Y.Z -PreleaseFromCatalog=<N>`, debug variant only.
+    val releaseNotes = if (name == "testDebugUnitTest") providers.gradleProperty("releaseNotes").getOrElse("") else ""
+    systemProperty("spectre.releaseNotes", releaseNotes)
+    systemProperty("spectre.releaseFromCatalog", providers.gradleProperty("releaseFromCatalog").getOrElse(""))
+    if (updateGolden || writeStock || releaseNotes.isNotBlank()) outputs.upToDateWhen { false }
 }
 
 // Robolectric brings BouncyCastle and Conscrypt onto the test classpath. They are approved there only
