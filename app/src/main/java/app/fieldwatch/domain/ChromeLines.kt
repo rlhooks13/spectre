@@ -403,8 +403,9 @@ internal object ChromeLines {
         en("ui.paused.label", "Paused", LanguageSlot.CONTROL),
         en("ui.export.import", "Export and import", LanguageSlot.CONTROL),
         en("ui.copyright.c.2026.off", "Copyright (c) 2026 Off Grid Pete LLC. All rights reserved.", LanguageSlot.BODY),
-        en("ui.offgridpete.label", "@OffGridPete", LanguageSlot.CONTROL),
-        en("ui.ogridpete.label", "@OGridPete", LanguageSlot.CONTROL),
+        // Upstream's social chips are gone (P0-4c); the keys stay because keys are never removed.
+        en("ui.offgridpete.label", "Unused", LanguageSlot.CONTROL),
+        en("ui.ogridpete.label", "Unused", LanguageSlot.CONTROL),
         en("ui.phone.label", "This phone", LanguageSlot.CONTROL),
         en("ui.tak.callsign", "TAK callsign", LanguageSlot.CONTROL),
         en("ui.new.tag", "New tag", LanguageSlot.CONTROL),

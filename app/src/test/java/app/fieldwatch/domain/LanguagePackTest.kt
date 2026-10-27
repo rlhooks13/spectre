@@ -123,7 +123,7 @@ class LanguagePackTest {
             OfficialSentences.AUTHOR_GUIDE,
         )
         assertEquals(
-            "https://github.com/rlhooks13/spectre/blob/main/docs/language-pack-author-guide.md",
+            "${Brand.REPO_URL}/blob/main/docs/language-pack-author-guide.md",
             OfficialSentences.AUTHOR_GUIDE_URL,
         )
         assertTrue(EnglishCopy.lines.none { it.text == OfficialSentences.NOT_REVIEWED })

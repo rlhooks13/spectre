@@ -38,6 +38,15 @@ class BrandTest {
     }
 
     @Test
+    fun noUpstreamSocialHandleOrLinkShips() {
+        assertEquals("https://github.com/rlhooks13/spectre", Brand.REPO_URL)
+        val handles = listOf("OffGridPete", "OGridPete", "instagram.com", "x.com/")
+        val english = EnglishCopy.lines.filter { line -> handles.any { it in line.text } }.map { it.key }
+        assertEquals(emptyList<String>(), english)
+        assertFalse(OfficialSentences.AUTHOR_GUIDE_URL.contains("OffGridPete"))
+    }
+
+    @Test
     fun noEnglishLineNamesTheUpstreamApp() {
         // Legacy ids such as "(app.fieldwatch)" are lowercase; the display name is not.
         val stale = EnglishCopy.lines.filter { "Fieldwatch" in it.text || "FIELDWATCH" in it.text }

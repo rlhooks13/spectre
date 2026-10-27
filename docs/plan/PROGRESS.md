@@ -52,9 +52,13 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 
 - 2026-10-27: **P0-4c Upstream social links.** Branch `p0/4c-social-links`.
   - Removed the Settings credit footer's Instagram (`instagram.com/OffGridPete`) and X (`x.com/OGridPete`) chips, the now-unused `SocialChip` composable, and `ic_instagram.xml` and `ic_x.xml`. The footer keeps the copyright line, which P0-4d settles.
-  - The language keys `ui.offgridpete.label` and `ui.ogridpete.label` stay (keys are never removed); they're unused now.
-  - The language-pack author-guide link now points to this repo's `docs/language-pack-author-guide.md` (`Brand.REPO_URL`); one test updated.
-  - Result: tests green; staging cold-started with 0 `FATAL`.
+  - The language keys `ui.offgridpete.label` and `ui.ogridpete.label` stay (keys are never removed). Their English values change from the upstream handles to "Unused", so the exported template no longer carries them.
+  - Removed the now-dead `openUrl` and five unused imports.
+  - The language-pack author-guide link now points to this repo's `docs/language-pack-author-guide.md` (`Brand.REPO_URL`). The repo is public, so the link resolves.
+  - The guide itself is rebranded: the title, "Spectre version/update/terms/user manual", issues at `rlhooks13/spectre`, and review by "the Spectre contributors". The in-app `NOT_REVIEWED` sentence is still upstream's until P0-4d.
+  - New `BrandTest.noUpstreamSocialHandleOrLinkShips` checks that no handle or link ships.
+  - Result: 772 tests green. Staging cold-started with 0 `FATAL`. The Settings footer itself wasn't screenshotted: it sits behind the first-run disclaimer, which device checks don't accept. Follow-up: an instrumented UI check once P1-A adds Robolectric and Compose UI tests.
+  - Not in this step: in-app fetches still go to upstream URLs (`CatalogRemote`, `FlockFiles` sensor list). P0-7 disables the catalog update and replaces or turns off the sensor layer.
 - 2026-10-27: **P0-4b English copy values.** PR #8, merged as `ca0676a`.
   - "Fieldwatch"/"FIELDWATCH" → "Spectre"/"SPECTRE" in English values only:
     - `ChromeLines` (49) and `LanguageCopy` (7).
