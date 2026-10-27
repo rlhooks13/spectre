@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document>
+  <name>Spectre 0.0.0-golden export</name>
+  <Placemark>
+    <name>Flock-1A2B</name>
+    <description>WIFI B4:1E:52:0A:0B:0C · Flock Safety · -61 dBm · ch 6 · Heard at this phone. Not a radio fix.</description>
+    <TimeStamp><when>2026-10-27T11:56:00Z</when></TimeStamp>
+    <Point><coordinates>0.002000,0.001100</coordinates></Point>
+  </Placemark>
+  <Placemark>
+    <name>Legacy-tag</name>
+    <description>BLE 4A:11:22:33:44:05 · -77 dBm · Heard at this phone. Not a radio fix.</description>
+    <TimeStamp><when>2026-10-27T11:51:00Z</when></TimeStamp>
+    <Point><coordinates>0.002050,0.001150</coordinates></Point>
+  </Placemark>
+  <Placemark>
+    <name>Tom&apos;s &quot;bag&quot;, left &amp; &lt;right&gt;</name>
+    <description>BLE 7A:11:22:33:44:01 · -67 dBm · Heard at this phone. Not a radio fix.</description>
+    <TimeStamp><when>2026-10-27T11:57:00Z</when></TimeStamp>
+    <Point><coordinates>0.002200,0.001300</coordinates></Point>
+  </Placemark>
+  <Placemark>
+    <name>5E:11:22:33:44:02</name>
+    <description>BLE 5E:11:22:33:44:02 · -72 dBm · Heard at this phone. Not a radio fix.</description>
+    <TimeStamp><when>2026-10-27T11:58:00Z</when></TimeStamp>
+    <Point><coordinates>0.002300,0.001400</coordinates></Point>
+  </Placemark>
+  <Placemark>
+    <name>Galaxy S23</name>
+    <description>BLE 6E:11:22:33:44:03 · -80 dBm · Heard at this phone. Not a radio fix.</description>
+    <TimeStamp><when>2026-10-27T11:59:00Z</when></TimeStamp>
+    <Point><coordinates>0.002400,0.001500</coordinates></Point>
+  </Placemark>
+</Document></kml>

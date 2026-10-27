@@ -1,6 +1,7 @@
 WigleWifi-1.4,appRelease=Spectre 0.0.0-golden,model=SM-S911U,release=16,device=dm1q,display=golden,board=kalama,brand=samsung
 MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,CurrentLatitude,CurrentLongitude,AltitudeMeters,AccuracyMeters,Type
-B4:1E:52:0A:0B:0C,Flock-1A2B,[ESS],2026-10-27 11:56:00,6,-55,0.001200,0.002100,0,0,WIFI
+B4:1E:52:0A:0B:0C,Flock-1A2B,[ESS],2026-10-27 11:50:00,6,-61,0.001100,0.002000,0,0,WIFI
+4A:11:22:33:44:05,Legacy-tag,,2026-10-27 11:51:00,0,-77,0.001150,0.002050,0,0,BLE
 7A:11:22:33:44:01,,,2026-10-27 11:57:00,0,-67,0.001300,0.002200,0,0,BLE
 5E:11:22:33:44:02,,,2026-10-27 11:58:00,0,-72,0.001400,0.002300,0,0,BLE
 6E:11:22:33:44:03,Galaxy S23,,2026-10-27 11:59:00,0,-80,0.001500,0.002400,0,0,BLE
