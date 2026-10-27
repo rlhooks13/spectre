@@ -51,12 +51,7 @@ object SpectreDisclaimer {
             "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE " +
             "SOFTWARE."
 
-    val LICENSE_TEXT = "$LICENSE_TITLE\n\n$LICENSE_BODY"
-
     val firstRunDisclaimer: String = "$HOBBY\n\n$HYPOTHESES\n\n$LIABILITY"
-
-    val firstRun: String =
-        "$firstRunDisclaimer\n\n$LICENSE_TEXT\n\n$ACCEPT"
 
     /** Debrief text / PDF. Same core as first-run, without the click-through line. */
     fun report(window: DebriefWindow? = null): String {

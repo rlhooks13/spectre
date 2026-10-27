@@ -1468,7 +1468,7 @@ private fun CreditFooter() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            LanguageText.text("ui.copyright.c.2026.off"),
+            LanguageText.text("ui.copyright.spectre"),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

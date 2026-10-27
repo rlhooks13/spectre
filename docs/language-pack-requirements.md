@@ -207,7 +207,7 @@ Show the import door once, before the disclaimer, when the phone language is not
 
 The door says that Fieldwatch is in English, and that the user can import a language-pack file if they already have one. It does not say a pack is waiting to be downloaded.
 
-The door also shows this official sentence: "Language packs are made by other people. They are not reviewed or certified by Off Grid Pete LLC."
+The door also shows this official sentence: "Language packs are made by other people. They are not reviewed or certified by the Spectre contributors."
 
 That sentence, the AI sentence, and the rest of the door are compiled into the APK. They are not pack keys. A pack must not be able to replace, shorten, or hide them. The import door is English.
 
@@ -235,7 +235,7 @@ The confirm dialog shows:
 - How many English lines will stay English.
 - How many lines in the file were ignored, including lines that were too long for their slot.
 - How many keys are new since this pack, when `writtenFor` is present and comparable. That count is the keys added after that version which this pack does not translate. Those keys are included in the stay-English count. Omit this line when `writtenFor` is missing or not a version the app can compare. A mismatch still does not reject the pack.
-- The same official sentence as the door: "Language packs are made by other people. They are not reviewed or certified by Off Grid Pete LLC." This sentence is compiled into the APK and is not a pack key. The pack cannot replace it.
+- The same official sentence as the door: "Language packs are made by other people. They are not reviewed or certified by the Spectre contributors." This sentence is compiled into the APK and is not a pack key. The pack cannot replace it.
 
 The buttons are Import and Cancel. Cancel leaves the current language alone. Import replaces the whole pack. It does not merge. A key that was translated before, and is absent from the new pack, returns to English.
 
