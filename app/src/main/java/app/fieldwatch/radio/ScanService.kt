@@ -519,7 +519,7 @@ class ScanService : LifecycleService() {
         val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(
             NotificationChannel(CHANNEL, "Scanning", NotificationManager.IMPORTANCE_LOW).apply {
-                description = LanguageText.text("ui.passive.wi.fi.bluetooth")
+                description = LanguageText.text("ui.scan.status.channel")
                 setShowBadge(false)
             },
         )

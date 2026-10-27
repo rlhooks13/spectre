@@ -300,10 +300,9 @@ Max collection (battery is the cost) — full walk-through:
                rotate size (rotating file is JSON lines; Format is on
                Reports → Log), Watchlist, Named radios (custom name +
                Observer notes). Footer: Spectre version · Catalog N.
-               Update stock catalog from GitHub needs internet and
-               currently downloads upstream Fieldwatch's stock pack; replaces
-               stock rows (Extra attention too); bookmarks stay. Offline:
-               Import signatures. GPS tagging, Online place names and maps, Keep screen
+               New stock catalogs ship inside app updates; the in-app
+               catalog update is off until a signed update returns.
+               Import signatures works offline. GPS tagging, Online place names and maps, Keep screen
                on, Watchlist alerts, and Beep ship on. Voice on watched
                signature ships off. Beep and Voice are independent:
                pip, spoken phrase, or both. What to say (while Voice is

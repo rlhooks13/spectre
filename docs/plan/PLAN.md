@@ -205,6 +205,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Sensor list: ship `scripts/build_sensors.py` (Overpass, ODbL license file, "© OpenStreetMap contributors" in the UI and exports), or turn the layer off.
    - dontgetflocked: show its operator and terms before download, cap the size, validate the schema. The agent handles only counts and hashes from it.
    - Add a region notice for camera alerts (DE/CH/FR restrictions).
+   - Split into sub-steps:
+     - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
+     - **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream.
+     - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation.
+     - **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
    - Unit tests, lint, unsigned `assembleRelease`, `assembleStaging`, wrapper validation, a test-count guard summed across modules.

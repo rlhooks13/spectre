@@ -28,8 +28,8 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 | Path | What it is |
 |---|---|
-| `dist/fieldwatch-signatures.json` | Stock catalog for 1.1.11 catalog updates (catalog 77; legacy format) |
-| `dist/fieldwatch-signatures-v2.json` | Stock catalog for 1.1.12+ catalog updates |
+| `dist/fieldwatch-signatures.json` | Stock catalog pack, legacy format (catalog 77), for Import signatures |
+| `dist/fieldwatch-signatures-v2.json` | Stock catalog pack for Import signatures. The in-app catalog update is off until it returns signed (Phase 4) |
 | `dist/fieldwatch-sensors.geojson.gz` | Other-sensors list. OpenStreetMap contributors, ODbL 1.0. See `dist/fieldwatch-sensors.txt` |
 | `dist/instruction.txt` | Install card: permissions, first launch |
 | [`CHANGELOG.md`](CHANGELOG.md) | What's new in each build |
@@ -41,7 +41,7 @@ Spectre is provided as-is under the MIT License, without warranty of any kind. U
 
 - There's no guarantee that trackers, cameras, tags, access points or any other device will be found, named or reported. Radios that are off, cellular-only, asleep, randomized, quiet, or outside what the phone's OS exposes won't appear. Each phone has its own radios, firmware, scan limits and battery policies, and software can't fix those.
 - Pattern matches, GPS co-travel ("Moving with you" / "possible tail"), Debrief text and AI Export output are hypotheses: not identity, not a legal finding, and not a complete RF capture. You're responsible for how you use the app and for following local law.
-- Location stamps are this phone at hear-time, not the other radio. There's no Spectre server. Stamps stay on the phone until you share them. Logs keep full coordinates even when Privacy mode masks the screen and sit reports. Sharing a Debrief, a sit compare, an AI Export (sit or one radio), a radio-detail Share as text, or a log can take that path off the phone. A TAK/CoT feed, when you turn it on, sends markers onto the LAN. Online place names use the system geocoder (often the phone maker's or Google's network), and online map tiles, the sensor list and the catalog update fetch over the network when you use them. How you store, share or publish those files is up to you.
+- Location stamps are this phone at hear-time, not the other radio. There's no Spectre server. Stamps stay on the phone until you share them. Logs keep full coordinates even when Privacy mode masks the screen and sit reports. Sharing a Debrief, a sit compare, an AI Export (sit or one radio), a radio-detail Share as text, or a log can take that path off the phone. A TAK/CoT feed, when you turn it on, sends markers onto the LAN. Online place names use the system geocoder (often the phone maker's or Google's network), and online map tiles and the sensor list fetch over the network when you use them. How you store, share or publish those files is up to you.
 - Don't use it in any situation where safety is in question.
 
 ## What Spectre is not
