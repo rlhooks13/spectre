@@ -1,6 +1,9 @@
 package app.fieldwatch.domain
 
-/** Compile-time switches for features that are off until a later PLAN step turns them on. */
+/**
+ * Compile-time switches for features that are off until a later PLAN step turns them on. Every switch that changes
+ * detection or what is sent belongs here, as a `const val` Boolean: the release notes list these (P0-8d).
+ */
 object Features {
     /**
      * "Update stock catalog from GitHub". Off until Phase 4 (P4-6) brings back a signed,

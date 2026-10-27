@@ -66,9 +66,11 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - **Signatures:** added or removed, renamed, reclassed, on or off, attention notes, rules added or retired, decodes, notes.
     - **Verdicts:** every match-corpus case whose hits differ.
     - **Switches:** the Features flag states.
+  - **Details:** the diff includes cluster settings and rule switches; verdicts run each case as a live group and compare class and attention too.
   - **How it's used:**
-    - `-PreleaseNotes=X.Y.Z -PreleaseFromCatalog=<N>` writes the block into `docs/release-notes/X.Y.Z.md`, which release.yml already publishes. Hand-written text around the block is kept.
-    - `ReleaseNotesTest` checks every committed notes file's signature section against the snapshots.
+    - `-PreleaseNotes=X.Y.Z` writes the block into `docs/release-notes/X.Y.Z.md`, which release.yml already publishes. Hand-written text around the block is kept.
+    - Releases chain: each block starts where the previous release's ended (v97 first), so no catalog version goes unlisted.
+    - `ReleaseNotesTest` checks the chain and every signatures section against the snapshots, and tests write, refresh and tamper detection in a temp folder.
     - The golden `release/since-v97.md` shows the next release's list, so catalog PRs show their changes there.
   - **Build:** `catalog/` and `docs/release-notes/` are now Test task inputs. Before this, a hand edit to them left the tests up to date and unchecked; found while testing this check.
   - **Owner follow-ups** (protected files):

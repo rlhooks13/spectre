@@ -12,8 +12,8 @@
 
 ### Verdict changes in the test corpus
 
-- Galaxy phone advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
-- Galaxy Buds advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
+- Near miss: Galaxy phone advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
+- Near miss: Galaxy Buds advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
 
 ### Feature switches
 
