@@ -244,7 +244,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Debrief text for 6 sits, including late-joining and tag-in-bag-from-start cases
   - every export format, CoT, the 3 AI prompts, and both packs
   - decoding of real 1.1.32 files, which become the importer's fixtures
-- **P1-A4 Match corpus.**
+- ✅ **P1-A4 Match corpus** (`MatchCorpus`, `MatchCorpusTest`). Near-misses that still hit name the 1B step that fixes them (`knownUntil`); that step's PR removes the marker.
   - Positives are **generated automatically** from each signature's rules.
   - Hand-written near-misses cover the confusers only:
     - Galaxy phone and Buds (0x0075)
