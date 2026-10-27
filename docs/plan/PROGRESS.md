@@ -2,16 +2,16 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-A1** (unblocked: #32, the owner-signed #6, merged). It adds dependencies, so it edits `verification-metadata.xml` and is a protected PR the owner signs. Then A2 → A3 → 1B–1E. Also next:
-  - **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved) after #33 (the owner PR adopting #10) merges. Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`.
+- Current step: **P0-4e** (applicationId `io.github.rlhooks13.spectre`, approved; unblocked now that #33 merged). Protected parts, such as release.yml's aapt2 package check, are drafted in `docs/setup/workflows/`. Also:
+  - **P1-A1** is PR #38, a protected PR (verification metadata, approved dependencies, baseline 807) waiting for the owner's signature. A2 → A3 → 1B–1E follow once it merges.
+  - **P2-1** (build-logic) is unblocked by the dependency list.
   - **P0-8d** after P1-B1.
-  - **Don't push** to `p0/3*` (#6), `p0/4d-spectre-disclaimer` (#10), `p0/8a-ci-workflow-draft` (#19) or `p0/8b-release-workflow-draft` (#20). The owner is adopting them and will close them.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** #33 (#10), #34 (#20), #37 (#19), #35 (CLAUDE.md key rule, build plugins) and #36 (staging test keystore) merge when green; the P0-7c layer choice.
+  - **Waiting on the owner:** signing #38 (P1-A1); the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `main` (no work in progress)
@@ -21,13 +21,8 @@
 - Last cycle: 2026-10-27T16:40Z
 
 ## Needs human (owner)
-**In progress by the owner (2026-10-27).** These come as owner-signed PRs from the host. The agent waits and doesn't push to the original branches.
-- **#32 (adopting #6) merged; #6 closed.** In CI, merged by the owner when green:
-  - #33 (adopting #10);
-  - #34 (adopting #20);
-  - #37 (adopting #19: the CI workflow, baseline 804, `app/lint-baseline.xml` protected);
-  - #35 (the CLAUDE.md language-key rule and the build plugins in `approved-dependencies.md`);
-  - #36 (the staging test keystore: alias `staging`, password `spectre-staging`).
+**For the owner:**
+- **Sign and merge #38 (P1-A1).** It adds `android-all-instrumented` and Robolectric's test-only transitive crypto (BouncyCastle, Conscrypt) to `approved-dependencies.md`. Robolectric pins SDK 34 because SDK 35 needs Java 21 and CI runs 17. Moving CI to Java 21 would allow 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
@@ -67,6 +62,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Owner PRs all merged** (relayed): #32 (#6), #33 (#10), #34 (#20), #35 (CLAUDE.md key rule, build plugins), #36 (staging test keystore), #37 (#19). #6, #10, #19 and #20 are closed. Main is e8ff4a6. #37 also raised `org.gradle.jvmargs` to `-Xmx4g -XX:MaxMetaspaceSize=1g` and `kotlin.daemon.jvmargs` to `-Xmx4g`, after the APK job's three-variant build ran out of memory at 2 GB. CI reports 854 passing tests against the 804 baseline. The release environment accepts `dryrun/v*`. P0-4e, P1-A1 and P2-1 are unblocked. P1-A1 opened as #38 (protected).
 - 2026-10-27: **Owner update,** relayed the same way:
   1. #32 (the owner-signed #6, P0-3 dependency verification) merged and #6 is closed, so **P1-A1 is unblocked**. #33 (#10), #34 (#20), #37 (#19: CI workflow, baseline 804, lint baseline protected), #35 (CLAUDE.md key rule and build plugins) and #36 (staging test keystore) are in CI; the owner merges each when green.
   2. **Correction to point 3 below:** no branch-delete allow rule is coming, and none is needed. GitHub auto-deletes merged head branches; the stale branches were remote-tracking refs, cleaned with `git fetch --prune`. The only leftover remote agent branch, `p0/language-pack-cap` (no PR), was superseded by P0-4g (#17) and is listed for the owner to delete.
