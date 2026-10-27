@@ -20,7 +20,8 @@ question. Full notice: the disclaimer the app shows on first launch.
 Spectre is not on the Play Store. You install the APK yourself (sideload),
 or let Obtainium track the GitHub releases for you.
 
-Copyright (c) 2026 Off Grid Pete LLC (see LICENSE for the current notice)
+Copyright (c) 2026 Off Grid Pete LLC
+Copyright (c) 2026 the Spectre contributors
 
 License: MIT License. AndroidX/Kotlin remain Apache-2.0; IEEE and
 Bluetooth SIG lookup tables have their own terms (NOTICE). Full text:
@@ -437,4 +438,5 @@ Field Playbooks, Debrief / AI Export (sit-level and one-radio on detail;
 RAM window and trip strategy §11.4.1).
 
 Spectre    https://github.com/rlhooks13/spectre
-Copyright (c) 2026 Off Grid Pete LLC (see LICENSE for the current notice)
+Copyright (c) 2026 Off Grid Pete LLC
+Copyright (c) 2026 the Spectre contributors
