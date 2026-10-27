@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4c (upstream social links), PR #9 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-5 (language packs). P0-4d is a protected PR the agent drafts for the owner.
-- Branch: `p0/4c-social-links`
+- Current step: P0-5 (language packs), on branch `p0/5-language-packs`; check `gh pr list --head p0/5-language-packs` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-4f (README and docs rebrand), then P0-6 (BrandGuard).
+- Branch: `p0/5-language-packs`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T08:03Z
+- Last cycle: 2026-10-27T08:30Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,25 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4c Upstream social links.** PR #9.
+- 2026-10-27: **P0-5 Language packs.** Branch `p0/5-language-packs`.
+  - New `scripts/rebrand_packs.py` (`python -I`, UTF-8, LF).
+    - It rewrites only `"key": "value"` lines inside `strings`, and only where "Fieldwatch"/"FIELDWATCH" stands alone or starts a hyphen compound.
+    - It leaves keys, metadata (`format`, `writtenFor`) and layout alone, checks the JSON before and after, and lists inflected forms per language.
+    - `--check` makes no changes and exits 1 if anything still needs the plain rebrand.
+  - Ran on all 26 bundled packs: 1,288 lines changed, same keys.
+  - 39 inflected forms fixed by hand:
+    - da: Spectres.
+    - et: Spectre (genitive), Spectrel, Spectrega, Spectrele, SPECTRE.
+    - fi: Spectren, Spectreen, Spectrelle.
+    - hu: Spectre-nek, Spectre-rel, Spectre-t (hyphenated, as Hungarian does for foreign names).
+    - tr: Spectre’ın, Spectre’ı.
+  - New `BrandTest.noBundledPackNamesTheUpstreamApp` checks all 26 packs (case-sensitive; the lowercase app id stays until P0-4e).
+  - Disclaimer: packs don't translate it; it's compiled English, so the English disclaimer is what users see (the step's condition holds).
+  - Upstream's copyright and footer text in packs stays under the old keys, which PR #10 retires in favor of new ones.
+  - Result: 773 tests green.
+  - PLAN: added P0-4f (README and docs rebrand), which code review asked for on PR #10.
+- 2026-10-27: **P0-4d Disclaimer and legal copy.** PR #10, protected, waiting for the owner's review and signature. It proposes the liability, LICENSE, NOTICE, copyright-line, PDF-footer and language-pack-sentence wording (see the PR table). The two changed attribution lines got new keys (`ui.copyright.spectre`, `ui.footer.operationally.sensitive`), so stale translations can't override them. `DISCLAIMER_REV` goes to 4.
+- 2026-10-27: **P0-4c Upstream social links.** PR #9, merged as `029f39c`.
   - Removed the Settings credit footer's Instagram (`instagram.com/OffGridPete`) and X (`x.com/OGridPete`) chips, the now-unused `SocialChip` composable, and `ic_instagram.xml` and `ic_x.xml`. The footer keeps the copyright line, which P0-4d settles.
   - The language keys `ui.offgridpete.label` and `ui.ogridpete.label` stay (keys are never removed). Their English values change from the upstream handles to "Unused", so the exported template no longer carries them.
   - Removed the now-dead `openUrl` and five unused imports.
