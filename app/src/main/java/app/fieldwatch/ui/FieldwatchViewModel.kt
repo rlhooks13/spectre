@@ -1134,7 +1134,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             val batch = try {
                 PathTiles.load(
                     app, samples,
-                    onlineLookup = true,
                     basemap = basemap,
                     mapKey = keyFor(basemap),
                     overlays = overlays,
@@ -1227,7 +1226,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             val batch = try {
                 PathTiles.load(
                     app, samples,
-                    onlineLookup = true,
                     basemap = basemap,
                     mapKey = keyFor(basemap),
                     overlays = overlays,
@@ -1398,7 +1396,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     north = ticket.north,
                     west = ticket.west,
                     east = ticket.east,
-                    onlineLookup = true,
                     basemap = ticket.basemap,
                     mapKey = keyFor(ticket.basemap),
                     overlays = ticket.overlays,
@@ -1536,7 +1533,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     north = box[1],
                     west = box[2],
                     east = box[3],
-                    onlineLookup = true,
                     basemap = ticket.basemap,
                     mapKey = keyFor(ticket.basemap),
                     overlays = ticket.overlays,
@@ -1657,7 +1653,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                         north = box[1],
                         west = box[2],
                         east = box[3],
-                        onlineLookup = true,
                         basemap = basemap,
                         mapKey = keyFor(basemap),
                         overlays = overlays,
@@ -3048,7 +3043,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
         val settings = app.config.settings
         val batch = PathTiles.load(
             app, samples,
-            onlineLookup = settings.onlineLookup,
             forPrint = true,
             basemap = settings.mapBasemap,
             mapKey = keyFor(settings.mapBasemap),
@@ -3114,7 +3108,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 val batch = runCatching {
                     PathTiles.load(
                         app, walk,
-                        onlineLookup = settings.onlineLookup,
                         basemap = settings.mapBasemap,
                         mapKey = keyFor(settings.mapBasemap),
                         overlays = settings.mapOverlays,
@@ -3132,7 +3125,6 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     val batch = runCatching {
                         PathTiles.load(
                             app, samples,
-                            onlineLookup = settings.onlineLookup,
                             basemap = settings.mapBasemap,
                             mapKey = keyFor(settings.mapBasemap),
                             overlays = settings.mapOverlays,

@@ -1,6 +1,8 @@
 package app.fieldwatch.data
 
 import app.fieldwatch.BuildConfig
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.FlockApproach
 import app.fieldwatch.domain.FlockCamera
 import app.fieldwatch.domain.FlockParseException
@@ -146,7 +148,7 @@ object FlockFiles {
     fun probe(dir: File, list: SensorList = SensorList.PLATES): Probe {
         if (list.url.isBlank()) return Probe.FAILED
         val saved = peek(dir, list)?.etag.orEmpty()
-        val conn = open(list, "HEAD", ifNoneMatch = null)
+        val conn = open(list, "HEAD", ifNoneMatch = null) ?: return Probe.FAILED
         return try {
             val code = conn.responseCode
             if (!servedFromSource(conn.url, list)) return Probe.FAILED
@@ -172,7 +174,7 @@ object FlockFiles {
         val savedEtag = header?.etag?.takeIf {
             it.isNotEmpty() && (!list.refillFlockOnly || header.version >= ALL_PLATES)
         }
-        val conn = open(list, "GET", savedEtag)
+        val conn = open(list, "GET", savedEtag) ?: return Fetch.Failed
         val tmp = File(dir, "${list.fileName}.download")
         tmp.delete()
         return try {
@@ -236,7 +238,9 @@ object FlockFiles {
         return finalUrl.protocol == "https" && (host == source || host.endsWith(".$source"))
     }
 
-    private fun open(list: SensorList, method: String, ifNoneMatch: String?): HttpURLConnection {
+    /** Null when NetworkPolicy refuses; nothing is sent. */
+    private fun open(list: SensorList, method: String, ifNoneMatch: String?): HttpURLConnection? {
+        if (!NetworkPolicy.allows(Egress.SENSOR_LIST)) return null
         return (URL(list.url).openConnection() as HttpURLConnection).apply {
             instanceFollowRedirects = true
             connectTimeout = 15_000

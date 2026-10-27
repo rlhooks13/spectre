@@ -107,6 +107,8 @@ fun DeviceDetailScreen(
     val placeStreets by vm.placeStreetNames.collectAsStateWithLifecycle()
     LaunchedEffect(device.key) { vm.refreshPlaceStreets(device) }
     val familyHint by vm.familyHint.collectAsStateWithLifecycle()
+    // Collected, not read with .value, so the range and decoded fields follow the phone and the catalog.
+    val ui by vm.ui.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -498,8 +500,8 @@ fun DeviceDetailScreen(
             if (device.kind == RadioKind.BLE || device.kind == RadioKind.WIFI) {
                 val aircraft = device.payloadAircraft?.trim().orEmpty()
                 if (aircraft.isNotEmpty()) Meta(LanguageText.text("ui.aircraft.label"), aircraft)
-                val phoneLat = vm.ui.value.phoneLat
-                val phoneLon = vm.ui.value.phoneLon
+                val phoneLat = ui.phoneLat
+                val phoneLon = ui.phoneLon
                 if (PayloadLocation.validCoord(device.payloadLat, device.payloadLon)) {
                     Geo.screenCoord(device.payloadLat, device.payloadLon, demoMode)?.let {
                         Meta(LanguageText.text("ui.aircraft.position"), it)
@@ -522,8 +524,8 @@ fun DeviceDetailScreen(
                         Text(range, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
-                val fleets = vm.ui.value.fleets
-                val decoded = remember(device.key, device.facts, device.fleetIds) {
+                val fleets = ui.fleets
+                val decoded = remember(device.key, device.facts, device.fleetIds, fleets) {
                     SignatureFieldDecoder.decodeSighting(device, fleets)
                 }
                 val mapped = device.fleetIds.mapNotNull { id -> fleets.find { it.id == id && it.decode != null } }

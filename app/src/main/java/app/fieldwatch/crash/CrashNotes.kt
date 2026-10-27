@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import androidx.annotation.RequiresApi
 import app.fieldwatch.BuildConfig
 import java.io.File
 import java.io.PrintWriter
@@ -95,6 +96,7 @@ object CrashNotes {
         return Exit(record.timestamp, text)
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun traceOf(record: android.app.ApplicationExitInfo): String {
         val bytes = runCatching {
             record.traceInputStream?.use { input ->

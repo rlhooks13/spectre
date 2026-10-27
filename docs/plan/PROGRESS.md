@@ -2,14 +2,24 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7d (camera-alert region notice), on branch `p0/7d-camera-region-notice`; check `gh pr list --head p0/7d-camera-region-notice` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #17 and ready to sign once its CI is green), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c).
-- Branch: `p0/7d-camera-region-notice`
+- Current step: P1-A8 (inherited lint errors), on branch `p1/a8-lint-errors`; check `gh pr list --head p1/a8-lint-errors` for the PR.
+  - **Then:** P1-A4 (match corpus), then P1-A5.
+  - **Deferred:** P1-A1 and P1-A2 wait for #6, and P0-8d for P1-B1's snapshots.
+  - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
+- **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
+- Branch: `p1/a8-lint-errors`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T11:05Z
+- Last cycle: 2026-10-27T13:20Z
 
 ## Needs human (owner)
+- PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
+- PR #20 (P0-8b):
+  - Review `docs/setup/workflows/release.yml`, sign it, and copy it to `.github/workflows/release.yml`.
+  - Add `dryrun/v*` to the `release` environment's allowed deployment tags.
+  - Leave `dryrun/v*` out of the `release-tags` ruleset, so scratch tags can be deleted.
+- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys go in `LanguageKeyRevisions` at the newest revision, and the first key-adding PR after a release raises `NEWEST` (ADR-0013). Also, after P0-8c, dev builds are versionCode 43 until the first release. The phone's staging build is still code 42 and installs over normally. Nothing else needs a downgrade.
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
@@ -54,7 +64,120 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7d Camera-alert region notice.** Branch `p0/7d-camera-region-notice`.
+- 2026-10-27: **P1-A8 Inherited lint errors.** Branch `p1/a8-lint-errors`. `lintDebug` now reports 0 errors with no baseline.
+  - **Order:** taken before P1-A4 so #19 can drop its lint baseline before the owner signs it, rather than after.
+  - **BLE hardening:** reading `BluetoothDevice.bluetoothClass` needs BLUETOOTH_CONNECT on Android 12+.
+    - **Before:** without the grant it threw, and `guardCallback` dropped the whole scan result.
+    - **When it can happen:** scanning only starts once CONNECT is granted, and a revoke normally kills the process. So this mostly affects a sticky `ScanService` restarting after CONNECT alone was revoked, or OEM permission splits.
+    - **Now:** `deviceClassOf()` catches `SecurityException` and leaves the class unknown.
+    - **No test yet:** it needs Robolectric or a fake `BluetoothDevice`, so it lands with P1-A1.
+  - **Location:** `FieldwatchApp.startLocationUpdates`/`seedLastKnown` get `@SuppressLint("MissingPermission")`, with the reason: each checks `hasFineLocation()` on entry (`seedLastKnown` now checks it itself too), and `runCatching` wraps each call.
+  - **API 30:** `CrashNotes.traceOf` and `WifiIeParser.ieBytes` get `@RequiresApi(R)`. Their callers already return before API 30, and lint now verifies that.
+  - **Compose:** `DeviceDetailScreen` collects `vm.ui` as state instead of reading `.value`, so the range to the payload follows the phone's fix. The decoded fields' `remember` now keys on `fleets` too, so they follow catalog edits.
+  - **#19:** drop `app/lint-baseline.xml`, the `lint {}` block, and the baseline-growth guard once this merges (the next #19 sync).
+- 2026-10-27: **P1-A7 merged** as `a852ad1` (PR #23).
+- 2026-10-27: **P1-A7 NetworkPolicy (ADR-0014).** PR #23. Branch `p1/a7-network-policy`.
+  - **Survey:** a read-only survey found exactly five egress points: `PathTiles.fetchTile`, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher.send`. There's no WebView, DownloadManager or HTTP library.
+  - **`NetworkPolicy.allows(Egress)`** is checked inside each, against the settings `ConfigStore` publishes on every change. It denies everything before settings load.
+  - **Rules:**
+    - tiles need `onlineLookup`;
+    - place names need `onlineLookup` and not Privacy;
+    - the catalog follows its feature flag;
+    - sensor lists are allowed, because the dialog is the consent;
+    - TAK publish needs `takEnabled` and not Privacy;
+    - TAK retract is always allowed, because it withdraws spots already sent.
+  - **Hard-coded tiles:** `PathTiles` now asks the policy itself, and its `onlineLookup` parameter is gone. That removes the five hard-coded `true`s, and the gaps where a queued window or pan prefetch ran on a stale `online` snapshot.
+  - **TAK DNS:** the host lookup in `destinations()` asks the policy too.
+  - **Ladder:** the V17 (re-enable built-in signatures), V19 (`tagLocation`) and V20 (`keepScreenOn` + `onlineLookup`) bodies are deleted. The version bumps stay.
+  - **`ConfigStore`:**
+    - It gains an internal `File` constructor for tests.
+    - It sets the policy before it publishes a config.
+    - `NetworkPolicy.settings` is `internal set`.
+  - **Tests:**
+    - `NetworkPolicyTest` covers the rules.
+    - `EgressInventoryTest` checks every non-test source set, `.kt` and `.java`, for sockets, streams, DNS, geocoder, web and HTTP clients. It also checks the policy call in each egress file, and that nothing hard-codes `onlineLookup = true`.
+    - `SettingsLadderTest` upgrades a V16 config: `onlineLookup`, `tagLocation` and `keepScreenOn` stay off, and the policy sees the loaded settings.
+  - **Lint:** 9 errors, all the inherited ones (no baseline on `main` until #19).
+  - **Follow-ups (ADR-0014 "Not covered"):**
+    - V30 still re-enables every fleet once, as part of its filter migration.
+    - Redirects are checked only after the request.
+    - Tombstones go to the current TAK host.
+    - A switch-off mid-request can be reported as a plain failure.
+    - The OS network location provider is outside the policy.
+- 2026-10-27: **P0-8c merged** as `3be1048` (PR #22). P0-8d now waits for P1-B1's catalog snapshots. P1-A1 and P1-A2 wait for #6, so new dependencies don't break its verification metadata.
+- 2026-10-27: **P0-8c Version from the git tag (ADR-0002).** PR #22. Branch `p0/8c-version-from-tag`.
+  - **How:** `app/build.gradle.kts` reads git through `providers.exec`.
+    - **Clean tagged commits:** a commit tagged `vX.Y.Z` or `dryrun/v0.0.Z` (Z ≥ 1) builds as that version.
+    - **Which tag:** a tag-triggered CI run uses `GITHUB_REF_NAME`; otherwise the numerically highest valid tag on HEAD wins.
+    - **Other builds** are `X.Y.Z-dev+<sha12>[.dirty]`, from the highest valid `v*` tag HEAD descends from. A malformed tag is skipped.
+    - **versionCode** is X·1,000,000 + Y·1,000 + Z. Before the first release it's 43, one above the inherited 42, so builds still install over the old ones.
+    - **No git:** a missing git, or git that fails, logs a warning and builds as `0.0.0-dev+unknown.dirty`.
+  - **Checked** with local-only tags, each deleted at once:
+
+    | Tags | Built as | Code |
+    |---|---|---|
+    | `dryrun/v0.0.7` | 0.0.7 | 7 |
+    | `v0.1.0` on HEAD | 0.1.0 | 1000 |
+    | `v0.1.0` + `v0.1.2` on HEAD | 0.1.2 | |
+    | `v0.1.0` on HEAD~1 | `0.1.0-dev+<sha>` | 1000 |
+    | `v0.1.0` on HEAD~2, malformed `v0.2.0-rc1` on HEAD~1 | `0.1.0-dev+<sha>` | 1000 |
+    | none, uncommitted changes | `0.0.0-dev+<sha>.dirty` | 43 |
+  - **User-Agent** drops SemVer build metadata, so dev builds don't send their commit (`BrandTest`).
+  - **Device:** the debug build launches with no crashes. The first draft gave versionCode 1 and needed `install -r -d`. The phone now has that build, so the next debug install needs `-d` once more to go from 1 to 43.
+  - **Drafts updated:** #19's APK job gets `fetch-depth: 0`. #20 rejects `dryrun/v0.0.0`, and its stale comment about "1.1.32" is gone.
+  - **Unblocks** #20's version check. The first real tag must be `v0.1.0`, which needs P0-8d notes or a hand-written `docs/release-notes/0.1.0.md`.
+  - **Rebutted:**
+    - "Dev names sort below their release": ADR-0002 defines `X.Y.Z-dev+<sha>`, and dev builds aren't distributed.
+    - "No unit test for the tag logic": the logic lives in the build script. Moving it to `buildSrc` needs a plugin that `approved-dependencies.md` doesn't list (P2-1). Dry-run tags exist to test the pipeline without burning a version.
+- 2026-10-27: **P0-4h merged** as `949cd0c` (PR #21). PR #10 is re-synced: its two keys `ui.copyright.spectre` and `ui.footer.operationally.sensitive` go in `LanguageKeyRevisions` at revision 6, so the revision-6 count becomes 8. The merge conflicted in the requirements doc; I kept main's "new since" wording and #10's "Spectre contributors" sentence.
+- 2026-10-27: **P0-4h Language key revision (ADR-0013).** PR #21. Branch `p0/4h-language-key-revision`.
+  - **Why now:** P0-8c makes the versionName 0.x, so the old `addedIn` "1.1.27" vs `writtenFor` comparison would count every key as new for any Spectre-made pack.
+  - **Change:** `EnglishLine.addedIn` (String) → `revision` (Int), from the new `LanguageKeyRevisions` table.
+    - Each release commit was diffed for keys: 1 = 1.1.27 (1,099), 2 = 1.1.28 (5), 3 = 1.1.29 (2), 4 = 1.1.31 (53), 5 = 1.1.32 (69), 6 = Spectre Phase 0 (6). `KEY_REVISION = 6`.
+    - Revision 1 is frozen by a SHA-256 of its sorted keys, checked independently against `3ebda52`'s key set.
+  - **Templates:** they write `keyRevision`, which is optional, so `formatVersion` stays 1. The app reads it leniently: a bad value drops the count, not the pack.
+  - **Fieldwatch packs** have no `keyRevision`, so their `writtenFor` maps through the release table. Before 1.1.27 → 0; after 1.1.32, or 0.x → no count.
+  - **Behavior change:** "new since" is now right for packs from every Fieldwatch release. A 1.1.27 pack reports up to 135 new keys; it reported 0 before.
+  - **First review round:** both reviews caught that the draft lumped 1.1.28–1.1.32 into revision 1, and that a defaulted revision let new keys slip in as old. Both are fixed.
+  - **Docs:** the author guide, the requirements doc and the manual builder are updated. New test `LanguageKeyRevisionTest`; `confirmCountsAndNewSince` is updated.
+  - **Bookkeeping:** this PR also carries the PLAN and PROGRESS entries for #18–#20. They were stripped from #19 so the protected PRs don't conflict.
+  - **#10's keys:** #10's two new keys go in the table at revision 6 when it's re-synced.
+- 2026-10-27: **P0-8b Release workflow draft.** PR #20 (protected; the owner signs it and copies it to `.github/workflows/release.yml`). Branch `p0/8b-release-workflow-draft`.
+  - **Tags:** `vX.Y.Z` for a real pre-release, and `dryrun/v0.0.Z` for a draft-only scratch run (the Phase 0 exit check).
+  - **Job A "Build"** (no secrets):
+    - The tag must be SemVer with X, Y and Z ≤ 999, sit on `main`, and (for `v*`) be the next version after the last published release, or 0.1.0 for the first release.
+    - `--no-daemon` build, then aapt2 checks that the versionCode and versionName match the tag.
+    - A real release needs `docs/release-notes/X.Y.Z.md`.
+  - **Job B "Sign and publish"** (`release` environment, no checkout, no Gradle):
+    - Re-derives the version from the tag.
+    - aapt2 checks package `app.fieldwatch` (P0-4e updates it), the version, and not debuggable.
+    - Signs with the PKCS12 secret, deletes the key and unsets the secrets.
+    - Requires exactly one signer whose SHA-256 equals `vars.SPECTRE_CERT_SHA256`.
+    - Publishes with `gh release create --verify-tag`: a pre-release, or a draft for dry runs. The hash block leads the notes, and notes with `<!--` or their own hash lines are refused.
+    - One concurrency group per tag.
+  - **Fails closed until P0-8c:** the build still hard-codes versionName 1.1.32, so the version check fails.
+  - **Not yet:**
+    - P0-8d, the notes generator.
+    - Pinning the SDK packages.
+    - A composite action for the SDK step, which has three copies.
+- 2026-10-27: **P0-8a CI workflow draft.** PR #19 (protected; the owner signs it and copies it into `.github/workflows/android.yml`). Branch `p0/8a-ci-workflow-draft`.
+  - **Steps:** wrapper validation, unit tests, a test-count guard (passing tests summed over every module's results vs `test-baseline.txt`), `lintDebug`, unsigned `assembleRelease` with an apksigner check that it stays unsigned, and `assembleStaging` uploaded as `spectre-staging-apk`.
+  - **Pins:** actions pinned by SHA (checkout v4.2.2, setup-java v4.9.1, gradle/actions v4.4.4, upload-artifact v4.6.2). Job names "Unit tests" and "APK" are unchanged.
+  - **Lint baseline:** lint found 9 inherited errors (MissingPermission ×4, NewApi ×2 inside `runCatching`, StateFlow value in composition ×3).
+    - `app/lint-baseline.xml` records only those 9 (warnings aren't baselined, so they stay visible).
+    - A CI guard fails if the file grows against the base branch, or if the report holds an error the baseline doesn't cover.
+    - P1-A8 clears the file before Phase 2 moves anything. Entries match by path.
+  - **Reviews:**
+    - **The test-count guard was tightened.** It now counts debug test cases once each by (module, class, name), fails when it finds no results, and reads the baseline from a line that is only a number.
+    - **Unsigned release.** The release check now requires exactly `app-release-unsigned.apk`. The apksigner probe could fail open.
+    - **Debug APK** is built again.
+    - **Lint** runs even after a test failure, and the APK job runs in parallel.
+    - **Staging key.** CI warns when the staging keystore is missing.
+  - **Test baseline:** `test-baseline.txt` goes 766 → 790, the current passing debug count. This conflicts trivially with PR #6 (767).
+  - **Needs human:** add `app/lint-baseline.xml` to the `protected` regex in `protected-paths.yml`.
+  - **Local checks:** `lintDebug` (0 report errors), `assembleRelease` (`app-release-unsigned.apk`) and `assembleStaging` all pass. 790 debug test cases, none failing or skipped.
+- 2026-10-27: **PR #10 checked against `main` after #18:** it merges cleanly and unit tests pass. I didn't push another merge commit; #10 still needs the owner's signature on every commit anyway.
+- 2026-10-27: **P0-7d Camera-alert region notice.** PR #18, merged as `1e87107`. Branch `p0/7d-camera-region-notice`.
   - New key `settings.layer.alert.region` (BODY). It says some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving, so check the law before turning on an alert.
   - `SensorLayerBlock` draws it under "Voice Alerts", above the switches, so every layer gets it (plate readers now; Other sensors with P1-E5).
   - Always shown, never keyed to the phone's region. It names no statute. See ADR-0012.

@@ -18,5 +18,6 @@ object Brand {
     const val LOG_TAG = "Spectre"
 
     /** HTTP User-Agent for the few network calls the app makes. */
-    fun userAgent(version: String): String = "$NAME/$version (+$REPO_URL)"
+    /** Drops SemVer build metadata (a dev build's commit), so servers see only the version. */
+    fun userAgent(version: String): String = "$NAME/${version.substringBefore('+')} (+$REPO_URL)"
 }

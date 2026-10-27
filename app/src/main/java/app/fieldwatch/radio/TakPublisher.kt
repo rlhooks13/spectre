@@ -2,6 +2,8 @@ package app.fieldwatch.radio
 
 import android.util.Log
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Egress
+import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.CotEvent
 import app.fieldwatch.domain.Fleet
@@ -447,7 +449,7 @@ class TakPublisher {
         if (last.isEmpty() && parked.isEmpty()) return
         val host = settings.takHost.trim().ifBlank { TakDefaults.HOST }
         val port = settings.takPort.coerceIn(1, 65_535)
-        val dests = destinations(host, port)
+        val dests = destinations(host, port, Egress.TAK_RETRACT)
         if (dests.isEmpty()) return
         val spots = LinkedHashMap<String, TakSent>()
         last.forEach { (uid, spot) -> spots[uid] = spot }
@@ -459,13 +461,15 @@ class TakPublisher {
             } else {
                 CotEvent.tombstoneXml(uid, spot.lat, spot.lon, now)
             }
-            if (!sendAll(dests, xml.toByteArray(Charsets.UTF_8))) return
+            if (!sendAll(dests, xml.toByteArray(Charsets.UTF_8), Egress.TAK_RETRACT)) return
             last.remove(uid)
             parked.remove(uid)
         }
     }
 
-    private fun destinations(host: String, port: Int): List<Pair<InetAddress, Int>> {
+    /** Resolving the host is a DNS query, so it asks the policy for [kind] too. */
+    private fun destinations(host: String, port: Int, kind: Egress = Egress.TAK_PUBLISH): List<Pair<InetAddress, Int>> {
+        if (!NetworkPolicy.allows(kind)) return emptyList()
         val primary = runCatching { InetAddress.getByName(host) }.getOrNull() ?: return emptyList()
         val out = LinkedHashMap<String, Pair<InetAddress, Int>>()
         fun add(addr: InetAddress, p: Int) {
@@ -479,7 +483,13 @@ class TakPublisher {
         return out.values.toList()
     }
 
-    private fun sendAll(dests: List<Pair<InetAddress, Int>>, bytes: ByteArray): Boolean {
+    /** [kind] is TAK_RETRACT only for tombstones of spots already sent; everything else publishes. */
+    private fun sendAll(
+        dests: List<Pair<InetAddress, Int>>,
+        bytes: ByteArray,
+        kind: Egress = Egress.TAK_PUBLISH,
+    ): Boolean {
+        if (!NetworkPolicy.allows(kind)) return false
         var ok = false
         for ((addr, port) in dests) {
             if (send(addr, port, bytes)) ok = true
