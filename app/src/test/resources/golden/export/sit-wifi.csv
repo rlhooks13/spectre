@@ -1,2 +1,4 @@
 kind,mac,name,custom_name,observer_notes,rssi,rssi_min,rssi_max,channel,frequency_mhz,randomized,hidden,first_seen,last_seen,hits,lat,lon,extra_attention,signatures,extra_attention_families,mine
-WIFI,B4:1E:52:0A:0B:0C,Flock-1A2B,,,-55,-64,-51,6,2437,false,false,2026-10-27T11:50:00Z,2026-10-27T12:00:00Z,40,0.001200,0.002100,false,Flock Safety Cameras,Flock Safety Cameras,false
+WIFI,B4:1E:52:0A:0B:0C,Flock-1A2B,,"On the pole by the gate,
+facing the road",-55,-64,-51,6,2437,false,false,2026-10-27T11:46:00Z,2026-10-27T11:56:00Z,40,0.001200,0.002100,true,Flock Safety Cameras,Flock Safety Cameras,false
+WIFI,02:00:5E:10:00:09,Café-AP,,,-86,-95,-82,11,2462,false,false,2026-10-27T11:50:00Z,2026-10-27T12:00:00Z,2,,,false,,,false

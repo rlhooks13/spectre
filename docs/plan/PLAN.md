@@ -239,7 +239,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Pins TimeZone and Locale, resets the LanguageText overlay, and passes `now` explicitly.
   - JSON goldens are compared **after parsing**, plus one Robolectric test that pins the device's byte order.
   - One localized golden.
-- **P1-A3 Goldens:** (split into PRs: exports and CoT first, then signature matching, Debrief, the ATAK package, AI prompts and packs, 1.1.32 decoding)
+- **P1-A3 Goldens:** (split into PRs: sit exports and live CoT first, then the rotating-log exports (`LogStore` CSV/JSONL and the log map export), signature matching, Debrief, the ATAK package, AI prompts and packs, 1.1.32 decoding)
   - signature matching
   - Debrief text for 6 sits, including late-joining and tag-in-bag-from-start cases
   - every export format, CoT, the 3 AI prompts, and both packs
