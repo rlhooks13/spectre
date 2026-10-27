@@ -28,7 +28,7 @@ object BleAdParser {
             val raw = result.periodicAdvertisingInterval
             if (raw > 0) raw * 1.25 else null
         } else null
-        val deviceClass = parsed.deviceClass ?: result.device?.bluetoothClass?.let { btClass24(it) }
+        val deviceClass = parsed.deviceClass ?: deviceClassOf(result.device)
         return RadioFacts(
             txPowerDbm = txScan ?: txAdv,
             advFlags = flags,
@@ -199,6 +199,16 @@ object BleAdParser {
             ((be[12].toLong() and 0xFF) shl 24) or ((be[13].toLong() and 0xFF) shl 16) or
             ((be[14].toLong() and 0xFF) shl 8) or (be[15].toLong() and 0xFF)
         return UUID(hi, lo).toString().uppercase()
+    }
+
+    /**
+     * The cached class of device. On Android 12+ reading it needs BLUETOOTH_CONNECT. Without that grant it
+     * throws, which used to drop the whole scan result, so the device wasn't seen. Now the class is unknown.
+     */
+    private fun deviceClassOf(device: BluetoothDevice?): Int? = try {
+        device?.bluetoothClass?.let { btClass24(it) }
+    } catch (_: SecurityException) {
+        null
     }
 
     private fun btClass24(cls: BluetoothClass): Int? {

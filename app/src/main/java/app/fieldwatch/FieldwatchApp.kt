@@ -1,6 +1,7 @@
 package app.fieldwatch
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -767,6 +768,9 @@ class FieldwatchApp : Application() {
         syncLocationUpdates()
     }
 
+    // Guarded by hasFineLocation() on entry, and each request sits in runCatching, which also catches a
+    // SecurityException if the grant is revoked meanwhile. Lint can't see either guard.
+    @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
         if (locating || !hasFineLocation()) return
         val lm = getSystemService(LOCATION_SERVICE) as LocationManager
@@ -824,6 +828,8 @@ class FieldwatchApp : Application() {
         }
     }
 
+    // Callers check hasFineLocation() first, and each read sits in runCatching.
+    @SuppressLint("MissingPermission")
     private fun seedLastKnown(lm: LocationManager) {
         val now = System.currentTimeMillis()
         val cands = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
