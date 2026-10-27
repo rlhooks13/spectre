@@ -1,0 +1,50 @@
+T:airtag	target	AirTag, Offline Finding status 0x10
+  -> fleet-airtag [FINDER]
+T:smarttag	target	SmartTag on FD5A
+  -> fleet-smarttag [FINDER]
+T:tile-feed	target	Tile on FEED
+  -> fleet-tile [FINDER]
+T:tile-067c	target	Tile on its own company id 0x067C
+  -> (none)
+T:axon	target	Axon Body camera, BLE on its public OUI
+  -> fleet-axon [LAW_ENFORCEMENT, attention]
+T:flock	target	Flock camera Wi-Fi BSSID
+  -> fleet-flock-cameras [SURVEILLANCE, attention]
+T:tattile	target	Tattile camera name
+  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+T:raven	target	ShotSpotter sensor name
+  -> fleet-raven [SURVEILLANCE]
+T:vigilant	target	Motorola Vigilant name
+  -> fleet-vigilant [SURVEILLANCE, attention]
+T:cradlepoint	target	Cradlepoint IBR900 router
+  -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
+NM:galaxy	near-miss	Galaxy phone advertising Samsung 0x0075
+  -> fleet-smarttag [FINDER]
+NM:buds	near-miss	Galaxy Buds advertising Samsung 0x0075
+  -> fleet-smarttag [FINDER]
+NM:iphone-of	near-miss	Separated iPhone, Offline Finding only
+  -> fleet-airtag [FINDER]
+NM:airpods-of	near-miss	Powered-off AirPods, Offline Finding only
+  -> fleet-airtag [FINDER]
+NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
+  -> fleet-apple-device [PHONE]
+NM:tattile	near-miss	Tattile camera name
+  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+NM:quuppa	near-miss	Quuppa tag on 0x00C7
+  -> fleet-tile [FINDER]
+NM:dji	near-miss	Unnamed DJI accessory on 0x08AA (a mic or action camera, not a drone)
+  -> fleet-dji [DRONE]
+NM:google-018e	near-miss	Unnamed non-Fitbit Google LLC device on 0x018E
+  -> fleet-fitbit [WEARABLE]
+NM:raven	near-miss	Speaker named Ravenclaw
+  -> fleet-raven [SURVEILLANCE]
+NM:vigilant	near-miss	Home alarm named Vigilant
+  -> fleet-vigilant [SURVEILLANCE, attention]
+NM:ibr	near-miss	Phone hotspot named Ibrahim
+  -> fleet-apple-device [PHONE]; fleet-cradlepoint [LAW_ENFORCEMENT, attention]
+RND:Axon	random-oui	Random BLE address on Axon's OUI
+  -> fleet-axon [LAW_ENFORCEMENT, attention]
+RND:LiteOn	random-oui	Random BLE address on LiteOn's OUI
+  -> fleet-liteon-camera-radio [CAMERA]
+RND:Arlo	random-oui	Random BLE address on Arlo's OUI
+  -> fleet-arlo [CAMERA]

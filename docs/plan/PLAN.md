@@ -254,7 +254,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - a Quuppa 0x00C7 tag
     - RAVEN, Vigilant, IBR\*
     - random BLE addresses that collide with BLE-applicable OUIs (Axon, Flock, LiteOn/Arlo)
-- ✅ **P1-A5 `CatalogLintTest`** (ADR-0015). Corpus collisions are checked by pinning each hand-written case's full hit set; a golden replaces the pin once P1-A2 lands.
+- ✅ **P1-A5 `CatalogLintTest`** (ADR-0015). Corpus collisions are checked by pinning each hand-written case's full hit set; the P1-A3 golden `golden/match/corpus.txt` replaced the pin.
   - Company ids must exist in radiodb (expose `RadioDb.parse` as `internal`).
   - Bare mega-vendor MANUFACTURER_ID rules are banned (Apple, Samsung, Google, Microsoft, DJI).
   - NAME_CONTAINS needs at least 5 characters.

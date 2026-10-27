@@ -1,0 +1,14 @@
+7020 generated positives, 0 miss their own signature, 13 also hit others
+fleet-target-atrius#0 -> fleet-ibeacon
+fleet-honeywell-home#4 -> fleet-amazon
+fleet-honeywell-home#5 -> fleet-amazon
+fleet-inseego#3 -> fleet-novatel
+fleet-liteon-camera-radio#25 -> fleet-tplink
+fleet-marauder#3 -> fleet-hobby-ble
+fleet-novatel#0 -> fleet-inseego
+fleet-tattile#0 -> fleet-tile
+fleet-tattile#1 -> fleet-tile
+fleet-unifi-ap#0 -> fleet-unifi
+fleet-unifi-ap#1 -> fleet-unifi
+fleet-unifi-ap#3 -> fleet-unifi
+fleet-unifi-ap#4 -> fleet-unifi

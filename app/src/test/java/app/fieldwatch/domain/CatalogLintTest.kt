@@ -68,19 +68,10 @@ class CatalogLintTest {
     }
 
     /**
-     * Corpus collisions. Each hand-written corpus case has its full hit set pinned, and the generated
-     * positives' hits on other signatures are counted, so a rule that starts catching more shows up here.
-     * A 1B fix updates the pins in the same PR. A golden replaces this once P1-A2 lands.
+     * Corpus collisions. The generated positives' hits on other signatures must each name a step or ADR, so a
+     * rule that starts catching more fails here. Each hand-written case's full hit set is a golden
+     * (`MatchGoldenTest`, `golden/match/corpus.txt`); a 1B fix re-blesses it in the same PR.
      */
-    @Test
-    fun corpusCasesHitExactlyThePinnedSignatures() {
-        val cases = MatchCorpus.targets.map { it.sighting } + MatchCorpus.nearMisses.map { it.sighting } +
-            MatchCorpus.randomAddressOuiHits.map { it.sighting }
-        val hits = SignatureEngine().match(cases, fleets)
-        assertEquals(PINNED_HITS.keys, cases.map { it.key }.toSet())
-        for (s in cases) assertEquals(s.key, PINNED_HITS.getValue(s.key), hits.getValue(s.key))
-    }
-
     @Test
     fun generatedPositivesHitNoNewSignatures() {
         val positives = MatchCorpus.positives(fleets)
@@ -158,34 +149,6 @@ class CatalogLintTest {
             "fleet-tattile#0 -> fleet-tile" to "P1-B2",
             "fleet-tattile#1 -> fleet-tile" to "P1-B2",
             "fleet-liteon-camera-radio#25 -> fleet-tplink" to "P1-B10",
-        )
-
-        private val PINNED_HITS: Map<String, Set<String>> = mapOf(
-            "T:airtag" to setOf("fleet-airtag"),
-            "T:smarttag" to setOf("fleet-smarttag"),
-            "T:tile-feed" to setOf("fleet-tile"),
-            "T:tile-067c" to emptySet(),
-            "T:axon" to setOf("fleet-axon"),
-            "T:flock" to setOf("fleet-flock-cameras"),
-            "T:tattile" to setOf("fleet-tattile", "fleet-tile"),
-            "T:raven" to setOf("fleet-raven"),
-            "T:vigilant" to setOf("fleet-vigilant"),
-            "T:cradlepoint" to setOf("fleet-cradlepoint"),
-            "NM:galaxy" to setOf("fleet-smarttag"),
-            "NM:buds" to setOf("fleet-smarttag"),
-            "NM:iphone-of" to setOf("fleet-airtag"),
-            "NM:airpods-of" to setOf("fleet-airtag"),
-            "NM:iphone" to setOf("fleet-apple-device"),
-            "NM:tattile" to setOf("fleet-tattile", "fleet-tile"),
-            "NM:quuppa" to setOf("fleet-tile"),
-            "NM:dji" to setOf("fleet-dji"),
-            "NM:google-018e" to setOf("fleet-fitbit"),
-            "NM:raven" to setOf("fleet-raven"),
-            "NM:vigilant" to setOf("fleet-vigilant"),
-            "NM:ibr" to setOf("fleet-apple-device", "fleet-cradlepoint"),
-            "RND:Axon" to setOf("fleet-axon"),
-            "RND:LiteOn" to setOf("fleet-liteon-camera-radio"),
-            "RND:Arlo" to setOf("fleet-arlo"),
         )
 
         private fun repoFile(path: String): File {
