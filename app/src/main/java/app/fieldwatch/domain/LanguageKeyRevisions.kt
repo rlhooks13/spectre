@@ -76,6 +76,9 @@ object LanguageKeyRevisions {
             // P1-B4b: the finder-tag lines without "loud pocket Apple".
             "ui.finder.tags.class.intro", "ui.finder.tags.class.list", "ui.co.travel.split.phones",
             "ui.phone.s.joined.kept.pace", "ui.apple.device.s.path.usually", "ui.nothing.stayed.four.classes",
+            // P1-B4c: wearable lines that cover AI recorders, not only Garmin / Fitbit / Oura / Polar.
+            "ui.wearable.radios.stayed", "ui.wearables.usually.move", "ui.wearables.with.you.kinds",
+            "ui.typical.wearable.companion", "ui.typical.wearable.joined.sit", "ui.wearable.s.stayed.kinds",
         )) put(key, 6)
     }
 

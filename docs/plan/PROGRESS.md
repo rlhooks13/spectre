@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B4c Beacons and wearables by class**, after P1-B4b merges. Then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B5 Over-broad names**, after P1-B4c merges. Then B6 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b4b-finder-wording`
+- Branch: `p1/b4c-beacons-wearables-by-class`
 - Phone serial: RFCX205JR3K
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
@@ -68,6 +68,17 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B4c Beacons and wearables by class.** #59 (P1-B4b) merged as 3f73949.
+  - **The fix:** `TrackerMatch` picks BEACON and WEARABLE by the matched fleets' class, as FINDER already is; no name tokens are left in `kind` or `label`.
+    - Target's cart tag is now a beacon.
+    - Six AI recorder pendants (Bee, Fieldy, Friend, Limitless, Omi, Plaud) and Pokémon GO Plus are now wearables.
+    - `classesOf` keeps a user signature named for a beacon or wearable in that class, as for finders.
+    - The carried-Apple check skips any beacon-class match.
+  - **Wording:** six wearable lines named Garmin / Fitbit / Oura / Polar or "watch or ring". New keys cover watches, rings, bands and AI recorders, and say a recorder you don't recognize is worth a look. The old keys are "Unused", and `-PpruneLanguagePacks` removed 138 lines from the 26 packs. `ui.co.travel.split.phones` (unreleased and in no pack) changed in place.
+  - **Corpus:** new target `T:plaud`.
+  - **Goldens:**
+    - new `debrief/9-recorder-pendant-with-you.txt`;
+    - the class line in the other Debrief and prompt goldens.
 - 2026-10-27: **Owner: #43 adopted as #58 (8dd258f).**
   - #58 adopts #43 owner-signed, and #43 is closed.
   - CI counted 956 passing tests on SDK 35, which confirms that Java 17 runs SDK 35. The baseline is 956, not 858.

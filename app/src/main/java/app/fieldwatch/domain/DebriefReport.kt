@@ -529,8 +529,8 @@ object DebriefReport {
                         next(),
                         LanguageText.text("ui.wearables.label"),
                         trackerCallout(
-                            (LanguageText.text("ui.garmin.fitbit.oura.polar") + " ") +
-                                (LanguageText.text("ui.watches.rings.usually.move") + " ") +
+                            (LanguageText.text("ui.wearable.radios.stayed") + " ") +
+                                (LanguageText.text("ui.wearables.usually.move") + " ") +
                                 LanguageText.text("ui.they.not.typically.planted"),
                             wearablesWithYou,
                             customNames,
@@ -802,7 +802,7 @@ object DebriefReport {
                 beaconsOpen,
             )
             dump(
-                LanguageText.text("ui.wearables.garmin.fitbit.oura"),
+                LanguageText.text("ui.wearables.with.you.kinds"),
                 wearablesOpen,
             )
             dump(
@@ -909,7 +909,7 @@ object DebriefReport {
             TrackerMatch.Kind.BEACON ->
                 LanguageText.text("ui.location.beacons.do.not")
             TrackerMatch.Kind.WEARABLE ->
-                LanguageText.text("ui.typical.watch.ring.companion")
+                LanguageText.text("ui.typical.wearable.companion")
             TrackerMatch.Kind.PHONE ->
                 LanguageText.text("ui.typical.phone.carried")
         }
@@ -962,7 +962,7 @@ object DebriefReport {
                     TrackerMatch.Kind.BEACON ->
                         LanguageText.text("ui.unusual.retail.location.beacon")
                     TrackerMatch.Kind.WEARABLE ->
-                        LanguageText.text("ui.typical.watch.joined.sit")
+                        LanguageText.text("ui.typical.wearable.joined.sit")
                     TrackerMatch.Kind.PHONE ->
                         LanguageText.text("ui.typical.phone.joined.sit")
                 }
@@ -1040,7 +1040,7 @@ object DebriefReport {
             append(". ")
         }
         if (wearablesWithYou.isNotEmpty()) {
-            append((LanguageText.text("ui.wearable.s.stayed.path") + " "))
+            append((LanguageText.text("ui.wearable.s.stayed.kinds") + " "))
             append(wearablesWithYou.joinToString { "${it.label} ${it.device.mac}" })
             append(".")
         }

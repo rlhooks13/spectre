@@ -123,7 +123,7 @@ Radios you marked mine. Heard in this window. Still listed. No beep while the ma
 
 7. TRACKING ASSESSMENT
 Overall distance traveled: 62 m along the GPS path (3 samples). Straight-line span 62 m.
-Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (Garmin, Fitbit, Oura, Polar), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (watches, rings, fitness bands, AI recorders), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
 No finder tag, retail beacon, wearable, or carried Apple device stayed with you. House tags and other radios you only passed are not listed.
 
 8. ENVIRONMENT

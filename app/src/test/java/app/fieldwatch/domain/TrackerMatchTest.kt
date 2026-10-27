@@ -99,6 +99,35 @@ class TrackerMatchTest {
         assertEquals(names.getValue("fleet-apple-audio"), TrackerMatch.label(buds, names, classes))
     }
 
+    /** P1-B4c: beacons and wearables by class, so Target's cart tag and an AI recorder pendant are assessed too. */
+    @Test
+    fun beaconsAndWearablesGoByClass() {
+        fun on(id: String) = apple("", fleetIds = setOf(id)).copy(manufacturerId = null)
+        assertEquals(TrackerMatch.Kind.BEACON, kind(on("fleet-target-atrius")))
+        assertEquals(TrackerMatch.Kind.WEARABLE, kind(on("fleet-plaud")))
+        assertEquals(TrackerMatch.Kind.WEARABLE, kind(on("fleet-polar")))
+        assertEquals(names.getValue("fleet-plaud"), TrackerMatch.label(on("fleet-plaud"), names, classes))
+    }
+
+    /** A user signature named for a beacon or a wearable keeps that kind, as one named for a tracker does. */
+    @Test
+    fun aUserSignatureNamedForABeaconOrWearableKeepsItsKind() {
+        val beacon = Fleet(id = "user-b", name = "Office iBeacon", builtIn = false)
+        val watch = Fleet(id = "user-w", name = "My Garmin", builtIn = false)
+        val custom = TrackerMatch.classesOf(listOf(beacon, watch))
+        val n = mapOf("user-b" to beacon.name, "user-w" to watch.name)
+        fun on(id: String) = apple("", fleetIds = setOf(id)).copy(manufacturerId = null)
+        assertEquals(TrackerMatch.Kind.BEACON, TrackerMatch.kind(on("user-b"), n, custom))
+        assertEquals(TrackerMatch.Kind.WEARABLE, TrackerMatch.kind(on("user-w"), n, custom))
+    }
+
+    /** An Apple-layout iBeacon that matched a beacon row is a beacon, never a carried phone. */
+    @Test
+    fun aLoudAppleIbeaconIsABeaconNotAPhone() {
+        val ibeacon = apple("0215" + "00".repeat(21), fleetIds = setOf("fleet-target-atrius"))
+        assertEquals(TrackerMatch.Kind.BEACON, kind(ibeacon))
+    }
+
     private fun apple(hex: String, fleetIds: Set<String>) = Sighting(
         key = "BLE:4A:11:22:33:44:55",
         kind = RadioKind.BLE,
