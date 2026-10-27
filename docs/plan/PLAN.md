@@ -212,12 +212,15 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation. **Partial (stays open):**
        - Done: the dialog and the layer note name the source host, say Spectre doesn't run it, point to its terms and credit OpenStreetMap (ODbL). The download must come from that host over HTTPS (redirects elsewhere fail). Parse limits cover depth, string length, unpacked size and duplicates.
        - Open: the operator's name and the terms themselves (needs-human). Then strict GeoJSON type checks, an atomic install, and download tests against a local server.
-     - **P0-7d** Region notice for camera alerts.
+     - ✅ **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
    - Unit tests, lint, unsigned `assembleRelease`, `assembleStaging`, wrapper validation, a test-count guard summed across modules.
    - The two-job release workflow (see Release model). The release notes list the APK's SHA-256 and the signing certificate's SHA-256, which the README and install card promise.
    - CI uploads the staging APK as its artifact; debug is debuggable and unminified (P0-3).
+   - Split into sub-steps (both are protected PRs the owner signs and copies into `.github/workflows/`):
+     - **P0-8a** CI workflow draft (`docs/setup/workflows/android.yml`): wrapper validation, unit tests, lint, the test-count guard, unsigned `assembleRelease`, `assembleStaging` uploaded as the artifact. Actions pinned by SHA.
+     - **P0-8b** Release workflow draft (`docs/setup/workflows/release.yml`): the two-job release.
 
 - **Verify:** install the staging and debug builds next to official Fieldwatch. Check scanning, an alert, an export share and the TAK callsign.
 - **Exit:**
@@ -259,6 +262,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - One check inside `PathTiles` fetch, `PlaceLookup.reverse`, `CatalogRemote.fetch`, `FlockFiles.open` and `TakPublisher`.
   - Remove the 5 hard-coded `onlineLookup = true` calls.
   - Delete the V17/V19/V20 steps that force settings back on.
+- **P1-A8 Clear the lint baseline** (`app/lint-baseline.xml`, added in P0-8a). Fix the 9 inherited errors and delete the file:
+  - 4 × MissingPermission (`BleAdParser`, `FieldwatchApp`): check the permission or catch `SecurityException`.
+  - 2 × NewApi on API 29 (`CrashNotes.traceOf`, `WifiIeParser.ieBytes`): already inside `runCatching`, so add an explicit SDK check.
+  - 3 × `StateFlowValueCalledInComposition` (`DeviceDetailScreen`): collect the flow as state.
 
 **1B. Detection fixes** (one PR each; every golden diff is justified)
 - **Shipped on immediately** (rule fixes checked against the corpus and static tags):

@@ -74,6 +74,10 @@ android {
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
+    lint {
+        // The 9 errors inherited from 1.1.32; CI fails on any new one. P1-A8 clears this file.
+        baseline = file("lint-baseline.xml")
+    }
 }
 
 androidComponents {

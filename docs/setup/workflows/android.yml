@@ -1,0 +1,137 @@
+name: Android CI
+
+# Draft (P0-8a). The agent can't push .github/workflows/, so it drafts this file here. After review, the
+# owner copies it over .github/workflows/android.yml. The job names "Unit tests" and "APK" stay as they
+# were, so required-check settings keep matching.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - name: Android SDK
+        run: |
+          set -euo pipefail
+          : "${ANDROID_HOME:=${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          SM=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | sort | tail -1)
+          yes | "$SM" --licenses >/dev/null || true
+          "$SM" --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      # Sums passing tests over every module's results and compares the total with the protected baseline.
+      # A deletion the plan names lowers the baseline in an owner-signed PR; nothing else may.
+      - name: Test-count guard
+        run: |
+          set -euo pipefail
+          python3 -I - <<'PY'
+          import glob, sys, xml.etree.ElementTree as ET
+          passed = 0
+          files = glob.glob("**/build/test-results/**/*.xml", recursive=True)
+          for path in files:
+              root = ET.parse(path).getroot()
+              suites = [root] if root.tag == "testsuite" else root.iter("testsuite")
+              for s in suites:
+                  n = lambda k: int(s.get(k, "0"))
+                  passed += n("tests") - n("failures") - n("errors") - n("skipped")
+          with open("docs/plan/test-baseline.txt", encoding="utf-8") as f:
+              lines = [l.strip() for l in f if l.strip() and not l.lstrip().startswith("#")]
+          baseline = int(lines[0])
+          print(f"{passed} passing tests in {len(files)} result files; baseline {baseline}.")
+          if passed < baseline:
+              print(f"::error::Passing tests fell below the baseline: {passed} < {baseline}.")
+              sys.exit(1)
+          PY
+
+      - name: Lint
+        run: ./gradlew lintDebug --stacktrace
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: reports
+          path: |
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.html
+          if-no-files-found: ignore
+
+  build:
+    name: APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: test
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
+
+      - name: Android SDK
+        run: |
+          set -euo pipefail
+          : "${ANDROID_HOME:=${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          SM=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | sort | tail -1)
+          yes | "$SM" --licenses >/dev/null || true
+          "$SM" --install "platforms;android-35" "build-tools;35.0.0"
+
+      # Release is never signed by Gradle (build.gradle.kts checks this); building it proves R8 and the
+      # resource shrinker still pass. Staging is minified and test-signed, and is what testers install.
+      - name: Assemble release (unsigned) and staging
+        run: ./gradlew assembleRelease assembleStaging --stacktrace
+
+      - name: Check the release APK is unsigned
+        run: |
+          set -euo pipefail
+          apk=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
+          test -n "$apk"
+          if "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$apk" >/dev/null 2>&1; then
+            echo "::error::$apk is signed; release must stay unsigned until the release workflow signs it."
+            exit 1
+          fi
+          echo "$apk is unsigned."
+
+      - name: Upload staging APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: spectre-staging-apk
+          path: app/build/outputs/apk/staging/*.apk
+          if-no-files-found: error
