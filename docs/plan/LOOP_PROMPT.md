@@ -25,19 +25,23 @@ Each wakeup runs **one cycle**. A cycle advances at most one PLAN step, or one r
    - end the loop
 3. **Usage watcher.** If no Monitor running `bash tools/usage-watch.sh` is armed, start one with `timeout_ms: 1800000` and a description of "Spectre usage watcher".
 4. **Loop age.** If the loop is more than 6 days old (per PROGRESS.md), re-create it by invoking the `loop` skill with the same prompt and record the new creation time. If that fails, push "re-run /loop" and open a `needs-human` issue.
-5. **Phone.** `adb -s $SERIAL get-state` must print `device`. If it doesn't, enter **device-offline mode**: only pure-JVM steps; no merges that touch radio, data or UI; no release stages.
-6. **Main branch CI.** If `main` CI is red, the only work this cycle is fixing `main`.
+5. **Usage gate.** Run `bash tools/usage-watch.sh --gate`. It checks the last usage reading against `tools/usage-watch.conf`: work only while the five-hour window is under 90% **and the weekly window is under 80%**.
+   - Exit 0 (`USAGE_GATE open …`): carry on. If the state was `PAUSED_USAGE`, set `State: RUNNING` and push "resumed".
+   - Exit 1 (`USAGE_GATE closed until=<epoch>`): don't start work. Handle it as `USAGE_HIGH` (section 2), with `resets_at` = `until`. If the state is already `PAUSED_USAGE`, just sleep again.
+   - Exit 2 (`USAGE_GATE unknown`): carry on. The watcher reports a window as soon as the status line writes it, and the `USAGE_STALE` rule applies.
+6. **Phone.** `adb -s $SERIAL get-state` must print `device`. If it doesn't, enter **device-offline mode**: only pure-JVM steps; no merges that touch radio, data or UI; no release stages.
+7. **Main branch CI.** If `main` CI is red, the only work this cycle is fixing `main`.
 
 ## 2. Handle events
-- **`USAGE_HIGH`:**
+- **`USAGE_HIGH`** (from the watcher or the gate):
   1. Checkpoint: commit work in progress to the branch and push.
   2. Set the resume pointer, and set `State: PAUSED_USAGE until <resets_at>`.
-  3. Push "paused".
+  3. Push "paused: <window> at <pct>% until <resets_at as local time>".
   4. ScheduleWakeup for `min(3600, resets_at - now + 120)` seconds, with `noop: true`.
   5. End the cycle.
-- **While `PAUSED_USAGE`:**
-  - before `resets_at`: sleep again (noop)
-  - after it: set `State: RUNNING`, push "resumed" and continue
+- **While `PAUSED_USAGE`:** the usage gate decides.
+  - While it's closed, each wakeup is a cheap one: run pre-flight steps 1–5 only, don't re-read files you already have in context, don't push, and sleep again (noop). A weekly pause can last days; that's intended.
+  - Once it opens, set `State: RUNNING`, push "resumed" and continue.
 - **`USAGE_STALE` while running:** note it in PROGRESS.md and carry on. If the usage file has no windows for more than 30 minutes, open a `needs-human` issue: the status line may not be reporting `rate_limits`.
 
 ## 3. Pick

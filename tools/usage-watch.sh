@@ -2,10 +2,16 @@
 # Spectre usage watcher. Run it under the Monitor tool: every stdout line becomes an event for the loop.
 #
 # Reads the usage file that tools/statusline.sh writes from Claude Code's status-line JSON and prints:
-#   USAGE_HIGH window=<five_hour|seven_day> pct=<n> resets_at=<epoch>   once per window cycle at or above THRESHOLD
+#   USAGE_HIGH window=<five_hour|seven_day> pct=<n> resets_at=<epoch>   once per window cycle at or above that window's threshold
 #   USAGE_RESET window=<w> resets_at=<epoch>                             once, after a window that went high has reset
 #   USAGE_STALE age=<s>                                                  once per episode of the file going stale
 #   USAGE_UNKNOWN                                                        once per episode of the file having no windows
+#
+# --gate checks once and exits. The loop runs it in pre-flight, so no cycle starts over a threshold:
+#   exit 0   USAGE_GATE open five_hour=<pct>/<threshold> seven_day=<pct>/<threshold>   ("reset" once a window's reset time passed)
+#   exit 1   a USAGE_HIGH line per window at or above its threshold, then USAGE_GATE closed until=<latest resets_at>
+#   exit 2   USAGE_GATE unknown   (no usage file, or no windows in it)
+# The gate ignores the state file and the reading's age: it judges the last reading there is.
 #
 # State goes to a file so a re-armed Monitor (at most 30 min each) doesn't repeat events.
 # The config is parsed as KEY=integer lines. It is never sourced, so it can't run code.
@@ -18,21 +24,25 @@ usage_file="$state_dir/usage.json"
 state_file="$state_dir/usage-watch.state"
 conf="$(cd "$(dirname "$0")" && pwd)/usage-watch.conf"
 
-THRESHOLD=90
+THRESHOLD_FIVE_HOUR=90
+THRESHOLD_SEVEN_DAY=80
 POLL=30
 STALE=600
 if [ -f "$conf" ]; then
     while IFS='=' read -r key value; do
         case "$key" in
-            THRESHOLD|POLL|STALE)
+            THRESHOLD_FIVE_HOUR|THRESHOLD_SEVEN_DAY|POLL|STALE)
                 [[ "$value" =~ ^[0-9]+$ ]] && printf -v "$key" '%s' "$value" ;;
         esac
-    done < <(grep -E '^[A-Z]+=[0-9]+$' "$conf")
+    done < <(grep -E '^[A-Z_]+=[0-9]+$' "$conf")
 fi
-[ "${1:-}" = "--once" ] && once=1 || once=0
 
-mkdir -p "$state_dir"
-touch "$state_file"
+threshold() {
+    case "$1" in
+        five_hour) echo "$THRESHOLD_FIVE_HOUR" ;;
+        seven_day) echo "$THRESHOLD_SEVEN_DAY" ;;
+    esac
+}
 
 seen() { grep -qxF "$1" "$state_file"; }
 mark() { printf '%s\n' "$1" >> "$state_file"; }
@@ -58,6 +68,43 @@ for w in ("five_hour", "seven_day"):
 ' "$usage_file" | tr -d '\r'
 }
 
+gate() {
+    local rows now window pct resets limit closed=0 reopens=0 summary=""
+    rows=$(windows)
+    if [ -z "$rows" ]; then
+        echo "USAGE_GATE unknown"
+        return 2
+    fi
+    now=$(date +%s)
+    while read -r window pct resets; do
+        limit=$(threshold "$window")
+        if [ "$now" -ge "$resets" ]; then
+            summary+=" $window=reset/$limit"
+            continue
+        fi
+        summary+=" $window=$pct/$limit"
+        if [ "$pct" -ge "$limit" ]; then
+            echo "USAGE_HIGH window=$window pct=$pct resets_at=$resets"
+            closed=1
+            [ "$resets" -gt "$reopens" ] && reopens=$resets
+        fi
+    done <<< "$rows"
+    if [ "$closed" -eq 1 ]; then
+        echo "USAGE_GATE closed until=$reopens"
+        return 1
+    fi
+    echo "USAGE_GATE open$summary"
+}
+
+case "${1:-}" in
+    --gate) gate; exit $? ;;
+    --once) once=1 ;;
+    *) once=0 ;;
+esac
+
+mkdir -p "$state_dir"
+touch "$state_file"
+
 while :; do
     now=$(date +%s)
     if [ ! -f "$usage_file" ]; then
@@ -77,7 +124,7 @@ while :; do
             seen "UNKNOWN" && unmark "UNKNOWN"
             while read -r window pct resets; do
                 key="HIGH $window $resets"
-                if [ "$pct" -ge "$THRESHOLD" ] && [ "$now" -lt "$resets" ] && ! seen "$key"; then
+                if [ "$pct" -ge "$(threshold "$window")" ] && [ "$now" -lt "$resets" ] && ! seen "$key"; then
                     echo "USAGE_HIGH window=$window pct=$pct resets_at=$resets"
                     mark "$key"
                 fi

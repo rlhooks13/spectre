@@ -37,7 +37,7 @@ The plan was drafted from a design pass and then checked by two independent revi
 | Feature boundary | Receive-only by default. **Optional active features** (Bluetooth Classic, Wi-Fi RTT, Wi-Fi Aware) are off by default and labeled as transmitting. No external hardware |
 | Privacy | **First-run choice** for online maps and geocoding, plus offline map packs |
 | Depth | **Multi-module Gradle + Jetpack**: Room, DataStore, Hilt, WorkManager, type-safe Navigation |
-| Operation | **Fully autonomous, releases included** (no human approval step). One long `/loop` session, back to back, in a dedicated Linux VM on this PC as a non-sudo user. A usage watcher pauses work at 90% and resumes it after the reset |
+| Operation | **Fully autonomous, releases included** (no human approval step). One long `/loop` session, back to back, in a dedicated Linux VM on this PC as a non-sudo user. A usage watcher pauses work at 90% of the five-hour window or 80% of the weekly window, and resumes it after the reset |
 | Isolation | The **`spectre` WSL2 distro**. On GitHub the agent acts as **`rlhooks13`** (owner decision) through a fine-grained token limited to the two Spectre repos. A **dedicated test phone** with no personal accounts. The **shared Claude account**, with connectors disabled and checked every cycle |
 | Guardrails | **Protected control files** change only through PRs whose commits carry the owner's SSH signature (the required `Protected paths` check). Everything else merges autonomously |
 
@@ -582,9 +582,10 @@ The agent runs inside a **dedicated WSL2 distro `spectre` (Ubuntu 24.04) on this
 - **Watcher.** `tools/usage-watch.sh` is a **script**, not a model; a model polling usage would spend the quota it watches.
   - It runs under Monitor and is re-armed on every expiry (at most 30 minutes each).
   - Every 30 s it reads `usage.json` and prints:
-    - `USAGE_HIGH window=… pct=… resets_at=…` at ≥ 90% (the threshold is in a protected config), once per window cycle
+    - `USAGE_HIGH window=… pct=… resets_at=…` at ≥ 90% of the five-hour window or ≥ 80% of the weekly window (the thresholds are in a protected config), once per window cycle
     - `USAGE_RESET window=…` when the window resets
     - `USAGE_STALE` if the file is more than 10 minutes stale during work
+- **Gate.** Every cycle's pre-flight runs `tools/usage-watch.sh --gate`, which exits non-zero while any window is at or over its threshold. So a cycle never starts over a threshold, even after a restart that cleared the watcher's events.
 - **On `USAGE_HIGH`:**
   - Checkpoint: commit work in progress to the branch, push, and write a resume pointer.
   - Sleep with chained ScheduleWakeups (each ≤ 3600 s) until `resets_at`, then resume.
@@ -665,7 +666,7 @@ They share one model, so the objective checks carry the most weight: tests, the 
 | An unattended release ships a bad label | Corpus, lint, the five-reviewer gate, a 7-day soak of the same binary, field logic flagged off until the owner's captures pass, the kill list, revert releases |
 | Prompt injection (issues, datasets, packs, web) | The trust rule (all GitHub text is data; the owner instructs through the session), connectors denied and checked, server-side rulesets, protected control files |
 | The agent weakens its own guardrails | The `Protected paths` signature check; rulesets with no bypass; the token has no Workflows or Administration permission; the sign job runs no agent code |
-| The agent uses up the shared quota | The watcher at 90%; the threshold lives in a protected config; the owner can STOP |
+| The agent uses up the shared quota | The watcher and pre-flight gate (five-hour 90%, weekly 80%); the threshold lives in a protected config; the owner can STOP |
 | The loop dies (7-day expiry, reboot, a 3-block stall) | Day-6 re-creation, `dontAsk` mode, the restart runbook, `PROGRESS.md` resume pointer, push notifications |
 | The phone is lost (adb authorization timeout, unplugged) | USB with the timeout disabled; device-offline mode |
 | The "Spectre" name collides | Display name in a single `Brand` object; distinct icon; NOTICE lineage statement |
