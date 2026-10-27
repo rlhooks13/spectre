@@ -65,6 +65,10 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-A3, the ATAK package:**
+  - The Debrief goldens merged as #48.
+  - `atak/sit-package.txt` pins the zip's entries, manifest and every entry: phone-scoped HERE pins, the self and path events, and `tracks.kml` with the operator path and a drone track. It uses `SitFixture` plus a synthetic Remote ID drone (FFFA, made-up serial, advertised position, heading, speed and pilot).
+  - `cot/drone-live.xml` pins the live aircraft and pilot events, linked to each other.
 - 2026-10-27: **P1-A3, Debrief goldens for 6 sits:**
   - **The sits:**
     1. a stationary café stop;
