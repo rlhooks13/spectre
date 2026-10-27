@@ -1244,15 +1244,15 @@ class ConfigStore internal constructor(private val file: File) {
             // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load), and patchBuiltIn above
             // appends their replacements switched on (ADDED_RULES_V101). A user who had switched the old rule off,
             // or had SSID keywords off (the v4 policy), gets the replacements off too.
-            fleets = fleets.map { fleet ->
-                val added = ADDED_RULES_V101[fleet.id]
-                if (added == null || !fleet.builtIn) return@map fleet
-                val old = cfg.fleets.firstOrNull { it.id == fleet.id } ?: return@map fleet
-                val wasOff = old.rules.any { RetiredRules.isRetired(fleet.id, it) && !it.enabled }
-                if (!wasOff) return@map fleet
-                fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in added) r.copy(enabled = false) else r })
-            }
+            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V101)
             version = CATALOG_V101
+        }
+        if (version < CATALOG_V102) {
+            // P1-B5b: 18 short "contains" names are retired (RetiredRules strips them on load). Each row keeps the
+            // anchored glob of the same brand and radio it already had; HP and MyQ also gain a glob (ADDED_RULES_V102)
+            // that patchBuiltIn appends switched on, and that carries an "off" from the retired name.
+            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V102)
+            version = CATALOG_V102
         }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
@@ -1280,6 +1280,20 @@ class ConfigStore internal constructor(private val file: File) {
         }
     }
 
+    /**
+     * [fleets] with each built-in row's newly [added] name globs switched off where that row in [before] (the config
+     * as loaded, before RetiredRules stripped it) had a retired rule switched off: the user's "off" on the rule a
+     * catalog step replaced carries to its replacements.
+     */
+    private fun carryRetiredOff(fleets: List<Fleet>, before: List<Fleet>, added: Map<String, Set<String>>): List<Fleet> =
+        fleets.map { fleet ->
+            val names = added[fleet.id]
+            if (names == null || !fleet.builtIn) return@map fleet
+            val old = before.firstOrNull { it.id == fleet.id } ?: return@map fleet
+            if (old.rules.none { RetiredRules.isRetired(fleet.id, it) && !it.enabled }) return@map fleet
+            fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in names) r.copy(enabled = false) else r })
+        }
+
     private fun ruleKey(rule: MatchRule): String =
         listOf(rule.kind.name, rule.text.uppercase(), rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty())
             .joinToString("|")
@@ -1300,7 +1314,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 101
+        const val CATALOG_VERSION = 102
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1399,7 +1413,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V98 = 98
         private const val CATALOG_V99 = 99
         private const val CATALOG_V100 = 100
-        private const val CATALOG_V101 = CATALOG_VERSION
+        private const val CATALOG_V101 = 101
+        private const val CATALOG_V102 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
@@ -1793,6 +1808,12 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-raven" to setOf("RAVEN", "RAVEN-*", "RAVEN_*", "DIRECT-??-Raven-*"),
             "fleet-vigilant" to setOf("Vigilant", "Vigilant-*", "Vigilant_*"),
             "fleet-cradlepoint" to setOf("IBR350*", "IBR1150*"),
+        )
+
+        /** The name globs v102 added beside the anchored globs that replace a retired short name (P1-B5b). */
+        private val ADDED_RULES_V102 = mapOf(
+            "fleet-hp" to setOf("HP ENVY*"),
+            "fleet-myq" to setOf("MyQ"),
         )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */

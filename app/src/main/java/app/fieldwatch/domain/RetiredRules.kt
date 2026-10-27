@@ -25,6 +25,25 @@ object RetiredRules {
         Entry("fleet-raven", MatchRule(RuleKind.NAME_CONTAINS, text = "RAVEN"), retiredIn = 101),
         Entry("fleet-vigilant", MatchRule(RuleKind.NAME_CONTAINS, text = "Vigilant"), retiredIn = 101),
         Entry("fleet-cradlepoint", MatchRule(RuleKind.NAME_GLOB, text = "IBR*", radio = RadioKind.WIFI), retiredIn = 101),
+        // P1-B5b: short "contains" names whose row already has an anchored glob of the same brand on the same radio.
+        Entry("fleet-arlo", MatchRule(RuleKind.NAME_CONTAINS, text = "Arlo"), retiredIn = 102),
+        Entry("fleet-asus", MatchRule(RuleKind.NAME_CONTAINS, text = "ASUS", radio = RadioKind.WIFI), retiredIn = 102),
+        Entry("fleet-dji", MatchRule(RuleKind.NAME_CONTAINS, text = "DJI", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-dji", MatchRule(RuleKind.NAME_CONTAINS, text = "DJI", radio = RadioKind.WIFI), retiredIn = 102),
+        Entry("fleet-eero", MatchRule(RuleKind.NAME_CONTAINS, text = "eero", radio = RadioKind.WIFI), retiredIn = 102),
+        Entry("fleet-eufy", MatchRule(RuleKind.NAME_CONTAINS, text = "eufy"), retiredIn = 102),
+        Entry("fleet-fobo", MatchRule(RuleKind.NAME_CONTAINS, text = "FOBO", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-hak5-pineapple", MatchRule(RuleKind.NAME_CONTAINS, text = "Hak5"), retiredIn = 102),
+        Entry("fleet-hp", MatchRule(RuleKind.NAME_CONTAINS, text = "ENVY", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-kevo", MatchRule(RuleKind.NAME_CONTAINS, text = "Kevo", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-mbux", MatchRule(RuleKind.NAME_CONTAINS, text = "MBUX", radio = RadioKind.WIFI), retiredIn = 102),
+        Entry("fleet-myq", MatchRule(RuleKind.NAME_CONTAINS, text = "MyQ", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-nuki", MatchRule(RuleKind.NAME_CONTAINS, text = "Nuki", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-paxton", MatchRule(RuleKind.NAME_CONTAINS, text = "Net2", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-seos", MatchRule(RuleKind.NAME_CONTAINS, text = "Yale", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-tapo", MatchRule(RuleKind.NAME_CONTAINS, text = "Tapo"), retiredIn = 102),
+        Entry("fleet-tuya", MatchRule(RuleKind.NAME_CONTAINS, text = "TUYA", radio = RadioKind.BLE), retiredIn = 102),
+        Entry("fleet-wyze", MatchRule(RuleKind.NAME_CONTAINS, text = "Wyze"), retiredIn = 102),
     )
 
     /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */

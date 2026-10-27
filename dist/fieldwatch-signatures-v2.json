@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 101,
+    "catalogVersion": 102,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -1803,14 +1803,6 @@
             "matchAny": true,
             "colorIndex": 6,
             "rules": [
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Arlo",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
                 {
                     "kind": "NAME_GLOB",
                     "text": "Arlo*",
@@ -6616,14 +6608,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Yale",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Yale*",
                     "companyId": 0,
@@ -6659,14 +6643,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "ASUS_*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "ASUS",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -21539,27 +21515,11 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "DJI",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "DJI*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "DJI",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
                     "enabled": true
                 },
                 {
@@ -22264,14 +22224,6 @@
             "matchAny": true,
             "colorIndex": 6,
             "rules": [
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "eero",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
                 {
                     "kind": "NAME_GLOB",
                     "text": "eero*",
@@ -23441,14 +23393,6 @@
             "rules": [
                 {
                     "kind": "NAME_CONTAINS",
-                    "text": "eufy",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
                     "text": "EufyCam",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -24574,14 +24518,6 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "FOBO",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
                     "enabled": true
                 },
                 {
@@ -26355,14 +26291,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Hak5",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Hak5*",
                     "companyId": 0,
@@ -27360,14 +27288,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "ENVY",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "ENVY*",
                     "companyId": 0,
@@ -27733,6 +27653,14 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "HP ENVY*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
                     "enabled": true
                 }
             ],
@@ -44964,14 +44892,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Kevo",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Kevo*",
                     "companyId": 0,
@@ -46588,14 +46508,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "MBUX",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "WIFI",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "MBUX*",
                     "companyId": 0,
@@ -47343,8 +47255,8 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "MyQ",
+                    "kind": "NAME_GLOB",
+                    "text": "MyQ-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -47352,7 +47264,7 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "MyQ-*",
+                    "text": "MyQ",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -48898,14 +48810,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Nuki",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Nuki*",
                     "companyId": 0,
@@ -49596,14 +49500,6 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "Paxton*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Net2",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
@@ -58096,14 +57992,6 @@
             "colorIndex": 6,
             "rules": [
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Tapo",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "Tapo*",
                     "companyId": 0,
@@ -61176,14 +61064,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "TUYA",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": "BLE",
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "TUYA*",
                     "companyId": 0,
@@ -63518,14 +63398,6 @@
                 {
                     "kind": "NAME_CONTAINS",
                     "text": "WyzeCam",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Wyze",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,

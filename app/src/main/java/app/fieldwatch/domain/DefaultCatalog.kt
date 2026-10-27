@@ -1101,9 +1101,7 @@ object DefaultCatalog {
         decode = CatalogDecodes.djiModel,
         rules = listOf(
             mfg(0x08AA),
-            bleName("DJI"),
             bleGlob("DJI*"),
-            wifiName("DJI"),
             wifiGlob("DJI*"),
         ),
     )
@@ -1177,7 +1175,6 @@ object DefaultCatalog {
             listOf(
                 wifiGlob("ASUS*"),
                 wifiGlob("ASUS_*"),
-                wifiName("ASUS"),
             ),
             ApVendorOuis.ASUS,
         ),
@@ -1214,7 +1211,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = withWifiOuis(
             listOf(
-                wifiName("eero"),
                 wifiGlob("eero*"),
                 wifiGlob("Eero*"),
             ),
@@ -1614,7 +1610,6 @@ object DefaultCatalog {
         notes = "eufy home camera or tag. Common in houses. Consumer camera, not a roadside pole.",
         builtIn = true,
         rules = listOf(
-            name("eufy"),
             name("EufyCam"),
             glob("eufy*"),
             glob("Eufy*"),
@@ -1632,7 +1627,6 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             name("WyzeCam"),
-            name("Wyze"),
             glob("Wyze*"),
         ),
     )
@@ -1664,7 +1658,6 @@ object DefaultCatalog {
         notes = "Arlo home camera or its base-station Wi-Fi. Consumer camera, not a roadside pole. Renamed SSIDs still hit on the board vendor.",
         builtIn = true,
         rules = listOf(
-            name("Arlo"),
             glob("Arlo*"),
             glob("ARLO_VMB_*"),
         ) + ApVendorOuis.ARLO.map { oui(it) },
@@ -1801,7 +1794,6 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x07D0),
             uuid("FD50"),
-            bleName("TUYA"),
             bleGlob("TUYA*"),
             bleGlob("Tuya*"),
         ),
@@ -1823,7 +1815,6 @@ object DefaultCatalog {
             uuid("FCBF"),
             uuid("00009800-0000-1000-8000-00177A000002"),
             bleName("Seos"),
-            bleName("Yale"),
             bleGlob("Yale*"),
         ),
     )
@@ -1878,7 +1869,6 @@ object DefaultCatalog {
             uuid("A92EE200-5501-11E4-916C-0800200C9A66"),
             uuid("A92EE300-5501-11E4-916C-0800200C9A66"),
             uuid("A92AE200-5501-11E4-916C-0800200C9A66"),
-            bleName("Nuki"),
             bleGlob("Nuki*"),
         ),
     )
@@ -1949,7 +1939,6 @@ object DefaultCatalog {
             mfg(0x015E),
             bleName("Unikey"),
             bleGlob("Unikey*"),
-            bleName("Kevo"),
             bleGlob("Kevo*"),
         ),
     )
@@ -2016,7 +2005,6 @@ object DefaultCatalog {
             mfg(0x0196),
             bleName("Paxton"),
             bleGlob("Paxton*"),
-            bleName("Net2"),
             bleGlob("Net2*"),
         ),
     )
@@ -2048,8 +2036,9 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x0878),
             uuid("26D91A37-C279-4D0F-96A1-532CE41CE0F6"),
-            bleName("MyQ"),
             bleGlob("MyQ-*"),
+            // P1-B5b: the bare name, which "MyQ-*" misses, now that "MyQ" anywhere is retired.
+            bleGlob("MyQ"),
         ),
     )
 
@@ -2165,11 +2154,14 @@ object DefaultCatalog {
             listOf(
                 mfg(0x0065),
                 uuid("FE78"),
-                bleName("ENVY"),
                 bleGlob("ENVY*"),
                 wifiGlob("HP-Print*"),
             ),
             ApVendorOuis.HPINC,
+        ) + listOf(
+            // P1-B5b: HP printers lead with the brand ("HP ENVY 6055e"), which "ENVY*" misses, now that "ENVY"
+            // anywhere is retired. Last, as patchBuiltIn appends it.
+            bleGlob("HP ENVY*"),
         ),
     )
 
@@ -2185,7 +2177,6 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x017C),
             bleName("Mercedes"),
-            wifiName("MBUX"),
             wifiGlob("MBUX*"),
         ),
     )
@@ -2292,7 +2283,6 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x0127),
             uuid("00EE"),
-            bleName("FOBO"),
             bleGlob("FOBO*"),
         ),
     )
@@ -2442,7 +2432,6 @@ object DefaultCatalog {
         notes = "TP-Link Tapo home camera. Consumer camera, not a roadside pole.",
         builtIn = true,
         rules = listOf(
-            name("Tapo"),
             glob("Tapo*"),
         ),
     )
@@ -3180,7 +3169,6 @@ object DefaultCatalog {
             glob("Pineapple_*"),
             name("Pineapple_"),
             name("WiFi Pineapple"),
-            name("Hak5"),
             glob("Hak5*"),
         ),
     )
