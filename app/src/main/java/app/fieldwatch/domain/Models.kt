@@ -246,6 +246,21 @@ data class MatchRule(
     val enabled: Boolean = true,
 )
 
+/** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
+private val BASE_UUID = Regex("""^0000([0-9A-F]{4})-0000-1000-8000-00805F9B34FB$""")
+
+/**
+ * What a rule matches, for "is this the same rule" everywhere (P1-B6): the stock overlay, the signature import, the
+ * catalog ladder and the retired list. It ignores whether the rule is switched on, trims and uppercases text, and reads
+ * a long-form base UUID as its 16-bit alias.
+ */
+fun MatchRule.matchKey(): String {
+    val t = text.trim().uppercase().let { t ->
+        if (kind == RuleKind.SERVICE_UUID || kind == RuleKind.SERVICE_DATA) BASE_UUID.matchEntire(t)?.groupValues?.get(1) ?: t else t
+    }
+    return listOf(kind.name, t, companyId, dataPrefixHex.trim().uppercase(), radio?.name.orEmpty()).joinToString("|")
+}
+
 @Serializable
 data class Fleet(
     val id: String,

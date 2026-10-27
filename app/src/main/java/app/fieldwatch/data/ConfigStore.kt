@@ -15,6 +15,7 @@ import app.fieldwatch.domain.MatchRule
 import app.fieldwatch.domain.PersistedConfig
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RetiredRules
+import app.fieldwatch.domain.matchKey
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureCandidates
 import app.fieldwatch.domain.SignatureClass
@@ -1261,6 +1262,12 @@ class ConfigStore internal constructor(private val file: File) {
             fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V103, ADDED_RULES_V103)
             version = CATALOG_V103
         }
+        if (version < CATALOG_V104) {
+            // P1-B6: the overlay and the import used to count a rule's switch as part of the rule, so a row could end
+            // up holding a rule twice, once on and once off (the "on" copy won). Keep one, off if either copy was.
+            fleets = fleets.map(::withoutDuplicateRules)
+            version = CATALOG_V104
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1304,9 +1311,14 @@ class ConfigStore internal constructor(private val file: File) {
             fleet.copy(rules = fleet.rules.map { r -> if (ruleKey(r) in keys) r.copy(enabled = false) else r })
         }
 
-    private fun ruleKey(rule: MatchRule): String =
-        listOf(rule.kind.name, rule.text.uppercase(), rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty())
-            .joinToString("|")
+    private fun ruleKey(rule: MatchRule): String = rule.matchKey()
+
+    /** [fleet] with each rule once, where it first appears; a rule held more than once is off if any copy was. */
+    private fun withoutDuplicateRules(fleet: Fleet): Fleet {
+        val copies = fleet.rules.groupBy { ruleKey(it) }
+        if (copies.size == fleet.rules.size) return fleet
+        return fleet.copy(rules = copies.values.map { same -> same.first().copy(enabled = same.all { it.enabled }) })
+    }
 
     private fun seed(): PersistedConfig {
         val fleets = DefaultCatalog.fleets()
@@ -1324,7 +1336,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 103
+        const val CATALOG_VERSION = 104
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1425,7 +1437,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V100 = 100
         private const val CATALOG_V101 = 101
         private const val CATALOG_V102 = 102
-        private const val CATALOG_V103 = CATALOG_VERSION
+        private const val CATALOG_V103 = 103
+        private const val CATALOG_V104 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still

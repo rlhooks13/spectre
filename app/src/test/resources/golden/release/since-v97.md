@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v103 -->
-### Signatures (stock catalog v97 → v103)
+<!-- generated: catalog v97 -> v104 -->
+### Signatures (stock catalog v97 → v104)
 
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12.
 - **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.

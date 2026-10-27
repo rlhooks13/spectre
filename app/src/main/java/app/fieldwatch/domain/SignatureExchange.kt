@@ -203,15 +203,11 @@ object SignatureExchange {
         ).joinToString("|")
     }
 
-    fun ruleKey(rule: MatchRule): String =
-        listOf(
-            rule.kind.name,
-            rule.text.uppercase(),
-            rule.companyId.toString(),
-            rule.dataPrefixHex.uppercase(),
-            rule.radio?.name.orEmpty(),
-            rule.enabled.toString(),
-        ).joinToString("|")
+    /** Whether two rules are the same rule, whatever their switch ([MatchRule.matchKey], P1-B6). */
+    fun ruleKey(rule: MatchRule): String = rule.matchKey()
+
+    /** [MatchRule.matchKey] plus the switch, for "did this row change" (a rule switched off is a change to save). */
+    fun ruleStateKey(rule: MatchRule): String = rule.matchKey() + "|" + rule.enabled
 
     private fun uniqueName(desired: String, taken: Set<String>): Pair<String, Boolean> {
         val base = desired.trim().ifBlank { "Imported signature" }
@@ -253,9 +249,13 @@ object SignatureExchange {
             val stockKeys = stock.rules.map { ruleKey(it) }.toSet()
             // A retired stock rule isn't a user extra: it goes, not carried over.
             val extras = local.rules.filter { ruleKey(it) !in stockKeys && !RetiredRules.isRetired(local.id, it) }
+                .distinctBy { ruleKey(it) }
+            // The user's switch on each stock rule stays (P1-B6). A rule held twice (an older overlay's duplicate) is
+            // off if either copy was.
+            val localOn = local.rules.groupBy { ruleKey(it) }.mapValues { (_, copies) -> copies.all { it.enabled } }
             val overlaid = stock.copy(
                 enabled = local.enabled,
-                rules = stock.rules + extras,
+                rules = stock.rules.map { s -> localOn[ruleKey(s)]?.let { on -> s.copy(enabled = on) } ?: s } + extras,
                 builtIn = true,
                 decode = stock.decode ?: local.decode,
             )
@@ -284,7 +284,7 @@ object SignatureExchange {
         if (local.clusterByOui != overlaid.clusterByOui) return true
         if (local.sequentialMac != overlaid.sequentialMac) return true
         if (local.decode != overlaid.decode) return true
-        if (local.rules.map { ruleKey(it) } != overlaid.rules.map { ruleKey(it) }) return true
+        if (local.rules.map { ruleStateKey(it) } != overlaid.rules.map { ruleStateKey(it) }) return true
         return false
     }
 }

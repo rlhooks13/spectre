@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B6 Retired rules**, after P1-B5 (catalog v103) merges. Then B7 onward. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B7** onward, after P1-B6 (catalog v104) merges. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b5-short-names-word-start`
+- Branch: `p1/b6-shared-rule-key`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -69,6 +69,18 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B6 Shared rule key (catalog v104).** #63 (P1-B5) merged as 411ef9d.
+  - **Already done before this step:** `catalog/retired.json` was already subtracted in merge, overlay and load (P1-B1 to B5).
+  - **The bug:** three rule keys disagreed.
+    - `SignatureExchange.ruleKey` counted a rule's switch. So `overlayStock` kept a user's switched-off stock rule as an "extra" beside a fresh switched-on copy, and the "on" copy won, so the user's off was lost. `merge` could add a duplicate.
+    - `ConfigStore` and `RetiredRules` each had their own key, and only `RetiredRules` normalized long-form UUIDs.
+  - **The fix:**
+    - One `MatchRule.matchKey()` (Models.kt) ignores the switch, trims, uppercases, and reads a base UUID as its alias. All three places use it.
+    - `ruleStateKey` adds the switch, for the import fingerprint's sibling, the overlay's change check.
+    - The overlay keeps each stock rule's user switch ("off" wins over an old duplicate).
+  - **Ladder v104:** each rule kept once in every row, off if any copy was.
+  - **Stock:** 37 case-variant duplicates removed ("Eufy*" beside "eufy*", ...). Name matching ignores case, so they were one rule twice. New lint `noStockRowHoldsARuleTwice`.
+  - **Tests:** `RuleKeyTest` (written first and seen failing: the overlay held 3 rules where 2 belong), `CatalogV104LadderTest`.
 - 2026-10-27: **P1-B5 Over-broad names, the last 16 (catalog v103).** #62 (P1-B5b) merged as ac21e0e.
   - **The fix:**
     - 14 short BLE "contains" names (Echo, Audi, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Seos, Sony, VW) become the brand as a whole word at the start: `DefaultCatalog.bleWordStart` gives the exact name plus `X *`, `X-*` and `X_*`. Bose also gets `LE-Bose*`.

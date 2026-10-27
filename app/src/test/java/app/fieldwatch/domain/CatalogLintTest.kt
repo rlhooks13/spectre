@@ -61,6 +61,18 @@ class CatalogLintTest {
         check("bare mega-vendor company-id rules", found, BARE_MEGA_VENDOR)
     }
 
+    /**
+     * P1-B6: no stock row holds a rule twice under the shared rule key. Name matching ignores case, so "Eufy*" and
+     * "eufy*" are one rule; a saved config keeps one copy (the v104 ladder step), and stock must match it.
+     */
+    @Test
+    fun noStockRowHoldsARuleTwice() {
+        val twice = fleets.flatMap { f ->
+            f.rules.groupBy { it.matchKey() }.filterValues { it.size > 1 }.values.map { "${f.id}: ${it.joinToString { r -> r.text }}" }
+        }
+        assertEquals("Stock rules held twice", emptyList<String>(), twice)
+    }
+
     @Test
     fun nameContainsHasAtLeastFiveCharacters() {
         val found = rows.filter { r -> containsLiteral(r.rule)?.let { it.length < 5 } == true }.map { it.nameKey }
