@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4f (README and docs rebrand), on branch `p0/4f-docs-rebrand`; check `gh pr list --head p0/4f-docs-rebrand` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-6 (BrandGuard).
+- Current step: P0-4f (README and docs rebrand), PR #12 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-6 (BrandGuard).
 - Branch: `p0/4f-docs-rebrand`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -50,7 +50,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4f README and docs rebrand.** Branch `p0/4f-docs-rebrand`.
+- 2026-10-27: **P0-4f README and docs rebrand.** PR #12.
   - **`README.md` rewritten for the fork:**
     - Fork statement; the separate-app claim is conditional on the P0-4e app id.
     - "Receive-only by default", noting that scans can send OS probe and scan requests.
