@@ -111,6 +111,11 @@ class MatchCorpusTest {
         } + MatchCorpus.targets.map { it.label to it.knownUntil }
         for (miss in MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits) {
             assertTrue(miss.label, ids.containsAll(miss.mustNotMatch))
+            if (miss.finderKnownUntil != null) {
+                // The finder marker is for a case whose signature is already right and only its label is wrong.
+                assertTrue("${miss.label}: finderKnownUntil needs checkFinder", miss.checkFinder)
+                assertEquals("${miss.label}: set knownUntil or finderKnownUntil, not both", null, miss.knownUntil)
+            }
         }
         for (t in MatchCorpus.targets) assertTrue(t.label, t.fleetId in ids)
         for ((label, step) in steps) {

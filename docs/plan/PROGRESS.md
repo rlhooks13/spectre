@@ -73,6 +73,14 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - new near-miss: a Wi-Fi network named Tile;
     - new `finderKnownUntil` marker for the Tattile camera, which still reads as a tracker through TrackerMatch's name tokens until P1-B4.
   - **Release-notes golden:** lists the Tile rule changes and five corpus verdicts.
+  - **Review fixes:**
+    - `DeviceExplain` no longer explains a Tattile camera or a FEDD advertiser as "a Tile tracker". Before, the "tile" substring check hid the Tattile branch. Both have tests.
+    - `RetiredRules` normalizes long-form base UUIDs.
+    - `CatalogV99LadderTest` covers the stale-config, overlay and import paths.
+    - Ladder tests share `testing/ConfigUpgrade`.
+    - New corpus targets: "TILE", and "Tile Mate" with FEED.
+    - ADR-0015 marks the B1 and B2 rows done.
+  - **By design:** a "Tile Mate" that advertises no FEED, FEEC or 0x067C is no longer labeled.
 - 2026-10-27: **P0-8d Release-notes generator.** #53 (P1-B1) merged first.
   - **What it generates.** `testing/ReleaseNotes` lists every label and verdict change between two frozen catalog snapshots:
     - **Signatures:** added or removed, renamed, reclassed, on or off, attention notes, rules added or retired, decodes, notes.

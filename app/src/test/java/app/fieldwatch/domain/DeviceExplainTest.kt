@@ -76,6 +76,24 @@ class DeviceExplainTest {
         assertTrue(guess.headline, guess.headline.contains("Wi-Fi Direct", ignoreCase = true))
     }
 
+    /** A Tattile camera is a plate reader, not "a Tile tracker" because its name contains "tile" (P1-B2). */
+    @Test
+    fun tattileIsAPlateReaderNotATileTracker() {
+        val guess = DeviceExplain.guess(wifi("00:11:22:33:44:55", "Tattile Vega"), listOf("Tattile"))
+        assertTrue(guess.headline, guess.headline.contains("Tattile plate reader"))
+        assertFalse(guess.headline, guess.headline.contains("Tile tracker"))
+        assertTrue(DeviceExplain.guess(app.fieldwatch.testing.Sightings.sighting("t"), listOf("Tile Trackers")).headline.contains("Tile tracker"))
+    }
+
+    /** FEDD isn't Tile's (no capture confirms it, P1-B2), so it isn't explained as one. */
+    @Test
+    fun feddAloneIsNotATileTracker() {
+        val guess = DeviceExplain.guess(app.fieldwatch.testing.Sightings.sighting("f", serviceUuids = listOf("FEDD")), emptyList())
+        assertFalse(guess.headline, guess.headline.contains("Tile"))
+        val feed = DeviceExplain.guess(app.fieldwatch.testing.Sightings.sighting("t", serviceUuids = listOf("FEED")), emptyList())
+        assertTrue(feed.headline, feed.headline.contains("Tile tracker"))
+    }
+
     private fun wifi(mac: String, name: String) = Sighting(
         key = "WIFI:$mac",
         kind = RadioKind.WIFI,

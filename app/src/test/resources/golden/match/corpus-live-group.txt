@@ -16,6 +16,12 @@ T:tile-067c	target	Tile on its own company id 0x067C
 T:tile-name	target	Tile advertising its name over BLE
   expect fleet-tile
   -> fleet-tile [FINDER]
+T:tile-caps	target	Tile with its name in capitals
+  expect fleet-tile
+  -> fleet-tile [FINDER]
+T:tile-mate	target	Tile Mate with FEED
+  expect fleet-tile
+  -> fleet-tile [FINDER]
 T:axon	target	Axon Body camera, BLE on its public OUI
   expect fleet-axon
   -> fleet-axon [LAW_ENFORCEMENT, attention]

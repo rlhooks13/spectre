@@ -22,8 +22,8 @@
 
 | Violation | Fixed by |
 |---|---|
-| `fleet-smarttag/0x0075`, bare Samsung | P1-B1 |
-| `fleet-tile/Tile/ANY`, and the Tattile → Tile collisions | P1-B2 (BLE-only anchored glob) |
+| `fleet-smarttag/0x0075`, bare Samsung | P1-B1 (done: retired in catalog v98) |
+| `fleet-tile/Tile/ANY`, and the Tattile → Tile collisions | P1-B2 (done in catalog v99: BLE-only anchored glob) |
 | 34 short brand names | P1-B5 |
 | `fleet-google/0x00E0`, `fleet-microsoft/0x0006`, `fleet-fitbit/0x018E`, `fleet-dji/0x08AA`, `fleet-huf/0x070A`, and the LiteOn → TP-Link collision | P1-B10 |
 

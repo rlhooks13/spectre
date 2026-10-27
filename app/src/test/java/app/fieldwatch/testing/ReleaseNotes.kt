@@ -122,7 +122,9 @@ object ReleaseNotes {
     /** Labels name their group, since a target and a near miss can share a description. */
     private fun corpusCases(): List<Pair<String, Sighting>> =
         MatchCorpus.targets.map { "Target: ${it.label}" to it.sighting } +
-            MatchCorpus.nearMisses.map { "Near miss: ${it.label}" to it.sighting } +
+            MatchCorpus.nearMisses.map { m ->
+                "Near miss: ${m.label}" + (m.finderKnownUntil?.let { " (its signature is right, but it is still read as a tracker until $it)" } ?: "") to m.sighting
+            } +
             MatchCorpus.randomAddressOuiHits.map { "Random address: ${it.label}" to it.sighting }
 
     /** Each case as a live group of three heard at NOW on consecutive addresses; the label of its first member. */
