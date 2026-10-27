@@ -4,6 +4,9 @@ class SignatureEngine {
     companion object {
         /** 802.11 WPA (Microsoft) and RSN (IEEE) vendor IE OUIs — not a product brand. */
         private val WIFI_PROTOCOL_IE_OUIS = setOf("0050F2", "000FAC")
+
+        /** The bare Offline Finding row, routed by device type (P1-B3). */
+        private const val FIND_MY = "fleet-findmy"
     }
 
     /**
@@ -33,6 +36,7 @@ class SignatureEngine {
             dropProtocolIBeacon(hits, compiled)
             dropDjiWhenSpecificRow(hits)
             dropGoProWhenPolar(hits)
+            routeOfflineFinding(hits, device, compiled)
             dropAirTagsWhenAppleDevice(hits, device)
             dropCiscoWhenMeraki(hits)
             byKey[device.key] = hits
@@ -317,13 +321,38 @@ class SignatureEngine {
      * unless the advertised name is AirTag or UUID FD44 is present.
      */
     private fun dropAirTagsWhenAppleDevice(hits: MutableSet<String>, device: Sighting) {
-        if ("fleet-airtag" !in hits) return
+        if ("fleet-airtag" !in hits && FIND_MY !in hits) return
         if (device.name.contains("AirTag", ignoreCase = true)) return
         if (hasFindMyAccessoryUuid(device)) return
         val appleProduct = "fleet-apple-device" in hits || "fleet-apple-audio" in hits
         if (appleProduct || TrackerMatch.isAppleContinuity(device)) {
             hits.remove("fleet-airtag")
+            // An Offline Finding record routeOfflineFinding couldn't read is the same Apple product's (P1-B3).
+            hits.remove(FIND_MY)
         }
+    }
+
+    /**
+     * P1-B3. An Offline Finding record (0x004C, `12 <len> <status> …`) carries the device type in status bits 4-5, as
+     * AirGuard decodes it: 0 an Apple device (iPhone, Mac), 1 an AirTag, 2 a Find My accessory, 3 AirPods. The
+     * separated form has length 0x19 and the near-owner form 0x02; both put the status byte first. A "Find My device"
+     * hit moves to the row that type names, when the catalog has that row. A Find My accessory or a record too short to
+     * read stays "Find My device": still a finder, never silently dropped.
+     */
+    private fun routeOfflineFinding(hits: MutableSet<String>, device: Sighting, compiled: Compiled) {
+        if (FIND_MY !in hits) return
+        val status = mfgRecords(device).firstNotNullOfOrNull { rec ->
+            if (rec.companyId == 0x004C) AdvPayloadDecoder.offlineFindingStatus(hexOnly(rec.dataHex)) else null
+        } ?: return
+        val target = when ((status shr 4) and 0x3) {
+            0 -> "fleet-apple-device"
+            1 -> "fleet-airtag"
+            3 -> "fleet-apple-audio"
+            else -> return
+        }
+        if (target !in compiled.planIds) return
+        hits.remove(FIND_MY)
+        hits += target
     }
 
     private fun hasFindMyAccessoryUuid(device: Sighting): Boolean {
@@ -469,6 +498,8 @@ class SignatureEngine {
         val vendorIe: Map<String, IntArray>,
         val longOui: List<LongOui>,
     ) {
+        val planIds: Set<String> = plans.mapTo(HashSet(plans.size)) { it.id }
+
         fun plansFor(kind: RadioKind): IntArray =
             if (kind == RadioKind.WIFI) wifiPlans else blePlans
 

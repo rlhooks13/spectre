@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 99,
+    "catalogVersion": 100,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -880,14 +880,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "MANUFACTURER_DATA",
-                    "text": "",
-                    "companyId": 76,
-                    "dataPrefixHex": "12",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "SERVICE_UUID",
                     "text": "FD44",
                     "companyId": 0,
@@ -900,7 +892,7 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Apple AirTag or Find My accessory. iPhones also send Find My so they can be located — that stays on Apple Device unless the name is AirTag. Addresses rotate.",
+            "notes": "Apple AirTag. A nameless AirTag is found through Find My device's Offline Finding rule, whose status byte says AirTag. Addresses rotate.",
             "attentionNote": "",
             "builtIn": true,
             "kind": "FINDER"
@@ -24364,6 +24356,31 @@
             "attentionNote": "Fieldy wearable AI note-taker (pendant). It records conversations and transcribes them. Not proof someone is recording you. A miss is not a clean bill (off, paired and quiet, or a different brand). Look with your eyes.",
             "builtIn": true,
             "kind": "WEARABLE"
+        },
+        {
+            "id": "fleet-findmy",
+            "name": "Find My device",
+            "enabled": true,
+            "matchAny": true,
+            "colorIndex": 4,
+            "rules": [
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 76,
+                    "dataPrefixHex": "12",
+                    "radio": null,
+                    "enabled": true
+                }
+            ],
+            "minPeers": 0,
+            "peerWindowSec": 60,
+            "clusterByOui": false,
+            "sequentialMac": false,
+            "notes": "Apple Find My network tag or accessory (Offline Finding) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. This row's rule also finds nameless AirTags, iPhones and AirPods for their own rows; switching it off stops those too. Addresses rotate.",
+            "attentionNote": "",
+            "builtIn": true,
+            "kind": "FINDER"
         },
         {
             "id": "fleet-fitbit",

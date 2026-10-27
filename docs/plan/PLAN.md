@@ -275,7 +275,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - ✅ **P1-B1 SmartTag:** drop `mfg(0x0075)` and keep FD5A.
     - It re-blesses the goldens that pin the Galaxy near-miss as "Samsung SmartTags": `match/corpus*.txt`, `export/sit*`, `export/log*`, `cot/*` where present, `atak/sit-package.txt` and `debrief/5-galaxy-phone-in-pocket.txt`. Each diff shows the label going away.
   - ✅ **P1-B2 Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
-  - **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
+  - ✅ **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
   - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
   - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*, and every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015). Each becomes a longer name, or a prefix glob whose literal is 5+ characters or ends in a separator, or an ADR-0015 entry with a reason.
   - **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.

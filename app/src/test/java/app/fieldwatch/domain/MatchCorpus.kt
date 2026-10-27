@@ -128,13 +128,24 @@ object MatchCorpus {
     /**
      * An Offline Finding record: type 0x12, length 0x19 (25 bytes) = status, 22-byte key, key bits, hint.
      * Status bits 4-5 carry the device type as AirGuard decodes it: 0x00 Apple device (iPhone, Mac),
-     * 0x10 AirTag, 0x20 Find My accessory, 0x30 AirPods. P1-B3 confirms this layout against a capture.
+     * 0x10 AirTag, 0x20 Find My accessory, 0x30 AirPods. This follows AirGuard's decoder; no Spectre capture
+     * confirms it yet (a field-capture request in PROGRESS.md asks for one).
      */
     private fun offlineFinding(status: Int) = "1219" + "%02X".format(status) + "00".repeat(24)
+
+    /** The near-owner form: type 0x12, length 0x02 = status, one more byte. Same status bits. */
+    private fun offlineFindingNearOwner(status: Int) = "1202" + "%02X".format(status) + "00"
 
     /** The real devices behind each confuser's signature. Pinned by hand, so a rule fix can't drop them. */
     val targets: List<Target> = listOf(
         Target("AirTag, Offline Finding status 0x10", sighting("T:airtag", mfg = apple(offlineFinding(0x10))), "fleet-airtag"),
+        // An AirTag's other status bits (battery level in bits 6-7) don't change its type.
+        Target("AirTag with low battery, status 0xD0", sighting("T:airtag-lowbatt", mfg = apple(offlineFinding(0xD0))), "fleet-airtag"),
+        // A third-party Find My accessory (type 0x20) is still a finder, under its own name.
+        Target("Find My accessory, status 0x20", sighting("T:findmy-accessory", mfg = apple(offlineFinding(0x20))), "fleet-findmy"),
+        // A record too short to read the status byte: type unknown, still a finder.
+        Target("Offline Finding record too short to read", sighting("T:findmy-short", mfg = apple("1219")), "fleet-findmy"),
+        Target("AirTag near its owner, short Offline Finding form", sighting("T:airtag-near-owner", mfg = apple(offlineFindingNearOwner(0x10))), "fleet-airtag"),
         Target(
             "SmartTag on FD5A",
             sighting("T:smarttag", serviceUuids = listOf("FD5A"), serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
@@ -197,19 +208,27 @@ object MatchCorpus {
         NearMiss(
             "Separated iPhone, Offline Finding only",
             sighting("NM:iphone-of", mfg = apple(offlineFinding(0x00))),
-            setOf("fleet-airtag"), knownUntil = "P1-B3",
+            // Now an Apple device (P1-B3), but TrackerMatch still reads Apple phones as finders (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
         ),
         NearMiss(
             "Powered-off AirPods, Offline Finding only",
             sighting("NM:airpods-of", mfg = apple(offlineFinding(0x30))),
-            setOf("fleet-airtag"), knownUntil = "P1-B3",
+            // Now Apple audio (P1-B3), but TrackerMatch still reads carried Apple devices as finders (P1-B4).
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true, finderKnownUntil = "P1-B4",
         ),
         // A phone carried by the user sends Continuity nearby-info next to Offline Finding. The Continuity
         // record is what keeps it off AirTag today (dropAirTagsWhenAppleDevice), so this exercises that filter.
         NearMiss(
             "Companion iPhone (Continuity 0x10 with Offline Finding)",
             sighting("NM:iphone", mfg = apple("1005031C0F2A7B", offlineFinding(0x00))),
-            setOf("fleet-airtag"),
+            setOf("fleet-airtag", "fleet-findmy"),
+        ),
+        // The same phone with an Offline Finding record too short to read its type: Continuity still says Apple product.
+        NearMiss(
+            "Companion iPhone with an unreadable Offline Finding record",
+            sighting("NM:iphone-short-of", mfg = apple("1005031C0F2A7B", "1219")),
+            setOf("fleet-airtag", "fleet-findmy"),
         ),
         // "Tattile" (plate-reader maker) contains "tile".
         NearMiss(

@@ -118,6 +118,7 @@ class StockCatalogFileTest {
         val FROZEN = mapOf(
             97 to "dd932a77b805e9e04cfac29c1120544fed5e4ae7e4443280c432a0db90a78ac3",
             98 to "23e200b04b8e5aea0b52b537ce64f5e63c3ab04ae3976c3fc2f254a8d8f18944",
+            99 to "b78b7ed45c7ab64878662a9bd5250d5b78d2d34507673c53433d0a2c80582811",
         )
     }
 

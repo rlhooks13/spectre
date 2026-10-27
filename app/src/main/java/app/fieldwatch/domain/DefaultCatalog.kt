@@ -78,6 +78,7 @@ object DefaultCatalog {
         liteOnCameraRadio(),
         ravenAcoustic(),
         airTags(),
+        findMyDevice(),
         smartTags(),
         tileTrackers(),
         ibeacon(),
@@ -396,13 +397,32 @@ object DefaultCatalog {
         colorIndex = Hue.FIND_MY,
         kind = SignatureClass.FINDER,
         matchAny = true,
-        notes = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be located — that stays on Apple Device unless the name is AirTag. Addresses rotate.",
+        notes = "Apple AirTag. A nameless AirTag is found through Find My device's Offline Finding rule, whose status byte says AirTag. Addresses rotate.",
         builtIn = true,
         rules = listOf(
             name("AirTag"),
             name("Find My"),
-            mfgData(0x004C, "12"),
+            // A bare Offline Finding record (0x12) is "Find My device" (P1-B3); the engine routes it here when its
+            // status byte says AirTag (SignatureEngine.routeOfflineFinding).
             uuid("FD44"),
+        ),
+    )
+
+    /**
+     * An Apple Offline Finding record (company 0x004C, type 0x12) whose device type doesn't decode to an AirTag, an
+     * Apple device or AirPods: a third-party Find My accessory (status type 0x20), or a record too short to read.
+     * The engine routes the decoded types to their own rows (P1-B3).
+     */
+    private fun findMyDevice() = Fleet(
+        id = "fleet-findmy",
+        name = "Find My device",
+        colorIndex = Hue.FIND_MY,
+        kind = SignatureClass.FINDER,
+        matchAny = true,
+        notes = "Apple Find My network tag or accessory (Offline Finding) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. This row's rule also finds nameless AirTags, iPhones and AirPods for their own rows; switching it off stops those too. Addresses rotate.",
+        builtIn = true,
+        rules = listOf(
+            mfgData(0x004C, "12"),
         ),
     )
 

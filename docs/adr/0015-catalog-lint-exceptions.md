@@ -44,7 +44,7 @@
 **Reviewer checks, not lint:**
 - **Short prefix globs:** `lit*` with a literal under 5 characters, such as `IBR*` (already in P1-B5). Fixed-length patterns like AT&T's `ATT???????` are fine.
 - **Subsidiary ids used bare:** Beats 0x00CC (Apple), Nest Labs 0x01B5 (Google), Harman 0x0057 (Samsung).
-- **One-byte `MANUFACTURER_DATA` prefixes on a mega-vendor id:** Apple's Continuity types are protocol message types. The over-broad Offline Finding rule `fleet-airtag` 0x004C "12" is P1-B3's fix.
+- **One-byte `MANUFACTURER_DATA` prefixes on a mega-vendor id:** Apple's Continuity types are protocol message types. Offline Finding 0x004C "12" left AirTags in P1-B3 (catalog v100). It now sits on purpose on `fleet-findmy`, a type-unknown finder that the engine routes by the status byte (`SignatureEngine.routeOfflineFinding`). It stays one byte rather than "1219" so the near-owner form (`12 02 <status>`) still matches.
 
 ## Consequences
 - The catalog can't gain a violation or a new cross-signature overlap without a reviewer seeing this list change.
