@@ -4,11 +4,14 @@ name: Release
 # can't write workflows). Two jobs, per PLAN.md "Release model" and ADR-0002:
 #   A. "Build": checks the tag, builds the unsigned release APK with Gradle, and uploads it. No secrets.
 #   B. "Sign and publish": runs in the `release` environment. No checkout and no Gradle: it downloads A's
-#      artifact, re-derives the version from the tag itself, signs, checks the certificate against the
-#      SPECTRE_CERT_SHA256 variable, and publishes a GitHub pre-release with both SHA-256 values.
+#      artifact, re-derives the version from the tag itself, checks the APK's package, version and
+#      debuggable flag before signing, signs, checks the certificate against the SPECTRE_CERT_SHA256
+#      variable, and publishes a GitHub pre-release with both SHA-256 values.
 # Tags:
 #   vX.Y.Z         a real release: must be the next version after the last v* tag, on main.
 #   dryrun/vX.Y.Z  a scratch run (Phase 0 exit): same checks except "next", published as a draft only.
+# Release notes are hand-written in docs/release-notes/X.Y.Z.md until the generator of label and verdict
+# changes lands (P0-8d).
 
 on:
   push:
@@ -17,8 +20,10 @@ on:
 permissions:
   contents: read
 
+# One group per tag: a shared group would cancel a queued run and burn its immutable tag. The next-version
+# check already serializes real releases.
 concurrency:
-  group: release
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -36,33 +41,45 @@ jobs:
         id: tag
         env:
           TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }} # read-only here; lists published releases
         run: |
           set -euo pipefail
+          semver='^(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})$'
           case "$TAG" in
             v*) kind=release; version=${TAG#v} ;;
             dryrun/v*) kind=dryrun; version=${TAG#dryrun/v} ;;
             *) echo "::error::Unexpected tag $TAG."; exit 1 ;;
           esac
-          # SemVer core only; Y and Z at most 999 (ADR-0002), so the versionCode stays unambiguous.
-          if ! [[ "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})$ ]]; then
-            echo "::error::$TAG is not vX.Y.Z with Y and Z at most 999."
+          # SemVer core only; X, Y and Z at most 999 (ADR-0002), so the versionCode stays unambiguous and
+          # under Android's 2,100,000,000 limit.
+          if ! [[ "$version" =~ $semver ]]; then
+            echo "::error::$TAG is not vX.Y.Z with X, Y and Z at most 999."
             exit 1
           fi
           x=${BASH_REMATCH[1]}; y=${BASH_REMATCH[2]}; z=${BASH_REMATCH[3]}
+          # Dry runs are signed with the release key too, so they stay in 0.0.x, a range no release uses.
+          if [ "$kind" = dryrun ] && [ "$x.$y" != 0.0 ]; then
+            echo "::error::Dry-run tags must be dryrun/v0.0.Z."
+            exit 1
+          fi
           if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
             echo "::error::$TAG does not point at a commit on main."
             exit 1
           fi
           if [ "$kind" = release ]; then
-            prev=$(git tag -l 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | grep -vxF "$TAG" | sort -V | tail -1 || true)
+            # The last published release (pre-releases count, drafts don't), not the highest tag: a rejected
+            # tag still exists, because v* tags are immutable.
+            prev=$(gh release list --repo "$REPO" --exclude-drafts --limit 1000 --json tagName --jq '.[].tagName' \
+              | sed -n 's/^v//p' | grep -E "$semver" | grep -vxF "$version" | sort -V | tail -1 || true)
             if [ -z "$prev" ]; then
               allowed="0.1.0"
             else
-              IFS=. read -r px py pz <<< "${prev#v}"
+              IFS=. read -r px py pz <<< "$prev"
               allowed="$px.$py.$((pz + 1)) $px.$((py + 1)).0 $((px + 1)).0.0"
             fi
             if ! printf '%s\n' $allowed | grep -qxF "$version"; then
-              echo "::error::$TAG is not the next version after ${prev:-no release}; allowed: $allowed."
+              echo "::error::$TAG is not the next version after ${prev:-no release}; allowed: $allowed"
               exit 1
             fi
           fi
@@ -90,7 +107,8 @@ jobs:
           "$SM" --install "platforms;android-35" "build-tools;35.0.0"
 
       - name: Assemble release (unsigned)
-        run: ./gradlew assembleRelease --stacktrace
+        # No daemon, so no build code keeps running to swap the APK after the checks below.
+        run: ./gradlew --no-daemon assembleRelease --stacktrace
 
       # The APK must carry the tag's version. Until the build derives it from the tag (P0-8c), this fails
       # closed: the hard-coded 1.1.32 never matches a 0.x tag.
@@ -102,7 +120,8 @@ jobs:
           set -euo pipefail
           apk=app/build/outputs/apk/release/app-release-unsigned.apk
           test -f "$apk"
-          line=$("$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging "$apk" | head -1)
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging "$apk" > "$RUNNER_TEMP/badging.txt"
+          line=$(sed -n 1p "$RUNNER_TEMP/badging.txt")
           echo "$line"
           case "$line" in
             *"versionCode='$CODE' versionName='$VERSION'"*) ;;
@@ -166,13 +185,40 @@ jobs:
           case "$TAG" in
             v*) kind=release; version=${TAG#v} ;;
             dryrun/v*) kind=dryrun; version=${TAG#dryrun/v} ;;
-            *) exit 1 ;;
+            *) echo "::error::Unexpected tag $TAG."; exit 1 ;;
           esac
-          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          if ! [[ "$version" =~ ^(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]{0,2})$ ]]; then
+            echo "::error::$TAG is not vX.Y.Z with X, Y and Z at most 999."
+            exit 1
+          fi
+          x=${BASH_REMATCH[1]}; y=${BASH_REMATCH[2]}; z=${BASH_REMATCH[3]}
+          if [ "$kind" = dryrun ] && [ "$x.$y" != 0.0 ]; then
+            echo "::error::Dry-run tags must be dryrun/v0.0.Z."
+            exit 1
+          fi
+          code=$((x * 1000000 + y * 1000 + z))
           : "${ANDROID_HOME:=${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
           signer="$ANDROID_HOME/build-tools/35.0.0/apksigner"
-          if [ ! -x "$signer" ]; then
-            echo "::error::$signer is not on this runner image."
+          aapt2="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          if [ ! -x "$signer" ] || [ ! -x "$aapt2" ]; then
+            echo "::error::build-tools 35.0.0 is not on this runner image."
+            exit 1
+          fi
+
+          # Job A ran build code, so check what it handed over before the release key touches it. The
+          # applicationId changes in P0-4e; that owner-signed PR updates this line too.
+          "$aapt2" dump badging in/app-release-unsigned.apk > "$RUNNER_TEMP/badging.txt"
+          head1=$(sed -n 1p "$RUNNER_TEMP/badging.txt")
+          case "$head1" in
+            "package: name='app.fieldwatch' versionCode='$code' versionName='$version' "*) ;;
+            *) echo "::error::Unexpected APK: $head1 (want app.fieldwatch, $code, $version)."; exit 1 ;;
+          esac
+          if grep -q '^application-debuggable' "$RUNNER_TEMP/badging.txt"; then
+            echo "::error::The APK is debuggable."
+            exit 1
+          fi
+          if grep -Eqi -- '<!--|SHA-256|verify before you install' in/notes.md; then
+            echo "::error::The notes contain an HTML comment or their own hash lines."
             exit 1
           fi
           if [ -z "${CERT_SHA256:-}" ] || [ -z "${KS_B64:-}" ]; then
@@ -188,6 +234,7 @@ jobs:
             --ks-pass env:SPECTRE_STORE_PASSWORD --key-pass env:SPECTRE_KEY_PASSWORD \
             --out "$out" in/app-release-unsigned.apk
           rm -f "$ks"
+          unset KS_B64 SPECTRE_STORE_PASSWORD SPECTRE_KEY_PASSWORD KEY_ALIAS
 
           certs=$("$signer" verify --print-certs "$out")
           signers=$(printf '%s\n' "$certs" | grep -c 'certificate SHA-256 digest' || true)
@@ -199,11 +246,12 @@ jobs:
           fi
           apk_sha=$(sha256sum "$out" | cut -d' ' -f1)
 
+          # The hashes come first, so nothing in the notes can push them out of view.
           {
-            cat in/notes.md
-            printf '\n## Verify before you install\n\n'
+            printf '## Verify before you install\n\n'
             printf -- '- APK SHA-256: `%s`\n' "$apk_sha"
-            printf -- '- Signing certificate SHA-256: `%s`\n' "$got"
+            printf -- '- Signing certificate SHA-256: `%s`\n\n' "$got"
+            cat in/notes.md
           } > notes.md
 
           if [ "$kind" = release ]; then
