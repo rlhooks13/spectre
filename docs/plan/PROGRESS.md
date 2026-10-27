@@ -70,13 +70,19 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
 - 2026-10-27: **P1-B5b Redundant short names (catalog v102).** #61 (P1-B5a) merged as e9666a7.
-  - **Triage:** of the 34 short "contains" names the lint lists, 19 sit on a row that already has an anchored glob of the same brand (`Arlo*`, `DJI*`, `Net2*`, ...).
+  - **Triage:** of the 34 short "contains" names the lint lists, 18 sit on a row that already has an anchored glob of the same brand on the same radio (`Arlo*`, `DJI*`, `Net2*`, ...).
   - **The fix:**
-    - The 19 contains-rules are retired (`retired.json`, `RetiredRules`, retiredIn 102).
+    - The 18 contains-rules are retired (`retired.json`, `RetiredRules`, retiredIn 102).
     - The globs stay, and ADR-0015 accepts them as anchored short brand prefixes, with the reason.
-    - No new rules, so the ladder step only moves the version.
-  - **Corpus:** new near misses "Car Audio BT" (was Audi) and the "Veeroo-5G" SSID (was eero). No existing corpus case relied on a bare name.
-  - **Left for P1-B5:** 15 names with no anchored glob: Echo, iPad, Seos, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Sony, UBNT, VW.
+    - HP gains `HP ENVY*` (printers lead with the brand) and MyQ the exact name `MyQ`.
+    - The ladder carries an "off" on a retired name to those two (`carryRetiredOff`, now shared with v101).
+  - **Corpus:**
+    - new targets "HP ENVY 6055e", "MyQ" and "DJI";
+    - new near misses: "Veeroo-5G" (was eero), plus "Car Audio BT", "Arlo's iPhone" and "Kevon-iPhone", which still hit and are pinned `knownUntil` P1-B5 and P1-B5d.
+  - **Review fixes:**
+    - Audi went back to P1-B5: its anchored globs are Wi-Fi only.
+    - My line deletions had merged 18 rule lines in DefaultCatalog (the Edit tool kept the newline). Restored: the catalog diff is now 18 clean deletions plus the two additions.
+  - **Left for P1-B5:** 16 names with no anchored glob on their radio: Echo, iPad, Seos, Audi, BMW, Bose, BYD, Ford, BT05, JBL, Logi, Xbox, Oura, Sony, UBNT, VW.
 - 2026-10-27: **P1-B5a RAVEN, Vigilant, IBR\* (catalog v101).** #60 (P1-B4c) merged as f91b91a.
   - **Split:** P1-B5 splits into B5a, the three rules the step names, and B5 itself, the 34 short names, which each need evidence of what real devices advertise.
   - **The fix:**

@@ -6,7 +6,6 @@
 - **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.
 - **Arlo** (camera): stopped matching on name contains "Arlo".
 - **ASUS** (isp): stopped matching on name contains "ASUS" (WIFI).
-- **Audi MMI** (vehicle): stopped matching on name contains "Audi" (BLE).
 - **BlueTOAD Spectra** (surveillance): notes reworded.
 - **Cisco** (isp): notes reworded.
 - **Cradlepoint** (law enforcement): stopped matching on name glob "IBR*" (WIFI); now also matches on name glob "IBR350*" (WIFI); name glob "IBR1150*" (WIFI).
@@ -17,10 +16,10 @@
 - **goTenna** (mesh): notes reworded.
 - **Hak5 Pineapple** (hacking): stopped matching on name contains "Hak5".
 - **Hobby BLE serial** (hacking): attention note reworded; notes reworded.
-- **HP** (home): stopped matching on name contains "ENVY" (BLE).
+- **HP** (home): stopped matching on name contains "ENVY" (BLE); now also matches on name glob "HP ENVY*" (BLE).
 - **Kevo** (lock): stopped matching on name contains "Kevo" (BLE).
 - **Mercedes MBUX** (vehicle): stopped matching on name contains "MBUX" (WIFI).
-- **myQ** (home): stopped matching on name contains "MyQ" (BLE).
+- **myQ** (home): stopped matching on name contains "MyQ" (BLE); now also matches on name glob "MyQ" (BLE).
 - **Nuki** (lock): stopped matching on name contains "Nuki" (BLE).
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).
 - **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI).
@@ -50,7 +49,6 @@
 - Near miss: Speaker named Ravenclaw: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Home alarm named Vigilant: was Motorola Vigilant (surveillance, extra attention), now no signature.
 - Near miss: Phone hotspot named Ibrahim: was Apple Device (phone), Cradlepoint (law enforcement, extra attention), now Apple Device (phone).
-- Near miss: Car stereo named Audio: was Audi MMI (vehicle), now no signature.
 - Near miss: Hotspot named Veeroo: was Eero (isp), now no signature.
 - Near miss: Fan gear named Ravens: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Device named Vigilante: was Motorola Vigilant (surveillance, extra attention), now no signature.

@@ -106,24 +106,239 @@
                 "radio": "WIFI"
             }
         },
-        { "fleetId": "fleet-arlo", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Arlo* and ARLO_VMB_* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Arlo", "companyId": 0, "dataPrefixHex": "", "radio": null } },
-        { "fleetId": "fleet-asus", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in an SSID; the row's anchored ASUS* and ASUS_* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "ASUS", "companyId": 0, "dataPrefixHex": "", "radio": "WIFI" } },
-        { "fleetId": "fleet-audi-mmi", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Audi_MMI_* and Audi MMI* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Audi", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-dji", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's exact DJI and anchored DJI* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "DJI", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-dji", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in an SSID; the row's exact DJI and anchored DJI* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "DJI", "companyId": 0, "dataPrefixHex": "", "radio": "WIFI" } },
-        { "fleetId": "fleet-eero", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in an SSID (\"Veeroo\"); the row's anchored eero* and Eero* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "eero", "companyId": 0, "dataPrefixHex": "", "radio": "WIFI" } },
-        { "fleetId": "fleet-eufy", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's EufyCam and anchored eufy* and Eufy* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "eufy", "companyId": 0, "dataPrefixHex": "", "radio": null } },
-        { "fleetId": "fleet-fobo", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored FOBO* stays.", "rule": { "kind": "NAME_CONTAINS", "text": "FOBO", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-hak5-pineapple", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Hak5* and its Pineapple names stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Hak5", "companyId": 0, "dataPrefixHex": "", "radio": null } },
-        { "fleetId": "fleet-hp", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored ENVY* and HP-Print* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "ENVY", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-kevo", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Kevo* and Unikey names stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Kevo", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-mbux", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in an SSID; the row's anchored MBUX* and Mercedes stay.", "rule": { "kind": "NAME_CONTAINS", "text": "MBUX", "companyId": 0, "dataPrefixHex": "", "radio": "WIFI" } },
-        { "fleetId": "fleet-myq", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored MyQ-* stays.", "rule": { "kind": "NAME_CONTAINS", "text": "MyQ", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-nuki", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Nuki* stays.", "rule": { "kind": "NAME_CONTAINS", "text": "Nuki", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-paxton", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Net2* and Paxton names stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Net2", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-seos", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Yale* and Seos stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Yale", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-tapo", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored Tapo* stays.", "rule": { "kind": "NAME_CONTAINS", "text": "Tapo", "companyId": 0, "dataPrefixHex": "", "radio": null } },
-        { "fleetId": "fleet-tuya", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's anchored TUYA* and Tuya* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "TUYA", "companyId": 0, "dataPrefixHex": "", "radio": "BLE" } },
-        { "fleetId": "fleet-wyze", "retiredIn": 102, "step": "P1-B5b", "reason": "Short name anywhere in a name; the row's WyzeCam and anchored Wyze* stay.", "rule": { "kind": "NAME_CONTAINS", "text": "Wyze", "companyId": 0, "dataPrefixHex": "", "radio": null } }
+        {
+            "fleetId": "fleet-arlo",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Arlo* and ARLO_VMB_* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Arlo",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-asus",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in an SSID; the row's anchored ASUS* and ASUS_* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "ASUS",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
+        },
+        {
+            "fleetId": "fleet-dji",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored DJI* (which also matches the bare name) stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "DJI",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-dji",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in an SSID; the row's anchored DJI* (which also matches the bare name) stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "DJI",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
+        },
+        {
+            "fleetId": "fleet-eero",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in an SSID (\"Veeroo\"); the row's anchored eero* and Eero* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "eero",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
+        },
+        {
+            "fleetId": "fleet-eufy",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's EufyCam and anchored eufy* and Eufy* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "eufy",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-fobo",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored FOBO* stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "FOBO",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-hak5-pineapple",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Hak5* and its Pineapple names stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Hak5",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-hp",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored ENVY* and HP-Print* stay, and HP ENVY* is added for the brand-first form.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "ENVY",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-kevo",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Kevo* and Unikey names stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Kevo",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-mbux",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in an SSID; the row's anchored MBUX* and Mercedes stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "MBUX",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "WIFI"
+            }
+        },
+        {
+            "fleetId": "fleet-myq",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored MyQ-* stays, and the exact name MyQ is added.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "MyQ",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-nuki",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Nuki* stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Nuki",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-paxton",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Net2* and Paxton names stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Net2",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-seos",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Yale* and Seos stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Yale",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-tapo",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored Tapo* stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Tapo",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-tuya",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's anchored TUYA* and Tuya* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "TUYA",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": "BLE"
+            }
+        },
+        {
+            "fleetId": "fleet-wyze",
+            "retiredIn": 102,
+            "step": "P1-B5b",
+            "reason": "Short name anywhere in a name; the row's WyzeCam and anchored Wyze* stay.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Wyze",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        }
     ]
 }

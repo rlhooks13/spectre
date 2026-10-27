@@ -7892,6 +7892,14 @@
                     "enabled": true
                 },
                 {
+                    "kind": "NAME_CONTAINS",
+                    "text": "Audi",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
                     "kind": "NAME_GLOB",
                     "text": "Audi_MMI_*",
                     "companyId": 0,
@@ -27646,6 +27654,14 @@
                     "dataPrefixHex": "",
                     "radio": "WIFI",
                     "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "HP ENVY*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -47241,6 +47257,14 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "MyQ-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "MyQ",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",

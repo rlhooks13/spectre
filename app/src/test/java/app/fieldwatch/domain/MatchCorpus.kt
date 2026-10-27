@@ -191,6 +191,10 @@ object MatchCorpus {
         Target("Raven default-style name", sighting("T:raven-default", name = "RAVEN-1A2B"), "fleet-raven"),
         Target("Vigilant default-style name", sighting("T:vigilant-default", name = "Vigilant_C3D4"), "fleet-vigilant"),
         Target("Raven Wi-Fi Direct SSID", sighting("T:raven-direct", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0B", name = "DIRECT-rR-Raven-607"), "fleet-raven"),
+        // P1-B5b: brand-first default names, now that the short "contains" names are gone.
+        Target("HP ENVY printer", sighting("T:hp-envy", name = "HP ENVY 6055e"), "fleet-hp"),
+        Target("MyQ hub by its bare name", sighting("T:myq", name = "MyQ"), "fleet-myq"),
+        Target("DJI drone by its bare name", sighting("T:dji", name = "DJI"), "fleet-dji"),
         Target("Cradlepoint IBR1150 router", sighting("T:cradlepoint-1150", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0C", name = "IBR1150-3F2"), "fleet-cradlepoint"),
         Target(
             "Cradlepoint IBR900 router",
@@ -284,7 +288,10 @@ object MatchCorpus {
             setOf("fleet-cradlepoint"),
         ),
         // P1-B5b: short brand names caught words that contain them; the rows keep only their anchored globs.
-        NearMiss("Car stereo named Audio", sighting("NM:car-audio", name = "Car Audio BT"), setOf("fleet-audi-mmi")),
+        NearMiss("Car stereo named Audio", sighting("NM:car-audio", name = "Car Audio BT"), setOf("fleet-audi-mmi"), knownUntil = "P1-B5"),
+        // The anchored short brand globs ADR-0015 accepts still catch a person's name that starts with the brand.
+        NearMiss("Phone named for an Arlo", sighting("NM:arlo-phone", name = "Arlo's iPhone"), setOf("fleet-arlo"), knownUntil = "P1-B5d"),
+        NearMiss("Phone named for a Kevon", sighting("NM:kevon-phone", name = "Kevon-iPhone"), setOf("fleet-kevo"), knownUntil = "P1-B5d"),
         NearMiss(
             "Hotspot named Veeroo",
             sighting("NM:veeroo", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0E", name = "Veeroo-5G"),

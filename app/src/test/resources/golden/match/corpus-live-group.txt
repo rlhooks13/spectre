@@ -61,6 +61,15 @@ T:vigilant-default	target	Vigilant default-style name
 T:raven-direct	target	Raven Wi-Fi Direct SSID
   expect fleet-raven
   -> fleet-raven [SURVEILLANCE]
+T:hp-envy	target	HP ENVY printer
+  expect fleet-hp
+  -> fleet-hp [HOME]
+T:myq	target	MyQ hub by its bare name
+  expect fleet-myq
+  -> fleet-myq [HOME]
+T:dji	target	DJI drone by its bare name
+  expect fleet-dji
+  -> fleet-dji [DRONE]
 T:cradlepoint-1150	target	Cradlepoint IBR1150 router
   expect fleet-cradlepoint
   -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
@@ -110,8 +119,14 @@ NM:ibr	near-miss	Phone hotspot named Ibrahim
   must not fleet-cradlepoint
   -> fleet-apple-device [PHONE]
 NM:car-audio	near-miss	Car stereo named Audio
-  must not fleet-audi-mmi
-  -> (none)
+  must not fleet-audi-mmi, wrong until P1-B5
+  -> fleet-audi-mmi [VEHICLE]
+NM:arlo-phone	near-miss	Phone named for an Arlo
+  must not fleet-arlo, wrong until P1-B5d
+  -> fleet-apple-device [PHONE]; fleet-arlo [CAMERA]
+NM:kevon-phone	near-miss	Phone named for a Kevon
+  must not fleet-kevo, wrong until P1-B5d
+  -> fleet-apple-device [PHONE]; fleet-kevo [LOCK]
 NM:veeroo	near-miss	Hotspot named Veeroo
   must not fleet-eero
   -> (none)

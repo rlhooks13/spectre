@@ -1244,19 +1244,14 @@ class ConfigStore internal constructor(private val file: File) {
             // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load), and patchBuiltIn above
             // appends their replacements switched on (ADDED_RULES_V101). A user who had switched the old rule off,
             // or had SSID keywords off (the v4 policy), gets the replacements off too.
-            fleets = fleets.map { fleet ->
-                val added = ADDED_RULES_V101[fleet.id]
-                if (added == null || !fleet.builtIn) return@map fleet
-                val old = cfg.fleets.firstOrNull { it.id == fleet.id } ?: return@map fleet
-                val wasOff = old.rules.any { RetiredRules.isRetired(fleet.id, it) && !it.enabled }
-                if (!wasOff) return@map fleet
-                fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in added) r.copy(enabled = false) else r })
-            }
+            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V101)
             version = CATALOG_V101
         }
         if (version < CATALOG_V102) {
-            // P1-B5b: 19 short "contains" names are retired (RetiredRules strips them on load). Each row keeps the
-            // anchored glob of the same name it already had, so nothing is added and this step only moves the version.
+            // P1-B5b: 18 short "contains" names are retired (RetiredRules strips them on load). Each row keeps the
+            // anchored glob of the same brand and radio it already had; HP and MyQ also gain a glob (ADDED_RULES_V102)
+            // that patchBuiltIn appends switched on, and that carries an "off" from the retired name.
+            fleets = carryRetiredOff(fleets, cfg.fleets, ADDED_RULES_V102)
             version = CATALOG_V102
         }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
@@ -1284,6 +1279,20 @@ class ConfigStore internal constructor(private val file: File) {
             )
         }
     }
+
+    /**
+     * [fleets] with each built-in row's newly [added] name globs switched off where that row in [before] (the config
+     * as loaded, before RetiredRules stripped it) had a retired rule switched off: the user's "off" on the rule a
+     * catalog step replaced carries to its replacements.
+     */
+    private fun carryRetiredOff(fleets: List<Fleet>, before: List<Fleet>, added: Map<String, Set<String>>): List<Fleet> =
+        fleets.map { fleet ->
+            val names = added[fleet.id]
+            if (names == null || !fleet.builtIn) return@map fleet
+            val old = before.firstOrNull { it.id == fleet.id } ?: return@map fleet
+            if (old.rules.none { RetiredRules.isRetired(fleet.id, it) && !it.enabled }) return@map fleet
+            fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in names) r.copy(enabled = false) else r })
+        }
 
     private fun ruleKey(rule: MatchRule): String =
         listOf(rule.kind.name, rule.text.uppercase(), rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty())
@@ -1799,6 +1808,12 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-raven" to setOf("RAVEN", "RAVEN-*", "RAVEN_*", "DIRECT-??-Raven-*"),
             "fleet-vigilant" to setOf("Vigilant", "Vigilant-*", "Vigilant_*"),
             "fleet-cradlepoint" to setOf("IBR350*", "IBR1150*"),
+        )
+
+        /** The name globs v102 added beside the anchored globs that replace a retired short name (P1-B5b). */
+        private val ADDED_RULES_V102 = mapOf(
+            "fleet-hp" to setOf("HP ENVY*"),
+            "fleet-myq" to setOf("MyQ"),
         )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */

@@ -123,7 +123,7 @@ class CatalogLintTest {
 
         /** The short names P1-B5b left: none of these rows has an anchored glob of the same name to fall back on. */
         private val SHORT_NAME: Map<String, String> = listOf(
-            "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-seos/Seos/BLE", "fleet-bmw/BMW/BLE",
+            "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-seos/Seos/BLE", "fleet-audi-mmi/Audi/BLE", "fleet-bmw/BMW/BLE",
             "fleet-bose/Bose/BLE", "fleet-byd/BYD/BLE", "fleet-ford/Ford/BLE", "fleet-hobby-ble/BT05/BLE",
             "fleet-jbl/JBL/BLE", "fleet-logitech/Logi/BLE", "fleet-microsoft/Xbox/BLE", "fleet-oura/Oura/BLE",
             "fleet-sony/Sony/BLE", "fleet-unifi-ap/UBNT/WIFI", "fleet-volkswagen/VW/BLE",

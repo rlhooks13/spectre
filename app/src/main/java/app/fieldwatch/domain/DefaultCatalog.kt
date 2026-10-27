@@ -1100,7 +1100,9 @@ object DefaultCatalog {
         builtIn = true,
         decode = CatalogDecodes.djiModel,
         rules = listOf(
-            mfg(0x08AA),            bleGlob("DJI*"),            wifiGlob("DJI*"),
+            mfg(0x08AA),
+            bleGlob("DJI*"),
+            wifiGlob("DJI*"),
         ),
     )
 
@@ -1172,7 +1174,8 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 wifiGlob("ASUS*"),
-                wifiGlob("ASUS_*"),            ),
+                wifiGlob("ASUS_*"),
+            ),
             ApVendorOuis.ASUS,
         ),
     )
@@ -1207,7 +1210,8 @@ object DefaultCatalog {
         notes = "Amazon Eero mesh. Not an Echo speaker.",
         builtIn = true,
         rules = withWifiOuis(
-            listOf(                wifiGlob("eero*"),
+            listOf(
+                wifiGlob("eero*"),
                 wifiGlob("Eero*"),
             ),
             ApVendorOuis.EERO,
@@ -1605,7 +1609,8 @@ object DefaultCatalog {
         matchAny = true,
         notes = "eufy home camera or tag. Common in houses. Consumer camera, not a roadside pole.",
         builtIn = true,
-        rules = listOf(            name("EufyCam"),
+        rules = listOf(
+            name("EufyCam"),
             glob("eufy*"),
             glob("Eufy*"),
         ),
@@ -1621,7 +1626,8 @@ object DefaultCatalog {
         notes = "Wyze home camera. Very common consumer gear, not a roadside pole.",
         builtIn = true,
         rules = listOf(
-            name("WyzeCam"),            glob("Wyze*"),
+            name("WyzeCam"),
+            glob("Wyze*"),
         ),
     )
 
@@ -1651,7 +1657,8 @@ object DefaultCatalog {
         matchAny = true,
         notes = "Arlo home camera or its base-station Wi-Fi. Consumer camera, not a roadside pole. Renamed SSIDs still hit on the board vendor.",
         builtIn = true,
-        rules = listOf(            glob("Arlo*"),
+        rules = listOf(
+            glob("Arlo*"),
             glob("ARLO_VMB_*"),
         ) + ApVendorOuis.ARLO.map { oui(it) },
     )
@@ -1786,7 +1793,8 @@ object DefaultCatalog {
         decode = CatalogDecodes.tuya,
         rules = listOf(
             mfg(0x07D0),
-            uuid("FD50"),            bleGlob("TUYA*"),
+            uuid("FD50"),
+            bleGlob("TUYA*"),
             bleGlob("Tuya*"),
         ),
     )
@@ -1806,7 +1814,8 @@ object DefaultCatalog {
             mfg(0x0BDE),
             uuid("FCBF"),
             uuid("00009800-0000-1000-8000-00177A000002"),
-            bleName("Seos"),            bleGlob("Yale*"),
+            bleName("Seos"),
+            bleGlob("Yale*"),
         ),
     )
 
@@ -1859,7 +1868,8 @@ object DefaultCatalog {
             uuid("A92EE100-5501-11E4-916C-0800200C9A66"),
             uuid("A92EE200-5501-11E4-916C-0800200C9A66"),
             uuid("A92EE300-5501-11E4-916C-0800200C9A66"),
-            uuid("A92AE200-5501-11E4-916C-0800200C9A66"),            bleGlob("Nuki*"),
+            uuid("A92AE200-5501-11E4-916C-0800200C9A66"),
+            bleGlob("Nuki*"),
         ),
     )
 
@@ -1928,7 +1938,8 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x015E),
             bleName("Unikey"),
-            bleGlob("Unikey*"),            bleGlob("Kevo*"),
+            bleGlob("Unikey*"),
+            bleGlob("Kevo*"),
         ),
     )
 
@@ -1993,7 +2004,8 @@ object DefaultCatalog {
         rules = listOf(
             mfg(0x0196),
             bleName("Paxton"),
-            bleGlob("Paxton*"),            bleGlob("Net2*"),
+            bleGlob("Paxton*"),
+            bleGlob("Net2*"),
         ),
     )
 
@@ -2023,7 +2035,10 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x0878),
-            uuid("26D91A37-C279-4D0F-96A1-532CE41CE0F6"),            bleGlob("MyQ-*"),
+            uuid("26D91A37-C279-4D0F-96A1-532CE41CE0F6"),
+            bleGlob("MyQ-*"),
+            // P1-B5b: the bare name, which "MyQ-*" misses, now that "MyQ" anywhere is retired.
+            bleGlob("MyQ"),
         ),
     )
 
@@ -2138,10 +2153,15 @@ object DefaultCatalog {
         rules = withWifiOuis(
             listOf(
                 mfg(0x0065),
-                uuid("FE78"),                bleGlob("ENVY*"),
+                uuid("FE78"),
+                bleGlob("ENVY*"),
                 wifiGlob("HP-Print*"),
             ),
             ApVendorOuis.HPINC,
+        ) + listOf(
+            // P1-B5b: HP printers lead with the brand ("HP ENVY 6055e"), which "ENVY*" misses, now that "ENVY"
+            // anywhere is retired. Last, as patchBuiltIn appends it.
+            bleGlob("HP ENVY*"),
         ),
     )
 
@@ -2156,7 +2176,8 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x017C),
-            bleName("Mercedes"),            wifiGlob("MBUX*"),
+            bleName("Mercedes"),
+            wifiGlob("MBUX*"),
         ),
     )
 
@@ -2261,7 +2282,8 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x0127),
-            uuid("00EE"),            bleGlob("FOBO*"),
+            uuid("00EE"),
+            bleGlob("FOBO*"),
         ),
     )
 
@@ -2409,7 +2431,8 @@ object DefaultCatalog {
         matchAny = true,
         notes = "TP-Link Tapo home camera. Consumer camera, not a roadside pole.",
         builtIn = true,
-        rules = listOf(            glob("Tapo*"),
+        rules = listOf(
+            glob("Tapo*"),
         ),
     )
 
@@ -3145,7 +3168,8 @@ object DefaultCatalog {
         rules = listOf(
             glob("Pineapple_*"),
             name("Pineapple_"),
-            name("WiFi Pineapple"),            glob("Hak5*"),
+            name("WiFi Pineapple"),
+            glob("Hak5*"),
         ),
     )
 
@@ -4338,7 +4362,9 @@ object DefaultCatalog {
         notes = "Audi in-car MMI hotspot. Factory name from the car, not a dealer.",
         builtIn = true,
         rules = listOf(
-            mfg(0x010E),            wifiGlob("Audi_MMI_*"),
+            mfg(0x010E),
+            bleName("Audi"),
+            wifiGlob("Audi_MMI_*"),
             wifiGlob("Audi MMI*"),
         ),
     )
