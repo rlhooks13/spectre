@@ -1082,6 +1082,7 @@
     "settings.layer.alert.speed": "Alerte radars de vitesse",
     "settings.layer.alert.gun": "Alerte détecteurs de tirs",
     "settings.layer.alert.camera": "Alerte autres caméras",
+    "settings.layer.alert.region": "Certains pays, dont l'Allemagne, la Suisse et la France, restreignent les applications qui avertissent les conducteurs des caméras sur la route, ou leur usage au volant. Vérifiez la loi là où vous conduisez avant d'activer une alerte.",
     "settings.layer.download.title": "Télécharger les lecteurs de plaques.",
     "settings.layer.more": "Mettre à jour pour inclure chaque lecteur de plaques.",
     "settings.layer.other.download.title": "Télécharger les autres capteurs.",
