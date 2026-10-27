@@ -1,74 +1,81 @@
 # Spectre: one-time setup (owner)
 
-This sets up the autonomous agent. Plan on 2–3 hours. Do the steps in order. Anything marked **(dry run)** is checked in step 9.
+This sets up the autonomous agent. Steps marked ✅ were done for you on 2026-10-26. The rest are yours, and step 9 is a supervised dry run before the agent runs alone.
 
 The WSL2 distro `spectre` is the isolation boundary. Claude Code's only tamper-proof lock is the machine-wide `managed-settings.json`. Inside the distro it locks only the agent. Your own Claude Code sessions on the Windows host keep their connectors and MCP servers.
-
-Steps marked ✅ were done for you on 2026-10-26.
 
 **What runs where**
 
 | Where | What |
 |---|---|
-| Windows host, your account | GitHub admin work, the signing keys, usbipd |
-| WSL2 distro `spectre` (Ubuntu 24.04), user `spectre` (no sudo) | The agent: Claude Code in tmux, the repo, the Android SDK, adb |
-| GitHub | Rulesets, CODEOWNERS, the `release` environment with secrets, CI |
+| Windows host, your account | GitHub admin work (your `gh` login), the release keystore, your commit-signing key, usbipd |
+| WSL2 distro `spectre` (Ubuntu 24.04), user `spectre` (no sudo) | The agent: Claude Code in tmux, the repo, the Android SDK, adb, its own limited GitHub token |
+| GitHub `rlhooks13/spectre` | Rulesets, the `Protected paths` check, the `release` environment with secrets, CI |
 | Dedicated phone | Test device attached to the distro with usbipd, with static reference tags next to it |
 
-## 1. GitHub, as `rlhooks13`
+**About the shared account.** The agent acts on GitHub as your account, `rlhooks13`, so GitHub shows its work as yours. Three things make that safe:
+- **Its token is limited.** It covers only the two Spectre repos, with no admin, workflows, secrets or environments permission.
+- **Control files need your signature.** A required check fails any PR that changes a control file unless you signed every commit.
+- **GitHub text is never an instruction.** You instruct the agent through its Claude session.
 
-1. **Create the repos.**
-   - Create **public** `rlhooks13/spectre`, empty: no README or license.
-   - Create **private** `rlhooks13/spectre-corpus`.
-2. **Push this checkout from the Windows host** (in Git Bash, in this folder). Upstream stays fetch-only.
-   ```
-   git remote rename origin upstream
-   git remote set-url --push upstream DISABLED
-   git remote add origin https://github.com/rlhooks13/spectre.git
-   git switch main && git merge --ff-only p0/bootstrap   # after the bootstrap kit is committed
-   git push -u origin main
-   ```
-3. **Actions settings** (Settings → Actions → General):
-   - Workflow permissions: **Read repository contents**.
-   - **Untick** "Allow GitHub Actions to create and approve pull requests".
-   - Fork pull requests: require approval for all outside contributors.
-4. **Rulesets** (Settings → Rules → Rulesets). Create these *after* the push above.
-   - **`main`**, targeting the default branch:
-     - Restrict deletions.
-     - Block force pushes.
-     - Require a pull request: **0 approvals**, **Require review from Code Owners**, dismiss stale approvals.
-     - Require status checks: the CI jobs (`Unit tests`, `APK`, and later ones).
-     - Bypass list: only you.
-   - **`release-tags`**, targeting tags `v*` and `catalog-v*`: Restrict updates and Restrict deletions. Leave creation allowed so the bot can tag.
-   - Turn on release immutability (Settings → General → Releases) if your account offers it.
-5. **`release` environment** (Settings → Environments).
-   - Deployment branches and tags: **selected tags** `v*` and `catalog-v*`.
-   - **No required reviewers**. That's your decision: releases are fully autonomous.
-   - Secrets come in step 3.
-6. **Collaborators.** Invite the bot (step 2) with the **Write** role on both repos. Never give it Admin.
+## 1. GitHub ✅
 
-## 2. Bot account
+| Item | State |
+|---|---|
+| Repos | `rlhooks13/spectre` (public), `rlhooks13/spectre-corpus` (private) |
+| Remotes in this checkout | `origin` = your fork; `upstream` = OffGridPete/Fieldwatch, fetch-only (its push URL is `DISABLED`). Upstream's 40 release tags were not pushed |
+| History | The 2 kit commits were re-authored to `87336707+rlhooks13@users.noreply.github.com` and signed |
+| Merging | Squash only; merged branches are deleted |
+| Actions | Workflow token is read-only; Actions can't create or approve PRs; outside contributors' PRs need approval to run |
+| Security | Secret scanning and push protection are on |
+| `main` ruleset | No deletion, no force-push, PR required (0 approvals), required checks `Unit tests`, `APK`, `Protected paths`, **no bypass** |
+| `release-tags` ruleset | `v*` and `catalog-v*` tags can't be moved or deleted |
+| Releases | Immutable |
+| `release` environment | Deploys only from `v*` and `catalog-v*` tags; no reviewers (your decision) |
+| Labels | `sev1`, `stop`, `needs-human`, `field-capture`, `gate` |
 
-1. **Create the account.** Make a separate GitHub account (e.g. `spectre-bot`) with its own email, and turn on 2FA. Accept both invites.
-2. **Create the token.** Use a **classic** token with **only the `repo` scope**: no `workflow`, `delete_repo`, `admin:*` or `write:packages`.
-   - Without `workflow`, the bot can't push changes under `.github/workflows/`. The agent drafts workflow changes in `docs/setup/workflows/` for you to copy over.
-   - Fine-grained tokens generally can't be scoped to another user's personal repo. If GitHub lets you create one limited to `rlhooks13/spectre` (Contents, Pull requests and Issues set to read/write, Workflows off), prefer it.
-3. **Expiry.** Set it to 1 year. Put the date in your calendar: an expired token stops the agent, and it will push-notify you.
+With no bypass, you also make every change through a PR. To change the rules in an emergency, use Settings → Rules → Rulesets, or `gh api` with your own login on Windows.
 
-## 3. Signing keys (Windows host, your account; never in the distro)
+## 2. The agent's GitHub token (your step)
 
-1. **Generate the keystore:**
-   ```
-   keytool -genkeypair -v -keystore spectre-release.jks -alias spectre -keyalg RSA -keysize 4096 \
-     -validity 36500 -dname "CN=Spectre contributors, O=Spectre"
-   keytool -list -v -keystore spectre-release.jks -alias spectre     # copy the SHA256 fingerprint
-   base64 -w0 spectre-release.jks > spectre-release.jks.b64
-   ```
-2. **Add the `release` environment secrets:** `SPECTRE_KEYSTORE_B64` (the .b64 contents), `SPECTRE_STORE_PASSWORD`, `SPECTRE_KEY_ALIAS` (`spectre`), `SPECTRE_KEY_PASSWORD`.
-3. **Add the environment variable** `SPECTRE_CERT_SHA256` (the fingerprint). The sign job checks it.
-4. **Back up** the `.jks` and its passwords in two offline places. Then delete the `.b64`.
-   - **If this key is lost**, no update can ever install over existing copies.
-5. **The catalog signing key** (ECDSA P-256) comes in Phase 4. The agent opens a `needs-human` issue with the command when it's needed.
+Create a **fine-grained** token for your account at GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained tokens** → Generate new token:
+
+| Field | Value |
+|---|---|
+| Name | `spectre agent (WSL distro)` |
+| Expiration | Custom, 1 year. Put the date in your calendar; when it expires the agent stops and sends a push notification |
+| Resource owner | `rlhooks13` |
+| Repository access | **Only select repositories:** `spectre`, `spectre-corpus` |
+| Contents | Read and write |
+| Issues | Read and write |
+| Pull requests | Read and write |
+| Actions | Read-only |
+| Commit statuses | Read-only |
+| Metadata | Read-only (set automatically) |
+| **Everything else** | **No access**, especially Administration, Workflows, Secrets, Environments and Variables |
+
+Then give it to the distro. **Never paste it into a chat.** In a Windows terminal:
+```
+wsl -d spectre
+gh auth login --hostname github.com --git-protocol https
+```
+Choose **Paste an authentication token**, paste it, then type `exit`.
+
+## 3. Keys ✅
+
+- **Release signing keystore.**
+  - Location: `C:\Users\RLHooks\SpectreSigning\spectre-release.p12` (PKCS12, alias `spectre`).
+  - Its password is in `BACKUP-ME.txt` in the same folder.
+  - Uploaded to the `release` environment: `SPECTRE_KEYSTORE_B64`, `SPECTRE_STORE_PASSWORD`, `SPECTRE_KEY_PASSWORD`, `SPECTRE_KEY_ALIAS`, plus the variable `SPECTRE_CERT_SHA256` = `5bf1c8c5b14f97fd6c93db8b96d48bcacff58d2397985b18310abd4c95a77fe5`.
+  - **Your step:** copy that folder to two offline places (a USB drive, a password manager), then delete it from this PC.
+    - If it's lost, no update can install over existing copies.
+    - If it leaks, someone else can sign Spectre updates.
+- **Commit-signing key.**
+  - Location: `C:\Users\RLHooks\.ssh\spectre_signing` (ed25519, no passphrase). It never leaves Windows; the distro can't see your drives.
+  - Its public half is `docs/setup/allowed_signers`. This checkout signs every commit with it (repo-local git config).
+  - Back it up with the keystore. If it's lost, create a new one and update `allowed_signers` through a PR signed with the old key. If both are gone, temporarily disable the `main` ruleset to make that change.
+- **Optional:** to show "Verified" badges on GitHub, run `gh auth refresh -s admin:ssh_signing_key`, then `gh ssh-key add ~/.ssh/spectre_signing.pub --type signing`. The `Protected paths` check doesn't need this.
+- **The catalog signing key** (ECDSA P-256) comes in Phase 4.
 
 ## 4. The distro
 
@@ -86,21 +93,15 @@ Steps marked ✅ were done for you on 2026-10-26.
 Isolation was checked from inside the distro: no Windows drives mounted, `.exe` files can't run, `sudo` is denied, managed settings and hooks are read-only, and the guard blocks a force-push.
 
 ### Your part
-- **Root access** for setup work: `wsl -d spectre -u root`. The agent itself always runs as `spectre`.
-- **Keep the distro running.** The host must never sleep (admin PowerShell):
+- **Keep it running.** The host must never sleep (admin PowerShell):
   ```
   powercfg /change standby-timeout-ac 0
   powercfg /change hibernate-timeout-ac 0
   ```
   Keep one terminal open on `wsl -d spectre`; WSL can stop a distro once every session has closed.
-- **Bot login** (after step 2, as `spectre`). Run `gh auth login --hostname github.com --git-protocol https` and paste the bot's token at its prompt, never in chat. Then:
-  ```
-  gh auth setup-git
-  gh repo clone rlhooks13/spectre ~/spectre
-  git -C ~/spectre config user.name "<bot username>"
-  git -C ~/spectre config user.email "<bot id>+<bot username>@users.noreply.github.com"
-  ```
-- **Claude login** (as `spectre`). Run `claude`, then `/login` with your subscription. With interop off, the browser won't open by itself: copy the URL it prints into your Windows browser.
+- **Claude login** (as `spectre`): run `claude`, then `/login` with your subscription. With interop off the browser won't open by itself: copy the URL it prints into your Windows browser.
+- **Root access** for setup work only: `wsl -d spectre -u root`. The agent always runs as `spectre`.
+- After step 2, Claude clones the repo into `~/spectre` and sets the agent's git identity (`Spectre agent`, noreply email, unsigned commits).
 
 ## 5. Managed settings ✅
 
@@ -118,13 +119,13 @@ All are owned by root and read-only for `spectre`.
   - the toolchain allowlist and the hard-stop denylist
   - the guard hook on Bash, Edit, Write and NotebookEdit
   - the usage status line
-- **When the repo copies change** (they're protected, so you'll have reviewed the PR), reinstall them as root:
+- **When the repo copies change** (through a PR you signed), reinstall them:
   ```
   wsl -d spectre -u root -- bash -c 'cd /home/spectre/spectre && install -m 0755 tools/hooks/guard.sh /etc/claude-code/spectre/guard.sh && install -m 0755 tools/statusline.sh /etc/claude-code/spectre/statusline.sh && install -m 0644 docs/setup/managed-settings.template.json /etc/claude-code/managed-settings.json'
   ```
 - **Sandbox (optional, dry run):** add `"sandbox": {"enabled": true}` and test whether `./gradlew`, `gh` and `adb` still work. Keep it only if they do.
 
-## 6. Dedicated phone
+## 6. Dedicated phone (your step; usbipd is installed ✅)
 
 - No personal Google account. Don't put anything on it you wouldn't want the agent to see.
 - Developer options:
@@ -132,23 +133,23 @@ All are owned by root and read-only for `spectre`.
   - **Disable adb authorization timeout** on
   - **Stay awake** on
 - Automatic system updates **off**. Location, Wi-Fi and Bluetooth **on**.
-- On the charger, with the reference tags beside it: AirTag, SmartTag, Tile, Galaxy Buds. Also a Galaxy phone if you have one, as a confuser.
-- **Attach it to the distro.** Install usbipd-win from an admin PowerShell: `winget install --exact --id dorssel.usbipd-win`. Plug the phone in, then:
+- On the charger, with the reference tags beside it: AirTag, SmartTag, Tile, Galaxy Buds, plus a Galaxy phone if you have one, as a confuser.
+- Plug it in, then attach it to the distro:
   ```
   usbipd list                                   # find the phone's BUSID
   usbipd bind --busid <BUSID>                   # admin PowerShell, one time
   usbipd attach --wsl --busid <BUSID> --auto-attach
   ```
-  Leave that `attach` window running; it reattaches after a replug. Inside the distro, run `adb devices`, accept the prompt on the phone, and tick "Always allow".
-- **Don't run adb or Android Studio on Windows** while the phone is attached to the distro.
+  Leave the `attach` window running; it reattaches after a replug. Inside the distro, run `adb devices`, accept the prompt on the phone, and tick "Always allow".
+- Don't run adb or Android Studio on Windows while the phone is attached to the distro.
 
-## 7. Notifications
+## 7. Notifications (your step)
 
 - In the agent's Claude session, turn on Remote Control.
 - On your own phone, install the Claude mobile app, signed in to the same account.
-- **Fallback:** watch the repo on GitHub, so `needs-human` issues and releases notify you.
+- **This is your only alert channel.** GitHub doesn't notify you about activity from your own account, and the agent posts as you.
 
-## 8. Start the loop (in `wsl -d spectre`)
+## 8. Start the loop
 
 ```
 wsl -d spectre
@@ -161,7 +162,7 @@ To detach, press Ctrl-b then d. To reattach later, run `tmux attach -t spectre`.
 
 ## 9. Dry run (supervised, before you leave it alone)
 
-Watch the first cycle and tick each check. Write the results into PROGRESS.md (the agent does this when asked).
+Watch the first cycle and tick each check. The agent writes the results into PROGRESS.md.
 
 | ✓ | Check | Expected |
 |---|---|---|
@@ -174,16 +175,26 @@ Watch the first cycle and tick each check. Write the results into PROGRESS.md (t
 | ☐ | `./gradlew testDebugUnitTest` in the distro | 766 tests pass |
 | ☐ | `adb -s <serial> get-state` | `device` |
 | ☐ | Push notification | Arrives on your phone |
-| ☐ | The bot opens a PR changing a non-protected file | CI runs; the bot can merge it |
-| ☐ | The bot opens a PR changing `CLAUDE.md` | Can't merge until you approve |
-| ☐ | The bot pushes a change under `.github/workflows/` | Rejected (no `workflow` scope) |
+| ☐ | It opens a PR changing a non-protected file | CI runs; it can squash-merge it |
+| ☐ | It opens a PR changing `CLAUDE.md` | `Protected paths` fails; can't merge |
+| ☐ | It pushes a change under `.github/workflows/` | Rejected: its token has no Workflows permission |
+| ☐ | It runs `gh secret list` or tries to edit a ruleset | 403 |
 | ☐ | Ask it to re-create its own loop with the `loop` skill | Works, or it reports the fallback |
 
-If anything fails, fix it here before the loop runs unattended. The agent marks the matching PLAN step `needs-human` if it hits one of these later.
+If anything fails, fix it here before the loop runs unattended.
 
 ## Your ongoing part
 
-- Review PRs that touch protected paths (CODEOWNERS sends you a review request).
+- **Changing a control file** (the agent pushes a branch and pings you, or you start one). From this checkout on Windows, which signs automatically:
+  ```
+  git fetch origin && git switch -c owner/<slug> origin/main
+  git merge --squash origin/<agent-branch>   # only if you're adopting an agent branch; review the diff first
+  # edit as needed, then commit: commits made in this checkout are signed
+  git commit
+  git push -u origin owner/<slug>
+  gh pr create --fill && gh pr merge --squash --auto
+  ```
+  The agent's own commits are unsigned, so adopting its branch means squashing it into a commit you sign. Read the diff first: your signature is what unlocks protected paths.
 - Record the field captures the agent asks for (`field-capture` issues: walks and drives with ground truth).
-- Handle `needs-human` issues. Re-run `/loop` if asked. Renew the bot token before it expires.
-- To stop the agent, create an issue labeled `stop`, add a `STOP` file at the repo root, or attach to tmux and press Esc.
+- Handle `needs-human` issues. Re-run `/loop` if asked. Renew the agent's token before it expires.
+- To stop the agent, open an issue labeled `stop`, add a `STOP` file at the repo root, or attach to tmux and press Esc.

@@ -1,0 +1,54 @@
+name: Protected paths
+
+# The agent pushes as the owner's GitHub account, so GitHub can't tell the two apart. This check can:
+# a PR that changes a control file merges only if every commit in it is signed with the owner's SSH key.
+# That key lives only on the owner's Windows host. The allowed key is read from the BASE branch, so a PR
+# can't add its own key. The agent's token has no Workflows permission, so it can't edit this file.
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  owner-signature:
+    name: Protected paths
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Require the owner's signature on changes to protected paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          protected='^(\.github/|\.claude/|CLAUDE\.md$|docs/plan/(CHARTER\.md|test-baseline\.txt|quarantine\.txt|LOOP_PROMPT\.md|approved-dependencies\.md|review-prompts/)|docs/setup/|gradle/verification-metadata\.xml$|tools/(usage-watch\.|statusline\.|hooks/)|.*Disclaimer\.kt$)'
+          base=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
+          hits=$(git diff --name-only --no-renames "$base" "$HEAD_SHA" | grep -E "$protected" || true)
+          if [ -z "$hits" ]; then
+            echo "No protected paths changed."
+            exit 0
+          fi
+          echo "Protected paths changed:"
+          printf '  %s\n' $hits
+          if ! git show "$BASE_SHA:docs/setup/allowed_signers" > "$RUNNER_TEMP/allowed_signers" 2>/dev/null; then
+            echo "::error::docs/setup/allowed_signers is missing on the base branch."
+            exit 1
+          fi
+          git config gpg.ssh.allowedSignersFile "$RUNNER_TEMP/allowed_signers"
+          bad=0
+          for c in $(git rev-list "$base..$HEAD_SHA"); do
+            if out=$(git verify-commit "$c" 2>&1) && printf '%s' "$out" | grep -q '^Good "git" signature for '; then
+              echo "owner-signed: $c"
+            else
+              echo "::error::Commit $c changes this PR but isn't signed with the owner's key."
+              bad=1
+            fi
+          done
+          exit $bad
