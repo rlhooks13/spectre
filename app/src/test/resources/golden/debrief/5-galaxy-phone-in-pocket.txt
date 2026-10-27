@@ -88,11 +88,11 @@ No listed camera was along this path.
 
 4. TRACKING ASSESSMENT
 Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
-Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (Garmin, Fitbit, Oura, Polar), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
 Callouts below are only radios that stayed with the path. Radios you passed (store fixtures, house tags) are omitted.
 
 5. POSSIBLE TRACKERS WITH YOU
-Finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee) and loud pocket Apple BLE. These radios stayed with your GPS path for this sit. Spectre cannot tell your own tag or phone from a tracker planted in the car, bag, or on you before you started. Account for each MAC. Not a finding and not identity.
+Finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee). These radios stayed with your GPS path for this sit. Spectre cannot tell your own tag or phone from a tracker planted in the car, bag, or on you before you started. Account for each MAC. Not a finding and not identity.
 
   • Samsung SmartTags
     5E:11:22:33:44:08  5E:11:22:33:44:08  RSSI -50 dBm (min -50 / max -48)

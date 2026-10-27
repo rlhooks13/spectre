@@ -960,7 +960,6 @@
     "ui.gps.tagging.off.fieldwatch": "GPS žymėjimas IŠJUNGTAS. Spectre negali patikrinti, ar radijas judėjo su jumis.",
     "ui.turn.settings.tag.detections.2": "Įjunkite Nustatymai → Žymėti aptikimus GPS, eikite arba važiuokite 50+ m, tada vėl paleiskite Apžvalgą.",
     "ui.insufficient.movement.distinguish.radio": "Nepakanka judėjimo atskirti radiją, kuris liko su jumis, nuo to, kurį praėjote. Eikite arba važiuokite toliau ir paleiskite dar kartą.",
-    "ui.no.finder.tag.retail": "Jokia žyma, parduotuvės švyturys ar dėvimas neliko su jumis. Namų žymos ir radijo, kuriuos tik praėjote, neįtraukiami.",
     "ui.callouts.below.only.radios": "Žemiau tik radijo, kurie liko su keliu. Radijo, kuriuos praėjote (parduotuvės įranga, namų žymos), praleidžiami.",
     "ui.radios.marked.mine.heard": "Radijo, kuriuos pažymėjote Mano. Girdėti šiame lange. Vis dar sąraše. Be pyptelėjimo, kol žyma įjungta.",
     "ui.marked.mine.first.heard": "Pažymėta Mano. Pirmą kartą girdėta pamainai prasidėjus ir liko su keliu.",

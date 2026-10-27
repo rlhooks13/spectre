@@ -2,29 +2,32 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B4b Finder wording**, after P1-B4 merges. Then B4c, then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
-  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
+- Current step: **P1-B4c Beacons and wearables by class**, after P1-B4b merges. Then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+  - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** signing #43; the P0-7c layer choice.
+  - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b4-apple-phones-not-finders`
+- Branch: `p1/b4b-finder-wording`
 - Phone serial: RFCX205JR3K
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T20:45Z
+- Last cycle: 2026-10-27T21:10Z
 
 ## Needs human (owner)
 **For the owner:**
-- **Sign and merge #43 (P1-A1 follow-ups).** CI is green on Java 17 with Robolectric on SDK 35. The earlier "SDK 35 needs Java 21" note was wrong: a test run showed `java.version` 17.0.20.1 on SDK 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **Decide on the inherited co-travel verdicts (CHARTER: field-dependent logic behind flags that default off).** The finder, beacon, wearable and now phone "moved with you" and "possible tail" verdicts came from Fieldwatch unflagged, and the Debrief has always shown them. Should they go behind a `Features` flag that defaults off (the Debrief loses its tracking assessment until field acceptance), or stay on as inherited behavior? P1-B4 replaced carried-phone FINDER verdicts with milder PHONE ones and left the rest as it found them.
+- **CLAUDE.md command table (protected):** add the build switches the agent added:
+  - `-PwriteStockCatalog`, the short form of `WRITE_STOCK_CATALOG=1`;
+  - `-PreleaseNotes=X.Y.Z`, which writes a release's generated notes;
+  - `-PpruneLanguagePacks`, which drops retired ("Unused") keys from the bundled packs (P1-B4b). The language-key rules could also say to run it after a key goes "Unused".
 - **Uninstall the stale `app.fieldwatch.debug` from the phone** if you don't need its data (the agent leaves it alone because uninstalling deletes that data). Also, the Spectre debug build stops at its first-run "Disclaimer and license" screen. The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
@@ -65,6 +68,26 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Owner: #43 adopted as #58 (8dd258f).**
+  - #58 adopts #43 owner-signed, and #43 is closed.
+  - CI counted 956 passing tests on SDK 35, which confirms that Java 17 runs SDK 35. The baseline is 956, not 858.
+  - #59 merged that main in (a merge commit, no force-push); `check` passes with 961 debug unit tests.
+  - P0-7c stays parked.
+- 2026-10-27: **P1-B4b Finder wording.** #57 (P1-B4) merged as 5da4d2a.
+  - **New keys, revision 6:** three Debrief lines no longer list "loud pocket Apple" among finder tags:
+    - `ui.finder.tags.class.intro`;
+    - `ui.finder.tags.class.list`;
+    - `ui.co.travel.split.phones`, whose class list adds carried Apple devices.
+  - **Old keys:** they stay, with "Unused". `-PpruneLanguagePacks` (new; `BundledPackRetiredKeysTest`) removed their lines from the 20 bundled packs that had them: 60 lines, nothing else touched. The test fails whenever a bundled pack still carries a retired key.
+  - **Debrief:**
+    - section 4 counts phones with you, so it no longer says nothing stayed above a "Phones with you" list;
+    - the takeaway and the executive summary name a phone that joined and kept pace (`ui.phone.s.joined.kept.pace`), and, more mildly, one that was with you all along (`ui.apple.device.s.path.usually`);
+    - with only phones, the takeaway's core is "No finder tag stayed with the path", not "No signature hits";
+    - section 4's "nothing stayed" line now names all four classes (`ui.nothing.stayed.four.classes`; the old `ui.no.finder.tag.retail` is "Unused" and pruned from all 26 packs).
+  - **Prune tool:**
+    - it finds keys by parsing the JSON;
+    - it edits text by splitting on "\n" only, so CRs and a missing final newline survive;
+    - it has unit tests for middle, last, only and CRLF entries, and every pack parses after pruning.
 - 2026-10-27: **P1-B4 Apple phones.** #56 (P1-B3) merged as dd938cc.
   - **The fix:** `TrackerMatch.kind` takes each fleet's `SignatureClass`. A FINDER-class match is a finder, whatever the name, so "Tattile" is no longer one. A loud carried Apple phone, Mac or AirPods is the new `Kind.PHONE`, never FINDER. With no signature at all, an Offline Finding record still reads as a finder unless its status byte says Apple device or AirPods.
   - **Debrief:** phones get their own "Phones with you" section and Markdown list, with milder wording (5 new keys at revision 6). They don't reach the summary, actions or takeaway.

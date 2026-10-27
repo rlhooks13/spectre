@@ -200,7 +200,11 @@ tasks.withType<Test>().configureEach {
     // Release notes' generated block (P0-8d): `-PreleaseNotes=X.Y.Z`, debug variant only.
     val releaseNotes = if (name == "testDebugUnitTest") providers.gradleProperty("releaseNotes").getOrElse("") else ""
     systemProperty("spectre.releaseNotes", releaseNotes)
-    if (updateGolden || writeStock || releaseNotes.isNotBlank()) outputs.upToDateWhen { false }
+    // Dropping retired ("Unused") keys from the bundled language packs (P1-B4b): `-PpruneLanguagePacks`.
+    val pruneLanguagePacks = name == "testDebugUnitTest" &&
+        providers.gradleProperty("pruneLanguagePacks").orNull?.let { it.isEmpty() || it == "true" } == true
+    systemProperty("spectre.pruneLanguagePacks", pruneLanguagePacks.toString())
+    if (updateGolden || writeStock || releaseNotes.isNotBlank() || pruneLanguagePacks) outputs.upToDateWhen { false }
 }
 
 // Robolectric brings BouncyCastle and Conscrypt onto the test classpath. They are approved there only

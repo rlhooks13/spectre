@@ -87,8 +87,8 @@ No listed camera was along this path.
 
 4. TRACKING ASSESSMENT
 Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
-Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
-No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (Garmin, Fitbit, Oura, Polar), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
+No finder tag, retail beacon, wearable, or carried Apple device stayed with you. House tags and other radios you only passed are not listed.
 
 5. ENVIRONMENT
 Mixed or under-sampled environment.  (0 APs, 2 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)

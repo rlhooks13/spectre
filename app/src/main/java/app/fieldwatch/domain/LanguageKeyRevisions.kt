@@ -73,6 +73,9 @@ object LanguageKeyRevisions {
             // P1-B4: carried Apple phones are assessed as phones, not finders.
             "ui.phones.with.you.label", "ui.phones.with.you.body", "ui.phones.with.you.heading",
             "ui.typical.phone.carried", "ui.typical.phone.joined.sit",
+            // P1-B4b: the finder-tag lines without "loud pocket Apple".
+            "ui.finder.tags.class.intro", "ui.finder.tags.class.list", "ui.co.travel.split.phones",
+            "ui.phone.s.joined.kept.pace", "ui.apple.device.s.path.usually", "ui.nothing.stayed.four.classes",
         )) put(key, 6)
     }
 

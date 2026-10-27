@@ -450,7 +450,7 @@ object DebriefReport {
             add(DebriefSection(
                 next(),
                 LanguageText.text("ui.executive.summary"),
-                execSummary(wifi, ble, named, hidden, randomized, pathSpan, pathLen, following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, settings, places, win, mineHeard) + craftSentence(pictures),
+                execSummary(wifi, ble, named, hidden, randomized, pathSpan, pathLen, following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, settings, places, win, mineHeard) + craftSentence(pictures),
                 chart = classChart(inWin, fleets),
             ))
             add(DebriefSection(next(), LanguageText.text("ui.where.were"), whereYouWere(settings, path, pathLen, pathSpan, inWin, names, places, windowEnd, customNames, bookmarkedKeys)))
@@ -470,7 +470,7 @@ object DebriefReport {
                 DebriefSection(
                     next(),
                     LanguageText.text("ui.tracking.assessment"),
-                    trackingSection(settings, path, pathSpan, pathLen, following, wholeSit, beaconsWithYou, wearablesWithYou),
+                    trackingSection(settings, path, pathSpan, pathLen, following, wholeSit, beaconsWithYou, wearablesWithYou, phonesWithYou),
                 ),
             )
             if (wholeSit.isNotEmpty()) {
@@ -479,7 +479,7 @@ object DebriefReport {
                         next(),
                         LanguageText.text("ui.possible.trackers"),
                         trackerCallout(
-                            (LanguageText.text("ui.finder.tags.airtag.find") + " ") +
+                            (LanguageText.text("ui.finder.tags.class.intro") + " ") +
                                 (LanguageText.text("ui.these.radios.stayed.gps") + " ") +
                                 (LanguageText.text("ui.fieldwatch.cannot.tell.own") + " ") +
                                 LanguageText.text("ui.account.each.mac.not"),
@@ -626,7 +626,7 @@ object DebriefReport {
             meta = meta,
             disclaimer = SpectreDisclaimer.report(win),
             trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing,
-            takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, pathSpan, settings, named),
+            takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, pathSpan, settings, named),
             sections = sections,
             extraAttention = attentionHits.map { (d, sig, note) ->
                 ExtraAttentionHit(
@@ -761,7 +761,7 @@ object DebriefReport {
                 (LanguageText.text("ui.possible.tail.extra.gates") + " ") +
                 (LanguageText.text("ui.2.3.gps.stamps") + " ") +
                 (LanguageText.text("ui.fail.any.one.omit") + " ") +
-                (LanguageText.text("ui.finder.tags.airtag.smarttag") + " ") +
+                (LanguageText.text("ui.finder.tags.class.list") + " ") +
                 (LanguageText.text("ui.tracking.test.retail.beacons") + " ") +
                 LanguageText.text("ui.they.do.not.typically"),
         )
@@ -987,6 +987,7 @@ object DebriefReport {
         ownLikely: List<FollowHit>,
         beaconsWithYou: List<FollowHit>,
         wearablesWithYou: List<FollowHit>,
+        phonesWithYou: List<FollowHit>,
         settings: AppSettings,
         places: DebriefPlaces,
         window: DebriefWindow,
@@ -1043,6 +1044,15 @@ object DebriefReport {
             append(wearablesWithYou.joinToString { "${it.label} ${it.device.mac}" })
             append(".")
         }
+        // P1-B4b: carried Apple devices, with the one that joined and kept pace first.
+        val (phonesFollowing, phonesAlong) = phonesWithYou.partition { it.verdict == Verdict.FOLLOWING }
+        for ((key, rows) in listOf("ui.phone.s.joined.kept.pace" to phonesFollowing, "ui.apple.device.s.path.usually" to phonesAlong)) {
+            if (rows.isEmpty()) continue
+            if (isNotEmpty() && !endsWith(" ")) append(" ")
+            append(LanguageText.text(key) + " ")
+            append(rows.joinToString { "${it.label} ${it.device.mac}" })
+            append(".")
+        }
     }
 
     private fun trackingSection(
@@ -1054,6 +1064,7 @@ object DebriefReport {
         wholeSit: List<FollowHit>,
         beaconsWithYou: List<FollowHit>,
         wearablesWithYou: List<FollowHit>,
+        phonesWithYou: List<FollowHit>,
     ): String = buildString {
         if (!settings.tagLocation) {
             appendLine(LanguageText.text("ui.gps.tagging.off.fieldwatch"))
@@ -1061,13 +1072,13 @@ object DebriefReport {
             return@buildString
         }
         appendLine("Overall distance traveled: ${fmtDist(pathLen)} along the GPS path (${path.size} samples). Straight-line span ${fmtDist(pathSpan)}.")
-        appendLine(LanguageText.text("ui.co.travel.split.class"))
+        appendLine(LanguageText.text("ui.co.travel.split.phones"))
         if (path.size < 2 || pathSpan < MOVE_M) {
             appendLine(LanguageText.text("ui.insufficient.movement.distinguish.radio"))
             return@buildString
         }
-        if (following.isEmpty() && wholeSit.isEmpty() && beaconsWithYou.isEmpty() && wearablesWithYou.isEmpty()) {
-            appendLine(LanguageText.text("ui.no.finder.tag.retail"))
+        if (following.isEmpty() && wholeSit.isEmpty() && beaconsWithYou.isEmpty() && wearablesWithYou.isEmpty() && phonesWithYou.isEmpty()) {
+            appendLine(LanguageText.text("ui.nothing.stayed.four.classes"))
         } else {
             appendLine(LanguageText.text("ui.callouts.below.only.radios"))
         }
@@ -1497,11 +1508,23 @@ object DebriefReport {
         ownLikely: List<FollowHit>,
         beaconsWithYou: List<FollowHit>,
         wearablesWithYou: List<FollowHit>,
+        phonesWithYou: List<FollowHit>,
         pathSpan: Double,
         settings: AppSettings,
         named: List<Sighting>,
     ): String {
         val extra = buildString {
+            val (phonesFollowing, phonesAlong) = phonesWithYou.partition { it.verdict == Verdict.FOLLOWING }
+            if (phonesFollowing.isNotEmpty()) {
+                append((" " + LanguageText.text("ui.phone.s.joined.kept.pace") + " "))
+                append(phonesFollowing.joinToString { it.label + " (" + it.device.mac + ")" })
+                append(".")
+            }
+            if (phonesAlong.isNotEmpty()) {
+                append((" " + LanguageText.text("ui.apple.device.s.path.usually") + " "))
+                append(phonesAlong.joinToString { it.label + " (" + it.device.mac + ")" })
+                append(".")
+            }
             if (beaconsWithYou.isNotEmpty()) {
                 append((" " + LanguageText.text("ui.retail.beacon.s.also.2") + " "))
                 append(beaconsWithYou.joinToString { it.label + " (" + it.device.mac + ")" })
@@ -1525,7 +1548,7 @@ object DebriefReport {
                 "Not enough GPS movement (${pathSpan.toInt()} m) to test following; walk and re-run Debrief."
             ownLikely.isNotEmpty() || withYou.isNotEmpty() ->
                 "Finder tags with you (yours or planted before you started): ${(ownLikely + withYou).joinToString { trackId(it) }}. No new arrival this window. Account for each MAC — do not dismiss as yours."
-            beaconsWithYou.isNotEmpty() || wearablesWithYou.isNotEmpty() ->
+            beaconsWithYou.isNotEmpty() || wearablesWithYou.isNotEmpty() || phonesWithYou.isNotEmpty() ->
                 LanguageText.text("ui.no.finder.tag.stayed")
             named.isEmpty() ->
                 LanguageText.text("ui.no.signature.hits.no")
