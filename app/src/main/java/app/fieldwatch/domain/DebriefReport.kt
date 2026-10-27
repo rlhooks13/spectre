@@ -273,6 +273,8 @@ object DebriefReport {
         val phonesWithYou = stayedWithYou(phoneFollow).open()
         // A phone that joined the sit and kept pace is someone else's: it still raises the alert (P1-B4).
         val phoneFollowing = phonesWithYou.any { it.verdict == Verdict.FOLLOWING }
+        // P1-B4c: an AI recorder that joined the sit and kept pace is someone else's too.
+        val wearableFollowing = wearablesWithYou.any { it.verdict == Verdict.FOLLOWING }
         val mineHeard = inWin.count { it.key in mineKeys }
         val placeBody = if (!settings.placeWatch || placeRecords.isEmpty()) {
             null
@@ -529,8 +531,8 @@ object DebriefReport {
                         next(),
                         LanguageText.text("ui.wearables.label"),
                         trackerCallout(
-                            (LanguageText.text("ui.garmin.fitbit.oura.polar") + " ") +
-                                (LanguageText.text("ui.watches.rings.usually.move") + " ") +
+                            (LanguageText.text("ui.wearable.radios.stayed") + " ") +
+                                (LanguageText.text("ui.wearables.usually.move") + " ") +
                                 LanguageText.text("ui.they.not.typically.planted"),
                             wearablesWithYou,
                             customNames,
@@ -625,7 +627,7 @@ object DebriefReport {
             windowLine = windowLine,
             meta = meta,
             disclaimer = SpectreDisclaimer.report(win),
-            trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing,
+            trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing || wearableFollowing,
             takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, pathSpan, settings, named),
             sections = sections,
             extraAttention = attentionHits.map { (d, sig, note) ->
@@ -763,7 +765,7 @@ object DebriefReport {
                 (LanguageText.text("ui.fail.any.one.omit") + " ") +
                 (LanguageText.text("ui.finder.tags.class.list") + " ") +
                 (LanguageText.text("ui.tracking.test.retail.beacons") + " ") +
-                LanguageText.text("ui.they.do.not.typically"),
+                LanguageText.text("ui.they.do.not.typically.recorder"),
         )
         fun List<FollowHit>.open(): List<FollowHit> = filter { it.device.key !in mineKeys }
         val followingMd = follow.filter { it.verdict == Verdict.FOLLOWING }.open()
@@ -802,7 +804,7 @@ object DebriefReport {
                 beaconsOpen,
             )
             dump(
-                LanguageText.text("ui.wearables.garmin.fitbit.oura"),
+                LanguageText.text("ui.wearables.with.you.kinds"),
                 wearablesOpen,
             )
             dump(
@@ -909,7 +911,7 @@ object DebriefReport {
             TrackerMatch.Kind.BEACON ->
                 LanguageText.text("ui.location.beacons.do.not")
             TrackerMatch.Kind.WEARABLE ->
-                LanguageText.text("ui.typical.watch.ring.companion")
+                LanguageText.text("ui.typical.wearable.companion")
             TrackerMatch.Kind.PHONE ->
                 LanguageText.text("ui.typical.phone.carried")
         }
@@ -962,7 +964,7 @@ object DebriefReport {
                     TrackerMatch.Kind.BEACON ->
                         LanguageText.text("ui.unusual.retail.location.beacon")
                     TrackerMatch.Kind.WEARABLE ->
-                        LanguageText.text("ui.typical.watch.joined.sit")
+                        LanguageText.text("ui.typical.wearable.joined.sit")
                     TrackerMatch.Kind.PHONE ->
                         LanguageText.text("ui.typical.phone.joined.sit")
                 }
@@ -1040,7 +1042,7 @@ object DebriefReport {
             append(". ")
         }
         if (wearablesWithYou.isNotEmpty()) {
-            append((LanguageText.text("ui.wearable.s.stayed.path") + " "))
+            append((LanguageText.text("ui.wearable.s.stayed.kinds") + " "))
             append(wearablesWithYou.joinToString { "${it.label} ${it.device.mac}" })
             append(".")
         }
@@ -1072,7 +1074,7 @@ object DebriefReport {
             return@buildString
         }
         appendLine("Overall distance traveled: ${fmtDist(pathLen)} along the GPS path (${path.size} samples). Straight-line span ${fmtDist(pathSpan)}.")
-        appendLine(LanguageText.text("ui.co.travel.split.phones"))
+        appendLine(LanguageText.text("ui.co.travel.split.kinds"))
         if (path.size < 2 || pathSpan < MOVE_M) {
             appendLine(LanguageText.text("ui.insufficient.movement.distinguish.radio"))
             return@buildString
@@ -1491,7 +1493,7 @@ object DebriefReport {
         }
         if (wearablesWithYou.isNotEmpty()) {
             add(
-                (LanguageText.text("ui.wearables.usually.own.kit") + " ") +
+                (LanguageText.text("ui.wearables.own.kit.recorder") + " ") +
                     wearablesWithYou.joinToString { it.label + " " + it.device.mac } +
                     ".",
             )
@@ -1531,7 +1533,7 @@ object DebriefReport {
                 append(".")
             }
             if (wearablesWithYou.isNotEmpty()) {
-                append((" " + LanguageText.text("ui.wearable.s.path.usually") + " "))
+                append((" " + LanguageText.text("ui.wearable.s.path.recorder") + " "))
                 append(wearablesWithYou.joinToString { it.label + " (" + it.device.mac + ")" })
                 append(".")
             }

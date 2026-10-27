@@ -31,6 +31,9 @@ T:tile-name	target	Tile advertising its name over BLE
 T:tile-caps	target	Tile with its name in capitals
   expect fleet-tile
   -> fleet-tile [FINDER]
+T:plaud	target	Plaud NotePin recorder
+  expect fleet-plaud
+  -> fleet-plaud [WEARABLE, attention]
 T:tile-mate	target	Tile Mate with FEED
   expect fleet-tile
   -> fleet-tile [FINDER]

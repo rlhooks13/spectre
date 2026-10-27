@@ -1,0 +1,133 @@
+SPECTRE SIT — Walk
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Walk” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Walk
+Window        sit Walk (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        1
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 1.10 km along path · span 1.10 km · 241 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Walk Spectre heard 0 Wi-Fi access points and 1 BLE advertisers (1 signature-matched, 0 hidden SSIDs, 1 randomized BLE). Overall distance traveled: 1.10 km along the GPS path (straight-line span 1.10 km). No finder tag clearly stayed with the GPS path in this window. Wearable(s) stayed with the path (usually your watch, ring or recorder, or a companion's): Plaud Note 5A:11:22:33:44:0B.
+Wearables  1
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 1.10 km along-track, span 1.10 km, 241 fixes.
+
+1. Stay  11:40–11:40 UTC  (45s)
+   0.00116, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+2. Stay  11:40–11:41 UTC  (45s)
+   0.00154, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+3. Stay  11:41–11:42 UTC  (45s)
+   0.00191, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+4. Stay  11:42–11:43 UTC  (45s)
+   0.00228, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+5. Stay  11:43–11:43 UTC  (45s)
+   0.00265, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+6. Stay  11:43–11:44 UTC  (45s)
+   0.00302, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+7. Stay  11:44–11:45 UTC  (45s)
+   0.00339, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+8. Stay  11:45–11:46 UTC  (45s)
+   0.00376, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+9. Stay  11:46–11:46 UTC  (45s)
+   0.00413, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+10. Stay  11:46–11:47 UTC  (45s)
+   0.00450, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Plaud Note
+   · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm
+
+3. KNOWN CAMERAS ON PATH
+Within about 150 m
+
+No listed camera was along this path.
+
+4. TRACKING ASSESSMENT
+Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (watches, rings, fitness bands, AI recorders, game wristbands), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).
+Callouts below are only radios that stayed with the path. Radios you passed (store fixtures, house tags) are omitted.
+
+5. WEARABLES WITH YOU
+Wearable radios (watches, rings, fitness bands, AI recorders, game wristbands) that stayed with your GPS path. Wearables usually move with the person wearing them — often your own kit or someone walking with you. A recorder you don't recognize is worth a look. They are not typically planted trackers. Account for each MAC. Not a finding and not identity.
+
+  • Plaud Note
+    Plaud NotePin 2A  5A:11:22:33:44:0B  RSSI -58 dBm (min -61 / max -58)
+    GPS samples span 1098 m along your path (40 fixes). Already on the air when this window opened and still here. Typical of a wearable you or a companion carry (watch, ring, band or recorder). Not typically a planted tracker; account for a recorder you don't recognize.
+
+6. ENVIRONMENT
+Mixed or under-sampled environment.  (0 APs, 1 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)
+
+7. NETWORKS (WI-FI ACCESS POINTS)
+Heard 0 AP(s); 0 hidden SSID; 0 sat most of the window.
+
+8. BLUETOOTH LE
+Heard 1 advertiser(s); 1 with randomized addresses; 1 signature-matched.
+
+9. SIGNATURE HITS
+Plaud Note  1
+
+10. PERSISTENCE
+Sat most of this window: 1
+First seen in this window: 0
+
+11. EXTRA ATTENTION
+Pattern match, not identity, not a skimmer detector, not a safety finding.
+  · Plaud NotePin 2A  5A:11:22:33:44:0B  -58 dBm  [Plaud Note]
+    Plaud Note / NotePin AI recorder. It records meetings. Not proof someone is recording you. A miss is not a clean bill (off, renamed, or a different brand). Look with your eyes.
+
+12. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+13. PRIVACY
+A passive observer with the same radios would see 0 named/hidden APs and 1 BLE advertisers (1 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+14. RECOMMENDED ACTIONS
+  · Wearables with you (usually own kit or a companion; account for a recorder you don't recognize): Plaud Note 5A:11:22:33:44:0B.
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: No finder tag stayed with the path. Wearable(s) with the path (usually own kit; a recorder you don't recognize is worth a look): Plaud Note (5A:11:22:33:44:0B).

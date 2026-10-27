@@ -252,6 +252,25 @@ class DebriefGoldenTest {
     }
 
     /**
+     * P1-B4c: an AI recorder pendant (Plaud NotePin) with you for a whole walk. A wearable by class, worded for a
+     * recorder as well as a watch, and flagged by its own attention note.
+     */
+    @Test
+    fun recorderPendantWithYou() {
+        val path = path(55.0)
+        Golden.assertText(
+            "debrief/9-recorder-pendant-with-you.txt",
+            debrief(
+                "Walk",
+                listOf(
+                    heard("T:plaud", "5A:11:22:33:44:0B", path, 0.0, 20.0, firstSeen = start - 60 * 60_000L) { -58 - (it.toInt() % 4) },
+                ),
+                path,
+            ),
+        )
+    }
+
+    /**
      * A drive past two roadside cameras with your own AirTag in the car, marked mine and named, an observer note
      * on one camera, and one mapped plate reader beside the road. Each camera is heard along one stretch.
      */

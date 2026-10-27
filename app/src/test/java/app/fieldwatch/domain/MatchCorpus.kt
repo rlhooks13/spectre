@@ -167,6 +167,8 @@ object MatchCorpus {
         ),
         Target("Tile advertising its name over BLE", sighting("T:tile-name", name = "Tile"), "fleet-tile"),
         Target("Tile with its name in capitals", sighting("T:tile-caps", name = "TILE"), "fleet-tile"),
+        // P1-B4c: an AI recorder pendant, assessed as a wearable by class.
+        Target("Plaud NotePin recorder", sighting("T:plaud", name = "Plaud NotePin 2A"), "fleet-plaud"),
         // Since P1-B2 the name must be exactly Tile; a "Tile Mate" is found through its service UUID instead.
         // (A "Tile Mate" advertising no FEED, FEEC or 0x067C at all is no longer labeled, by design.)
         Target("Tile Mate with FEED", sighting("T:tile-mate", name = "Tile Mate", serviceUuids = listOf("FEED")), "fleet-tile"),
