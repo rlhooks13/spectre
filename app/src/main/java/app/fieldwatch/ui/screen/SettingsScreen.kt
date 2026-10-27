@@ -1077,10 +1077,12 @@ fun SettingsScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(LanguageText.text("ui.import.signatures")) }
-            FieldwatchActionButton(
-                onClick = vm::updateStockCatalogFromGitHub,
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(LanguageText.text("ui.update.stock.catalog.github")) }
+            if (app.fieldwatch.domain.Features.IN_APP_CATALOG_UPDATE) {
+                FieldwatchActionButton(
+                    onClick = vm::updateStockCatalogFromGitHub,
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text(LanguageText.text("ui.update.stock.catalog.github")) }
+            }
 
             FieldwatchActionButton(
                 onClick = { confirmRestore = true },

@@ -554,7 +554,14 @@ internal object ChromeLines {
         en("ui.disclaimer.label", "Disclaimer", LanguageSlot.CONTROL),
         en("ui.i.have.read.i", "I have read this and I agree", LanguageSlot.CONTROL),
         en("ui.fieldwatch.needs.radios", "Spectre needs the radios", LanguageSlot.CONTROL),
-        en("ui.location.nearby.wi.fi", "Location, nearby Wi-Fi, Bluetooth scan, and notifications let Spectre passively watch advertised networks and BLE devices. Nothing is transmitted.", LanguageSlot.BODY),
+        // Superseded by ui.permissions.receive.only (P0-7): "Nothing is transmitted" was not accurate.
+        en("ui.location.nearby.wi.fi", "Unused", LanguageSlot.BODY),
+        en(
+            "ui.permissions.receive.only",
+            "Location, nearby Wi-Fi, Bluetooth scan, and notifications let Spectre watch advertised networks and BLE devices. " +
+                "Spectre never connects, pairs, or advertises. Wi-Fi and Bluetooth scans can send the probe and scan requests Android makes when it scans.",
+            LanguageSlot.BODY,
+        ),
         en("ui.grant.permissions", "Grant permissions", LanguageSlot.CONTROL),
         en("ui.sit.compare", "sit compare", LanguageSlot.CONTROL),
         en("ui.sit.compare.pdf", "Sit compare PDF", LanguageSlot.CONTROL),

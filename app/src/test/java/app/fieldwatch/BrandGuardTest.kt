@@ -144,10 +144,8 @@ class BrandGuardTest {
             Allow(Regex("""dist/fieldwatch-sensors\.txt"""), Regex("""built by upstream Fieldwatch"""),
                 "data credit to upstream"),
             // Temporary.
-            Allow(Regex(""".*/data/(CatalogRemote|FlockFiles)\.kt"""), Regex("""raw\.githubusercontent\.com/OffGridPete/Fieldwatch"""),
-                "upstream catalog and sensor downloads", until = "P0-7"),
-            Allow(Regex("""dist/instruction\.txt"""), Regex("""downloads upstream Fieldwatch's stock pack"""),
-                "the card says where the catalog update comes from", until = "P0-7"),
+            Allow(Regex(""".*/data/FlockFiles\.kt"""), Regex("""raw\.githubusercontent\.com/OffGridPete/Fieldwatch"""),
+                "upstream sensor-list download", until = "P0-7b"),
             Allow(Regex(""".*/domain/FieldwatchDisclaimer\.kt"""), Regex("""Off Grid Pete LLC is not liable|Do not use Fieldwatch, this paste"""),
                 "upstream disclaimer, renamed and reworded by PR #10", until = "P0-4d"),
             Allow(Regex(""".*/domain/ChromeLines\.kt"""), Regex(""""Copyright \(c\) 2026 Off Grid Pete LLC\. All rights reserved\."|"Off Grid Pete LLC  ·  operationally sensitive""""),

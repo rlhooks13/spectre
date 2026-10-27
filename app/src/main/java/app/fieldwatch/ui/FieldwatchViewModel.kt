@@ -17,6 +17,7 @@ import app.fieldwatch.FieldwatchApp
 import app.fieldwatch.domain.AircraftTrail
 import app.fieldwatch.domain.AppSettings
 import app.fieldwatch.domain.Brand
+import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapOverlay
 import app.fieldwatch.domain.MapFrame
@@ -2639,6 +2640,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     fun updateStockCatalogFromGitHub() {
+        if (!Features.IN_APP_CATALOG_UPDATE) return
         if (_export.value.active) return
         viewModelScope.launch {
             if (!PlaceLookup.online(app)) {

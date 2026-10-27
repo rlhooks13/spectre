@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-6 (BrandGuard), PR #13 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-7 (copy and legal fixes).
-- Branch: `p0/6-brand-guard`
+- Current step: P0-7a (receive-only copy, catalog update off), on branch `p0/7a-receive-only-copy-catalog-off`; check `gh pr list --head p0/7a-receive-only-copy-catalog-off` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; synced with main and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7b (sensor list).
+- Branch: `p0/7a-receive-only-copy-catalog-off`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T09:05Z
+- Last cycle: 2026-10-27T09:30Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,19 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-6 BrandGuard.** PR #13.
+- 2026-10-27: **P0-7a Receive-only copy and catalog update off.** Branch `p0/7a-receive-only-copy-catalog-off`.
+  - **Permission copy:** "Nothing is transmitted" was untrue, because scans send OS probe and scan requests (CHARTER invariant 3). The safety meaning changes, so the line gets a new key (invariant 7).
+    - New key `ui.permissions.receive.only`: "…Spectre never connects, pairs, or advertises. Wi-Fi and Bluetooth scans can send the probe and scan requests Android makes when it scans."
+    - The old key `ui.location.nearby.wi.fi` stays with the value "Unused". Packs fall back to English for the new key until it's translated.
+  - **Catalog update:** off via `Features.IN_APP_CATALOG_UPDATE = false`. The Settings button is hidden and the ViewModel entry point returns early. `CatalogRemote.STOCK_PACK_URL` now points at this repo's `dist/` copy instead of upstream, and P4-6 brings back a signed update.
+  - **Install card:** the catalog-update line now says new catalogs ship inside app updates.
+  - **BrandGuard:** the upstream-URL entry is narrowed to `FlockFiles` (until P0-7b), and the card's catalog line entry is removed.
+  - New `ReceiveOnlyCopyTest` (+2): no English line claims "nothing is transmitted" or "passively watch"; the flag is off; the URL isn't upstream.
+  - Result: 778 tests green. Staging cold-started with 0 `FATAL`.
+  - Not checked on the device: the permission screen sits behind the disclaimer.
+  - PLAN: P0-7 split into 7a to 7d.
+- 2026-10-27: **PR #10 synced with main** after #13. The P0-4d BrandGuard entries became permanent ones (SpectreDisclaimer liability and MIT notice, the About attribution, the retired keys' unused pack lines), and the README and card carry LICENSE's two copyright notices. 779 tests green on the branch. Owner notified in a PR comment.
+- 2026-10-27: **P0-6 BrandGuard.** PR #13, merged as `d5f965c`.
   - New `BrandGuardTest`: a JVM unit test for now, because build-logic is blocked on the approved-dependency plugins; it moves in P2-1.
     - **What it scans:** every line of every text file under `app/src/main` (language packs included), `app/build.gradle.kts` and `dist/`.
     - **What it matches**, case-insensitively: `field[\s_-]?watch`, `off[\s-]?grid[\s-]?pete`, `ogridpete`.
