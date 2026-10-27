@@ -38,16 +38,25 @@ class CatalogLintTest {
 
     @Test
     fun companyIdsAreAssigned() {
+        // A MANUFACTURER_ID left at 0 matches Ericsson; ids are 16-bit. MANUFACTURER_DATA uses 0 as "any company".
+        val malformed = rows.filter {
+            (it.rule.kind == RuleKind.MANUFACTURER_ID && it.rule.companyId == 0) || it.rule.companyId !in 0..0xFFFF
+        }.map { it.companyKey }
+        assertEquals("Malformed company ids", emptyList<String>(), malformed)
         val found = rows.filter { usesCompany(it.rule) && RadioDb.company(it.rule.companyId) == null }.map { it.companyKey }
         check("unassigned company ids", found, UNKNOWN_COMPANY)
+    }
+
+    @Test
+    fun megaVendorIdsAreWhoWeThink() {
+        for ((id, owner) in MEGA_VENDOR) assertTrue("0x%04X".format(id), RadioDb.company(id).orEmpty().contains(owner, ignoreCase = true))
     }
 
     @Test
     fun noBareMegaVendorCompanyIds() {
         // Bare: alone in an any-rule signature. In an all-rules signature other rules narrow it.
         val found = rows.filter {
-            it.fleet.matchAny && it.rule.kind == RuleKind.MANUFACTURER_ID &&
-                MEGA_VENDOR.containsMatchIn(RadioDb.company(it.rule.companyId).orEmpty())
+            it.fleet.matchAny && it.rule.kind == RuleKind.MANUFACTURER_ID && it.rule.companyId in MEGA_VENDOR
         }.map { it.companyKey }
         check("bare mega-vendor company-id rules", found, BARE_MEGA_VENDOR)
     }
@@ -76,8 +85,11 @@ class CatalogLintTest {
     fun generatedPositivesHitNoNewSignatures() {
         val positives = MatchCorpus.positives(fleets)
         val hits = SignatureEngine().match(positives.map { it.sighting }, fleets)
-        val crossHits = positives.sumOf { p -> (hits.getValue(p.sighting.key) - p.fleetId).size }
-        assertEquals("Cross-signature hits from the generated positives", PINNED_CROSS_HITS, crossHits)
+        val found = positives.mapNotNull { p ->
+            val others = (hits.getValue(p.sighting.key) - p.fleetId).sorted()
+            if (others.isEmpty()) null else "${p.id} -> ${others.joinToString(",")}"
+        }
+        check("cross-signature hits from the generated positives", found, ALLOWED_COLLISIONS)
     }
 
     @Test
@@ -85,9 +97,9 @@ class CatalogLintTest {
         val plan = repoFile("../docs/plan/PLAN.md").readLines()
         val adr = repoFile("../docs/adr/0015-catalog-lint-exceptions.md").readText()
         val accepted = adr.substringAfter("**Accepted").substringBefore("**Assigned")
-        for ((key, why) in UNKNOWN_COMPANY + BARE_MEGA_VENDOR + SHORT_NAME) {
+        for ((key, why) in UNKNOWN_COMPANY + BARE_MEGA_VENDOR + SHORT_NAME + ALLOWED_COLLISIONS) {
             if (why == "ADR-0015") {
-                assertTrue("$key must be in ADR-0015's Accepted list", "`$key`" in accepted)
+                assertTrue("$key must be in ADR-0015's Accepted list", "`${key.substringBefore(" ->")}`" in accepted)
                 continue
             }
             val line = plan.firstOrNull { "**$why " in it || "**$why**" in it }
@@ -100,9 +112,16 @@ class CatalogLintTest {
         private val fleets = DefaultCatalog.fleets()
         private val rows = fleets.flatMap { f -> f.rules.filter { it.enabled }.map { Row(f, it) } }
 
-        private val MEGA_VENDOR = Regex("(?i)\\b(apple|samsung|google|microsoft|dji)\\b")
+        /**
+         * The mega-vendors' ids, pinned (a SIG rename can't drop one) and checked against the SIG name.
+         * Subsidiary ids (Beats 0x00CC, Nest 0x01B5, Harman 0x0057) are a reviewer check, per ADR-0015.
+         */
+        private val MEGA_VENDOR = mapOf(
+            0x004C to "Apple", 0x0075 to "Samsung", 0x00E0 to "Google", 0x018E to "Google",
+            0x0006 to "Microsoft", 0x08AA to "DJI",
+        )
 
-        private val UNKNOWN_COMPANY = mapOf("fleet-huf/0x070A" to "ADR-0015")
+        private val UNKNOWN_COMPANY = mapOf("fleet-huf/0x070A" to "P1-B10")
 
         private val BARE_MEGA_VENDOR = mapOf(
             "fleet-smarttag/0x0075" to "P1-B1",
@@ -124,8 +143,22 @@ class CatalogLintTest {
             "fleet-volkswagen/VW/BLE", "fleet-wyze/Wyze/ANY",
         ).associateWith { "P1-B5" }
 
-        /** Today's count; a fix that removes overlaps lowers it, a new over-broad rule raises it. */
-        private const val PINNED_CROSS_HITS = 13
+        /** Generated positive → the other signatures it hits, with ADR-0015 or the fixing step. */
+        private val ALLOWED_COLLISIONS = mapOf(
+            "fleet-target-atrius#0 -> fleet-ibeacon" to "ADR-0015",
+            "fleet-honeywell-home#4 -> fleet-amazon" to "ADR-0015",
+            "fleet-honeywell-home#5 -> fleet-amazon" to "ADR-0015",
+            "fleet-marauder#3 -> fleet-hobby-ble" to "ADR-0015",
+            "fleet-inseego#3 -> fleet-novatel" to "ADR-0015",
+            "fleet-novatel#0 -> fleet-inseego" to "ADR-0015",
+            "fleet-unifi-ap#0 -> fleet-unifi" to "ADR-0015",
+            "fleet-unifi-ap#1 -> fleet-unifi" to "ADR-0015",
+            "fleet-unifi-ap#3 -> fleet-unifi" to "ADR-0015",
+            "fleet-unifi-ap#4 -> fleet-unifi" to "ADR-0015",
+            "fleet-tattile#0 -> fleet-tile" to "P1-B2",
+            "fleet-tattile#1 -> fleet-tile" to "P1-B2",
+            "fleet-liteon-camera-radio#25 -> fleet-tplink" to "P1-B10",
+        )
 
         private val PINNED_HITS: Map<String, Set<String>> = mapOf(
             "T:airtag" to setOf("fleet-airtag"),
@@ -145,6 +178,8 @@ class CatalogLintTest {
             "NM:iphone" to setOf("fleet-apple-device"),
             "NM:tattile" to setOf("fleet-tattile", "fleet-tile"),
             "NM:quuppa" to setOf("fleet-tile"),
+            "NM:dji" to setOf("fleet-dji"),
+            "NM:google-018e" to setOf("fleet-fitbit"),
             "NM:raven" to setOf("fleet-raven"),
             "NM:vigilant" to setOf("fleet-vigilant"),
             "NM:ibr" to setOf("fleet-apple-device", "fleet-cradlepoint"),

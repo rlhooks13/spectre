@@ -82,8 +82,19 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
       - 34 brand names → P1-B5, widened to every short name.
   - **Corpus collisions:**
     - each target, near-miss and random-address case has its full hit set pinned;
-    - the generated positives' cross-signature hits are pinned at 13;
-    - so any new overlap fails. A golden replaces the pins after P1-A2.
+    - each generated positive that hits another signature is listed (13), with ADR-0015 or a step:
+      - 10 legitimate overlaps accepted (Atrius/iBeacon, Amazon thermostat, ESP32 Marauder, Inseego/Novatel, UniFi AP);
+      - Tattile → Tile goes to P1-B2;
+      - LiteOn's TP-Link vendor IE → TP-Link goes to P1-B10.
+    - A golden replaces the pins after P1-A2.
+  - **After the independent review:**
+    - The mega-vendor ids are pinned explicitly and checked against SIG names.
+    - A `MANUFACTURER_ID` of 0, or beyond 16 bits, fails.
+    - **Huf 0x070A** is a gap in the SIG range (not pending), so it moves to P1-B10.
+    - **New near-misses** with `knownUntil = P1-B10`: an unnamed DJI accessory on 0x08AA, and a non-Fitbit Google LLC device on 0x018E.
+    - **P1-B10 exit:** with no capture by the 0.1.0 gate, it drops the bare id.
+    - **P1-B5:** replacement prefix globs need a 5+ literal or a separator.
+  - **Rebutted:** extending the lint to all short prefix globs. 48 match, and many are deliberate fixed-length patterns (`ATT???????`, Tesla's 18-character pattern). It's a reviewer check in ADR-0015, and `IBR*` is in P1-B5.
   - **Open steps only:** every step an exception names must be an open PLAN step, and every accepted entry must be backticked under "Accepted" in ADR-0015.
 - 2026-10-27: **P1-A4 merged** as `7fd97df` (PR #25).
 - 2026-10-27: **P1-A4 Match corpus.** PR #25. Branch `p1/a4-match-corpus`. Test-only.

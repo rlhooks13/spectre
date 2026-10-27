@@ -205,6 +205,17 @@ object MatchCorpus {
             sighting("NM:quuppa", mfg = listOf(MfgRecord(0x00C7, "01210000"))),
             setOf("fleet-tile"), knownUntil = "P1-B2", checkFinder = true,
         ),
+        // Bare vendor ids (ADR-0015). Unnamed, so only the company id can match.
+        NearMiss(
+            "Unnamed DJI accessory on 0x08AA (a mic or action camera, not a drone)",
+            sighting("NM:dji", mfg = listOf(MfgRecord(0x08AA, "0100"))),
+            setOf("fleet-dji"), knownUntil = "P1-B10",
+        ),
+        NearMiss(
+            "Unnamed non-Fitbit Google LLC device on 0x018E",
+            sighting("NM:google-018e", mfg = listOf(MfgRecord(0x018E, "0100"))),
+            setOf("fleet-fitbit"), knownUntil = "P1-B10",
+        ),
         // Bare "contains" names catch everyday devices.
         NearMiss(
             "Speaker named Ravenclaw",

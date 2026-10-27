@@ -276,10 +276,18 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - **P1-B2 Tile:** 0x067C plus a BLE-only `NAME_GLOB("Tile")`. Drop 0x00C7. Drop FEDD unless a capture confirms it.
   - **P1-B3 AirTag:** decode the Offline Finding status-byte device-type bits. 0x12 alone means "Find My device (type unknown)", not AirTag.
   - **P1-B4 Apple phones:** stop treating carried Apple phones as FINDER (`Geo.kt:842`); they're assessed as phones with milder wording. TrackerMatch uses the matched fleets' class, not substring tokens.
-  - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*, and every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015): an anchored glob, a longer name, or an ADR-0015 entry with a reason.
+  - **P1-B5 Over-broad names:** tighten RAVEN, Vigilant and IBR\*, and every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015). Each becomes a longer name, or a prefix glob whose literal is 5+ characters or ends in a separator, or an ADR-0015 entry with a reason.
   - **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
   - **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
-  - **P1-B10 Bare vendor ids** (from P1-A5, ADR-0015): `fleet-dji` (DRONE class on all of DJI 0x08AA), `fleet-fitbit` (on 0x018E, Google LLC), and `fleet-google` / `fleet-microsoft` (PHONE class on 0x00E0 / 0x0006) move to payload-prefix rules, or to a class that fits everything on the id, backed by captures. Until a capture exists, open `field-capture` issues and keep the rows.
+  - **P1-B10 Bare vendor ids** (from P1-A5, ADR-0015).
+    - **Rows:**
+      - `fleet-dji` (DRONE class on all of DJI 0x08AA);
+      - `fleet-fitbit` (on 0x018E, Google LLC);
+      - `fleet-google` / `fleet-microsoft` (PHONE class on 0x00E0 / 0x0006);
+      - `fleet-huf` (0x070A, a gap in the SIG range);
+      - `fleet-liteon-camera-radio`'s `vendorIe("00:0A:EB")`, which is TP-Link's.
+    - **Change:** move them to payload-prefix rules, or to a class that fits everything on the id, backed by captures. Open `field-capture` issues.
+    - **No capture by the 0.1.0 gate:** drop the bare id and keep the names and service UUIDs.
 - **Shipped behind flags** (default off; acceptance checks listed in the Decision policy):
   - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.
