@@ -1,7 +1,6 @@
 package app.fieldwatch.domain
 
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 import kotlinx.serialization.Serializable
 
 data class DecodedFieldValue(
@@ -49,7 +48,24 @@ fun List<LiveDecodeChip>.reportLabels(): List<String> =
  * Not a matcher — [SignatureEngine.match] still decides the label.
  */
 object SignatureFieldDecoder {
-    private val cache = ConcurrentHashMap<String, List<DecodedFieldValue>>()
+    /** Parses kept, most recently used first out (P1-B7): rotating payloads never repeat, so this must not grow. */
+    const val CACHE_LIMIT = 512
+
+    private val cache = object : LinkedHashMap<String, List<DecodedFieldValue>>(CACHE_LIMIT, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, List<DecodedFieldValue>>): Boolean =
+            size > CACHE_LIMIT
+    }
+
+    private fun cached(key: String, parse: () -> List<DecodedFieldValue>): List<DecodedFieldValue> {
+        synchronized(cache) { cache[key] }?.let { return it }
+        val parsed = parse()
+        synchronized(cache) { cache[key] = parsed }
+        return parsed
+    }
+
+    internal fun cacheSizeForTests(): Int = synchronized(cache) { cache.size }
+
+    internal fun clearCacheForTests() = synchronized(cache) { cache.clear() }
 
     fun decodeSighting(device: Sighting, fleets: List<Fleet>): List<DecodedFieldValue> {
         if (device.fleetIds.isEmpty()) return emptyList()
@@ -88,7 +104,7 @@ object SignatureFieldDecoder {
         val seen = HashSet<String>()
         for ((bytes, hex) in candidates) {
             val key = cacheKey(fleet.id, decode, hex)
-            val parsed = cache[key] ?: parse(fleet, decode, bytes).also { cache[key] = it }
+            val parsed = cached(key) { parse(fleet, decode, bytes) }
             for (row in parsed) {
                 if (seen.add(row.id)) out += row
             }

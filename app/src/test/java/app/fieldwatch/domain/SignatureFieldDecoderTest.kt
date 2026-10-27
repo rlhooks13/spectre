@@ -53,6 +53,29 @@ class SignatureFieldDecoderTest {
         assertEquals("Humidity", "53.49 %", rows.first { it.id == "humidity" }.display)
     }
 
+    /**
+     * P1-B7: rotating payloads never repeat, so an unbounded cache grew for as long as the scan ran. It keeps the
+     * most recently used parses, up to its limit, and still answers correctly past it.
+     */
+    @Test
+    fun theParseCacheIsBoundedAndKeepsTheRecentOnes() {
+        val fleet = Fleet(
+            id = "fleet-lru",
+            name = "LRU",
+            decode = FleetDecode(
+                source = DecodeSource.MANUFACTURER_DATA,
+                companyId = 0x0499,
+                fields = listOf(DecodeField(id = "b", label = "B", offset = 0, type = DecodeType.U16, endian = DecodeEndian.BE)),
+            ),
+        )
+        SignatureFieldDecoder.clearCacheForTests()
+        repeat(SignatureFieldDecoder.CACHE_LIMIT + 300) { i ->
+            val rows = SignatureFieldDecoder.decodeSighting(ble(0x0499, "%04X".format(i), fleet.id), listOf(fleet))
+            assertEquals("$i", rows.single().display)
+        }
+        assertEquals(SignatureFieldDecoder.CACHE_LIMIT, SignatureFieldDecoder.cacheSizeForTests())
+    }
+
     @Test
     fun scaleThenOffsetAdd() {
         val fleet = Fleet(

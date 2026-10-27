@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B7** onward, after P1-B6 (catalog v104) merges. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B10 Bare vendor ids**, then P1-B8 and B9, after P1-B7 merges. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b6-shared-rule-key`
+- Branch: `p1/b7-readings`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -69,6 +69,10 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B7 Readings.** #64 (P1-B6) merged as 6aaabe8.
+  - **RSSI:** `Rssi.measured` is −127..−1. It used to be −127..126, so 0 (an unset or missing level) and the positive values no radio reports counted as hears, and a 0 read as the strongest signal in ranges and the latest reading. `SitPathPlot`'s own `rssi == 0` check is now redundant and gone.
+  - **Decoder cache:** `SignatureFieldDecoder`'s parse cache is a synchronized LRU of 512. It was an unbounded `ConcurrentHashMap` keyed by payload, and rotating payloads never repeat.
+  - **Tests:** `RssiTest` and `theParseCacheIsBoundedAndKeepsTheRecentOnes`, written first and seen failing (3 tests). No golden changed.
 - 2026-10-27: **P1-B6 Shared rule key (catalog v104).** #63 (P1-B5) merged as 411ef9d.
   - **Already done before this step:** `catalog/retired.json` was already subtracted in merge, overlay and load (P1-B1 to B5).
   - **The bug:** three rule keys disagreed.

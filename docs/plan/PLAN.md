@@ -285,7 +285,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - ✅ **P1-B5 Over-broad names:** (RAVEN, Vigilant and IBR\* are done as P1-B5a, and 18 names as P1-B5b, above. The last 16 in catalog v103: 14 became the brand as a whole word at the start, `bleWordStart`; UBNT keeps its anchored `UBNT*`; iPad is an ADR-0015 exception.) tighten every `NAME_CONTAINS` under 5 characters that `CatalogLintTest` lists (ADR-0015). Each becomes a longer name, or a prefix glob whose literal is 5+ characters or ends in a separator, or an ADR-0015 entry with a reason.
   - ✅ **P1-B6 Retired rules:** `catalog/retired.json` is subtracted in `merge`, the ladder and import. A shared `ruleKey` ignores `enabled`. Each fix bumps `CATALOG_VERSION` with a ladder step and a snapshot.
     - P1-B1 landed the core: `RetiredRules` (kept equal to `catalog/retired.json` by a test) strips retired rules on every config load, in `merge` and in `overlayStock`. B6 is left with the shared `ruleKey` (the three copies, two of which count `enabled`).
-  - **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
+  - ✅ **P1-B7 Readings:** `Rssi.measured` is −127..−1, so 0 is unmeasured. The decoder cache gets an LRU limit.
   - **P1-B10 Bare vendor ids** (from P1-A5, ADR-0015).
     - **Rows:**
       - `fleet-dji` (DRONE class on all of DJI 0x08AA);
