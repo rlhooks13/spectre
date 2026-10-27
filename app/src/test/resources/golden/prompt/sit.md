@@ -193,5 +193,8 @@ Finder-tag-like radios (for stress-test of onboard tracking; not a tail list):
 - BLE 7A:11:22:33:44:01  Tom's "bag", left & <right> rssi=-67dBm RAND sig=Apple AirTags dwell=13m0s rssiMin=-76 rssiMax=-63
 - BLE 5E:11:22:33:44:02 rssi=-72dBm RAND sig=Samsung SmartTags dwell=12m0s rssiMin=-81 rssiMax=-68
 
+Loud carried Apple devices (phones, iPads, Macs, AirPods; not finder tags, usually the operator's or a companion's):
+- None.
+
 ## End of working data
 Write the addendum now, following **Your output** at the top. Do not rewrite the onboard Debrief.

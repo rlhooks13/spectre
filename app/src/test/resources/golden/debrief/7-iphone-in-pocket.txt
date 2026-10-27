@@ -91,11 +91,11 @@ Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chip
 No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
 
 5. PHONES WITH YOU
-Apple phones, Macs or AirPods that stayed loud with you. Usually your own or a companion's. A phone is not a planted tag; one you can't account for is worth a look.
+Apple devices (phone, iPad, Mac, Watch, AirPods) that stayed loud with you. Usually your own or a companion's. A phone or iPad can be hidden too, so account for any you don't recognize.
 
-  • Apple BLE (phone / Continuity)
+  • Apple Device
     4E:11:22:33:44:09  4E:11:22:33:44:09  RSSI -44 dBm (min -47 / max -44)
-    Stayed loud with you the whole sit (-44 to -47 dBm, 40 GPS stamps). Typical of a phone or earbuds you or a companion carry. Not a planted tag.
+    Stayed loud with you the whole sit (-44 to -47 dBm, 40 GPS stamps). Typical of a phone or earbuds you or a companion carry. Usually not planted, but account for it if it isn't yours.
 
 6. ENVIRONMENT
 Mixed or under-sampled environment.  (0 APs, 1 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)

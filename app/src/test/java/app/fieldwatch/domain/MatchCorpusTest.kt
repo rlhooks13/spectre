@@ -11,7 +11,7 @@ class MatchCorpusTest {
     private val fleets = DefaultCatalog.fleets()
     private val byId = fleets.associateBy { it.id }
     private val names = fleets.associate { it.id to it.name }
-    private val classes = fleets.associate { it.id to it.kind }
+    private val classes = TrackerMatch.classesOf(fleets)
     private val engine = SignatureEngine()
 
     /** Against a copy of the signature with only that rule, so a sibling rule can't hide a broken one. */

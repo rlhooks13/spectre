@@ -5,6 +5,7 @@ import app.fieldwatch.domain.PlaceMemory
 import app.fieldwatch.domain.RadioBookmarks
 import app.fieldwatch.domain.Sighting
 import app.fieldwatch.domain.Sit
+import app.fieldwatch.domain.TrackerMatch
 import app.fieldwatch.domain.WatchTarget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -67,7 +68,7 @@ class PlaceStore(private val file: File) {
         if (devices.isEmpty()) return
         val names = HashMap<String, String>(fleets.size)
         for (fleet in fleets) names[fleet.id] = fleet.name
-        val classes = fleets.associate { it.id to it.kind }
+        val classes = TrackerMatch.classesOf(fleets)
         val mine = RadioBookmarks.mineKeys(watchlist)
         val zone = ZoneId.systemDefault()
         val now = System.currentTimeMillis()
@@ -142,7 +143,7 @@ class PlaceStore(private val file: File) {
     private fun recordFor(device: Sighting, fleets: List<Fleet>, mineKeys: Set<String>): PlaceMemory.Record? {
         val names = HashMap<String, String>(fleets.size)
         for (fleet in fleets) names[fleet.id] = fleet.name
-        val id = PlaceMemory.accept(device, names, fleets.associate { it.id to it.kind }, mineKeys) ?: return null
+        val id = PlaceMemory.accept(device, names, TrackerMatch.classesOf(fleets), mineKeys) ?: return null
         return synchronized(lock) { records[id] }
     }
 

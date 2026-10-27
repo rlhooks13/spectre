@@ -253,10 +253,10 @@ object DebriefReport {
             PathCameras.tally(path, source.plates, source.others, source.near)
         }
         val cameraBody = cameraTally?.let { PathCameras.text(it) }
-        val classes = fleets.associate { it.id to it.kind }
+        val classes = TrackerMatch.classesOf(fleets)
+        val byKind = inWin.groupBy { TrackerMatch.kind(it, names, classes) }
         fun assess(kind: TrackerMatch.Kind) = followAssessments(
-            inWin.filter { TrackerMatch.kind(it, names, classes) == kind },
-            names, classes, path, windowStart, windowEnd, kind,
+            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind,
         )
         val follow = assess(TrackerMatch.Kind.FINDER)
         val beaconFollow = assess(TrackerMatch.Kind.BEACON)
@@ -271,6 +271,8 @@ object DebriefReport {
         val beaconsWithYou = stayedWithYou(beaconFollow).open()
         val wearablesWithYou = stayedWithYou(wearableFollow).open()
         val phonesWithYou = stayedWithYou(phoneFollow).open()
+        // A phone that joined the sit and kept pace is someone else's: it still raises the alert (P1-B4).
+        val phoneFollowing = phonesWithYou.any { it.verdict == Verdict.FOLLOWING }
         val mineHeard = inWin.count { it.key in mineKeys }
         val placeBody = if (!settings.placeWatch || placeRecords.isEmpty()) {
             null
@@ -543,6 +545,7 @@ object DebriefReport {
                         next(),
                         LanguageText.text("ui.phones.with.you.label"),
                         trackerCallout(LanguageText.text("ui.phones.with.you.body"), phonesWithYou, customNames),
+                        alert = phoneFollowing,
                     ),
                 )
             }
@@ -622,7 +625,7 @@ object DebriefReport {
             windowLine = windowLine,
             meta = meta,
             disclaimer = SpectreDisclaimer.report(win),
-            trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty(),
+            trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing,
             takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, pathSpan, settings, named),
             sections = sections,
             extraAttention = attentionHits.map { (d, sig, note) ->
@@ -726,10 +729,10 @@ object DebriefReport {
         val pathSpan = Geo.spanM(path)
         val pathLen = Geo.pathLengthM(path)
         val inWin = devices.filter { it.lastSeen >= windowStart || it.firstSeen >= windowStart }
-        val classes = fleets.associate { it.id to it.kind }
+        val classes = TrackerMatch.classesOf(fleets)
+        val byKind = inWin.groupBy { TrackerMatch.kind(it, names, classes) }
         fun assess(kind: TrackerMatch.Kind) = followAssessments(
-            inWin.filter { TrackerMatch.kind(it, names, classes) == kind },
-            names, classes, path, windowStart, windowEnd, kind,
+            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind,
         )
         val follow = assess(TrackerMatch.Kind.FINDER)
         val beaconsMd = stayedWithYou(assess(TrackerMatch.Kind.BEACON))

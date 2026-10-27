@@ -24,6 +24,7 @@
 **For the owner:**
 - **Sign and merge #43 (P1-A1 follow-ups).** CI is green on Java 17 with Robolectric on SDK 35. The earlier "SDK 35 needs Java 21" note was wrong: a test run showed `java.version` 17.0.20.1 on SDK 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
+- **Decide on the inherited co-travel verdicts (CHARTER: field-dependent logic behind flags that default off).** The finder, beacon, wearable and now phone "moved with you" and "possible tail" verdicts came from Fieldwatch unflagged, and the Debrief has always shown them. Should they go behind a `Features` flag that defaults off (the Debrief loses its tracking assessment until field acceptance), or stay on as inherited behavior? P1-B4 replaced carried-phone FINDER verdicts with milder PHONE ones and left the rest as it found them.
 - **Uninstall the stale `app.fieldwatch.debug` from the phone** if you don't need its data (the agent leaves it alone because uninstalling deletes that data). Also, the Spectre debug build stops at its first-run "Disclaimer and license" screen. The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
 - **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
 
@@ -67,7 +68,16 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 - 2026-10-27: **P1-B4 Apple phones.** #56 (P1-B3) merged as dd938cc.
   - **The fix:** `TrackerMatch.kind` takes each fleet's `SignatureClass`. A FINDER-class match is a finder, whatever the name, so "Tattile" is no longer one. A loud carried Apple phone, Mac or AirPods is the new `Kind.PHONE`, never FINDER. With no signature at all, an Offline Finding record still reads as a finder unless its status byte says Apple device or AirPods.
   - **Debrief:** phones get their own "Phones with you" section and Markdown list, with milder wording (5 new keys at revision 6). They don't reach the summary, actions or takeaway.
-  - **Callers:** DebriefReport, DebriefPrompt, PlaceMemory and PlaceStore pass a class map beside `names`.
+  - **Callers:** DebriefReport, DebriefPrompt, PlaceMemory and PlaceStore pass `TrackerMatch.classesOf(fleets)` beside `names`.
+  - **Review fixes:**
+    - User signatures default to OTHER, so `classesOf` keeps one named for a tracker ("My Tile Mate") a finder. Stock rows keep their class, so Tattile stays a camera.
+    - An AirTag record is a finder whatever else matched it.
+    - "Find My device" on a phone or AirPods record isn't a finder.
+    - A phone that joins and follows sets `trackingAlert` and an alert section (new golden `debrief/8-iphone-joins-and-follows.txt`).
+    - Phones are labeled by their row ("Apple audio").
+    - The AI export lists loud carried Apple devices.
+    - The phone wording no longer says flatly "not a planted tag".
+    - Smaller fixes: one Offline Finding type decoder (`TrackerMatch.offlineFindingType`, also used by the engine), each sighting classified once per report, and the unused `fleetHits` removed.
   - **Corpus:** the three `finderKnownUntil = "P1-B4"` markers come off (iPhone-of, AirPods-of, Tattile).
   - **Goldens:**
     - corpus and release notes drop their "until P1-B4" notes;

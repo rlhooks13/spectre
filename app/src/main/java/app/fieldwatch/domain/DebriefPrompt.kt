@@ -33,7 +33,7 @@ object DebriefPrompt {
         cameras: PathCameras.Report? = null,
     ): String {
         val names = fleets.associate { it.id to it.name }
-        val classes = fleets.associate { it.id to it.kind }
+        val classes = TrackerMatch.classesOf(fleets)
         val win = window ?: DebriefWindow(now - WINDOW_MS, now)
         val windowStart = win.startAt
         val windowEnd = win.endAt
@@ -56,9 +56,9 @@ object DebriefPrompt {
         val extraHits = in15.flatMap { d ->
             d.attentionNotes(fleets).map { (sig, note) -> Triple(d, sig, note) }
         }
-        val finders = in15.filter {
-            it.key !in mineKeys && TrackerMatch.kind(it, names, classes) == TrackerMatch.Kind.FINDER
-        }
+        val kinds = in15.filter { it.key !in mineKeys }.groupBy { TrackerMatch.kind(it, names, classes) }
+        val finders = kinds[TrackerMatch.Kind.FINDER].orEmpty()
+        val phones = kinds[TrackerMatch.Kind.PHONE].orEmpty()
         val sigFamilies = signed.groupBy { d ->
             d.fleetIds.joinToString("+") { names[it] ?: it }
         }.mapValues { it.value.size }.toList().sortedByDescending { it.second }
@@ -182,16 +182,22 @@ object DebriefPrompt {
                 }
             }
             appendLine()
-            appendLine("Finder-tag-like radios (for stress-test of onboard tracking; not a tail list):")
-            if (finders.isEmpty()) {
-                appendLine("- None.")
-            } else {
-                finders.sortedByDescending { it.rssi }.take(20).forEach { d ->
-                    append("- ").append(row(d, names, now, windowStart, customNames, observerNotes))
-                    append(" rssiMin=").append(d.rssiMin).append(" rssiMax=").append(d.rssiMax)
-                    appendLine()
+            fun list(title: String, rows: List<Sighting>) {
+                appendLine(title)
+                if (rows.isEmpty()) {
+                    appendLine("- None.")
+                } else {
+                    rows.sortedByDescending { it.rssi }.take(20).forEach { d ->
+                        append("- ").append(row(d, names, now, windowStart, customNames, observerNotes))
+                        append(" rssiMin=").append(d.rssiMin).append(" rssiMax=").append(d.rssiMax)
+                        appendLine()
+                    }
                 }
             }
+            list("Finder-tag-like radios (for stress-test of onboard tracking; not a tail list):", finders)
+            appendLine()
+            // P1-B4: carried Apple devices are no longer finders, but the model still sees them.
+            list("Loud carried Apple devices (phones, iPads, Macs, AirPods; not finder tags, usually the operator's or a companion's):", phones)
             appendLine()
             appendLine("## End of working data")
             appendLine("Write the addendum now, following **Your output** at the top. Do not rewrite the onboard Debrief.")
