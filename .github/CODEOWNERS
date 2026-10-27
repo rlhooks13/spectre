@@ -1,0 +1,20 @@
+# Protected control files. Changes need review by the owner (see docs/plan/CHARTER.md).
+# This works only with the main-branch ruleset's "Require review from Code Owners" turned on.
+
+/.github/                                             @rlhooks13
+/.claude/                                             @rlhooks13
+/CLAUDE.md                                            @rlhooks13
+/docs/plan/CHARTER.md                                 @rlhooks13
+/docs/plan/test-baseline.txt                          @rlhooks13
+/docs/plan/quarantine.txt                             @rlhooks13
+/docs/plan/review-prompts/                            @rlhooks13
+/docs/plan/LOOP_PROMPT.md                             @rlhooks13
+/docs/plan/approved-dependencies.md                   @rlhooks13
+/docs/setup/                                          @rlhooks13
+/gradle/verification-metadata.xml                     @rlhooks13
+/tools/usage-watch.sh                                 @rlhooks13
+/tools/usage-watch.conf                               @rlhooks13
+/tools/statusline.sh                                  @rlhooks13
+/tools/hooks/                                         @rlhooks13
+/app/src/main/java/app/fieldwatch/domain/FieldwatchDisclaimer.kt  @rlhooks13
+**/SpectreDisclaimer.kt                               @rlhooks13
