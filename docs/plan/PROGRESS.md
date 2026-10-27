@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-2, PR #3 (waiting on CI, then squash-merge)
-- Branch: `p0/2-repo-hygiene`
+- Current step: P0-3, part 1 (build types), PR #4 (waiting on CI, then squash-merge). Next: fix the startup crash (gate finding, see the log), then P0-3 part 2 (dependency verification, protected PR).
+- Branch: `p0/3-build-types`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T06:01Z
+- Last cycle: 2026-10-27T06:30Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -16,7 +16,9 @@
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
 - `approved-dependencies.md` (protected) is missing build plugins the plan needs: `com.android.library`, `org.jetbrains.kotlin.jvm`, and for `build-logic` the `com.android.tools.build:gradle` and `org.jetbrains.kotlin:kotlin-gradle-plugin` artifacts. Plugins already in use (`com.android.application`, `org.jetbrains.kotlin.android`, `.plugin.compose`, `.plugin.serialization`) and `androidx.compose.ui:ui-tooling` aren't listed by name either. This blocks P2-1. The agent will push a draft branch for the owner to sign before Phase 2.
 - On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
-- Permission rules: `gh pr merge --delete-branch` was silently denied while a plain `gh pr merge --squash` worked, and `cat` and some piped `git ls-files` commands are denied too. Merged agent branches stay on the remote until a rule allows `git push origin --delete p<phase>/*` or `gh pr merge --delete-branch`. Remote branch `p0/1-agent-scaffolding` is waiting for that.
+- Permission rules: `gh pr merge --delete-branch` was silently denied while a plain `gh pr merge --squash` worked, and `cat` and some piped `git ls-files` commands are denied too. Merged agent branches stay on the remote until a rule allows `git push origin --delete p<phase>/*` or `gh pr merge --delete-branch`. Remote branches `p0/1-agent-scaffolding` and `p0/2-repo-hygiene` are waiting for that.
+- **Staging test keystore (P0-3).** The guard hook blocks `keytool -genkeypair` ("signing locally"), so the agent can't create the committed, non-secret staging test keystore that PLAN's Build types call for. Until then, staging is signed with each machine's debug key, so a CI staging APK can't update a locally built one. Either generate `app/signing/staging-test.jks` on the host and commit it (add `!app/signing/staging-test.jks` to `.gitignore`; use alias `staging` and store and key password `spectre-staging`, which the build already expects), or confirm that the debug key is acceptable for staging.
+- **Phone screen sleeps.** At 06:22Z the screen was dozing while USB-powered, even with `stay_on_while_plugged_in=7`, so the screenshots came out black until `input keyevent KEYCODE_WAKEUP`. Check the screen timeout and Samsung's power settings.
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -46,6 +48,25 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P0-3 Build, part 1.** PR #4. Follow-up for P0-8: `testReleaseUnitTest` also writes results, so the test-count guard must count one variant (debug), not sum every XML file. P0-3 stays unticked until part 2 (dependency verification) lands.
+  - Added the version catalog `gradle/libs.versions.toml`. Same coordinates and versions, no new dependencies.
+  - Build types now follow PLAN:
+    - `debug`: debuggable, `.debug` suffix, no longer minified.
+    - `staging`: release settings with a `.staging` suffix, signed with the debug key for now (see Needs human). It has no version-name suffix, because `LanguagePack.parseVersion` and the export headers expect a plain `X.Y.Z`.
+    - `release`: never signed by Gradle. The `local.properties` signing block is gone; the CI sign job signs.
+  - Staging switches to `app/signing/staging-test.jks` automatically once that file exists.
+  - Staging unit tests are disabled, so they don't run a second time and inflate the summed test count.
+  - A `finalizeDsl` check fails the build if release ever gets a signing config.
+  - `dependenciesInfo` is off for APK and bundle. `buildToolsVersion = "35.0.0"` and `android.builder.sdkDownload=false`.
+  - **R8 coverage gap:** debug is no longer minified, and CI builds only `assembleDebug`. Until P0-8 adds `assembleStaging` to CI, every PR's Verification must include a local `./gradlew assembleStaging`. P0-8 should also upload the staging APK as a CI artifact.
+  - Result: 766 tests green. `assembleDebug`, `assembleStaging` and `assembleRelease` (unsigned) all build. The phone shows `app.fieldwatch.debug` and `app.fieldwatch.staging` installed side by side.
+  - **Gate finding: startup crash in 1.1.32, not caused by this PR.**
+    - What: `NullPointerException: Null reference used for synchronization` at `FieldwatchViewModel.cachedCameraReport` (`FieldwatchViewModel.kt:3339`), reached from `refreshSitPath`.
+    - Cause: `cameraCacheLock` is declared at line 3320, after the `init` block (line 671). The coroutines that block launches on `Dispatchers.Default` can read the lock before its initializer runs.
+    - Seen on: debug and staging, on the first launch of each. The second staging launch survived.
+    - **Reproduced on `main`:** an `assembleDebug` built from `45a5f70` (minified, non-debuggable, `app.fieldwatch`) crashed the same way on first launch at 06:26Z. Released 1.1.32 has the race.
+    - Next cycle fixes it before P0-3 part 2, with an audit of every other property declared after `init` that launched coroutines read.
+  - The crash screen's title and stack-trace text are nearly invisible (dark on dark). That's a contrast follow-up for P1-D6.
 - 2026-10-27: **P0-2 Repo hygiene.** PR #3.
   - Added `.gitattributes`: `* text=auto eol=lf`; `*.bat` stays CRLF, because cmd.exe misreads LF batch files; goldens (`**/golden/**`, `*.golden`) and binaries are `-text`.
   - Renormalized: only `gradlew.bat` was stored with CRLF, and its index copy is now LF.

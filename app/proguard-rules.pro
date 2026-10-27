@@ -1,6 +1,6 @@
-# Sideload is non-debuggable. Shrink unused library code (Material icons,
-# Compose tooling) but do not obfuscate or optimize — same R8 shape as
-# the old debug field build, without adb run-as into app data.
+# Applies to the minified build types, staging and release. Shrink unused
+# library code (Material icons, Compose tooling) but do not obfuscate or
+# optimize, so stack traces stay readable.
 -dontobfuscate
 -dontoptimize
 
