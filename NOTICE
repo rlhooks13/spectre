@@ -34,3 +34,8 @@ as original Fieldwatch source.
 
 Fieldwatch continues the Spectre 1.2.14 field build under a new name,
 application id (app.fieldwatch), and license.
+
+Spectre is an independent fork of Fieldwatch 1.1.32 by Off Grid Pete LLC
+(formerly named Spectre through 1.2.14). It is not made, reviewed or
+endorsed by Off Grid Pete LLC. New work is copyright (c) 2026 the Spectre
+contributors, under the same MIT License.

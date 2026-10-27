@@ -612,7 +612,7 @@ object DebriefReport {
             generatedUtc = utc(now),
             windowLine = windowLine,
             meta = meta,
-            disclaimer = FieldwatchDisclaimer.report(win),
+            disclaimer = SpectreDisclaimer.report(win),
             trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty(),
             takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, pathSpan, settings, named),
             sections = sections,

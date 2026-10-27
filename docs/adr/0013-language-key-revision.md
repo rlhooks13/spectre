@@ -26,7 +26,7 @@
   | 3 | Fieldwatch 1.1.29 (`73d1006`); 1.1.30 added none | 2 |
   | 4 | Fieldwatch 1.1.31 (`da086fc`) | 53 |
   | 5 | Fieldwatch 1.1.32 (`819365d`) | 69 |
-  | 6 | Spectre Phase 0 | 6 |
+  | 6 | Spectre Phase 0 | 8 (6, plus 2 from P0-4d) |
 
   `EnglishCopy.KEY_REVISION` is the newest (6).
 - **Revision 1 is frozen.** A test hashes its key set, which matches `3ebda52`'s keys exactly. A key left out of the table falls to revision 1 and fails that test, so a new key can't be silently treated as old.

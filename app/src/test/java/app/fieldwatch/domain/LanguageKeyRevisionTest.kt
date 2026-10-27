@@ -16,7 +16,7 @@ class LanguageKeyRevisionTest {
     @Test
     fun revisionsFollowTheReleasesThatAddedKeys() {
         // Counts read from each Fieldwatch release commit (3ebda52, a2563a3, 73d1006, da086fc, 819365d).
-        assertEquals(listOf(1099, 5, 2, 53, 69, 6), (1..6).map(::count))
+        assertEquals(listOf(1099, 5, 2, 53, 69, 8), (1..6).map(::count))
         assertEquals(6, EnglishCopy.KEY_REVISION)
         assertEquals(EnglishCopy.KEY_REVISION, EnglishCopy.lines.maxOf { it.revision })
         assertTrue(EnglishCopy.byKey.keys.containsAll(LanguageKeyRevisions.listed))

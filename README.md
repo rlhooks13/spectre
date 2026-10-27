@@ -53,7 +53,8 @@ Spectre is provided as-is under the MIT License, without warranty of any kind. U
 
 ## Copyright and license
 
-Copyright (c) 2026 Off Grid Pete LLC. See [LICENSE](LICENSE) for the current copyright notice.
+Copyright (c) 2026 Off Grid Pete LLC
+Copyright (c) 2026 the Spectre contributors
 
 Spectre is licensed under the [MIT License](LICENSE). AndroidX, Kotlin and related libraries remain Apache-2.0. The IEEE and Bluetooth SIG assigned-number tables in `radiodb.bin` are subject to those organizations' terms. See [NOTICE](NOTICE).
 

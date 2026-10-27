@@ -133,8 +133,12 @@ class BrandGuardTest {
 
         val ALLOWED = listOf(
             // Permanent.
-            Allow(Regex(""".*/domain/FieldwatchDisclaimer\.kt|dist/instruction\.txt"""), Regex("""Copyright \(c\) 2026 Off Grid Pete LLC(\\n"| \(see LICENSE)"""),
+            Allow(Regex(""".*/domain/SpectreDisclaimer\.kt|dist/instruction\.txt"""), Regex("""Copyright \(c\) 2026 Off Grid Pete LLC(\\n"|$)"""),
                 "MIT requires keeping upstream's copyright notice"),
+            Allow(Regex(""".*/domain/SpectreDisclaimer\.kt"""), Regex("""the Spectre contributors and Off Grid Pete LLC are not liable"""),
+                "liability disclaimer names upstream (owner-reviewed, P0-4d)"),
+            Allow(Regex(""".*/domain/ChromeLines\.kt"""), Regex(""""Copyright \(c\) 2026 Off Grid Pete LLC\. Copyright \(c\) 2026 the Spectre contributors\. MIT License\.""""),
+                "the About attribution (ui.copyright.spectre)"),
             Allow(Regex(""".*/domain/(Settings|Signature)Exchange\.kt"""), Regex("""exported from \$\{Brand\.NAME\} or Fieldwatch"""),
                 "import hint: files exported from upstream still import"),
             Allow(Regex(""".*/domain/SitTakPackage\.kt"""), Regex("""ifBlank \{ "fieldwatch" }"""),
@@ -144,14 +148,6 @@ class BrandGuardTest {
             Allow(Regex("""dist/fieldwatch-sensors\.txt"""), Regex("""built by upstream Fieldwatch"""),
                 "data credit to upstream"),
             // Temporary.
-            Allow(Regex(""".*/domain/FieldwatchDisclaimer\.kt"""), Regex("""Off Grid Pete LLC is not liable|Do not use Fieldwatch, this paste"""),
-                "upstream disclaimer, renamed and reworded by PR #10", until = "P0-4d"),
-            Allow(Regex(""".*/domain/ChromeLines\.kt"""), Regex(""""Copyright \(c\) 2026 Off Grid Pete LLC\. All rights reserved\."|"Off Grid Pete LLC  ·  operationally sensitive""""),
-                "copyright line and PDF footer, retired by PR #10", until = "P0-4d"),
-            Allow(Regex(""".*/domain/LanguageCopy\.kt"""), Regex("""not reviewed or certified by Off Grid Pete LLC"""),
-                "NOT_REVIEWED, reworded by PR #10", until = "P0-4d"),
-            Allow(Regex("""app/src/main/assets/lang/[a-z]+\.json"""), Regex("""^\s*"ui\.(off\.grid\.pete\.llc|copyright\.c\.2026\.off)": """),
-                "translations of the two keys PR #10 retires; their pack lines go with it", until = "P0-4d"),
             Allow(Regex(""".*/domain/DefaultCatalog\.kt"""),
                 Regex("""Fieldwatch (keeps Sony|cannot hear it|cannot hear\b|does not see Classic|does not connect|sees AP beacons)"""),
                 "six catalog notes; they change only with a catalog version bump, ladder step and snapshot", until = "P1-B1"),

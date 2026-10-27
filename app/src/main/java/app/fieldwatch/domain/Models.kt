@@ -1336,7 +1336,8 @@ data class AppSettings(
     val gnssRawLog: Boolean = false,
 )
 
-const val DISCLAIMER_REV = 3
+/** 4: Spectre disclaimer and license (P0-4d); everyone accepts it again. */
+const val DISCLAIMER_REV = 4
 
 /** Bump when an upgrade should show the Live tour one more time. */
 const val LIVE_TOUR_REV = 1
