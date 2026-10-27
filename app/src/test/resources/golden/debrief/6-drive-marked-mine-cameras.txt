@@ -1,0 +1,104 @@
+SPECTRE SIT — Drive to work
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Drive to work” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Drive to work
+Window        sit Drive to work (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        3
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 7.99 km along path · span 7.99 km · 241 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Drive to work Spectre heard 2 Wi-Fi access points and 1 BLE advertisers (3 signature-matched, 1 marked mine, 0 hidden SSIDs, 1 randomized BLE). Overall distance traveled: 7.99 km along the GPS path (straight-line span 7.99 km). No finder tag clearly stayed with the GPS path in this window.
+Finder tags  1
+Surveillance  2
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 7.99 km along-track, span 7.99 km, 241 fixes.
+
+1. Transit  11:40–12:00 UTC  9.94 km along track
+   0.00115, 0.00200  (operator phone)
+   → 0.07257, 0.00200  (operator phone)
+
+2. Stay  12:00–12:00 UTC  (0s)
+   0.07286, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
+   · Car keys  7A:11:22:33:44:01  -52 dBm
+
+3. KNOWN CAMERAS ON PATH
+Within about 150 m
+
+Flock
+  1 facing the path
+  0 on the path with no direction
+
+4. OBSERVER NOTES
+Your captions on radios heard in this window. Same KIND+MAC as Named radios. Not catalog Notes.
+  · WIFI  Flock-1A2B  B4:1E:52:0A:0B:0C  -70 dBm
+    Pole at the junction
+
+5. MARKED MINE
+Radios you marked mine. Heard in this window. Still listed. No beep while the mark is on.
+  · BLE  7A:11:22:33:44:01  Car keys  -52 dBm
+    Marked mine. With you the whole sit.
+
+6. TRACKING ASSESSMENT
+Overall distance traveled: 7.99 km along the GPS path (241 samples). Straight-line span 7.99 km.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+No finder tag, retail beacon, or wearable stayed with you. House tags and other radios you only passed are not listed.
+
+7. ENVIRONMENT
+In motion (walk/vehicle) through mixed RF.  (2 APs, 1 BLE, 0 persistent APs, traveled 7.99 km, span 7.99 km.)
+
+8. NETWORKS (WI-FI ACCESS POINTS)
+Heard 2 AP(s); 0 hidden SSID; 0 sat most of the window.
+ch 6  1  strongest -70 dBm
+ch 11  1  strongest -68 dBm
+
+9. BLUETOOTH LE
+Heard 1 advertiser(s); 1 with randomized addresses; 1 signature-matched.
+
+10. SIGNATURE HITS
+Flock Safety Cameras  2
+Apple AirTags  1
+Named or marked:
+  · Car keys  7A:11:22:33:44:01  -52 dBm  Marked mine
+
+11. PERSISTENCE
+Sat most of this window: 1
+First seen in this window: 2
+
+12. EXTRA ATTENTION
+Pattern match, not identity, not a skimmer detector, not a safety finding.
+  · Flock-3C4D  B4:1E:52:0A:0B:0D  -68 dBm  [Flock Safety Cameras]
+    Flock-style roadside ALPR / camera pole — reads plates and can be used to locate a vehicle. IEEE B4:1E:52 or a Flock-* SSID is the strong hit. Current poles are often quiet on Wi-Fi and BLE. Pattern match, not that camera. Look with your eyes.
+  · Flock-1A2B  B4:1E:52:0A:0B:0C  -70 dBm  [Flock Safety Cameras]
+    Flock-style roadside ALPR / camera pole — reads plates and can be used to locate a vehicle. IEEE B4:1E:52 or a Flock-* SSID is the strong hit. Current poles are often quiet on Wi-Fi and BLE. Pattern match, not that camera. Look with your eyes.
+
+13. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+14. PRIVACY
+A passive observer with the same radios would see 2 named/hidden APs and 1 BLE advertisers (1 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+15. RECOMMENDED ACTIONS
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: No finder tag, retail beacon, or wearable clearly stayed with your GPS path in this window.

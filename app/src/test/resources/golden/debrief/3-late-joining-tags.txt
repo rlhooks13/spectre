@@ -1,0 +1,140 @@
+SPECTRE SIT — Walk to the station
+
+DISCLAIMER
+This is a hobby project, provided as-is under the MIT License. Use at your own risk.
+
+Detections, pattern matches, “Moving with you” / “possible tail,” Debrief text, and AI Export are hypotheses — not identity, not a legal finding, and not a complete RF capture. Radios that are off, asleep, randomized, cellular-only, or hidden by the OS will not appear.
+
+You are solely responsible for how you use this app and for following local law. To the maximum extent permitted by law, the Spectre contributors and Off Grid Pete LLC are not liable for indirect, incidental, special, consequential, or punitive damages arising from its use.
+
+GPS stamps are this phone at hear-time, not the other radio, unless a decode map advertises its own latitude/longitude (Remote ID Location). Sharing a Debrief, sit compare, AI Export (sit or one radio), radio-detail Share as text, or log can take that path off the device. A TAK/CoT feed, when you turn it on, sends markers onto the LAN; that is on the operator.
+
+This sit report is from named sit “Walk to the station” (radios heard in that window; Live list cap still applied while watching). Do not use it in any situation where safety is in question.
+
+Generated     2026-10-27T12:00:00Z UTC
+Sit           Walk to the station
+Window        sit Walk to the station (2026-10-27T11:40:00Z → 2026-10-27T12:00:00Z UTC)
+Radios        2
+Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
+Scan          performance · stale 45s · brief hold 10s
+GPS tag       on
+Distance      traveled 1.10 km along path · span 1.10 km · 241 fixes
+Places        off
+ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
+
+1. EXECUTIVE SUMMARY
+In sit Walk to the station Spectre heard 0 Wi-Fi access points and 2 BLE advertisers (2 signature-matched, 0 hidden SSIDs, 2 randomized BLE). Overall distance traveled: 1.10 km along the GPS path (straight-line span 1.10 km). TRACKING NOTE. 1 finder tag(s) with you the whole sit (your kit or planted before you started): Apple AirTags 7A:11:22:33:44:04. 1 possible tail(s) first heard after this sit started: Samsung SmartTags 5E:11:22:33:44:02. Account for every MAC — Spectre cannot tell yours from a plant.
+Finder tags  2
+
+2. WHERE YOU WERE
+Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
+Overall: 1.10 km along-track, span 1.10 km, 241 fixes.
+
+1. Stay  11:40–11:40 UTC  (45s)
+   0.00116, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+2. Stay  11:40–11:41 UTC  (45s)
+   0.00154, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+3. Stay  11:41–11:42 UTC  (45s)
+   0.00191, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+4. Stay  11:42–11:43 UTC  (45s)
+   0.00228, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+5. Stay  11:43–11:43 UTC  (45s)
+   0.00265, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+6. Stay  11:43–11:44 UTC  (45s)
+   0.00302, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+7. Stay  11:44–11:45 UTC  (45s)
+   0.00339, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 0 BLE
+   · No GPS-stamped radios tied to this stay (tagging may have started after they were first heard).
+
+8. Stay  11:45–11:46 UTC  (45s)
+   0.00376, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 2 BLE  ·  Apple AirTags, Samsung SmartTags
+   · 7A:11:22:33:44:04  7A:11:22:33:44:04  -50 dBm
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -64 dBm
+
+9. Stay  11:46–11:46 UTC  (45s)
+   0.00413, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 2 BLE  ·  Apple AirTags, Samsung SmartTags
+   · 7A:11:22:33:44:04  7A:11:22:33:44:04  -50 dBm
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -64 dBm
+
+10. Stay  11:46–11:47 UTC  (45s)
+   0.00450, 0.00200  (operator phone)
+   Heard here: 0 AP(s), 2 BLE  ·  Apple AirTags, Samsung SmartTags
+   · 7A:11:22:33:44:04  7A:11:22:33:44:04  -50 dBm
+   · 5E:11:22:33:44:02  5E:11:22:33:44:02  -64 dBm
+
+3. KNOWN CAMERAS ON PATH
+Within about 150 m
+
+No listed camera was along this path.
+
+4. TRACKING ASSESSMENT
+Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
+Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
+Callouts below are only radios that stayed with the path. Radios you passed (store fixtures, house tags) are omitted.
+
+5. POSSIBLE TRACKERS WITH YOU
+Finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee) and loud pocket Apple BLE. These radios stayed with your GPS path for this sit. Spectre cannot tell your own tag or phone from a tracker planted in the car, bag, or on you before you started. Account for each MAC. Not a finding and not identity.
+
+  • Apple AirTags
+    7A:11:22:33:44:04  7A:11:22:33:44:04  RSSI -50 dBm (min -50 / max -50)
+    Stayed loud with you the whole sit (-50 to -50 dBm, 29 GPS stamps). With you the whole sit — yours or planted before you started. Account for it. Find My / iPhone addresses rotate; this MAC is this session.
+
+6. POSSIBLE TAIL
+Finder tags that were not heard when this sit started, then stayed with your path. That can mean someone started following you (their phone or tag), or a device was added during the trip. Not a finding and not identity.
+
+  • Samsung SmartTags
+    5E:11:22:33:44:02  5E:11:22:33:44:02  RSSI -64 dBm (min -68 / max -64)
+    Appeared after the sit started, then stayed loud with you across 769 m (769 m of your 1098 m path, 70%; 29/29 GPS stamps ≥ −75 dBm). Treat as a possible tail until you visually account for it.
+
+7. ENVIRONMENT
+Mixed or under-sampled environment.  (0 APs, 2 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)
+
+8. NETWORKS (WI-FI ACCESS POINTS)
+Heard 0 AP(s); 0 hidden SSID; 0 sat most of the window.
+
+9. BLUETOOTH LE
+Heard 2 advertiser(s); 2 with randomized addresses; 2 signature-matched.
+
+10. SIGNATURE HITS
+Apple AirTags  1
+Samsung SmartTags  1
+
+11. PERSISTENCE
+Sat most of this window: 2
+First seen in this window: 2
+
+12. ANOMALIES
+No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
+
+13. PRIVACY
+A passive observer with the same radios would see 0 named/hidden APs and 2 BLE advertisers (2 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
+
+14. RECOMMENDED ACTIONS
+  · Possible tail (appeared after this sit started): Samsung SmartTags 5E:11:22:33:44:02. Pause Live, open detail, note RSSI while you walk a dog-leg. Do not disable someone else’s tag.
+  · Possible trackers with you: Apple AirTags 7A:11:22:33:44:04. Could be yours or planted in the car/bag/on you before you started. Account for each MAC — do not dismiss as yours.
+  · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
+  · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
+
+—
+Takeaway: Possible tail (appeared after sit started): Samsung SmartTags 5E:11:22:33:44:02. Also finder tags with you (yours or planted before): Apple AirTags 7A:11:22:33:44:04. Account for every MAC.

@@ -49,8 +49,7 @@ object SitFixture {
             // A non-ASCII name checks UTF-8 through every format.
             target("T:flock").at(NO_FIX, 0, -86, null, null, 2, channel = 11).copy(name = "Café-AP"),
         )
-        val hits = SignatureEngine().match(raw, fleets, now = Golden.NOW)
-        val devices = raw.map { it.copy(fleetIds = hits[it.key].orEmpty()) }
+        val devices = matched(raw, fleets)
         val key = { mac: String -> devices.first { it.mac == mac }.key }
         return Sit(
             fleets = fleets,
@@ -62,8 +61,18 @@ object SitFixture {
         )
     }
 
-    private fun target(key: String): Sighting = MatchCorpus.targets.first { it.sighting.key == key }.sighting
-    private fun nearMiss(key: String): Sighting = MatchCorpus.nearMisses.first { it.sighting.key == key }.sighting
+    /** A hand-written match-corpus device (target or near-miss) by its corpus key. */
+    fun corpus(key: String): Sighting =
+        (MatchCorpus.targets.map { it.sighting } + MatchCorpus.nearMisses.map { it.sighting }).first { it.key == key }
+
+    /** [devices] with their signatures from the real matcher at [Golden.NOW]. */
+    fun matched(devices: List<Sighting>, fleets: List<Fleet>): List<Sighting> {
+        val hits = SignatureEngine().match(devices, fleets, now = Golden.NOW)
+        return devices.map { it.copy(fleetIds = hits[it.key].orEmpty()) }
+    }
+
+    private fun target(key: String): Sighting = corpus(key)
+    private fun nearMiss(key: String): Sighting = corpus(key)
 
     /** [mac] replaces the corpus's shared default; the key becomes the app's `KIND:MAC`. Last seen [minute]s from NOW. */
     private fun Sighting.at(
