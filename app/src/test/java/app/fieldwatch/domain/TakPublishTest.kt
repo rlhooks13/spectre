@@ -690,10 +690,10 @@ class TakPublishTest {
 
     @Test
     fun selfMarkerCarriesTheGnssLineAndNoCoordinatesInRemarks() {
-        val plain = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Fieldwatch-AB23")
+        val plain = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Spectre-AB23")
         assertTrue(plain.contains("uid=\"FIELDWATCH-SELF-AB23\""))
-        assertTrue(plain.contains("callsign=\"Fieldwatch-AB23\""))
-        assertTrue(plain.contains("Fieldwatch TAK heartbeat (this phone)"))
+        assertTrue(plain.contains("callsign=\"Spectre-AB23\""))
+        assertTrue(plain.contains("Spectre TAK heartbeat (this phone)"))
         assertFalse(plain.contains("GNSS"))
         val xml = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Fieldwatch-AB23", remarksExtra = "Possible GNSS interference · Medium")
         assertTrue(xml.contains("Possible GNSS interference · Medium"))
@@ -825,7 +825,7 @@ class TakPublishTest {
         )
         assertFalse(shared.contains("via "))
         assertEquals("Scout 1", TakInstall.callsign("Scout 1", other))
-        assertEquals("Fieldwatch-CD34", TakInstall.callsign("", other))
+        assertEquals("Spectre-CD34", TakInstall.callsign("", other))
         assertEquals("Scout 1", TakInstall.callsign("Scout 1", tag))
     }
 

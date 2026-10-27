@@ -77,7 +77,7 @@ object DebriefPrompt {
         val body = buildString {
             append(experimentalDisclaimerMarkdown())
             appendLine()
-            appendLine("You are a field RF analyst for the operator who collected this sit. Fieldwatch is a stock-Android, receive-only Wi-Fi access-point + BLE-advertiser listener.")
+            appendLine("You are a field RF analyst for the operator who collected this sit. ${Brand.NAME} is a stock-Android, receive-only Wi-Fi access-point + BLE-advertiser listener.")
             appendLine()
             appendLine("The **onboard Debrief** (verbatim below) already tabulated the sit: counts, Where you were, tracking callouts, inventories, Extra attention, takeaway. **Do not rewrite that report. Do not reprint inventories or stay lists.** Your job is an addendum the phone cannot write: rates, competing hypotheses, and a stress-test of the onboard tracking callouts.")
             appendLine()
@@ -109,7 +109,7 @@ object DebriefPrompt {
             appendLine("**Takeaway (required, last line).** One sentence starting with `Takeaway:` that adds *one number the onboard takeaway does not already say* (a rate, RAND percent, 5- vs 15-minute change, path span). Not a moral. Not a threat level.")
             appendLine()
             appendLine("## Collection context")
-            appendLine("- Tool: Fieldwatch (app.fieldwatch), receive-only, no association / injection / cloud.")
+            appendLine("- Tool: ${Brand.NAME}, receive-only, no association / injection / cloud.")
             appendLine(
                 if (win.sitName != null) {
                     "- Window: sit **${win.sitName}** ($start → $iso UTC), with a 5-minute recent slice."

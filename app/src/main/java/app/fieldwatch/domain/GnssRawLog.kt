@@ -205,7 +205,7 @@ object GnssRawFormat {
     }
 
     fun header(): String = buildString {
-        append("# Fieldwatch raw GNSS, recorded around a GNSS interference hit.\n")
+        append("# ${Brand.NAME} raw GNSS,recorded around a GNSS interference hit.\n")
         append("# Gain is on Agc lines when this phone reports it that way. Otherwise it is on the Raw line.\n")
         append("# \n")
         append("# ")

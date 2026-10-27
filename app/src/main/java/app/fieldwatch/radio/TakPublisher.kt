@@ -2,6 +2,7 @@ package app.fieldwatch.radio
 
 import android.util.Log
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.CotEvent
 import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.GnssLive
@@ -108,8 +109,8 @@ class TakPublisher {
                     lat = selfFix!!.first,
                     lon = selfFix.second,
                     now = now,
-                    callsign = "Fieldwatch",
-                    remarks = "Fieldwatch · gone",
+                    callsign = Brand.NAME,
+                    remarks = "${Brand.NAME} · gone",
                 )
                 if (sendAll(dests, xml.toByteArray(Charsets.UTF_8))) {
                     if (legacySelfSent.compareAndSet(false, true)) legacyJustSent = true
@@ -524,7 +525,7 @@ class TakPublisher {
     }
 
     companion object {
-        private const val TAG = "FieldwatchTak"
+        private const val TAG = "${Brand.LOG_TAG}Tak"
         private fun PayloadOk(fix: Pair<Double, Double>): Boolean =
             app.fieldwatch.domain.PayloadLocation.validCoord(fix.first, fix.second)
     }

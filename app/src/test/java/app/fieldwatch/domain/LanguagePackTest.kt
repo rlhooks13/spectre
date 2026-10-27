@@ -422,7 +422,7 @@ class LanguagePackTest {
         assertFalse(remarks.contains("HACKED"))
         val xml = CotEvent.selfXml(1.0, 2.0, 0L, "AB23", "Scout")
         assertTrue(xml.contains("type=\"a-f-G-U-C\""))
-        assertTrue(xml.contains("Fieldwatch TAK heartbeat (this phone)"))
+        assertTrue(xml.contains("Spectre TAK heartbeat (this phone)"))
         assertFalse(xml.contains("HACKED"))
         val pin = CotEvent.remarks(sighting("aa", "Porch"), emptyList(), advertised = false)
         assertTrue(pin.contains("heard here (operator GPS)"))

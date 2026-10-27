@@ -288,4 +288,4 @@ class BleRadio(
 
 private fun ByteArray.toHex(): String = joinToString("") { "%02X".format(it) }
 
-private const val TAG = "FieldwatchBle"
+private const val TAG = "${app.fieldwatch.domain.Brand.LOG_TAG}Ble"

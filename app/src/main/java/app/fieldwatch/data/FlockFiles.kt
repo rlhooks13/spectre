@@ -221,7 +221,7 @@ object FlockFiles {
             setRequestProperty("Accept", "application/geo+json, application/json, application/gzip")
             setRequestProperty(
                 "User-Agent",
-                "Fieldwatch/${BuildConfig.VERSION_NAME} (https://github.com/OffGridPete/Fieldwatch)",
+                app.fieldwatch.domain.Brand.userAgent(BuildConfig.VERSION_NAME),
             )
             if (!ifNoneMatch.isNullOrEmpty()) setRequestProperty("If-None-Match", ifNoneMatch)
         }

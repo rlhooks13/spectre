@@ -107,7 +107,7 @@ class GnssRawLogTest {
             store.close()
             val saved = store.recordings.value.single()
             val text = store.file(saved.name)!!.readText()
-            assertTrue(text.contains("# Fieldwatch raw GNSS"))
+            assertTrue(text.contains("# Spectre raw GNSS"))
             assertTrue(text.contains("\nRaw,"))
             assertNull(store.file("../${saved.name}"))
             val filler = java.io.File(dir, "gnss-20200101-000000.txt")

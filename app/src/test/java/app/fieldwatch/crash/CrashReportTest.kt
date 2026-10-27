@@ -38,7 +38,7 @@ class CrashReportTest {
             reason = "Native crash, signal 11",
             detail = "signal 11 (SIGSEGV)\n#00 pc 0000abcd /system/lib64/libbluetooth_jni.so",
         )
-        assertTrue(text.contains("Fieldwatch 1.1.28 (38)"))
+        assertTrue(text.contains("Spectre 1.1.28 (38)"))
         assertTrue(text.contains("samsung SM-G975U"))
         assertTrue(text.contains("Android 12 (SDK 31)"))
         assertTrue(text.contains("Native crash, signal 11"))

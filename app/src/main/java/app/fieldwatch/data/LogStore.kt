@@ -128,7 +128,7 @@ class LogStore(context: Context) {
 
     fun suggestedExportName(asJsonl: Boolean = false): String {
         val stamp = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
-        return "fieldwatch-log-$stamp.${exportExtension(asJsonl)}"
+        return "${app.fieldwatch.domain.Brand.FILE_PREFIX}-log-$stamp.${exportExtension(asJsonl)}"
     }
 
     suspend fun exportBundle(

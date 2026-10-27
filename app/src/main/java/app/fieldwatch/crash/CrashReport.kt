@@ -38,7 +38,7 @@ object CrashReport {
         reason: String,
         detail: String,
     ): String = buildString {
-        append("Fieldwatch ")
+        append("${app.fieldwatch.domain.Brand.NAME} ")
         append(versionName)
         append(" (")
         append(versionCode)

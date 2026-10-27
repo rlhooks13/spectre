@@ -141,7 +141,7 @@ object SitExport {
             .trim('-')
             .take(24)
             .ifBlank { "sit" }
-        val prefix = if (kind == LogExportKind.WIGLE) "fieldwatch-sit-wigle" else "fieldwatch-sit"
+        val prefix = if (kind == LogExportKind.WIGLE) "${Brand.FILE_PREFIX}-sit-wigle" else "${Brand.FILE_PREFIX}-sit"
         val ext = when (kind) {
             LogExportKind.LOG_CSV, LogExportKind.WIGLE -> "csv"
             LogExportKind.LOG_JSONL -> "jsonl"
@@ -161,13 +161,13 @@ object SitExport {
     }
 
     fun subject(kind: LogExportKind, sitName: String): String = when (kind) {
-        LogExportKind.LOG_CSV -> "Fieldwatch sit $sitName (CSV)"
-        LogExportKind.LOG_JSONL -> "Fieldwatch sit $sitName (JSON lines)"
-        LogExportKind.GPX -> "Fieldwatch sit $sitName (GPX)"
-        LogExportKind.KML -> "Fieldwatch sit $sitName (KML)"
-        LogExportKind.GEOJSON -> "Fieldwatch sit $sitName (GeoJSON)"
-        LogExportKind.WIGLE -> "Fieldwatch sit $sitName (WiGLE CSV)"
-        LogExportKind.ATAK -> "Fieldwatch sit $sitName (ATAK)"
+        LogExportKind.LOG_CSV -> "${Brand.NAME} sit $sitName (CSV)"
+        LogExportKind.LOG_JSONL -> "${Brand.NAME} sit $sitName (JSON lines)"
+        LogExportKind.GPX -> "${Brand.NAME} sit $sitName (GPX)"
+        LogExportKind.KML -> "${Brand.NAME} sit $sitName (KML)"
+        LogExportKind.GEOJSON -> "${Brand.NAME} sit $sitName (GeoJSON)"
+        LogExportKind.WIGLE -> "${Brand.NAME} sit $sitName (WiGLE CSV)"
+        LogExportKind.ATAK -> "${Brand.NAME} sit $sitName (ATAK)"
     }
 
     fun emptyHint(kind: LogExportKind, radios: LogExportRadios): String {

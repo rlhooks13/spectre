@@ -2,7 +2,7 @@ package app.fieldwatch.domain
 
 /**
  * Paste-ready analyst prompt for **one** radio from the device-detail screen.
- * One-tap share; no Fieldwatch cloud.
+ * One-tap share; no Spectre cloud.
  */
 object DeviceDetailPrompt {
     fun build(
@@ -27,7 +27,7 @@ object DeviceDetailPrompt {
             appendLine()
             appendLine("You are a field RF / privacy analyst with deep knowledge of IEEE OUI, Bluetooth SIG assigned numbers, GAP Appearance, known advertisement formats (iBeacon, Eddystone, Apple Continuity / Find My, Google Fast Pair, Microsoft), and common consumer products.")
             appendLine()
-            appendLine("The user wants **as much information as possible** about **this one radio** from a Fieldwatch observation. Fieldwatch is a stock-Android, receive-only Wi-Fi + BLE listener. Use the dump below **and** your public knowledge of registries and formats. Cite which field or byte pattern supports each claim.")
+            appendLine("The user wants **as much information as possible** about **this one radio** from a ${Brand.NAME} observation. ${Brand.NAME} is a stock-Android, receive-only Wi-Fi + BLE listener. Use the dump below **and** your public knowledge of registries and formats. Cite which field or byte pattern supports each claim.")
             appendLine()
             appendLine("Constraints you must respect:")
             appendLine("- This is **one** advertised radio, not a person, vehicle, or legal identity.")
@@ -43,7 +43,7 @@ object DeviceDetailPrompt {
             appendLine("- Treat this paste as operationally sensitive (MAC, SSID, payload, GPS).")
             appendLine()
             appendLine("## Collection context")
-            appendLine("- Tool: Fieldwatch (app.fieldwatch), receive-only, no association / injection / cloud.")
+            appendLine("- Tool: ${Brand.NAME}, receive-only, no association / injection / cloud.")
             appendLine("- Subject: $kind titled “$title”.")
             appendLine("- Scan intensity: ${settings.intensity.name.lowercase()}. Stale after ${settings.staleSec}s. Brief hold ${settings.decaySec}s.")
             appendLine("- Location tags: ${if (settings.tagLocation) "on" else "off"}.")
@@ -74,9 +74,9 @@ object DeviceDetailPrompt {
             appendLine("1. **What it likely is** — Product class, likely brand/family, possible model. Confidence 0–100. Hedge (Most likely / Probably / Could be). List the evidence (name, OUI, company ID, Appearance, services, payload). Competing hypotheses if the data fits more than one product.")
             appendLine("2. **Registry / format decode** — IEEE OUI or CID; Bluetooth SIG company; GAP Appearance; 16-bit UUIDs; iBeacon UUID/major/minor if present; Fast Pair model ID if present; Apple Continuity type if present. Quote the hex you used. If you recognize a well-known UUID or company from public lists, say so and say the list.")
             appendLine("3. **What that product typically does** — Phone, tag, speaker, car, AP, camera, mesh node, accessory, etc. Typical radio behavior (always-on beacon vs intermittent).")
-            appendLine("4. **What Fieldwatch actually saw vs what it cannot see** — Stock Android limits (no station/probe capture, no cellular, no DF). Randomized address implications.")
+            appendLine("4. **What ${Brand.NAME} actually saw vs what it cannot see** — Stock Android limits (no station/probe capture, no cellular, no DF). Randomized address implications.")
             appendLine("5. **Signal and presence** — Loud/quiet here; RSSI range this session; on-air windows. Do not convert RSSI to meters.")
-            appendLine("6. **Signature match** — If Fieldwatch matched a signature, treat it as a filter hit, not identity. Say whether the payload also supports that family. If Notes are in the dump, use them as catalog context for that family. If Extra attention is in the dump, quote it and treat it as an operator caution on a pattern, not proof — separate from Notes.")
+            appendLine("6. **Signature match** — If ${Brand.NAME} matched a signature, treat it as a filter hit, not identity. Say whether the payload also supports that family. If Notes are in the dump, use them as catalog context for that family. If Extra attention is in the dump, quote it and treat it as an operator caution on a pattern, not proof — separate from Notes.")
             appendLine("7. **Open questions** — What extra observation (another packet, name, GPS path, a second radio) would raise or lower confidence.")
             appendLine("8. **Must not conclude** — One short list of claims the dump does **not** support (owner, following, legal ID, distance).")
             appendLine()

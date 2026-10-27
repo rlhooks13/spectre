@@ -581,7 +581,7 @@ object DebriefReport {
             "last 15 minutes (${utc(windowStart)} → ${utc(windowEnd)} UTC)"
         }
         val heading = if (win.sitName != null) {
-            "FIELDWATCH SIT — ${win.sitName}"
+            "${Brand.NAME_UPPER} SIT — ${win.sitName}"
         } else {
             LanguageText.text("ui.fieldwatch.field.debrief")
         }
@@ -975,7 +975,7 @@ object DebriefReport {
         } else {
             LanguageText.text("ui.last.15.minutes.3")
         }
-        append("$whenPhrase Fieldwatch heard ${wifi.size} Wi-Fi access points and ${ble.size} BLE advertisers")
+        append("$whenPhrase ${Brand.NAME} heard${wifi.size} Wi-Fi access points and ${ble.size} BLE advertisers")
         append(" (${named.size} signature-matched")
         if (mineHeard > 0) append(", $mineHeard marked mine")
         append(", ${hidden.size} hidden SSIDs, $randomized randomized BLE). ")

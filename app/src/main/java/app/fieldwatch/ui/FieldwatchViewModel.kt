@@ -16,6 +16,7 @@ import app.fieldwatch.BuildConfig
 import app.fieldwatch.FieldwatchApp
 import app.fieldwatch.domain.AircraftTrail
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapOverlay
 import app.fieldwatch.domain.MapFrame
@@ -1871,7 +1872,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 val dir = File(app.cacheDir, "debrief").apply { mkdirs() }
                 val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
                     .format(java.util.Date())
-                val file = File(dir, "fieldwatch-sit-compare-$stamp.pdf")
+                val file = File(dir, "${Brand.FILE_PREFIX}-sit-compare-$stamp.pdf")
                 publishExport(0.32f, LanguageText.text("ui.loading.map.tiles"))
                 val tiles = pathTilesForFigure(doc.pathFigure)
                 val extraTiles = doc.extraFigures.map { pathTilesForFigure(it) }
@@ -2571,7 +2572,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun suggestedSignaturesName(): String {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
             .format(java.util.Date())
-        return "fieldwatch-signatures-$stamp.json"
+        return "${Brand.FILE_PREFIX}-signatures-$stamp.json"
     }
 
     private fun signaturePackJson(): String {
@@ -2653,7 +2654,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             runCatching {
                 val text = withContext(Dispatchers.IO) {
                     CatalogRemote.fetch(
-                        userAgent = "Fieldwatch/${BuildConfig.VERSION_NAME}",
+                        userAgent = Brand.userAgent(BuildConfig.VERSION_NAME),
                     )
                 }
                 val parsed = SignatureExchange.parsePack(text)
@@ -2752,7 +2753,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun suggestedSettingsName(): String {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
             .format(java.util.Date())
-        return "fieldwatch-settings-$stamp.json"
+        return "${Brand.FILE_PREFIX}-settings-$stamp.json"
     }
 
     private fun settingsPackJson(): String {
@@ -2944,7 +2945,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     LanguagePack.template(BuildConfig.VERSION_NAME)
                 }
                 val dir = java.io.File(app.cacheDir, "language").apply { mkdirs() }
-                val file = java.io.File(dir, "fieldwatch-language-en.json")
+                val file = java.io.File(dir, "${Brand.FILE_PREFIX}-language-en.json")
                 withContext(Dispatchers.IO) { file.writeText(json) }
                 val uri = FileProvider.getUriForFile(app, "${app.packageName}.files", file)
                 Intent(Intent.ACTION_SEND).apply {
@@ -3268,7 +3269,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 val dir = File(app.cacheDir, "debrief").apply { mkdirs() }
                 val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
                     .format(java.util.Date())
-                val file = File(dir, "fieldwatch-debrief-$stamp.pdf")
+                val file = File(dir, "${Brand.FILE_PREFIX}-debrief-$stamp.pdf")
                 publishExport(0.32f, LanguageText.text("ui.loading.map.tiles"))
                 val tiles = pathTilesForFigure(doc.pathFigure)
                 val extraTiles = doc.extraFigures.map { pathTilesForFigure(it) }
