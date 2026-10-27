@@ -2,15 +2,14 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-8a (CI workflow draft in `docs/setup/workflows/`, protected), on branch `p0/8a-ci-workflow-draft`; check `gh pr list --head p0/8a-ci-workflow-draft` for the PR. Then P0-8b (release workflow draft). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #17 and ready to sign once its CI is green), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c).
-- Branch: `p0/8a-ci-workflow-draft`
+- Current step: P0-7d (camera-alert region notice), on branch `p0/7d-camera-region-notice`; check `gh pr list --head p0/7d-camera-region-notice` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #17 and ready to sign once its CI is green), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c).
+- Branch: `p0/7d-camera-region-notice`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
 - Last cycle: 2026-10-27T11:05Z
 
 ## Needs human (owner)
-- P0-8a (PR to come): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
@@ -55,24 +54,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-8a CI workflow draft** (protected; the owner signs it and copies it into `.github/workflows/android.yml`). Branch `p0/8a-ci-workflow-draft`.
-  - **Steps:** wrapper validation, unit tests, a test-count guard (passing tests summed over every module's results vs `test-baseline.txt`), `lintDebug`, unsigned `assembleRelease` with an apksigner check that it stays unsigned, and `assembleStaging` uploaded as `spectre-staging-apk`.
-  - **Pins:** actions pinned by SHA (checkout v4.2.2, setup-java v4.9.1, gradle/actions v4.4.4, upload-artifact v4.6.2). Job names "Unit tests" and "APK" are unchanged.
-  - **Lint baseline:** lint found 9 inherited errors (MissingPermission ×4, NewApi ×2 inside `runCatching`, StateFlow value in composition ×3).
-    - `app/lint-baseline.xml` records only those 9 (warnings aren't baselined, so they stay visible).
-    - A CI guard fails if the file grows against the base branch, or if the report holds an error the baseline doesn't cover.
-    - P1-A8 clears the file before Phase 2 moves anything. Entries match by path.
-  - **Reviews:**
-    - **The test-count guard was tightened.** It now counts debug test cases once each by (module, class, name), fails when it finds no results, and reads the baseline from a line that is only a number.
-    - **Unsigned release.** The release check now requires exactly `app-release-unsigned.apk`. The apksigner probe could fail open.
-    - **Debug APK** is built again.
-    - **Lint** runs even after a test failure, and the APK job runs in parallel.
-    - **Staging key.** CI warns when the staging keystore is missing.
-  - **Test baseline:** `test-baseline.txt` goes 766 → 790, the current passing debug count. This conflicts trivially with PR #6 (767).
-  - **Needs human:** add `app/lint-baseline.xml` to the `protected` regex in `protected-paths.yml`.
-  - **Local checks:** `lintDebug` (0 report errors), `assembleRelease` (`app-release-unsigned.apk`) and `assembleStaging` all pass. 790 debug test cases, none failing or skipped.
-- 2026-10-27: **PR #10 checked against `main` after #18:** it merges cleanly and unit tests pass. I didn't push another merge commit; #10 still needs the owner's signature on every commit anyway.
-- 2026-10-27: **P0-7d Camera-alert region notice.** PR #18, merged as `1e87107`. Branch `p0/7d-camera-region-notice`.
+- 2026-10-27: **P0-7d Camera-alert region notice.** Branch `p0/7d-camera-region-notice`.
   - New key `settings.layer.alert.region` (BODY). It says some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving, so check the law before turning on an alert.
   - `SensorLayerBlock` draws it under "Voice Alerts", above the switches, so every layer gets it (plate readers now; Other sensors with P1-E5).
   - Always shown, never keyed to the phone's region. It names no statute. See ADR-0012.
