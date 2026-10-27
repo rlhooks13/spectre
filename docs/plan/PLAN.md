@@ -165,9 +165,9 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - `docs/plan/CHARTER.md` and `PLAN.md`, with step ids such as `P1-B3` used in PR titles. `PLAN.md` is agent-editable; `CHARTER.md` is protected.
    - `docs/plan/PROGRESS.md`, `review-prompts/`, `approved-dependencies.md` (seeded with this plan's libraries), `test-baseline.txt`.
    - ADR-0001 (identity), ADR-0002 (versioning), ADR-0003 (autonomy and review).
-2. **Repo hygiene.**
+2. ✅ **Repo hygiene.**
    - `.gitattributes`: `* text=auto eol=lf`, goldens and binaries `-text`.
-   - `core.longpaths`.
+   - `core.longpaths`. It's a per-clone setting: the README clone line carries it, and the owner sets it on the Windows signing checkout.
    - Scripts write `encoding="utf-8", newline="\n"`.
    - Delete the committed APK and PDFs and gitignore them.
 3. **Build.**
@@ -206,7 +206,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 
 **1A. Safety net** (lands before any fix)
 - **P1-A1 Test libraries:** coroutines-test, Turbine, Robolectric. Shared builders go in `app/src/test/.../testing/` (moved to `:core:testing` first in Phase 2).
-- **P1-A2 Golden rule:**
+- **P1-A2 Golden rule:** goldens live under a `golden/` directory (for example `app/src/test/resources/golden/`), so `.gitattributes` keeps them `-text`.
   - Pins TimeZone and Locale, resets the LanguageText overlay, and passes `now` explicitly.
   - JSON goldens are compared **after parsing**, plus one Robolectric test that pins the device's byte order.
   - One localized golden.

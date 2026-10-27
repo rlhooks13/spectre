@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-1, PR #2 (waiting on CI, then squash-merge)
-- Branch: `p0/1-agent-scaffolding`
+- Current step: P0-2 (committed on the branch; check `gh pr list --head p0/2-repo-hygiene` for the PR and its CI)
+- Branch: `p0/2-repo-hygiene`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T05:41Z
+- Last cycle: 2026-10-27T06:01Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -15,6 +15,8 @@
 - Host power settings (SETUP.md).
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
 - `approved-dependencies.md` (protected) is missing build plugins the plan needs: `com.android.library`, `org.jetbrains.kotlin.jvm`, and for `build-logic` the `com.android.tools.build:gradle` and `org.jetbrains.kotlin:kotlin-gradle-plugin` artifacts. Plugins already in use (`com.android.application`, `org.jetbrains.kotlin.android`, `.plugin.compose`, `.plugin.serialization`) and `androidx.compose.ui:ui-tooling` aren't listed by name either. This blocks P2-1. The agent will push a draft branch for the owner to sign before Phase 2.
+- On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
+- Permission rules: `gh pr merge --delete-branch` was silently denied while a plain `gh pr merge --squash` worked, and `cat` and some piped `git ls-files` commands are denied too. Merged agent branches stay on the remote until a rule allows `git push origin --delete p<phase>/*` or `gh pr merge --delete-branch`. Remote branch `p0/1-agent-scaffolding` is waiting for that.
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -32,7 +34,7 @@ The owner skipped the supervised dry run on 2026-10-27 (UTC) and told the agent 
 | `./gradlew testDebugUnitTest` | Pass: 766 tests, 0 failures, 0 skipped |
 | `adb -s RFCX205JR3K get-state` | Pass: `device` |
 | Push notification | Partial: the terminal notification was sent, but the mobile push wasn't (Remote Control inactive) |
-| PR changing a non-protected file: CI runs, squash-merge | Pending: this PR (P0-1) |
+| PR changing a non-protected file: CI runs, squash-merge | Pass: PR #2's APK, Unit tests and Protected paths checks passed, and it was squash-merged as `cd37758` |
 | PR changing `CLAUDE.md`: `Protected paths` fails | Pending |
 | Push under `.github/workflows/` rejected | Pending (P0-8) |
 | `gh secret list` / ruleset edit gives 403 | Partial: blocked locally by the guard hook before reaching GitHub. The server-side 403 isn't verified |
@@ -43,6 +45,17 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
+
+- 2026-10-27: **P0-2 Repo hygiene.** Branch `p0/2-repo-hygiene`.
+  - Added `.gitattributes`: `* text=auto eol=lf`; `*.bat` stays CRLF, because cmd.exe misreads LF batch files; goldens (`**/golden/**`, `*.golden`) and binaries are `-text`.
+  - Renormalized: only `gradlew.bat` was stored with CRLF, and its index copy is now LF.
+  - Deleted `dist/Fieldwatch.apk`, `dist/Fieldwatch_User_Manual.pdf` and `docs/Fieldwatch_User_Manual.pdf`; `*.apk` is now gitignored with no exceptions, and so are the manual outputs `/docs/*.pdf` and `/dist/*.pdf`.
+  - `scripts/build_lookups.py` writes `radiodb.txt` with `newline="\n"` and reads it back as UTF-8. The other scripts write only binaries (PDF, PNG).
+  - README rows that pointed at the deleted files are fixed; the full README rebrand is P0-4.
+  - `core.longpaths` is a per-clone setting, so it's a needs-human item for the owner's Windows checkout.
+  - Result: 766 tests green, `assembleDebug` OK.
+  - Follow-up for P0-4: `dist/instruction.txt` and `docs/instruction.txt` still list `Fieldwatch.apk`, the manual PDF and the APK SHA-256. The rebrand rewrites them. The card also points to the manual for the full notice. Until P0-8 publishes the manual as a release asset, the in-app disclaimer is the only copy this repo ships.
+  - Follow-up for P0-3: the debug build type sets `applicationIdSuffix = ""`, so debug and release share an app id, which contradicts the `run-as <appId>.debug` checklist.
 
 - 2026-10-27: **P0-1 Agent scaffolding.** PR #2. The scaffolding (CLAUDE.md, CHARTER, PLAN, PROGRESS, review prompts, approved dependencies, test baseline, ADR-0001 to ADR-0003) already landed in `bdfe6c3` and `023d2d1`. I checked it against the step text. The step asks for step ids, and PLAN.md had none outside Phases 0, 2 and 5, so this PR adds ids to every step plus a tick convention. It also records the phone facts and the dry-run results above, and ticks P0-1. Result: 766 tests green. Decisions: none new (ADR-0001, ADR-0002 and ADR-0003 already exist). Follow-ups:
   - P0-3 now pins Build-Tools 35.0.0 and turns off SDK auto-download (AGP fetched Build-Tools 34 during this run).

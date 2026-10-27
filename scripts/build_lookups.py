@@ -261,9 +261,10 @@ def main() -> int:
             ]
         ),
         encoding="utf-8",
+        newline="\n",
     )
     print(f"wrote {bin_path} ({len(packed)} bytes)")
-    print(meta.read_text())
+    print(meta.read_text(encoding="utf-8"))
     return 0
 
 

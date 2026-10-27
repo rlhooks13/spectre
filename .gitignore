@@ -4,7 +4,6 @@
 build/
 app/build/
 *.apk
-!dist/*.apk
 *.aab
 *.ap_
 local.properties
@@ -25,5 +24,9 @@ docs/ble-signature-decode.schema.json
 docs/GROK_BUILD_PROMPT.md
 research/
 scripts/.lookup-cache/
+
+# Built manual (docs/build_manual.py): it ships as a release asset, never in the tree
+/docs/*.pdf
+/dist/*.pdf
 
 # Machine JDK path belongs in JAVA_HOME, not the tree
