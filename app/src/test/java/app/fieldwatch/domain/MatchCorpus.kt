@@ -190,6 +190,8 @@ object MatchCorpus {
         // P1-B5a: the bare names became separator-ended prefixes; a default "NAME-suffix" still matches.
         Target("Raven default-style name", sighting("T:raven-default", name = "RAVEN-1A2B"), "fleet-raven"),
         Target("Vigilant default-style name", sighting("T:vigilant-default", name = "Vigilant_C3D4"), "fleet-vigilant"),
+        Target("Raven Wi-Fi Direct SSID", sighting("T:raven-direct", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0B", name = "DIRECT-rR-Raven-607"), "fleet-raven"),
+        Target("Cradlepoint IBR1150 router", sighting("T:cradlepoint-1150", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0C", name = "IBR1150-3F2"), "fleet-cradlepoint"),
         Target(
             "Cradlepoint IBR900 router",
             sighting("T:cradlepoint", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0A", name = "IBR900-1A2"),
@@ -280,6 +282,14 @@ object MatchCorpus {
             "Phone hotspot named Ibrahim",
             sighting("NM:ibr", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:09", name = "IBRAHIM-iPhone"),
             setOf("fleet-cradlepoint"),
+        ),
+        // The P1-B5a replacements need a separator or the exact name, and the Wi-Fi Direct shape.
+        NearMiss("Fan gear named Ravens", sighting("NM:ravens-fan", name = "Ravens-Fan"), setOf("fleet-raven")),
+        NearMiss("Device named Vigilante", sighting("NM:vigilante", name = "Vigilante"), setOf("fleet-vigilant")),
+        NearMiss(
+            "Wi-Fi Direct group a person named for a Raven cam",
+            sighting("NM:direct-raven", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0D", name = "DIRECT-5G-My-Raven-Cam"),
+            setOf("fleet-raven"),
         ),
     )
 

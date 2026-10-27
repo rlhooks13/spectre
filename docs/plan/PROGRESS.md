@@ -71,13 +71,18 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 - 2026-10-27: **P1-B5a RAVEN, Vigilant, IBR\* (catalog v101).** #60 (P1-B4c) merged as f91b91a.
   - **Split:** P1-B5 splits into B5a, the three rules the step names, and B5 itself, the 34 short names, which each need evidence of what real devices advertise.
   - **The fix:**
-    - `RAVEN` (contains) and `Vigilant` (contains) become separator-ended prefix globs: `RAVEN-*`, `RAVEN_*`, `Vigilant-*`, `Vigilant_*`.
-    - Raven also gets `DIRECT-*-Raven-*` (Wi-Fi), because the existing test `ravenWifiDirectSsidHitsRavenOnly` pins a real SSID, "DIRECT-rR-Raven-607", that only the bare name matched.
-    - Cradlepoint drops bare `IBR*` and keeps its eight model globs.
-    - The retired rules are in `catalog/retired.json` and `RetiredRules`. The new Raven globs sit last in the row, where `patchBuiltIn` appends them, so an upgraded row equals stock.
+    - `RAVEN` (contains) and `Vigilant` (contains) become the exact name plus separator-ended prefix globs: `RAVEN`, `RAVEN-*`, `RAVEN_*`, `Vigilant`, `Vigilant-*`, `Vigilant_*`.
+    - Raven also gets `DIRECT-??-Raven-*` (Wi-Fi), the shape of a real SSID, "DIRECT-rR-Raven-607", that only the bare name matched (pinned by the existing test `ravenWifiDirectSsidHitsRavenOnly`).
+    - Cradlepoint drops bare `IBR*`, keeps its eight model globs, and adds `IBR350*` and `IBR1150*`, which only `IBR*` covered.
+    - No capture shows Raven's or Vigilant's own name format, so these trade some recall for fewer false labels. Raven's UUIDs and OUI still find it.
+    - The retired rules are in `catalog/retired.json` and `RetiredRules`.
+  - **Ladder (v101):**
+    - It carries an "off" on a retired rule (or SSID keywords off, via the v4 policy) to that row's replacements (`ADDED_RULES_V101`).
+    - The replacements sit last in their rows, where `patchBuiltIn` appends them, so upgraded rows equal stock.
   - **Corpus:**
     - the three P1-B5 near misses (Ravenclaw speaker, Vigilant home alarm, IBRAHIM hotspot) lose `knownUntil`;
-    - new targets `RAVEN-1A2B` and `Vigilant_C3D4`.
+    - new targets: `RAVEN-1A2B`, `Vigilant_C3D4`, the Raven Wi-Fi Direct SSID, and `IBR1150-3F2`;
+    - new near misses: "Ravens-Fan", "Vigilante", and "DIRECT-5G-My-Raven-Cam".
   - **Tests:** `RetiredRulesFileTest` accepts suffixed step ids such as P1-B5a. New `CatalogV101LadderTest`.
 - 2026-10-27: **P1-B4c Beacons and wearables by class.** #59 (P1-B4b) merged as 3f73949.
   - **The fix:** `TrackerMatch` picks BEACON and WEARABLE by the matched fleets' class, as FINDER already is; no name tokens are left in `kind` or `label`.

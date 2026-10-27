@@ -6,14 +6,14 @@
 - **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.
 - **BlueTOAD Spectra** (surveillance): notes reworded.
 - **Cisco** (isp): notes reworded.
-- **Cradlepoint** (law enforcement): stopped matching on name glob "IBR*" (WIFI).
+- **Cradlepoint** (law enforcement): stopped matching on name glob "IBR*" (WIFI); now also matches on name glob "IBR350*" (WIFI); name glob "IBR1150*" (WIFI).
 - **goTenna** (mesh): notes reworded.
 - **Hobby BLE serial** (hacking): attention note reworded; notes reworded.
-- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-*-Raven-*" (WIFI).
+- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI).
 - **Samsung SmartTags** (finder): stopped matching on Bluetooth company id 0x0075.
 - **Sony** (audio): notes reworded.
 - **Tile Trackers** (finder): stopped matching on name contains "Tile"; service uuid "FEDD"; Bluetooth company id 0x00C7; now also matches on name glob "Tile" (BLE); Bluetooth company id 0x067C.
-- **Motorola Vigilant** (surveillance): stopped matching on name contains "Vigilant"; now also matches on name glob "Vigilant-*"; name glob "Vigilant_*".
+- **Motorola Vigilant** (surveillance): stopped matching on name contains "Vigilant"; now also matches on name glob "Vigilant"; name glob "Vigilant-*"; name glob "Vigilant_*".
 <!-- generated: catalog end -->
 
 ### Verdict changes in the test corpus
@@ -32,6 +32,9 @@
 - Near miss: Speaker named Ravenclaw: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Home alarm named Vigilant: was Motorola Vigilant (surveillance, extra attention), now no signature.
 - Near miss: Phone hotspot named Ibrahim: was Apple Device (phone), Cradlepoint (law enforcement, extra attention), now Apple Device (phone).
+- Near miss: Fan gear named Ravens: was Raven / ShotSpotter (surveillance), now no signature.
+- Near miss: Device named Vigilante: was Motorola Vigilant (surveillance, extra attention), now no signature.
+- Near miss: Wi-Fi Direct group a person named for a Raven cam: was Raven / ShotSpotter (surveillance), now no signature.
 
 ### Feature switches
 

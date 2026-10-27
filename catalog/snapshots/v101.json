@@ -20506,6 +20506,22 @@
                     "dataPrefixHex": "",
                     "radio": "WIFI",
                     "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "IBR350*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "IBR1150*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -47271,6 +47287,14 @@
                 },
                 {
                     "kind": "NAME_GLOB",
+                    "text": "Vigilant",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "Vigilant-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -50509,6 +50533,14 @@
                 },
                 {
                     "kind": "NAME_GLOB",
+                    "text": "RAVEN",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
                     "text": "RAVEN-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
@@ -50525,7 +50557,7 @@
                 },
                 {
                     "kind": "NAME_GLOB",
-                    "text": "DIRECT-*-Raven-*",
+                    "text": "DIRECT-??-Raven-*",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",

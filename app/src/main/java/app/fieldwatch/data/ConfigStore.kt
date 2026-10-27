@@ -1241,8 +1241,17 @@ class ConfigStore internal constructor(private val file: File) {
             version = CATALOG_V100
         }
         if (version < CATALOG_V101) {
-            // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load); the separator-ended
-            // RAVEN and Vigilant globs are added by patchBuiltIn above, so this step only moves the version.
+            // P1-B5a: RAVEN, Vigilant and IBR* are retired (RetiredRules strips them on load), and patchBuiltIn above
+            // appends their replacements switched on (ADDED_RULES_V101). A user who had switched the old rule off,
+            // or had SSID keywords off (the v4 policy), gets the replacements off too.
+            fleets = fleets.map { fleet ->
+                val added = ADDED_RULES_V101[fleet.id]
+                if (added == null || !fleet.builtIn) return@map fleet
+                val old = cfg.fleets.firstOrNull { it.id == fleet.id } ?: return@map fleet
+                val wasOff = old.rules.any { RetiredRules.isRetired(fleet.id, it) && !it.enabled }
+                if (!wasOff) return@map fleet
+                fleet.copy(rules = fleet.rules.map { r -> if (r.kind == RuleKind.NAME_GLOB && r.text in added) r.copy(enabled = false) else r })
+            }
             version = CATALOG_V101
         }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
@@ -1778,6 +1787,13 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-findmy",
         )
         private const val AIRTAGS = "fleet-airtag"
+
+        /** The name globs v101 added in place of each retired name rule (P1-B5a), by fleet. */
+        private val ADDED_RULES_V101 = mapOf(
+            "fleet-raven" to setOf("RAVEN", "RAVEN-*", "RAVEN_*", "DIRECT-??-Raven-*"),
+            "fleet-vigilant" to setOf("Vigilant", "Vigilant-*", "Vigilant_*"),
+            "fleet-cradlepoint" to setOf("IBR350*", "IBR1150*"),
+        )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */
         private const val V99_AIRTAG_NOTES = "Apple AirTag or Find My accessory. iPhones also send Find My so they can be " +

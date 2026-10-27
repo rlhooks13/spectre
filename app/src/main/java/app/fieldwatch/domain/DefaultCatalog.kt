@@ -387,12 +387,16 @@ object DefaultCatalog {
             uuid("3400"),
             uuid("3500"),
             oui("D4:11:D6"),
-            // P1-B5a: "RAVEN" anywhere hit "Ravenclaw" and "Ravens fan". A default "RAVEN-xxxx" name still matches.
-            // Last, as patchBuiltIn appends them, so an upgraded row equals stock.
+            // P1-B5a: "RAVEN" anywhere hit "Ravenclaw" and "Ravens fan". The exact name and a "RAVEN-xxxx" or
+            // "RAVEN_xxxx" style still match; no capture shows which a Raven uses, so this trades some recall for
+            // fewer false labels (UUIDs and the OUI above still find it). Last, as patchBuiltIn appends them, so an
+            // upgraded row equals stock (ConfigStore.ADDED_RULES_V101).
+            glob("RAVEN"),
             glob("RAVEN-*"),
             glob("RAVEN_*"),
-            // Its Wi-Fi Direct SSID, e.g. "DIRECT-rR-Raven-607" (SignatureExchangeTest.ravenWifiDirectSsidHitsRavenOnly).
-            wifiGlob("DIRECT-*-Raven-*"),
+            // Its Wi-Fi Direct SSID, in the observed shape "DIRECT-rR-Raven-607"
+            // (SignatureExchangeTest.ravenWifiDirectSsidHitsRavenOnly).
+            wifiGlob("DIRECT-??-Raven-*"),
         ),
     )
 
@@ -1592,7 +1596,9 @@ object DefaultCatalog {
         rules = listOf(
             name("Vigilant Solutions"),
             name("Motorola Vigilant"),
-            // P1-B5a: "Vigilant" anywhere hit home alarms and "Vigilante". A default "Vigilant-xxxx" name still matches.
+            // P1-B5a: "Vigilant" anywhere hit home alarms and "Vigilante". The exact name and a "Vigilant-xxxx" or
+            // "Vigilant_xxxx" style still match; no capture shows which one Vigilant uses (recall traded for precision).
+            glob("Vigilant"),
             glob("Vigilant-*"),
             glob("Vigilant_*"),
         ),
@@ -3862,6 +3868,10 @@ object DefaultCatalog {
                 wifiGlob("R920*"),
             ),
             ApVendorOuis.CRADLEPOINT,
+        ) + listOf(
+            // P1-B5a: the models bare "IBR*" covered that have no glob above. Last, as patchBuiltIn appends them.
+            wifiGlob("IBR350*"),
+            wifiGlob("IBR1150*"),
         ),
     )
 

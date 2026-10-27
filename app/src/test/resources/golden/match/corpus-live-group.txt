@@ -58,6 +58,12 @@ T:raven-default	target	Raven default-style name
 T:vigilant-default	target	Vigilant default-style name
   expect fleet-vigilant
   -> fleet-vigilant [SURVEILLANCE, attention]
+T:raven-direct	target	Raven Wi-Fi Direct SSID
+  expect fleet-raven
+  -> fleet-raven [SURVEILLANCE]
+T:cradlepoint-1150	target	Cradlepoint IBR1150 router
+  expect fleet-cradlepoint
+  -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
 T:cradlepoint	target	Cradlepoint IBR900 router
   expect fleet-cradlepoint
   -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
@@ -103,6 +109,15 @@ NM:vigilant	near-miss	Home alarm named Vigilant
 NM:ibr	near-miss	Phone hotspot named Ibrahim
   must not fleet-cradlepoint
   -> fleet-apple-device [PHONE]
+NM:ravens-fan	near-miss	Fan gear named Ravens
+  must not fleet-raven
+  -> (none)
+NM:vigilante	near-miss	Device named Vigilante
+  must not fleet-vigilant
+  -> (none)
+NM:direct-raven	near-miss	Wi-Fi Direct group a person named for a Raven cam
+  must not fleet-raven
+  -> (none)
 RND:Axon	random-oui	Random BLE address on Axon's OUI
   hits by design until P1-B8 classifies the address
   -> fleet-axon [LAW_ENFORCEMENT, attention]

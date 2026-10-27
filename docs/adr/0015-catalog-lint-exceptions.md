@@ -37,12 +37,12 @@
 
 **What the steps do:**
 - **P1-B10** (new) moves these to payload-prefix rules or a class that fits everything on the id, backed by captures. If no capture arrives by the 0.1.0 phase gate, it drops the bare id and keeps the row's names and service UUIDs.
-- **P1-B5** is widened from "RAVEN, Vigilant and IBR\*" to every short name the lint lists: Echo, iPad, Arlo, Seos, Yale, ASUS, Audi, BMW, Bose, BYD, DJI (BLE and Wi-Fi), eero, eufy, FOBO, Ford, Hak5, BT05, ENVY, JBL, Kevo, Logi, MBUX, Xbox, MyQ, Nuki, Oura, Net2, Sony, Tapo, TUYA, UBNT, VW, Wyze.
+- **P1-B5** is widened from "RAVEN, Vigilant and IBR\*" (done as P1-B5a, catalog v101) to every short name the lint lists: Echo, iPad, Arlo, Seos, Yale, ASUS, Audi, BMW, Bose, BYD, DJI (BLE and Wi-Fi), eero, eufy, FOBO, Ford, Hak5, BT05, ENVY, JBL, Kevo, Logi, MBUX, Xbox, MyQ, Nuki, Oura, Net2, Sony, Tapo, TUYA, UBNT, VW, Wyze.
   - It turns each into a longer name, or a prefix glob whose literal is at least 5 characters or ends in a separator (`-`, `_`, space). A glob that starts with `*` counts as "contains".
   - Or it moves a name into the Accepted list above, with a reason.
 
 **Reviewer checks, not lint:**
-- **Short prefix globs:** `lit*` with a literal under 5 characters, such as `IBR*` (already in P1-B5). Fixed-length patterns like AT&T's `ATT???????` are fine.
+- **Short prefix globs:** `lit*` with a literal under 5 characters, such as the `IBR*` that P1-B5a retired in catalog v101. Fixed-length patterns like AT&T's `ATT???????` are fine.
 - **Subsidiary ids used bare:** Beats 0x00CC (Apple), Nest Labs 0x01B5 (Google), Harman 0x0057 (Samsung).
 - **One-byte `MANUFACTURER_DATA` prefixes on a mega-vendor id:** Apple's Continuity types are protocol message types. Offline Finding 0x004C "12" left AirTags in P1-B3 (catalog v100). It now sits on purpose on `fleet-findmy`, a type-unknown finder that the engine routes by the status byte (`SignatureEngine.routeOfflineFinding`). It stays one byte rather than "1219" so the near-owner form (`12 02 <status>`) still matches.
 
