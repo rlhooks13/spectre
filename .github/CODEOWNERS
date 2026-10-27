@@ -1,5 +1,6 @@
-# Protected control files. Changes need review by the owner (see docs/plan/CHARTER.md).
-# This works only with the main-branch ruleset's "Require review from Code Owners" turned on.
+# Protected control files (see docs/plan/CHARTER.md). Documentation only: the owner and the agent share
+# the rlhooks13 account, so code-owner review can't be enforced. The required "Protected paths" check
+# (.github/workflows/protected-paths.yml) enforces it instead: every commit must carry the owner's signature.
 
 /.github/                                             @rlhooks13
 /.claude/                                             @rlhooks13

@@ -10,13 +10,14 @@
 - **Why a separate Linux machine:** Claude Code's only tamper-proof lock is the machine-wide managed settings file. On the host, that file would also lock the owner's own sessions (connectors, MCP servers). Inside the distro it binds only the agent.
 - **Why WSL2 instead of VirtualBox:** Hyper-V is already active on this PC, which makes VirtualBox slow and its USB passthrough unreliable. The distro's `/etc/wsl.conf` turns off Windows drive mounting and Windows interop, so the agent can't read the owner's files or start Windows programs. It still shares the host's NAT network; there is no `.wslconfig`, so host services bound to localhost aren't reachable.
 - The session uses the owner's Claude account, with claude.ai connectors disabled by managed settings and checked every cycle.
-- The agent acts on GitHub as a bot account.
+- On GitHub the agent acts as the owner's account `rlhooks13` (owner decision), through a fine-grained token limited to the two Spectre repos. The token has no Administration, Workflows, Secrets, Environments or Variables permission.
 
 **Control layers**
 1. GitHub, enforced on the server:
-   - The main ruleset blocks force-push and deletion and requires CI and CODEOWNERS review on protected paths.
-   - Tags are immutable.
-   - The bot's token has no workflow scope.
+   - The main ruleset has no bypass. It requires a PR and the CI checks, including `Protected paths`, and it blocks force-push and deletion.
+   - `Protected paths` fails any PR that changes a control file unless every commit is signed with the owner's SSH key. The key lives only on the Windows host, and the allowed key is read from the base branch. This replaces CODEOWNERS review, which can't work when the owner and the agent share one account.
+   - Tags and releases are immutable.
+   - The agent's token can't edit workflows, settings, rulesets or secrets.
    - The `release` environment holds the signing secrets, and its sign job runs no agent-written code.
 2. Claude Code managed settings: `dontAsk` mode, managed-only permission rules and hooks, connectors disabled, and the guard hook.
 3. Repo conventions: CLAUDE.md and the charter.
@@ -36,6 +37,7 @@ Layer 1 is the real boundary; layers 2 and 3 can be bypassed by scripts the agen
 - A script-based watcher (no model involved) pauses the loop at 90% of either plan window and resumes it after the reset.
 
 ## Consequences
-- The owner reviews only protected-path PRs, records field captures, and handles `needs-human` items.
+- The owner signs and merges only protected-path PRs, records field captures, and handles `needs-human` items.
+- **What sharing the account costs:** GitHub attributes all the agent's activity to the owner publicly, and doesn't notify the owner about it. Claude push notifications are the only alert channel. The `Agent: spectre-loop` trailer marks the agent's commits.
 - Reviewers share a model with the implementer, so objective checks (tests, corpus, lint, on-device checks) carry the most weight.
 - The agent shares the owner's usage quota.
