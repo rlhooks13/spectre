@@ -261,7 +261,7 @@ class LanguagePackTest {
                 assertEquals(EnglishCopy.cap(line), LanguageText.text(line.key).length)
             }
         } else {
-            // Every line at its slot cap, written with a two-byte letter, is over 264 KiB.
+            // Every line at its slot cap, written with a two-byte letter, is over 272 KiB.
             // The file cap stays. That whole file is refused. The packs in the app are smaller.
             assertReject(parsed)
             assertEquals(LanguageErrors.LARGE, (parsed as LanguageParse.Reject).messageKey)
@@ -606,7 +606,7 @@ class LanguagePackTest {
         assertTrue(text.contains("count: {n}"))
         assertTrue(text.contains("not reviewed or certified"))
         assertTrue(text.contains("Wi-Fi"))
-        assertTrue(text.contains("264 KiB"))
+        assertTrue(text.contains("272 KiB"))
     }
 
     @Test

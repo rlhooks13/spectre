@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7c (plate-list source and terms, partial), PR #16 (waiting on CI, then squash-merge; the step stays open for the owner's operator and terms answer). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #15 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7d (camera-alert region notice).
-- Branch: `p0/7c-plate-list-source`
+- Current step: language-pack cap (ADR-0011), on branch `p0/language-pack-cap`; check `gh pr list --head p0/language-pack-cap` for the PR. It must merge **before PR #10**: with #10 on top of `main` (after #16), the full-slot pack test trips. After it merges, re-sync #10 with `main`. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; **don't merge until the cap PR lands and #10 is re-synced**), the P0-4e applicationId go-ahead, and the dontgetflocked operator and terms (P0-7c). Next: P0-7d (camera-alert region notice).
+- Branch: `p0/language-pack-cap`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T10:15Z
+- Last cycle: 2026-10-27T10:35Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -54,7 +54,13 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7c Plate-list source and terms (partial).** PR #16.
+- 2026-10-27: **Language-pack cap 264 → 272 KiB (ADR-0011).** Branch `p0/language-pack-cap`.
+  - **Found when** re-syncing PR #10 after #16: `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` failed. A pack with every line at its slot cap must be either accepted, or refused and within 8 KiB of `LanguagePack.MAX_BYTES`.
+  - **Why it tripped:** the Phase 0 copy fixes added English lines, so the worst-case pack (main plus #10) is 278,802 bytes, 274 bytes past 264 KiB plus 8 KiB.
+  - **Decision:** the test's margin is a tripwire, so it stays unchanged. Instead the cap goes to 272 KiB, so the worst case is still refused and within the margin. The author guide and the requirements doc are updated.
+  - **Checks:** tests pass on `main` with the change, and on `main` + #10 + the change.
+  - #10 stays unmerged until this lands and #10 is re-synced.
+- 2026-10-27: **P0-7c Plate-list source and terms (partial).** PR #16, merged as `a3e6dcb`.
   - **Dialog:** the plate-reader download dialog uses new key `settings.layer.download.source`: "…from {host}. Spectre does not run that site; check it for its terms before you download. The list is crowdsourced and not complete…".
     - `{host}` comes from the download URL via the new `FlockFiles.sourceHost()`, so the copy can't drift from the real source.
     - The old key `settings.layer.download.body` is retired ("Unused"), and its translations are dropped from the 26 packs.
