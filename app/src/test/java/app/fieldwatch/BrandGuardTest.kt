@@ -148,8 +148,6 @@ class BrandGuardTest {
             Allow(Regex("""dist/fieldwatch-sensors\.txt"""), Regex("""built by upstream Fieldwatch"""),
                 "data credit to upstream"),
             // Temporary.
-            Allow(Regex(""".*/data/FlockFiles\.kt"""), Regex("""raw\.githubusercontent\.com/OffGridPete/Fieldwatch"""),
-                "upstream sensor-list download", until = "P0-7b"),
             Allow(Regex(""".*/domain/DefaultCatalog\.kt"""),
                 Regex("""Fieldwatch (keeps Sony|cannot hear it|cannot hear\b|does not see Classic|does not connect|sees AP beacons)"""),
                 "six catalog notes; they change only with a catalog version bump, ladder step and snapshot", until = "P1-B1"),

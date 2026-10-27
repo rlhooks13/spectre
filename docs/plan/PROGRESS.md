@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7a (receive-only copy, catalog update off), PR #14 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; synced with main and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7b (sensor list).
-- Branch: `p0/7a-receive-only-copy-catalog-off`
+- Current step: P0-7b (sensor layer off), PR #15 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced with main after #14 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7c (dontgetflocked).
+- Branch: `p0/7b-sensor-layer-off`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T09:30Z
+- Last cycle: 2026-10-27T09:55Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,28 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7a Receive-only copy and catalog update off.** PR #14.
+- 2026-10-27: **P0-7b Sensor layer off.** PR #15.
+  - **Why off:** PLAN's two options were a build script or the layer off. A build script means fetching and replacing a 40,112-row ODbL dataset that a test pins, so the layer is off for now. P1-E5 (new) brings it back with `scripts/build_sensors.py` and a list this project hosts.
+  - **What's off:**
+    - `Features.OTHER_SENSORS_LAYER = false`.
+    - `SensorList.OTHER.url` is now `""`. The existing blank-URL guard in `FlockFiles.probe` and `download` fails without opening a connection.
+    - The Settings "Other sensors" block is hidden.
+    - The ViewModel turn-on, update and confirm entry points return early; turning it off still works.
+  - **One gate for every reader:** `AppSettings.withFeatureGates()`, applied in `ConfigStore.load()` and `update()` (which covers import and restore), makes a saved `sensorLayer = true` read as false.
+    - So alerts, voice, map overlays, the Reports path figure and `syncFlock` all see "off".
+    - Why: both reviewers found that the first version only gated `syncFlock`'s `showOther`. Its stale-result guard then compared the raw setting and never loaded the plate-reader layer for anyone with the old setting on, and the hidden toggle couldn't turn it off. That's fixed by this one gate.
+  - **Leftover upstream data:** any old `road-sensors.bin` is deleted at startup. `cameraReport()` skips the list while the layer is off. The Debrief no longer says "The other-camera list is not on this phone" for a list that isn't offered.
+  - The plate-reader layer (dontgetflocked) is unchanged; that's P0-7c.
+  - BrandGuard's last upstream-URL entry is removed. No upstream URL is left in the app.
+  - README dist row and egress list updated.
+  - New `SensorLayerOffTest` (+3):
+    - The flag is off and no list has an upstream URL.
+    - A saved `sensorLayer` reads as off while the plate layer and alert prefs stay.
+    - Blank-URL probe and download fail with no progress or files.
+  - `PathCamerasTest` now ties the missing-list line to the flag; ported, not removed.
+  - Result: 781 tests green. Staging cold-started with 0 `FATAL`.
+- 2026-10-27: **PR #10 re-synced after #14.** Resolved the BrandGuard allowlist conflict. Dropped #10's two retired keys from all 26 packs with `drop_pack_keys.py`, so the 0-ignored-lines check passes. 781 tests green on the branch.
+- 2026-10-27: **P0-7a Receive-only copy and catalog update off.** PR #14, merged as `ed942a2`.
   - **Permission copy:** "Nothing is transmitted" was untrue, because scans send OS probe and scan requests (CHARTER invariant 3). The safety meaning changes, so the line gets a new key (invariant 7).
     - New key `ui.permissions.receive.only`: "…Spectre never connects, pairs, or advertises. Wi-Fi and Bluetooth scans can send the probe and scan requests Android makes when it scans."
     - The old key `ui.location.nearby.wi.fi` stays with the value "Unused". Packs fall back to English for the new key until it's translated.

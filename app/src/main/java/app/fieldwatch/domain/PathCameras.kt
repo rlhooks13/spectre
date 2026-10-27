@@ -91,7 +91,9 @@ object PathCameras {
      * A list that is not on the phone is still named. The layer switches do not apply here.
      */
     fun text(tally: Tally): String {
-        if (!tally.plates && !tally.others) return LanguageText.text("ui.cameras.lists.missing")
+        // While the Other-sensors layer is off, its list isn't "missing"; it isn't offered.
+        val othersOffered = Features.OTHER_SENSORS_LAYER
+        if (!tally.plates && (!tally.others || !othersOffered)) return LanguageText.text("ui.cameras.lists.missing")
         if (!tally.pathReady) return LanguageText.text("ui.cameras.no.path")
         return buildString {
             appendLine(
@@ -104,7 +106,7 @@ object PathCameras {
                 appendLine()
                 appendLine(LanguageText.text("ui.cameras.plates.missing"))
             }
-            if (!tally.others) {
+            if (!tally.others && othersOffered) {
                 appendLine()
                 appendLine(LanguageText.text("ui.cameras.other.missing"))
             }
