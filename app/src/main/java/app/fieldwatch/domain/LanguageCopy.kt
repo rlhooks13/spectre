@@ -10,8 +10,8 @@ data class EnglishLine(
     val key: String,
     val text: String,
     val slot: LanguageSlot,
-    /** versionName that added this key. The first map shares one version. */
-    val addedIn: String,
+    /** Key revision that added this key, from [LanguageKeyRevisions] (ADR-0013). Replaces the old versionName. */
+    val revision: Int,
 )
 
 data class BundledLanguage(val tag: String, val name: String, val english: String)
@@ -89,7 +89,8 @@ object LanguageAiCopy {
 }
 
 object EnglishCopy {
-    const val ADDED_IN = "1.1.27"
+    /** The newest key revision; see [LanguageKeyRevisions]. */
+    const val KEY_REVISION = LanguageKeyRevisions.NEWEST
     const val FORMAT = "fieldwatch-language"
     const val FORMAT_VERSION = 1
 
@@ -104,7 +105,7 @@ object EnglishCopy {
         for (line in lines) {
             require(seen.add(line.key)) { "Duplicate language key ${line.key}" }
             require(keyRe.matches(line.key)) { "Bad language key ${line.key}" }
-            require(line.addedIn == ADDED_IN)
+            require(line.revision in 1..KEY_REVISION) { "Bad revision for ${line.key}" }
             var i = 0
             while (i < line.text.length) {
                 val brace = line.text.indexOf('{', i)
@@ -146,7 +147,7 @@ object LanguageErrors {
 }
 
 internal fun en(key: String, text: String, slot: LanguageSlot) =
-    EnglishLine(key, text, slot, EnglishCopy.ADDED_IN)
+    EnglishLine(key, text, slot, LanguageKeyRevisions.of(key))
 
 private fun buildLines(): List<EnglishLine> = listOf(
     en("tab.live", "Live", LanguageSlot.TAB),
