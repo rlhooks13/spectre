@@ -1,0 +1,10 @@
+export.log.csv = Logdatei — CSV
+export.log.jsonl = Logdatei — JSON-Zeilen
+export.gpx = GPX — GPS-Austausch
+export.kml = KML — Google Earth
+export.geojson = GeoJSON — Kartendatei
+export.wigle = WiGLE CSV — wigle.net
+export.atak = ATAK-Datenpaket
+export.both = Beide Radios
+export.wifi.only = Nur Wi-Fi
+export.ble.only = Nur BLE
