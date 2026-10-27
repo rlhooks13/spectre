@@ -1,0 +1,29 @@
+[
+    {
+        "deviceKey": "BLE:7A:11:22:33:44:01",
+        "id": "BLE:7A:11:22:33:44:01",
+        "lastHeardAt": 1793102370000,
+        "localDay": 20388,
+        "places": [
+            {
+                "count": 3,
+                "firstAt": 1793016000000,
+                "lastAt": 1793016400000,
+                "lat": 0.0011,
+                "lon": 0.002,
+                "name": null
+            },
+            {
+                "count": 4,
+                "firstAt": 1793101200000,
+                "lastAt": 1793102370000,
+                "lat": 0.0015,
+                "lon": 0.0024,
+                "name": "Test Street"
+            }
+        ],
+        "returnAt": 1793101200000,
+        "returnGapMs": 84800000,
+        "sitId": "sit-1132-golden"
+    }
+]

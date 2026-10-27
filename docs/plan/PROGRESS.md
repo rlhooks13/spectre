@@ -2,26 +2,26 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-A3 Goldens**, split into PRs:
-  - first, exports and CoT (`ExportGoldenTest`, `SitFixture`);
-  - then signature matching, Debrief for 6 sits, the ATAK package, the AI prompts and both packs, and 1.1.32 decoding.
-  - Then 1B–1E.
-  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. The baseline goes up again for A2 and A3's tests in the next protected PR.
-  - **P2-1** (build-logic) is unblocked; it starts after 1A, so its build move doesn't collide with the golden work.
+- Current step: **P1-B1 SmartTag** (drop `mfg(0x0075)`, keep FD5A), the first 1B fix, now that the 1A safety net (A1–A5) is in.
+  - It follows the catalog change checklist (CLAUDE.md).
+  - It re-blesses the goldens its PLAN line names; each diff shows the Galaxy near-miss losing "Samsung SmartTags".
+  - Then B2 onward, and P0-8d after B1.
+  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2 and A3 added about 52 tests above 858, so the next protected PR raises the baseline again.
+  - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **P0-8d** after P1-B1.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
-    - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3. P1-A6 waits for build-logic (P2-1).
+    - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
   - **Waiting on the owner:** signing #43; the P0-7c layer choice.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a3a-export-goldens`
+- Branch: `p1/a3g-1132-fixtures`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T16:36Z
+- Last cycle: 2026-10-27T18:29Z
 
 ## Needs human (owner)
 **For the owner:**
@@ -65,6 +65,14 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-A3 done: real 1.1.32 files, decoded by today's code.**
+  - #51 (prompts and packs) merged.
+  - **Fixtures:** the five files under `fixtures/fieldwatch-1.1.32/` were written by the 1.1.32 code itself (a worktree at 819365d, each store's own Json) from synthetic inputs: config, a saved sit, places, and both share packs. The generator is in the folder's README.
+  - **`Fieldwatch1132DecodeTest`** (Robolectric) reads them as the app does: ConfigStore.load, SitStore, SettingsExchange.apply and SignatureExchange.merge. Places are decoded with PlaceStore's Json, because PlaceStore.load prunes against the wall clock.
+  - **Findings, pinned:**
+    - A signature pack's stock row with `enabled = false` is skipped as "already present" when merged, so a disabled state doesn't carry over in a pack.
+    - 1.1.32's places.json has no `format` key.
+    - PlaceStore.load reads the wall clock (a testability follow-up for the importer).
 - 2026-10-27: **Owner update (in session), and P1-A3's AI prompts and packs.**
   - **Usage gate:** #50 (3bd5de2) merged. Work runs only while the weekly window is under 80% and the five-hour window under 90%. Pre-flight step 5 runs `tools/usage-watch.sh --gate`, and a paused wakeup is cheap. The watcher was restarted from the new script, and the gate was open (five-hour 16/90, weekly 50/80).
   - **CI flake:** main CI was red on ba09e1f (#48). The APK job's dependency verification fetched `org.jetbrains.kotlin.android.gradle.plugin-2.0.21.pom` from the Gradle Plugin Portal: an auto-generated copy (681 bytes, sha256 9d841037…) where Maven Central's matches the pin (61ffa872…). The owner re-ran the job, and main is green. **Don't change `verification-metadata.xml` for it; if it happens again, tell the owner.**

@@ -1,0 +1,32 @@
+{
+    "catalogVersion": 97,
+    "changedFromStock": [
+        {
+            "attentionNote": "",
+            "builtIn": false,
+            "clusterByOui": false,
+            "colorIndex": 0,
+            "enabled": true,
+            "id": "fleet-user-1132",
+            "kind": "CAMERA",
+            "matchAny": true,
+            "minPeers": 0,
+            "name": "Test doorbell",
+            "notes": "Made on this phone.",
+            "peerWindowSec": 60,
+            "rules": [
+                {
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "enabled": true,
+                    "kind": "NAME_CONTAINS",
+                    "radio": null,
+                    "text": "Doorbell-TEST"
+                }
+            ],
+            "sequentialMac": false
+        }
+    ],
+    "fleetCount": 256,
+    "result": "Added 1 · skipped 1 already present."
+}

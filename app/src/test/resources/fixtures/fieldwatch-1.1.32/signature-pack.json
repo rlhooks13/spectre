@@ -1,0 +1,91 @@
+{
+    "format": "fieldwatch-signatures",
+    "formatVersion": 1,
+    "exportedAt": "2026-10-27T12:00:00Z",
+    "appVersion": "1.1.32",
+    "catalogVersion": 97,
+    "fleets": [
+        {
+            "id": "fleet-user-1132",
+            "name": "Test doorbell",
+            "enabled": true,
+            "matchAny": true,
+            "colorIndex": 0,
+            "rules": [
+                {
+                    "kind": "NAME_CONTAINS",
+                    "text": "Doorbell-TEST",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                }
+            ],
+            "minPeers": 0,
+            "peerWindowSec": 60,
+            "clusterByOui": false,
+            "sequentialMac": false,
+            "notes": "Made on this phone.",
+            "attentionNote": "",
+            "builtIn": false,
+            "kind": "CAMERA"
+        },
+        {
+            "id": "fleet-tile",
+            "name": "Tile Trackers",
+            "enabled": false,
+            "matchAny": true,
+            "colorIndex": 3,
+            "rules": [
+                {
+                    "kind": "NAME_CONTAINS",
+                    "text": "Tile",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "SERVICE_UUID",
+                    "text": "FEED",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "SERVICE_UUID",
+                    "text": "FEEC",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "SERVICE_UUID",
+                    "text": "FEDD",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_ID",
+                    "text": "",
+                    "companyId": 199,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                }
+            ],
+            "minPeers": 0,
+            "peerWindowSec": 60,
+            "clusterByOui": false,
+            "sequentialMac": false,
+            "notes": "Tile item finder. Decoded fields can show a rotating private id — not a serial.",
+            "attentionNote": "",
+            "builtIn": true,
+            "kind": "FINDER"
+        }
+    ]
+}
