@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-6 (BrandGuard), on branch `p0/6-brand-guard`; check `gh pr list --head p0/6-brand-guard` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-7 (copy and legal fixes).
+- Current step: P0-6 (BrandGuard), PR #13 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-7 (copy and legal fixes).
 - Branch: `p0/6-brand-guard`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -50,7 +50,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-6 BrandGuard.** Branch `p0/6-brand-guard`.
+- 2026-10-27: **P0-6 BrandGuard.** PR #13.
   - New `BrandGuardTest`: a JVM unit test for now, because build-logic is blocked on the approved-dependency plugins; it moves in P2-1.
     - **What it scans:** every line of every text file under `app/src/main` (language packs included), `app/build.gradle.kts` and `dist/`.
     - **What it matches**, case-insensitively: `field[\s_-]?watch`, `off[\s-]?grid[\s-]?pete`, `ogridpete`.
