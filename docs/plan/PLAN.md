@@ -330,6 +330,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - `refreshPermissions` writes only on change.
   - About 30 hard-coded strings move to keys.
 - **P1-D6 Accessibility:** tabs get `Role.Tab`; bars use `heightIn(min)`; Radar gets a text alternative.
+- **P1-D7 Debrief text defects** (found by the P1-A3 Debrief goldens, which pin them; each fix re-blesses them):
+  - A Transit leg's "along track" distance is longer than the whole path's (9.94 km against 7.99 km on the drive golden).
+  - The header's `Classification` label runs into its value (`ClassificationOperationally sensitive`).
+  - A finder that isn't Apple's still gets "Find My / iPhone addresses rotate" (the Galaxy golden; it goes with P1-B1).
 
 **1E. Exports and privacy**
 - **P1-E1 Export formats:**

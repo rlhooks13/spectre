@@ -65,6 +65,17 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-A3, Debrief goldens for 6 sits:**
+  - **The sits:**
+    1. a stationary café stop;
+    2. a tag in the bag from before the start;
+    3. late-joining tags;
+    4. pass-bys;
+    5. a Galaxy phone in a pocket;
+    6. a drive with a marked-mine tag past cameras.
+  - **Built like a saved sit:** devices go through `SitRadio.from(...).toSighting()`, the path has a fix every 5 s, gone radios are closed, and a camera report is always passed.
+  - **They pin two known wrong verdicts:** the Galaxy phone as a SmartTag (P1-B1), and a loud late joiner called "with you" (P1-B9).
+  - **New P1-D7:** three Debrief text defects the goldens found (a Transit leg longer than the path, `Classification` spacing, Find My copy on a non-Apple finder).
 - 2026-10-27: **P1-A3: three PRs.**
   - **#45, sit exports and live CoT:** merged.
   - **#46, rotating-log exports:** merged. It found a part-order bug, now listed under P1-C2: parts merge in file-name order, so an older part's position can win.

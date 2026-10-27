@@ -18,7 +18,7 @@ Radios        1
 Tool          Spectre (io.github.rlhooks13.spectre) · stock Android · receive-only Wi-Fi AP + BLE advertiser
 Scan          performance · stale 45s · brief hold 10s
 GPS tag       on
-Distance      traveled 1.10 km along path · span 1.10 km · 21 fixes
+Distance      traveled 1.10 km along path · span 1.10 km · 241 fixes
 Places        off
 ClassificationOperationally sensitive — neighbor SSIDs, MACs, operator GPS
 
@@ -28,93 +28,98 @@ Finder tags  1
 
 2. WHERE YOU WERE
 Phone GPS at hear-time, not the other radio’s location and not a camera pole. Stays are clusters within about 40 m; hops between them are transit. Coordinates are not repeated on every Wi-Fi/BLE line.
-Overall: 1.10 km along-track, span 1.10 km, 21 fixes.
+Overall: 1.10 km along-track, span 1.10 km, 241 fixes.
 
-1. Stay  11:40–11:41 UTC  (1m0s)
-   0.00100, 0.00200  (operator phone)
+1. Stay  11:40–11:40 UTC  (45s)
+   0.00116, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-2. Stay  11:41–11:42 UTC  (1m0s)
-   0.00149, 0.00200  (operator phone)
+2. Stay  11:40–11:41 UTC  (45s)
+   0.00154, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-3. Stay  11:42–11:43 UTC  (1m0s)
-   0.00199, 0.00200  (operator phone)
+3. Stay  11:41–11:42 UTC  (45s)
+   0.00191, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-4. Stay  11:43–11:44 UTC  (1m0s)
-   0.00248, 0.00200  (operator phone)
+4. Stay  11:42–11:43 UTC  (45s)
+   0.00228, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-5. Stay  11:44–11:45 UTC  (1m0s)
-   0.00298, 0.00200  (operator phone)
+5. Stay  11:43–11:43 UTC  (45s)
+   0.00265, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-6. Stay  11:45–11:46 UTC  (1m0s)
-   0.00347, 0.00200  (operator phone)
+6. Stay  11:43–11:44 UTC  (45s)
+   0.00302, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-7. Stay  11:46–11:47 UTC  (1m0s)
-   0.00396, 0.00200  (operator phone)
+7. Stay  11:44–11:45 UTC  (45s)
+   0.00339, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-8. Stay  11:47–11:48 UTC  (1m0s)
-   0.00446, 0.00200  (operator phone)
+8. Stay  11:45–11:46 UTC  (45s)
+   0.00376, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-9. Stay  11:48–11:49 UTC  (1m0s)
-   0.00495, 0.00200  (operator phone)
+9. Stay  11:46–11:46 UTC  (45s)
+   0.00413, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-10. Stay  11:49–11:50 UTC  (1m0s)
-   0.00545, 0.00200  (operator phone)
+10. Stay  11:46–11:47 UTC  (45s)
+   0.00450, 0.00200  (operator phone)
    Heard here: 0 AP(s), 1 BLE  ·  Apple AirTags
    · 7A:11:22:33:44:01  7A:11:22:33:44:01  -52 dBm
 
-3. TRACKING ASSESSMENT
-Overall distance traveled: 1.10 km along the GPS path (21 samples). Straight-line span 1.10 km.
+3. KNOWN CAMERAS ON PATH
+Within about 150 m
+
+No listed camera was along this path.
+
+4. TRACKING ASSESSMENT
+Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
 Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee, loud pocket Apple), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), and wearables (Garmin, Fitbit, Oura, Polar).
 Callouts below are only radios that stayed with the path. Radios you passed (store fixtures, house tags) are omitted.
 
-4. POSSIBLE TRACKERS WITH YOU
+5. POSSIBLE TRACKERS WITH YOU
 Finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee) and loud pocket Apple BLE. These radios stayed with your GPS path for this sit. Spectre cannot tell your own tag or phone from a tracker planted in the car, bag, or on you before you started. Account for each MAC. Not a finding and not identity.
 
   • Apple AirTags
     7A:11:22:33:44:01  7A:11:22:33:44:01  RSSI -52 dBm (min -55 / max -50)
-    Stayed loud with you the whole sit (-50 to -55 dBm, 21 GPS stamps). With you the whole sit — yours or planted before you started. Account for it. Find My / iPhone addresses rotate; this MAC is this session.
+    Stayed loud with you the whole sit (-50 to -55 dBm, 40 GPS stamps). With you the whole sit — yours or planted before you started. Account for it. Find My / iPhone addresses rotate; this MAC is this session.
 
-5. ENVIRONMENT
+6. ENVIRONMENT
 Mixed or under-sampled environment.  (0 APs, 1 BLE, 0 persistent APs, traveled 1.10 km, span 1.10 km.)
 
-6. NETWORKS (WI-FI ACCESS POINTS)
+7. NETWORKS (WI-FI ACCESS POINTS)
 Heard 0 AP(s); 0 hidden SSID; 0 sat most of the window.
 
-7. BLUETOOTH LE
+8. BLUETOOTH LE
 Heard 1 advertiser(s); 1 with randomized addresses; 1 signature-matched.
 
-8. SIGNATURE HITS
+9. SIGNATURE HITS
 Apple AirTags  1
 
-9. PERSISTENCE
+10. PERSISTENCE
 Sat most of this window: 1
-First seen in this window: 1
+First seen in this window: 0
 
-10. ANOMALIES
+11. ANOMALIES
 No extra flags. Signature hits, Extra attention, and tracking callouts already cover named pattern matches.
 
-11. PRIVACY
+12. PRIVACY
 A passive observer with the same radios would see 0 named/hidden APs and 1 BLE advertisers (1 randomized). This debrief includes operator GPS samples used for distance and the following test. Do not share this file off-device without redaction.
 
-12. RECOMMENDED ACTIONS
+13. RECOMMENDED ACTIONS
   · Possible trackers with you: Apple AirTags 7A:11:22:33:44:01. Could be yours or planted in the car/bag/on you before you started. Account for each MAC — do not dismiss as yours.
   · Use Live → Pause to inspect a busy list. Watch tracker signatures if this sit was noisy.
   · Station-side Wi-Fi (probes/clients) still needs a dedicated sniffer — Spectre cannot see them.
