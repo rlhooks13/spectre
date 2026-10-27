@@ -2,16 +2,18 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-A4 (match corpus), on branch `p1/a4-match-corpus`; check `gh pr list --head p1/a4-match-corpus` for the PR.
-  - **Then:** P1-A5 (`CatalogLintTest`).
-  - **Deferred:** P1-A1 and P1-A2 wait for #6, and P0-8d for P1-B1's snapshots.
+- Current step: P1-A5 (`CatalogLintTest`, ADR-0015), on branch `p1/a5-catalog-lint`; check `gh pr list --head p1/a5-catalog-lint` for the PR.
+  - **Then:** the first unblocked step in 1C or 1D.
+  - **Deferred:**
+    - 1B waits for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
+    - P0-8d waits for P1-B1's snapshots.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/a4-match-corpus`
+- Branch: `p1/a5-catalog-lint`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T14:10Z
+- Last cycle: 2026-10-27T14:40Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -64,7 +66,38 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-A4 Match corpus.** Branch `p1/a4-match-corpus`. Test-only.
+- 2026-10-27: **P1-A5 CatalogLintTest (ADR-0015).** Branch `p1/a5-catalog-lint`.
+  - **`RadioDb`:** an internal `initFrom(bytes)` (under the lock) and `resetForTest()` let JVM tests load `radiodb.bin` (built 2026-08-24). `@AfterClass` unloads it, so later test classes don't depend on run order. `parse` stays private.
+  - **Lint rules:**
+    - company ids must be in the SIG tables;
+    - no bare `MANUFACTURER_ID` for Apple, Samsung, Google, Microsoft or DJI (by SIG company name), alone in an any-rule signature;
+    - name rules that need a literal under 5 characters fail: `NAME_CONTAINS`, or a glob starting with `*`.
+  - **Today's 41 violations,** each keyed by content (not rule position) and listed with ADR-0015 or a fixing step, strictly in both directions:
+    - **Unassigned id:** `fleet-huf/0x070A`, accepted until the radiodb refresh.
+    - **Bare mega-vendor ids:**
+      - SmartTag 0x0075 → P1-B1;
+      - Google 0x00E0, Microsoft 0x0006 (PHONE class on the whole id), Fitbit on Google's 0x018E and DJI 0x08AA on a DRONE row → **new P1-B10** (payload prefixes or a fitting class, from captures).
+    - **35 short names:**
+      - "Tile" → P1-B2;
+      - 34 brand names → P1-B5, widened to every short name.
+  - **Corpus collisions:**
+    - each target, near-miss and random-address case has its full hit set pinned;
+    - each generated positive that hits another signature is listed (13), with ADR-0015 or a step:
+      - 10 legitimate overlaps accepted (Atrius/iBeacon, Amazon thermostat, ESP32 Marauder, Inseego/Novatel, UniFi AP);
+      - Tattile → Tile goes to P1-B2;
+      - LiteOn's TP-Link vendor IE → TP-Link goes to P1-B10.
+    - A golden replaces the pins after P1-A2.
+  - **After the independent review:**
+    - The mega-vendor ids are pinned explicitly and checked against SIG names.
+    - A `MANUFACTURER_ID` of 0, or beyond 16 bits, fails.
+    - **Huf 0x070A** is a gap in the SIG range (not pending), so it moves to P1-B10.
+    - **New near-misses** with `knownUntil = P1-B10`: an unnamed DJI accessory on 0x08AA, and a non-Fitbit Google LLC device on 0x018E.
+    - **P1-B10 exit:** with no capture by the 0.1.0 gate, it drops the bare id.
+    - **P1-B5:** replacement prefix globs need a 5+ literal or a separator.
+  - **Rebutted:** extending the lint to all short prefix globs. 48 match, and many are deliberate fixed-length patterns (`ATT???????`, Tesla's 18-character pattern). It's a reviewer check in ADR-0015, and `IBR*` is in P1-B5.
+  - **Open steps only:** every step an exception names must be an open PLAN step, and every accepted entry must be backticked under "Accepted" in ADR-0015.
+- 2026-10-27: **P1-A4 merged** as `7fd97df` (PR #25).
+- 2026-10-27: **P1-A4 Match corpus.** PR #25. Branch `p1/a4-match-corpus`. Test-only.
   - **Shared builders:** `testing/Sightings.kt` holds `sighting()` and `mac()`, the first of P1-A1's shared builders.
   - **Positives:**
     - `MatchCorpus.positives()` makes one sighting per enabled rule of every built-in signature, or one sighting with every rule for the all-rules row. That's 6,974 positives from 255 signatures; the clustered count is pinned at 0.
