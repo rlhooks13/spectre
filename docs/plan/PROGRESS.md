@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-5 (language packs), on branch `p0/5-language-packs`; check `gh pr list --head p0/5-language-packs` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-4f (README and docs rebrand), then P0-6 (BrandGuard).
+- Current step: P0-5 (language packs), PR #11 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-4f (README and docs rebrand), then P0-6 (BrandGuard).
 - Branch: `p0/5-language-packs`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -50,7 +50,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-5 Language packs.** Branch `p0/5-language-packs`.
+- 2026-10-27: **P0-5 Language packs.** PR #11.
   - New `scripts/rebrand_packs.py` (`python -I`, UTF-8, LF).
     - It rewrites only `"key": "value"` lines inside `strings`, and only where "Fieldwatch"/"FIELDWATCH" stands alone or starts a hyphen compound.
     - It leaves keys, metadata (`format`, `writtenFor`) and layout alone, checks the JSON before and after, and lists inflected forms per language.
