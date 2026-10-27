@@ -13,7 +13,8 @@ class RobolectricSetupTest {
     fun runsOnThePinnedSdkWithTheAppResources() {
         val context = RuntimeEnvironment.getApplication()
         assertEquals(android.app.Application::class.java, context.javaClass) // not FieldwatchApp
-        assertEquals(34, android.os.Build.VERSION.SDK_INT)
+        // robolectric.properties pins the app's targetSdk; a targetSdk bump must move the pin (and its jar) too.
+        assertEquals(context.applicationInfo.targetSdkVersion, android.os.Build.VERSION.SDK_INT)
         assertEquals("Spectre", context.getString(R.string.app_name))
     }
 }
