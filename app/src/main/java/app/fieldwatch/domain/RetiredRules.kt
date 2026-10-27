@@ -15,6 +15,10 @@ object RetiredRules {
     val ALL: List<Entry> = listOf(
         // P1-B1: Samsung's company id is on every Galaxy phone and Buds.
         Entry("fleet-smarttag", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x0075), retiredIn = 98),
+        // P1-B2: "tile" anywhere in a name hit Tattile cameras; 0x00C7 is Quuppa's; FEDD has no capture behind it.
+        Entry("fleet-tile", MatchRule(RuleKind.NAME_CONTAINS, text = "Tile"), retiredIn = 99),
+        Entry("fleet-tile", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x00C7), retiredIn = 99),
+        Entry("fleet-tile", MatchRule(RuleKind.SERVICE_UUID, text = "FEDD"), retiredIn = 99),
     )
 
     /** What a rule matches, ignoring whether it is switched on. */

@@ -51,7 +51,7 @@ class CatalogV98LadderTest {
     @Test
     fun aFieldwatchConfigLosesTheBareSamsungRuleAndKeepsFd5a() {
         val cfg = upgrade()
-        assertEquals(98, cfg.version)
+        assertEquals(ConfigStore.CATALOG_VERSION, cfg.version)
         val tag = cfg.fleet("fleet-smarttag")
         assertFalse(tag.hasSamsungId())
         assertTrue(tag.rules.any { it.kind == RuleKind.SERVICE_UUID && it.text == "FD5A" })

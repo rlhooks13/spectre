@@ -513,11 +513,12 @@ object DefaultCatalog {
         builtIn = true,
         decode = CatalogDecodes.tile,
         rules = listOf(
-            name("Tile"),
+            // Exact name, BLE only: "tile" inside a name (Tattile cameras) or a Wi-Fi network called Tile isn't one.
+            bleGlob("Tile"),
             uuid("FEED"),
             uuid("FEEC"),
-            uuid("FEDD"),
-            mfg(0x00C7),
+            // Tile's own company id. 0x00C7 is Quuppa's; FEDD was dropped for want of a capture (P1-B2).
+            mfg(0x067C),
         ),
     )
 

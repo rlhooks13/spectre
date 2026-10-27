@@ -77,7 +77,11 @@ class MatchCorpusTest {
                 TrackerMatch.kind(miss.sighting.copy(fleetIds = got), names) == TrackerMatch.Kind.FINDER
             if (miss.knownUntil == null) {
                 assertEquals(miss.label, emptySet<String>(), wrong)
-                assertFalse("${miss.label} is labeled a tracker", finder)
+                if (miss.finderKnownUntil == null) {
+                    assertFalse("${miss.label} is labeled a tracker", finder)
+                } else {
+                    assertTrue("${miss.label} (tracker label): fixed? Remove finderKnownUntil = ${miss.finderKnownUntil} in that step's PR.", finder)
+                }
             } else {
                 val fix = "fixed? Remove knownUntil = ${miss.knownUntil} in that step's PR."
                 assertTrue("${miss.label}: $fix", wrong.isNotEmpty())
@@ -102,8 +106,9 @@ class MatchCorpusTest {
     fun casesNameRealSignaturesAndOpenSteps() {
         val ids = fleets.map { it.id }.toSet()
         val plan = repoFile("../docs/plan/PLAN.md").readLines()
-        val steps = (MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits).map { it.label to it.knownUntil } +
-            MatchCorpus.targets.map { it.label to it.knownUntil }
+        val steps = (MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits).flatMap {
+            listOf(it.label to it.knownUntil, it.label to it.finderKnownUntil)
+        } + MatchCorpus.targets.map { it.label to it.knownUntil }
         for (miss in MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits) {
             assertTrue(miss.label, ids.containsAll(miss.mustNotMatch))
         }

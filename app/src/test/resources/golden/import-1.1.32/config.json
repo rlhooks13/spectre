@@ -44,14 +44,6 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "enabled": true,
-                    "kind": "NAME_CONTAINS",
-                    "radio": null,
-                    "text": "Tile"
-                },
-                {
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "enabled": true,
                     "kind": "SERVICE_UUID",
                     "radio": null,
                     "text": "FEED"
@@ -68,12 +60,12 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "enabled": true,
-                    "kind": "SERVICE_UUID",
-                    "radio": null,
-                    "text": "FEDD"
+                    "kind": "NAME_GLOB",
+                    "radio": "BLE",
+                    "text": "Tile"
                 },
                 {
-                    "companyId": 199,
+                    "companyId": 1660,
                     "dataPrefixHex": "",
                     "enabled": true,
                     "kind": "MANUFACTURER_ID",
@@ -261,7 +253,7 @@
         "wifiFastScan": false
     },
     "takInstallTag": "AB23",
-    "version": 98,
+    "version": 99,
     "watchlist": [
         {
             "alert": true,

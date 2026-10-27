@@ -1210,6 +1210,11 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V98
         }
+        if (version < CATALOG_V99) {
+            // P1-B2: Tile's three old rules are retired (RetiredRules strips them on load) and its new stock rules
+            // (0x067C, the BLE-only name "Tile") are added by patchBuiltIn above, so this step only moves the version.
+            version = CATALOG_V99
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1256,7 +1261,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 98
+        const val CATALOG_VERSION = 99
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1352,7 +1357,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V95 = 95
         private const val CATALOG_V96 = 96
         private const val CATALOG_V97 = 97
-        private const val CATALOG_V98 = CATALOG_VERSION
+        private const val CATALOG_V98 = 98
+        private const val CATALOG_V99 = CATALOG_VERSION
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still

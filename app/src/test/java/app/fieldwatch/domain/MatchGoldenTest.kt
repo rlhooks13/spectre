@@ -30,7 +30,8 @@ class MatchGoldenTest {
             Case(
                 "near-miss", it.label, it.sighting,
                 "must not ${it.mustNotMatch.sorted().joinToString(", ")}" +
-                    (if (it.checkFinder) " (nor be a finder)" else "") + (it.knownUntil?.let { s -> ", wrong until $s" } ?: ""),
+                    (if (it.checkFinder) " (nor be a finder)" else "") + (it.knownUntil?.let { s -> ", wrong until $s" } ?: "") +
+                    (it.finderKnownUntil?.let { s -> ", still labeled a tracker until $s" } ?: ""),
             )
         } + MatchCorpus.randomAddressOuiHits.map {
             Case("random-oui", it.label, it.sighting, "hits by design until P1-B8 classifies the address")
