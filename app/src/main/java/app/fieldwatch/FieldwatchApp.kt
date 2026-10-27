@@ -817,7 +817,7 @@ class FieldwatchApp : Application() {
     }
 
     private fun onProviderFix(loc: android.location.Location, gps: Boolean) {
-        app.fieldwatch.data.Capture.sink?.fix(loc) // every fix, before acceptFix filters it; debug builds only (ADR-0016)
+        app.fieldwatch.data.Capture.record { it.fix(loc) } // every fix, before acceptFix filters it; debug builds only (ADR-0016)
         acceptFix(loc, gps)
         if (::gnss.isInitialized) gnss.onTaggedFix(loc, gps)
     }
@@ -838,6 +838,7 @@ class FieldwatchApp : Application() {
             .mapNotNull { runCatching { lm.getLastKnownLocation(it) }.getOrNull() }
             .filter { now - it.time < 30_000L && (!it.hasAccuracy() || it.accuracy <= 75f) }
         val best = cands.minByOrNull { if (it.hasAccuracy()) it.accuracy else 75f } ?: return
+        app.fieldwatch.data.Capture.record { it.fix(best, lastKnown = true) } // debug builds only (ADR-0016)
         acceptFix(best, gps = best.provider == LocationManager.GPS_PROVIDER)
     }
 

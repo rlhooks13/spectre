@@ -81,7 +81,15 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - a recorder mapping test with Robolectric (P1-A1);
     - device-verify the fix path outdoors;
     - in-app start, stop and export once the owner records ground-truth captures.
-  - **Note:** the app's existing log (`loggingEnabled` defaults to true) also stores bystander data, sampled. That's a P1-E2 privacy item.
+  - **Note:** the app's existing log (`loggingEnabled` defaults to true) also stores bystander data, sampled. That's a P1-E2 privacy item, along with `dataExtractionRules` for device transfer.
+  - **After both reviews:**
+    - **Main thread:** callbacks now only queue a record (bounded 8,192, drops counted in `stats` lines). One writer thread encodes, writes, flushes every second and rotates.
+    - **Hooks:** `Capture.record {}` swallows sink failures, so recording can't drop a real observation.
+    - **Fixes:** last-known fixes are captured (`lastKnown`). Non-finite floats become null. Records are encoded before a part opens.
+    - **Format:** BLE `legacy` and `dataStatus`; Wi-Fi `ssidHex`, `mld` and `linkId`; header `elapsedNs`, `bootCount` and `part`; Fix `wallMs` is receipt time, with `fixTimeMs` added.
+    - **Files:** it pauses below 256 MB free and after write errors. Parts are named `capture-<wallMs>-<part>`. Each Wi-Fi IE is guarded on its own.
+    - **Tests:** `decodeOrNull` skips truncated and unknown lines. The test also checks nothing outside debug installs or implements a sink.
+    - **Re-run on the device:** 1 header (with `bootCount`), 1,002 BLE (all with `legacy`), 116 Wi-Fi (all with `ssidHex`), no fixes indoors. The file was non-empty within seconds, which shows the flush. Raw data deleted again; no crashes.
 - 2026-10-27: **P1-A5 merged** as `48cadf2` (PR #26).
 - 2026-10-27: **P1-A5 CatalogLintTest (ADR-0015).** PR #26. Branch `p1/a5-catalog-lint`.
   - **`RadioDb`:** an internal `initFrom(bytes)` (under the lock) and `resetForTest()` let JVM tests load `radiodb.bin` (built 2026-08-24). `@AfterClass` unloads it, so later test classes don't depend on run order. `parse` stays private.

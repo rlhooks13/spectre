@@ -12,6 +12,11 @@ import kotlinx.serialization.json.Json
  */
 @Serializable
 sealed class CaptureRecord {
+    /**
+     * First line of each part. [wallMs] and [elapsedNs] were read together, so they map `tNs` to wall time.
+     * [bootCount] changes across reboots, when `tNs` restarts. [model] is identifying next to a GPS track,
+     * so the scrubber (P1-F2) coarsens or drops it.
+     */
     @Serializable
     @SerialName("header")
     data class Header(
@@ -21,7 +26,15 @@ sealed class CaptureRecord {
         val sdk: Int,
         val model: String,
         val wallMs: Long,
+        val elapsedNs: Long? = null,
+        val bootCount: Int? = null,
+        val part: Int? = null,
     ) : CaptureRecord()
+
+    /** Records the recorder couldn't keep up with since the last stats line. A capture with drops is incomplete. */
+    @Serializable
+    @SerialName("stats")
+    data class Stats(val tNs: Long, val wallMs: Long, val dropped: Long) : CaptureRecord()
 
     /** One BLE advertisement report. Optional fields are null when Android says "not present". */
     @Serializable
@@ -40,8 +53,15 @@ sealed class CaptureRecord {
         val connectable: Boolean,
         /** In 1.25 ms units, as Android reports it. */
         val periodicInterval: Int? = null,
-        /** The whole ScanRecord, hex. */
+        /**
+         * The whole ScanRecord, hex. For a legacy report it is advertising data plus scan response, zero-padded
+         * to 62 bytes; for an extended one it is the real length.
+         */
         val adv: String,
+        /** Legacy (true) or extended (false) advertising PDU; null if unknown. */
+        val legacy: Boolean? = null,
+        /** ScanResult.DATA_* when not complete (e.g. truncated chained data); null when complete. */
+        val dataStatus: Int? = null,
     ) : CaptureRecord()
 
     /** One Wi-Fi scan result, with every information element as received. */
@@ -60,17 +80,23 @@ sealed class CaptureRecord {
         val standard: Int? = null,
         val capabilities: String,
         val ies: List<Ie> = emptyList(),
+        /** The SSID's raw bytes (API 33+), since [ssid] text can't tell non-UTF-8 bytes from literal hex. */
+        val ssidHex: String? = null,
+        /** Wi-Fi 7 multi-link: the AP MLD address and this link's id (API 34+). The scrubber remaps [mld]. */
+        val mld: String? = null,
+        val linkId: Int? = null,
     ) : CaptureRecord()
 
     @Serializable
     data class Ie(val id: Int, val ext: Int? = null, val hex: String)
 
-    /** One location fix, as the provider gave it. */
+    /** One location fix, as the provider gave it. [fixTimeMs] is the provider's own UTC time (Location.time). */
     @Serializable
     @SerialName("fix")
     data class Fix(
         val tNs: Long,
         val wallMs: Long,
+        val fixTimeMs: Long? = null,
         val provider: String,
         val lat: Double,
         val lon: Double,
@@ -78,6 +104,8 @@ sealed class CaptureRecord {
         val acc: Float? = null,
         val speed: Float? = null,
         val bearing: Float? = null,
+        /** From getLastKnownLocation at start or refresh; the app may use it, so replay must see it. */
+        val lastKnown: Boolean? = null,
     ) : CaptureRecord()
 
     companion object {
@@ -94,6 +122,12 @@ sealed class CaptureRecord {
         fun encode(record: CaptureRecord): String = json.encodeToString(serializer(), record)
 
         fun decode(line: String): CaptureRecord = json.decodeFromString(serializer(), line)
+
+        /**
+         * For readers (scrubber, replay): null for a line that doesn't decode, such as the truncated last line
+         * of a part whose process died mid-write, or a record type newer than this reader.
+         */
+        fun decodeOrNull(line: String): CaptureRecord? = runCatching { decode(line) }.getOrNull()
 
         fun hex(bytes: ByteArray): String {
             val out = StringBuilder(bytes.size * 2)

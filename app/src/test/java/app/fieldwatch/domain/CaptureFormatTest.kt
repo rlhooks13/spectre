@@ -7,6 +7,8 @@ import org.junit.Test
 import java.io.File
 
 class CaptureFormatTest {
+    private val IMPLEMENTS_SINK = Regex("(class|object)\\s+\\w+[^{\\n]*:[^{\\n]*\\bCaptureSink\\b")
+
     private val records = listOf(
         CaptureRecord.Header(app = "0.0.0-dev+abc", sdk = 36, model = "SM-S911U", wallMs = 1L),
         CaptureRecord.Ble(
@@ -46,6 +48,21 @@ class CaptureFormatTest {
     }
 
     @Test
+    fun newerFieldsRoundTripAndATruncatedLineIsSkipped() {
+        val full = listOf(
+            CaptureRecord.Header(app = "a", sdk = 36, model = "m", wallMs = 1L, elapsedNs = 9L, bootCount = 3, part = 2),
+            CaptureRecord.Stats(tNs = 1L, wallMs = 2L, dropped = 17L),
+            (records[1] as CaptureRecord.Ble).copy(legacy = false, dataStatus = 2),
+            (records[2] as CaptureRecord.Wifi).copy(ssidHex = "486F6D65", mld = "02:00:00:00:00:01", linkId = 1),
+            (records[3] as CaptureRecord.Fix).copy(fixTimeMs = 3L),
+        )
+        for (r in full) assertEquals(r, CaptureRecord.decodeOrNull(CaptureRecord.encode(r)))
+        val line = CaptureRecord.encode(records[1])
+        assertEquals(null, CaptureRecord.decodeOrNull(line.take(line.length / 2)))
+        assertEquals(null, CaptureRecord.decodeOrNull("{\"type\":\"future\",\"x\":1}"))
+    }
+
+    @Test
     fun hexIsUppercaseAndComplete() {
         assertEquals("00FF7F80", CaptureRecord.hex(byteArrayOf(0, -1, 127, -128)))
     }
@@ -60,5 +77,12 @@ class CaptureFormatTest {
             .filterNot { it.startsWith("test") || it.startsWith("androidTest") }
             .toSet()
         assertEquals(setOf("debug"), recorder)
+        // Nor may anything outside debug install a sink or implement one.
+        val installs = src.walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .filter { f -> f.relativeTo(src).invariantSeparatorsPath.let { !it.startsWith("debug/") && !it.startsWith("test") } }
+            .filter { f -> f.readText().let { "Capture.sink =" in it || IMPLEMENTS_SINK.containsMatchIn(it) } }
+            .map { it.name }.toList()
+        assertEquals(emptyList<String>(), installs)
     }
 }

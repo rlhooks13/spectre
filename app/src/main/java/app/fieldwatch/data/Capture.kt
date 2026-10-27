@@ -10,6 +10,15 @@ import android.location.Location
 object Capture {
     @Volatile
     var sink: CaptureSink? = null
+
+    /** Hands a result to the sink, if any. A sink failure is swallowed so it can never cost a real observation. */
+    inline fun record(block: (CaptureSink) -> Unit) {
+        val s = sink ?: return
+        try {
+            block(s)
+        } catch (_: Throwable) {
+        }
+    }
 }
 
 interface CaptureSink {
@@ -17,5 +26,6 @@ interface CaptureSink {
 
     fun wifi(results: List<android.net.wifi.ScanResult>)
 
-    fun fix(location: Location)
+    /** [lastKnown]: the fix came from getLastKnownLocation at start or refresh, not from a listener. */
+    fun fix(location: Location, lastKnown: Boolean = false)
 }

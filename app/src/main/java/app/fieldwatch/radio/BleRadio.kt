@@ -236,7 +236,7 @@ class BleRadio(
 
     private fun emit(result: ScanResult) {
         try {
-            app.fieldwatch.data.Capture.sink?.ble(result) // debug builds only (ADR-0016)
+            app.fieldwatch.data.Capture.record { it.ble(result) } // debug builds only (ADR-0016)
             onObservation(toObservation(result))
         } catch (t: Throwable) {
             Log.e(TAG, "scan result failed", t)
