@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7c (plate-list source and terms), on branch `p0/7c-plate-list-source`; check `gh pr list --head p0/7c-plate-list-source` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #15 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7d (camera-alert region notice).
+- Current step: P0-7c (plate-list source and terms, partial), PR #16 (waiting on CI, then squash-merge; the step stays open for the owner's operator and terms answer). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #15 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7d (camera-alert region notice).
 - Branch: `p0/7c-plate-list-source`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -54,7 +54,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7c Plate-list source and terms.** Branch `p0/7c-plate-list-source`.
+- 2026-10-27: **P0-7c Plate-list source and terms (partial).** PR #16.
   - **Dialog:** the plate-reader download dialog uses new key `settings.layer.download.source`: "…from {host}. Spectre does not run that site; check it for its terms before you download. The list is crowdsourced and not complete…".
     - `{host}` comes from the download URL via the new `FlockFiles.sourceHost()`, so the copy can't drift from the real source.
     - The old key `settings.layer.download.body` is retired ("Unused"), and its translations are dropped from the 26 packs.
