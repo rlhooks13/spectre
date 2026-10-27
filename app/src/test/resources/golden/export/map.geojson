@@ -1,0 +1,61 @@
+{
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    0.002,
+                    0.001
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "WIFI 02:00:5E:10:00:01 · Example Vendor · -48 dBm · ch 6 · Heard at this phone. Not a radio fix.",
+                "kind": "WIFI",
+                "mac": "02:00:5E:10:00:01",
+                "name": "Test AP",
+                "rssi": -48,
+                "time": "2026-10-27T12:00:00Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    0.0025,
+                    0.0015
+                ],
+                "type": "Point"
+            },
+            "properties": {
+                "description": "BLE 6A:1B:2C:3D:4E:5F · -71 dBm · Heard at this phone. Not a radio fix.",
+                "kind": "BLE",
+                "mac": "6A:1B:2C:3D:4E:5F",
+                "name": "Tag",
+                "rssi": -71,
+                "time": "2026-10-27T12:00:05Z"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        0,
+                        0
+                    ],
+                    [
+                        0.002,
+                        0.001
+                    ]
+                ],
+                "type": "LineString"
+            },
+            "properties": {
+                "name": "Operator path"
+            },
+            "type": "Feature"
+        }
+    ],
+    "name": "Spectre 0.0.0-golden export",
+    "type": "FeatureCollection"
+}

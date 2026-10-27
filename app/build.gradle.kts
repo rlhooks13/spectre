@@ -183,6 +183,15 @@ tasks.withType<Test>().configureEach {
     jvmArgumentProviders += CommandLineArgumentProvider {
         listOf("-Drobolectric.dependency.dir=${robolectricJars.get().asFile.absolutePath}")
     }
+    // Re-blessing goldens (P1-A2): `UPDATE_GOLDEN=1`, or `-PupdateGolden` (bare or `=true`). Only
+    // testDebugUnitTest writes them, so other variants can't overwrite its output. A re-bless always runs,
+    // since its output is the golden files themselves.
+    val updateGolden = name == "testDebugUnitTest" && (
+        System.getenv("UPDATE_GOLDEN") == "1" ||
+            providers.gradleProperty("updateGolden").orNull?.let { it.isEmpty() || it == "true" } == true
+        )
+    systemProperty("spectre.updateGolden", updateGolden.toString())
+    if (updateGolden) outputs.upToDateWhen { false }
 }
 
 // Robolectric brings BouncyCastle and Conscrypt onto the test classpath. They are approved there only
