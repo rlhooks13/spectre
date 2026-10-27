@@ -58,12 +58,27 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **Dialog:** the plate-reader download dialog uses new key `settings.layer.download.source`: "…from {host}. Spectre does not run that site; check it for its terms before you download. The list is crowdsourced and not complete…".
     - `{host}` comes from the download URL via the new `FlockFiles.sourceHost()`, so the copy can't drift from the real source.
     - The old key `settings.layer.download.body` is retired ("Unused"), and its translations are dropped from the 26 packs.
-  - **Size cap:** `FlockFiles.MAX_BYTES` is 80 MB, about 2× the published 37.7 MB. `download()` checks Content-Length and stops reading past the cap. Now pinned by a test.
-  - **Schema validation:** `parseFlock` throws `FlockParseException` on malformed input (already tested), `MIN_COUNT` rejects tiny lists, and a "too many cameras" cap applies. A bad parse never replaces a saved list.
+  - **Layer note:** under the plate layer's note, a new line `settings.layer.source` ("From {host}, which Spectre does not run. OpenStreetMap data, © OpenStreetMap contributors.") means people who already have the list see the source too.
+  - **OpenStreetMap credit:** the dialog credits "© OpenStreetMap contributors, ODbL". The basis is in the code: upstream's compiled credit says the camera locations are OSM data, and the parser keys cameras by `osm_id`. `{size}` comes from `expectedBytes`.
+  - **Network cap:** 80 MB, about 2× the published 37.7 MB. `download()` stops reading past it, Content-Length or not. The test checks only the constants; a download test against a local server is a follow-up.
+  - **Source host enforced:** after redirects, the response must come from the named host or a subdomain, over HTTPS, or probe and download fail (`servedFromSource`, tested).
+  - **Parser limits** (both reviewers found the old parser could crash the app):
+    - nesting depth 64;
+    - strings 64 KB;
+    - unpacked size 512 MB, because the gzip bytes could otherwise expand without bound;
+    - total feature-loop steps, so a list repeating one id is rejected;
+    - a backstop turning `StackOverflowError` and `OutOfMemoryError` into a parse failure, since those Errors slipped past `catch (Exception)` and would have taken down the scanning process.
+    - New `FlockParseLimitsTest` (+3) checks each limit, using a lazily generated endless reader.
+  - A bad parse never replaces a saved list (unchanged).
   - **Counts and hashes only:** the agent didn't download the dataset.
-  - **Not verified:** the operator's name and the data license (needs-human above).
-  - New `PlateListSourceTest` (+2).
-  - Result: 783 tests green.
+  - **Step stays open:** the operator's name and the terms are unverified (needs-human above).
+  - **Follow-ups:**
+    - strict GeoJSON `type` checks;
+    - an atomic install with fsync, and no copy-over fallback;
+    - download tests against a local server;
+    - translations of the new dialog key (non-English users see it in English for now);
+    - a device screenshot of the dialog. It sits behind the disclaimer, the permission grant and Settings navigation, so it waits for UI tests in P1-A.
+  - New `PlateListSourceTest` (+3). Result: 787 tests green.
 - 2026-10-27: **PR #10 re-synced after #15.** The BrandGuard allowlist conflict is resolved (neither side's removed entries stay). 784 tests green on the branch.
 - 2026-10-27: **P0-7b Sensor layer off.** PR #15, merged as `271db7e`.
   - **Why off:** PLAN's two options were a build script or the layer off. A build script means fetching and replacing a 40,112-row ODbL dataset that a test pins, so the layer is off for now. P1-E5 (new) brings it back with `scripts/build_sensors.py` and a list this project hosts.

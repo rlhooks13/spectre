@@ -80,7 +80,13 @@ object FlockFiles {
 
     /** The site a list downloads from, named in the download dialog. Empty when the list has no URL. */
     fun sourceHost(list: SensorList): String =
-        if (list.url.isBlank()) "" else runCatching { URL(list.url).host }.getOrDefault("")
+        if (list.url.isBlank()) "" else runCatching { URL(list.url).host.lowercase() }.getOrDefault("")
+
+    /** [sourceHost] for the plate-reader list, computed once for the dialog and the layer note. */
+    val PLATES_HOST: String = sourceHost(SensorList.PLATES)
+
+    /** The plate-reader list's published size in whole MB, for the download dialog. */
+    val PLATES_MB: Long = (SensorList.PLATES.expectedBytes + 500_000L) / 1_000_000L
 
     fun peek(dir: File, list: SensorList = SensorList.PLATES): Header? = peekFile(file(dir, list))
 
@@ -143,6 +149,7 @@ object FlockFiles {
         val conn = open(list, "HEAD", ifNoneMatch = null)
         return try {
             val code = conn.responseCode
+            if (!servedFromSource(conn.url, list)) return Probe.FAILED
             if (code == 304) return Probe.SAME
             if (code != 200) return Probe.FAILED
             val remote = conn.getHeaderField("ETag").orEmpty()
@@ -170,6 +177,7 @@ object FlockFiles {
         tmp.delete()
         return try {
             val code = conn.responseCode
+            if (!servedFromSource(conn.url, list)) return Fetch.Failed
             if (code == 304) return Fetch.Current
             if (code != 200) return Fetch.Failed
             val length = conn.contentLengthLong
@@ -217,6 +225,17 @@ object FlockFiles {
         }
     }
 
+    /**
+     * True when the response came from the host the dialog names (or a subdomain of it). Redirects
+     * are followed, so a list served from another host fails instead of being installed.
+     */
+    internal fun servedFromSource(finalUrl: URL, list: SensorList): Boolean {
+        val source = sourceHost(list)
+        if (source.isEmpty()) return false
+        val host = finalUrl.host.lowercase()
+        return finalUrl.protocol == "https" && (host == source || host.endsWith(".$source"))
+    }
+
     private fun open(list: SensorList, method: String, ifNoneMatch: String?): HttpURLConnection {
         return (URL(list.url).openConnection() as HttpURLConnection).apply {
             instanceFollowRedirects = true
@@ -232,13 +251,24 @@ object FlockFiles {
         }
     }
 
-    private fun parseFile(file: File): List<FlockCamera> {
-        return reader(FileInputStream(file)).use { parseFlock(it) }
-    }
+    private fun parseFile(file: File): List<FlockCamera> =
+        bounded { reader(FileInputStream(file)).use { parseFlock(it) } }
 
-    private fun parseStream(bytes: ByteArray): List<FlockCamera> {
-        return reader(bytes.inputStream()).use { parseFlock(it) }
-    }
+    private fun parseStream(bytes: ByteArray): List<FlockCamera> =
+        bounded { reader(bytes.inputStream()).use { parseFlock(it) } }
+
+    /**
+     * The parser has depth, string, size and count limits; this is the backstop. These Errors would
+     * otherwise slip past the callers' `catch (Exception)` and take down the scanning process.
+     */
+    private inline fun bounded(parse: () -> List<FlockCamera>): List<FlockCamera> =
+        try {
+            parse()
+        } catch (_: StackOverflowError) {
+            throw FlockParseException("nested too deep")
+        } catch (_: OutOfMemoryError) {
+            throw FlockParseException("too large")
+        }
 
     private fun reader(raw: java.io.InputStream): InputStreamReader {
         val input = BufferedInputStream(raw)
@@ -247,7 +277,30 @@ object FlockFiles {
         val b1 = input.read()
         input.reset()
         val stream = if (b0 == 0x1f && b1 == 0x8b) GZIPInputStream(input) else input
-        return InputStreamReader(stream, Charsets.UTF_8)
+        return InputStreamReader(Capped(stream, MAX_UNPACKED_BYTES), Charsets.UTF_8)
+    }
+
+    /** Unpacked size limit: the network cap counts gzip bytes, so a small bomb could still unpack huge. */
+    const val MAX_UNPACKED_BYTES = 512L * 1024L * 1024L
+
+    /** Fails the read past [limit] bytes; the parse turns that into a failed fetch. */
+    private class Capped(input: java.io.InputStream, private val limit: Long) : java.io.FilterInputStream(input) {
+        private var seen = 0L
+
+        override fun read(): Int {
+            val b = super.read()
+            if (b >= 0 && ++seen > limit) throw java.io.IOException("list unpacks past $limit bytes")
+            return b
+        }
+
+        override fun read(b: ByteArray, off: Int, len: Int): Int {
+            val n = super.read(b, off, len)
+            if (n > 0) {
+                seen += n
+                if (seen > limit) throw java.io.IOException("list unpacks past $limit bytes")
+            }
+            return n
+        }
     }
 
     private fun peekFile(file: File): Header? {

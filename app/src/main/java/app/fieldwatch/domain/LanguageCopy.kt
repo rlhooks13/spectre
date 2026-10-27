@@ -217,6 +217,12 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.heading", "Layers", LanguageSlot.CONTROL),
     en("settings.layer.flock", "License plate reader cameras", LanguageSlot.CONTROL),
     en("settings.layer.note", "License plate reader cameras on the map. The alert is below.", LanguageSlot.BODY),
+    // Shown under the note (P0-7c), so people who already have the list see its source too.
+    en(
+        "settings.layer.source",
+        "From {host}, which Spectre does not run. OpenStreetMap data, © OpenStreetMap contributors.",
+        LanguageSlot.BODY,
+    ),
     en("settings.layer.other", "Other sensors", LanguageSlot.CONTROL),
     en("settings.layer.other.note", "Speed cameras, red lights, gunshot detectors, and other cameras. Alerts for each type are below.", LanguageSlot.BODY),
     en("settings.layer.alert", "Alert when ahead", LanguageSlot.CONTROL),
@@ -232,7 +238,8 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.download.body", "Unused", LanguageSlot.BODY),
     en(
         "settings.layer.download.source",
-        "United States plate-reader list, about 37 MB, from {host}. Spectre does not run that site; check it for its terms before you download. " +
+        "United States plate-reader list, about {size} MB, from {host}. Spectre does not run that site; check it for its terms before you download. " +
+            "The camera locations are OpenStreetMap data (© OpenStreetMap contributors, ODbL). " +
             "The list is crowdsourced and not complete. It stays on this phone, and you can update it later.",
         LanguageSlot.BODY,
     ),

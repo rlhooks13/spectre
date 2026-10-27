@@ -74,6 +74,7 @@ import app.fieldwatch.domain.AlertVoiceWhat
 import app.fieldwatch.domain.LanguageText
 import app.fieldwatch.domain.AppSettings
 import app.fieldwatch.domain.Features
+import app.fieldwatch.data.FlockFiles
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapFooter
 import app.fieldwatch.domain.MapOverlay
@@ -662,7 +663,8 @@ fun SettingsScreen(
             )
             SensorLayerBlock(
                 title = LanguageText.text("settings.layer.flock"),
-                note = LanguageText.text("settings.layer.note"),
+                note = LanguageText.text("settings.layer.note") + "\n" +
+                    LanguageText.text("settings.layer.source", mapOf("host" to FlockFiles.PLATES_HOST)),
                 state = flock,
                 checked = settings.flockLayer,
                 onChecked = vm::setFlockLayer,
@@ -1224,7 +1226,7 @@ fun SettingsScreen(
                 Text(
                     LanguageText.text(
                         "settings.layer.download.source",
-                        mapOf("host" to app.fieldwatch.data.FlockFiles.sourceHost(app.fieldwatch.data.SensorList.PLATES)),
+                        mapOf("host" to FlockFiles.PLATES_HOST, "size" to FlockFiles.PLATES_MB.toString()),
                     ),
                 )
             },

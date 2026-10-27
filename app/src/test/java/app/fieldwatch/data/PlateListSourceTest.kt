@@ -12,11 +12,28 @@ class PlateListSourceTest {
     fun dialogNamesTheHostTheListComesFrom() {
         assertEquals("data.dontgetflocked.com", FlockFiles.sourceHost(SensorList.PLATES))
         val english = EnglishCopy.byKey.getValue("settings.layer.download.source").text
-        assertTrue(english.contains("{host}"))
-        val shown = LanguageText.text("settings.layer.download.source", mapOf("host" to FlockFiles.sourceHost(SensorList.PLATES)))
-        assertTrue(shown, shown.contains("from data.dontgetflocked.com."))
+        assertTrue(english.contains("{host}") && english.contains("{size}"))
+        val shown = LanguageText.text(
+            "settings.layer.download.source",
+            mapOf("host" to FlockFiles.PLATES_HOST, "size" to FlockFiles.PLATES_MB.toString()),
+        )
+        assertTrue(shown, shown.contains("about 38 MB, from data.dontgetflocked.com."))
         assertTrue(shown, shown.contains("Spectre does not run that site; check it for its terms"))
-        assertTrue(shown, shown.contains("crowdsourced and not complete"))
+        assertTrue(shown, shown.contains("© OpenStreetMap contributors, ODbL"))
+        val note = LanguageText.text("settings.layer.source", mapOf("host" to FlockFiles.PLATES_HOST))
+        assertTrue(note, note.startsWith("From data.dontgetflocked.com, which Spectre does not run."))
+    }
+
+    @Test
+    fun onlyTheNamedHostOverHttpsCountsAsTheSource() {
+        val ok = listOf("https://data.dontgetflocked.com/cameras.geojson.gz", "https://cdn.data.dontgetflocked.com/x")
+        ok.forEach { assertTrue(it, FlockFiles.servedFromSource(java.net.URL(it), SensorList.PLATES)) }
+        val bad = listOf(
+            "https://evil.example/cameras.geojson.gz",
+            "https://data.dontgetflocked.com.evil.example/x",
+            "http://data.dontgetflocked.com/cameras.geojson.gz",
+        )
+        bad.forEach { assertTrue(it, !FlockFiles.servedFromSource(java.net.URL(it), SensorList.PLATES)) }
     }
 
     @Test
