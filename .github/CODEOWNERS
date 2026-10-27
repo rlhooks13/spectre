@@ -13,6 +13,7 @@
 /docs/plan/approved-dependencies.md                   @rlhooks13
 /docs/setup/                                          @rlhooks13
 /gradle/verification-metadata.xml                     @rlhooks13
+/app/lint-baseline.xml                                @rlhooks13
 /tools/usage-watch.sh                                 @rlhooks13
 /tools/usage-watch.conf                               @rlhooks13
 /tools/statusline.sh                                  @rlhooks13
