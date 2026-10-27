@@ -4,18 +4,18 @@ A capture is a recording of what the radios and GPS reported, made by a **debug 
 
 ## 1. Record (on the dedicated phone, debug build)
 ```
-adb -s $SERIAL shell run-as app.fieldwatch.debug mkdir -p files/capture
-adb -s $SERIAL shell run-as app.fieldwatch.debug touch files/capture/ENABLED    # start
+adb -s $SERIAL shell run-as io.github.rlhooks13.spectre.debug mkdir -p files/capture
+adb -s $SERIAL shell run-as io.github.rlhooks13.spectre.debug touch files/capture/ENABLED    # start
 #   ... scan: walk, drive, or leave reference tags beside the phone ...
-adb -s $SERIAL shell run-as app.fieldwatch.debug rm files/capture/ENABLED       # stop
+adb -s $SERIAL shell run-as io.github.rlhooks13.spectre.debug rm files/capture/ENABLED       # stop
 ```
 The recorder sees the stop within 3 s and flushes every second. **Wait 10 s** before pulling. Parts are `files/capture/capture-<wallMs>-<part>.ndjson`, up to 8 MB each and 64 MB in all.
 
 ## 2. Pull into a new empty folder outside both repos, and verify it
 ```
 RAW=$HOME/captures/raw-$(date +%s); mkdir -p $RAW
-adb -s $SERIAL exec-out "run-as app.fieldwatch.debug tar cf - -C files/capture --exclude ENABLED ." | tar xf - -C $RAW
-adb -s $SERIAL shell "run-as app.fieldwatch.debug sh -c 'cd files/capture && sha256sum capture-*.ndjson'"
+adb -s $SERIAL exec-out "run-as io.github.rlhooks13.spectre.debug tar cf - -C files/capture --exclude ENABLED ." | tar xf - -C $RAW
+adb -s $SERIAL shell "run-as io.github.rlhooks13.spectre.debug sh -c 'cd files/capture && sha256sum capture-*.ndjson'"
 (cd $RAW && sha256sum capture-*.ndjson)    # must match line for line
 ```
 - If the sums differ, pull again.
@@ -51,7 +51,7 @@ GIT_AUTHOR_DATE="$(date -u +%Y-%m-01)T00:00:00Z" GIT_COMMITTER_DATE="$(date -u +
 
 ## 5. Delete the raw capture everywhere (after the push)
 ```
-adb -s $SERIAL shell run-as app.fieldwatch.debug rm -rf files/capture
+adb -s $SERIAL shell run-as io.github.rlhooks13.spectre.debug rm -rf files/capture
 rmdir $RAW
 ```
 

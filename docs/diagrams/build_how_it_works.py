@@ -235,7 +235,7 @@ def build():
         fill=MUTED,
         anchor="lm",
     )
-    d.text((W - PAD, H - 30), "app.fieldwatch", font=M(16), fill=PHOS, anchor="rm")
+    d.text((W - PAD, H - 30), "io.github.rlhooks13.spectre", font=M(16), fill=PHOS, anchor="rm")
 
     img.save(OUT, "PNG")
     print("wrote", OUT, img.size)

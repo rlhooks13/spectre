@@ -956,7 +956,7 @@
     "ui.generated.label": "Készült",
     "ui.window.label": "Ablak",
     "ui.tool.label": "Eszköz",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · kész Android · csak vétel Wi-Fi AP + BLE hirdető",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · kész Android · csak vétel Wi-Fi AP + BLE hirdető",
     "ui.scan.label": "Keresés",
     "ui.gps.tag": "GPS jelölés",
     "ui.distance.label": "Távolság",

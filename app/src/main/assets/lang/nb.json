@@ -948,7 +948,7 @@
     "ui.sit.label": "Økt",
     "ui.window.label": "Vindu",
     "ui.tool.label": "Verktøy",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · vanlig Android · bare mottak Wi-Fi-AP + BLE-sender",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · vanlig Android · bare mottak Wi-Fi-AP + BLE-sender",
     "ui.scan.label": "Skann",
     "ui.gps.tag": "GPS-stempel",
     "ui.distance.label": "Avstand",

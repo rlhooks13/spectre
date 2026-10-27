@@ -206,13 +206,12 @@ jobs:
             exit 1
           fi
 
-          # Job A ran build code, so check what it handed over before the release key touches it. The
-          # applicationId changes in P0-4e; that owner-signed PR updates this line too.
+          # Job A ran build code, so check what it handed over before the release key touches it.
           "$aapt2" dump badging in/app-release-unsigned.apk > "$RUNNER_TEMP/badging.txt"
           head1=$(sed -n 1p "$RUNNER_TEMP/badging.txt")
           case "$head1" in
-            "package: name='app.fieldwatch' versionCode='$code' versionName='$version' "*) ;;
-            *) echo "::error::Unexpected APK: $head1 (want app.fieldwatch, $code, $version)."; exit 1 ;;
+            "package: name='io.github.rlhooks13.spectre' versionCode='$code' versionName='$version' "*) ;;
+            *) echo "::error::Unexpected APK: $head1 (want io.github.rlhooks13.spectre, $code, $version)."; exit 1 ;;
           esac
           if grep -q '^application-debuggable' "$RUNNER_TEMP/badging.txt"; then
             echo "::error::The APK is debuggable."

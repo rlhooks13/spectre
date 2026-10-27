@@ -31,7 +31,7 @@
   - an in-app start/stop or export, which comes once the owner records ground-truth captures.
 
 ## Consequences
-- **Start and stop:** recording is started and stopped over adb on a debug build: `adb shell run-as app.fieldwatch.debug touch files/capture/ENABLED`, and `rm` to stop.
+- **Start and stop:** recording is started and stopped over adb on a debug build: `adb shell run-as io.github.rlhooks13.spectre.debug touch files/capture/ENABLED`, and `rm` to stop.
 - **Raw data:** raw capture files stay on the phone until P1-F2 and F4 exist. The agent deletes any raw capture it makes during testing.
 - **Cost:** the hooks cost one null check per result in release builds.
 - **No test for the Android-to-record mapping yet:** the recorder needs Android types, so its unit test waits for Robolectric (P1-A1). The format has JVM tests. A test pins the recorder to the debug source set and checks that nothing outside it installs or implements a sink.

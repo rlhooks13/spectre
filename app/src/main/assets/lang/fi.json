@@ -956,7 +956,7 @@
     "ui.sit.label": "Vahti",
     "ui.window.label": "Ikkuna",
     "ui.tool.label": "Työkalu",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · tavallinen Android · vain vastaanotto Wi-Fi AP + BLE-mainostaja",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · tavallinen Android · vain vastaanotto Wi-Fi AP + BLE-mainostaja",
     "ui.scan.label": "Haku",
     "ui.gps.tag": "GPS-merkki",
     "ui.distance.label": "Etäisyys",

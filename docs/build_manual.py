@@ -481,7 +481,7 @@ def draw_cover(c, doc):
     c.setFont("Helvetica", 9)
     c.drawString(48, 108, "Version 1.1.32")
     c.drawString(48, 94, "26 October 2026")
-    c.drawString(48, 80, "Package  app.fieldwatch   ·   Android 10+ (API 29)   ·   Target API 35")
+    c.drawString(48, 80, "Package  io.github.rlhooks13.spectre   ·   Android 10+ (API 29)   ·   Target API 35")
     c.setStrokeColor(colors.HexColor("#2A3340"))
     c.setLineWidth(0.6)
     c.line(48, 68, PAGE_W - 48, 68)
@@ -986,7 +986,7 @@ def story():
         P("4.1 Installation", "h2"),
         P(
             "Fieldwatch is not on the Play Store; you install an APK yourself (sideload). Package "
-            "name <font face='Courier'>app.fieldwatch</font>. Minimum Android 10 (API 29); this "
+            "name <font face='Courier'>io.github.rlhooks13.spectre</font>. Minimum Android 10 (API 29); this "
             "build targets API 35. Tested on a Galaxy A54; meant for most Android 10+ phones. The app does not "
             "self-update, so keep a copy of the APK you trust."
         ),
@@ -4921,7 +4921,7 @@ def story():
         ),
         bullets([
             "<b>Debrief (text)</b> — <font face='Courier'>text/plain</font> on the system share sheet. Paste into notes, chat, or a logbook.",
-            "<b>Debrief (PDF)</b> — letter-size (612×792 pt) typeset copy via Android PdfDocument. Night-green FIELDWATCH / FIELD DEBRIEF header, numbered sections, amber Possible trackers with you / Possible tail (finder tags) plus Retail beacons with you / Wearables with you when those lists are non-empty, amber Extra attention callout for each matched special note, green takeaway box, page N / M, footer “Off Grid Pete LLC · operationally sensitive.” Cached under <font face='Courier'>cache/debrief/fieldwatch-debrief-YYYYMMDD-HHMMSS.pdf</font> and shared as <font face='Courier'>application/pdf</font> through FileProvider <font face='Courier'>app.fieldwatch.files</font>. Open in Drive, Files, email, or a PDF viewer.",
+            "<b>Debrief (PDF)</b> — letter-size (612×792 pt) typeset copy via Android PdfDocument. Night-green FIELDWATCH / FIELD DEBRIEF header, numbered sections, amber Possible trackers with you / Possible tail (finder tags) plus Retail beacons with you / Wearables with you when those lists are non-empty, amber Extra attention callout for each matched special note, green takeaway box, page N / M, footer “Off Grid Pete LLC · operationally sensitive.” Cached under <font face='Courier'>cache/debrief/fieldwatch-debrief-YYYYMMDD-HHMMSS.pdf</font> and shared as <font face='Courier'>application/pdf</font> through FileProvider <font face='Courier'>io.github.rlhooks13.spectre.files</font>. Open in Drive, Files, email, or a PDF viewer.",
         ]),
         P("11.4.1 What Debrief actually sees", "h3"),
         P(
@@ -5110,7 +5110,7 @@ def story():
             "files on the phone. Export and save "
             "show a progress dialog; live logging is paused while a log copy runs so the UI "
             "does not lock. Clear skips queued appends and opens a fresh file. FileProvider "
-            "authority is <font face='Courier'>app.fieldwatch.files</font>. There is no automatic "
+            "authority is <font face='Courier'>io.github.rlhooks13.spectre.files</font>. There is no automatic "
             "off-device sync. Debrief (text or PDF) is the sit summary; Sit export is the sit roster file; "
             "the log file is the after-action tape. "
             "If tagging was on, log rows include operator lat/lon. New Wi-Fi log rows also include vendor_ie. "
@@ -6482,7 +6482,7 @@ def story():
                 ["Instagram", "@OffGridPete"],
                 ["X", "@OGridPete"],
                 ["Document", "User Manual and Technical Documentation"],
-                ["Application ID", "app.fieldwatch"],
+                ["Application ID", "io.github.rlhooks13.spectre"],
                 ["Software version", "1.1.32 (versionCode 42), field build of 26 October 2026"],
                 ["Document version", "1.1.32"],
                 ["Document date", "26 October 2026"],

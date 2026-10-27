@@ -929,7 +929,7 @@
     "ui.sit.label": "Сесија",
     "ui.window.label": "Прозорец",
     "ui.tool.label": "Алатка",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · стандарден Android · само прием Wi-Fi AP + BLE огласувач",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · стандарден Android · само прием Wi-Fi AP + BLE огласувач",
     "ui.scan.label": "Скен",
     "ui.gps.tag": "GPS ознака",
     "ui.distance.label": "Растојание",

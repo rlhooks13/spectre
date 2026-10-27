@@ -925,7 +925,7 @@
     "ui.generated.label": "Sukurta",
     "ui.window.label": "Langas",
     "ui.tool.label": "Įrankis",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · standartinis Android · tik priėmimas Wi-Fi AP + BLE skelbėjas",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · standartinis Android · tik priėmimas Wi-Fi AP + BLE skelbėjas",
     "ui.scan.label": "Skenas",
     "ui.gps.tag": "GPS žyma",
     "ui.distance.label": "Atstumas",

@@ -2,7 +2,7 @@
 
 Spectre is a receive-only Wi-Fi access-point and Bluetooth LE watcher for Android. It lists what the phone can hear, matches it against a signature catalog (trackers, cameras, beacons and more), and writes reports of what was seen. It's receive-only by default: it never connects, pairs or advertises, though the Wi-Fi and BLE scans themselves can send the probe and scan requests Android makes when it scans. No dongle, no account, no backend server, and it works offline in the field.
 
-Spectre is an independent fork of [Fieldwatch](https://github.com/OffGridPete/Fieldwatch) 1.1.32 by Off Grid Pete LLC. It is not made, reviewed or endorsed by Off Grid Pete LLC. Spectre will get its own application id before its first release, so that release installs as a separate app next to Fieldwatch. Until then, a build from this repo uses Fieldwatch's id (`app.fieldwatch`) and can't be installed on a phone that already has Fieldwatch; the debug build (`app.fieldwatch.debug`) can.
+Spectre is an independent fork of [Fieldwatch](https://github.com/OffGridPete/Fieldwatch) 1.1.32 by Off Grid Pete LLC. It is not made, reviewed or endorsed by Off Grid Pete LLC. Spectre has its own application id, `io.github.rlhooks13.spectre` (debug builds add `.debug`, staging builds `.staging`), so it installs as a separate app next to Fieldwatch. Data doesn't carry over from a Fieldwatch install.
 
 ## Install
 

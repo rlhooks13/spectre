@@ -943,7 +943,7 @@
     "ui.sit.label": "Pass",
     "ui.window.label": "Fönster",
     "ui.tool.label": "Verktyg",
-    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (app.fieldwatch) · vanlig Android · bara mottagning Wi-Fi-AP + BLE-sändare",
+    "ui.fieldwatch.app.fieldwatch.stock": "Spectre (io.github.rlhooks13.spectre) · vanlig Android · bara mottagning Wi-Fi-AP + BLE-sändare",
     "ui.scan.label": "Sök",
     "ui.gps.tag": "GPS-stämpel",
     "ui.distance.label": "Avstånd",
