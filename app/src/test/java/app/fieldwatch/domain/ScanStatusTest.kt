@@ -77,7 +77,7 @@ class ScanStatusTest {
         val report = ScanStatus.report(radio(), phone(locationPermission = false), now)
         assertEquals("Location permission is off.", report.verdict)
         assertTrue(report.blocked)
-        assertTrue(report.checks.any { it.startsWith("Allow location for Fieldwatch.") })
+        assertTrue(report.checks.any { it.startsWith("Allow location for Spectre.") })
     }
 
     @Test

@@ -34,6 +34,14 @@ class BrandTest {
         )
         assertEquals("SPECTRE SIT — Porch", sit.heading)
         assertTrue(DebriefReport.isSitHeading(sit.heading))
-        assertFalse(DebriefReport.isSitHeading("FIELDWATCH FIELD DEBRIEF"))
+        assertFalse(DebriefReport.isSitHeading(LanguageText.text("ui.fieldwatch.field.debrief")))
+    }
+
+    @Test
+    fun noEnglishLineNamesTheUpstreamApp() {
+        // Legacy ids such as "(app.fieldwatch)" are lowercase; the display name is not.
+        val stale = EnglishCopy.lines.filter { "Fieldwatch" in it.text || "FIELDWATCH" in it.text }
+            .map { it.key }
+        assertEquals(emptyList<String>(), stale)
     }
 }
