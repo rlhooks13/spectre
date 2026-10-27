@@ -502,6 +502,7 @@ class LanguagePackTest {
             val parsed = LanguagePack.parse(File(dir, "${bundled.tag}.json").readBytes())
             val preview = (parsed as LanguageParse.Ok).preview
             assertEquals(bundled.name, preview.language)
+            assertEquals("${bundled.tag}: bundled lines the app ignores", 0, preview.ignored)
             assertTrue("${bundled.tag} display.live.path", preview.accepted.containsKey("display.live.path"))
             assertTrue("${bundled.tag} display.recenter", preview.accepted.containsKey("display.recenter"))
             assertTrue("${bundled.tag} map.north.up", preview.accepted.containsKey("map.north.up"))

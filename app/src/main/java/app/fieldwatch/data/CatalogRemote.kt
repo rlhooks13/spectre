@@ -3,10 +3,15 @@ package app.fieldwatch.data
 import java.net.HttpURLConnection
 import java.net.URL
 
-/** HTTPS GET of the stock signature pack on GitHub. No account. Fails to the caller. */
+/**
+ * HTTPS GET of the stock signature pack on GitHub. No account. Fails to the caller.
+ * Unused while [app.fieldwatch.domain.Features.IN_APP_CATALOG_UPDATE] is off.
+ * Do not turn that flag on without P4-6's signature check: this URL is an agent-writable branch,
+ * and a pack fetched from it replaces stock rules, Extra attention included.
+ */
 object CatalogRemote {
     const val STOCK_PACK_URL =
-        "https://raw.githubusercontent.com/OffGridPete/Fieldwatch/main/dist/fieldwatch-signatures-v2.json"
+        "https://raw.githubusercontent.com/rlhooks13/spectre/main/dist/fieldwatch-signatures-v2.json"
 
     fun fetch(
         url: String = STOCK_PACK_URL,

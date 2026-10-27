@@ -266,7 +266,7 @@ private fun PermissionGate(onRequest: () -> Unit) {
     ) {
         Text(LanguageText.text("ui.fieldwatch.needs.radios"), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
         Text(
-            LanguageText.text("ui.location.nearby.wi.fi"),
+            LanguageText.text("ui.permissions.receive.only"),
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 12.dp, bottom = 20.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
