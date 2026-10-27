@@ -130,7 +130,7 @@ class LanguagePackTest {
         assertTrue(EnglishCopy.lines.none { it.text == OfficialSentences.AI })
         assertTrue(EnglishCopy.lines.none { it.text == OfficialSentences.AUTHOR_GUIDE })
         assertEquals("Export English template", LanguageExportCopy.BUTTON)
-        assertEquals("Fieldwatch English template", LanguageExportCopy.SHARE)
+        assertEquals("Spectre English template", LanguageExportCopy.SHARE)
         assertEquals("Could not export the English template", LanguageExportCopy.FAILED)
         assertTrue(EnglishCopy.lines.none { it.key == "language.export" || it.key == "ui.fieldwatch.english.template" || it.key == "ui.could.not.export.english" })
     }
@@ -422,7 +422,7 @@ class LanguagePackTest {
         assertFalse(remarks.contains("HACKED"))
         val xml = CotEvent.selfXml(1.0, 2.0, 0L, "AB23", "Scout")
         assertTrue(xml.contains("type=\"a-f-G-U-C\""))
-        assertTrue(xml.contains("Fieldwatch TAK heartbeat (this phone)"))
+        assertTrue(xml.contains("Spectre TAK heartbeat (this phone)"))
         assertFalse(xml.contains("HACKED"))
         val pin = CotEvent.remarks(sighting("aa", "Porch"), emptyList(), advertised = false)
         assertTrue(pin.contains("heard here (operator GPS)"))

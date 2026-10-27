@@ -80,7 +80,7 @@ object GeoExport {
     }
 
     fun suggestedName(format: Format, stamp: String): String =
-        "fieldwatch-map-$stamp.${format.extension}"
+        "${Brand.FILE_PREFIX}-map-$stamp.${format.extension}"
 
     private fun gpx(
         radios: List<LogRadio>,
@@ -92,7 +92,7 @@ object GeoExport {
         track: List<GpsSample>,
     ): String = buildString {
         append("""<?xml version="1.0" encoding="UTF-8"?>""").append('\n')
-        append("""<gpx version="1.1" creator="Fieldwatch ${xml(appVersion)}"""")
+        append("""<gpx version="1.1" creator="${Brand.NAME} ${xml(appVersion)}"""")
         append(""" xmlns="http://www.topografix.com/GPX/1/1">""").append('\n')
         val n = radios.size
         radios.forEachIndexed { i, r ->
@@ -128,7 +128,7 @@ object GeoExport {
     ): String = buildString {
         append("""<?xml version="1.0" encoding="UTF-8"?>""").append('\n')
         append("""<kml xmlns="http://www.opengis.net/kml/2.2"><Document>""").append('\n')
-        append("  <name>Fieldwatch ${xml(appVersion)} export</name>\n")
+        append("  <name>${Brand.NAME} ${xml(appVersion)} export</name>\n")
         val n = radios.size
         radios.forEachIndexed { i, r ->
             append("  <Placemark>\n")
@@ -183,7 +183,7 @@ object GeoExport {
         }
         val root = JSONObject()
         root.put("type", "FeatureCollection")
-        root.put("name", "Fieldwatch $appVersion export")
+        root.put("name", "${Brand.NAME} $appVersion export")
         root.put("features", features)
         return root.toString()
     }
@@ -207,7 +207,7 @@ object GeoExport {
         deviceInfo: String,
         onProgress: (Int, Int) -> Unit,
     ): String = buildString {
-        append("WigleWifi-1.4,appRelease=Fieldwatch ${csvRaw(appVersion)}")
+        append("WigleWifi-1.4,appRelease=${Brand.NAME} ${csvRaw(appVersion)}")
         if (deviceInfo.isNotBlank()) append(',').append(deviceInfo.filter { it != '\n' && it != '\r' })
         append('\n')
         append("MAC,SSID,AuthMode,FirstSeen,Channel,RSSI,")

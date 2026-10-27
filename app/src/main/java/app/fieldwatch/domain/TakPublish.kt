@@ -28,7 +28,7 @@ object TakDefaults {
 
 /**
  * One phone on a TAK net. The tag is not a setting, so a settings file cannot
- * copy it onto another phone. A blank callsign means Fieldwatch- plus the tag.
+ * copy it onto another phone. A blank callsign means Spectre- plus the tag.
  */
 object TakInstall {
     const val LEGACY_SELF_UID = "FIELDWATCH-SELF"
@@ -55,7 +55,7 @@ object TakInstall {
         val typed = storedCallsign(stored)
         if (typed.isNotEmpty()) return typed
         val mark = clean(tag)
-        return if (mark.isEmpty()) "Fieldwatch" else "Fieldwatch-$mark"
+        return if (mark.isEmpty()) Brand.NAME else "${Brand.NAME}-$mark"
     }
 
     /**
@@ -923,13 +923,15 @@ object CotEvent {
         },
     )
 
+    const val TOMBSTONE_REMARKS = "${Brand.NAME} · gone"
+
     fun tombstoneXml(
         uid: String,
         lat: Double,
         lon: Double,
         now: Long,
-        callsign: String = "Fieldwatch",
-        remarks: String = "Fieldwatch · gone",
+        callsign: String = Brand.NAME,
+        remarks: String = TOMBSTONE_REMARKS,
     ): String = eventXml(
         uid = uid,
         cotType = "a-u-G",
@@ -956,7 +958,7 @@ object CotEvent {
         remarksExtra: String? = null,
     ): String {
         val remarks = buildString {
-            append("Fieldwatch TAK heartbeat (this phone)")
+            append("${Brand.NAME} TAK heartbeat (this phone)")
             val extra = remarksExtra?.trim().orEmpty()
             if (extra.isNotEmpty()) {
                 append('\n')

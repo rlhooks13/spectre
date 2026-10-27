@@ -96,13 +96,13 @@ object SignatureExchange {
             json.decodeFromString(SignaturePack.serializer(), trimmed)
         } catch (e: Exception) {
             throw IllegalArgumentException(
-                "Not a Fieldwatch signature pack. Export from Settings → Export signatures.",
+                "Not a ${Brand.NAME} signature pack. Export from Settings → Export signatures.",
                 e,
             )
         }
         if (pack.format != SignaturePack.FORMAT && pack.format != SignaturePack.LEGACY_FORMAT) {
             throw IllegalArgumentException(
-                "Not a Fieldwatch signature pack (open a fieldwatch-signatures JSON file; spectre-signatures still imports).",
+                "Not a ${Brand.NAME} signature pack (open a signatures JSON file exported from ${Brand.NAME} or Fieldwatch).",
             )
         }
         if (pack.fleets.isEmpty()) {

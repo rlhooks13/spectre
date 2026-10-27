@@ -110,7 +110,7 @@ class GeoExportTest {
             "model=A54,release=16",
         )
         val lines = csv.lines().filter { it.isNotBlank() }
-        assertTrue(lines[0].startsWith("WigleWifi-1.4,appRelease=Fieldwatch 1.1.6,model=A54"))
+        assertTrue(lines[0].startsWith("WigleWifi-1.4,appRelease=Spectre 1.1.6,model=A54"))
         assertTrue(lines[1].startsWith("MAC,SSID,AuthMode,"))
         assertTrue(lines[2].startsWith("AA:BB:CC:DD:EE:01,CafeWiFi,[ESS],"))
         assertTrue(lines[2].endsWith(",WIFI"))
@@ -134,7 +134,7 @@ class GeoExportTest {
             "",
         )
         val lines = csv.lines()
-        assertTrue(lines[0].startsWith("WigleWifi-1.4,appRelease=Fieldwatch 1.1.20"))
+        assertTrue(lines[0].startsWith("WigleWifi-1.4,appRelease=Spectre 1.1.20"))
         val formula = lines.first { it.startsWith("AA:BB:CC:DD:EE:FF,") }
         assertTrue(formula.startsWith("AA:BB:CC:DD:EE:FF,'=cmd|' /c calc'!A0,[ESS],"))
         assertFalse(formula.contains(",=cmd|"))

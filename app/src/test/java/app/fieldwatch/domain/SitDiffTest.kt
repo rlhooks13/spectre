@@ -156,7 +156,7 @@ class SitDiffTest {
         assertTrue(text.contains("Privacy"))
         assertTrue(text.contains("AA:BB:CC:**:**:**"))
         assertFalse(text.contains("11:22:33"))
-        assertTrue(text.contains("FIELDWATCH SIT COMPARE"))
+        assertTrue(text.contains("SPECTRE SIT COMPARE"))
     }
 
     @Test
@@ -225,7 +225,7 @@ class SitDiffTest {
         assertTrue(text.contains("decoded live value"))
         assertTrue(text.contains("A flood note is a burst of new addresses, not a follower."))
         assertTrue(text.contains("Flood if any"))
-        assertTrue(text.contains("FIELDWATCH SIT COMPARE"))
+        assertTrue(text.contains("SPECTRE SIT COMPARE"))
         assertFalse(text.contains("Full Wi-Fi inventory"))
     }
 

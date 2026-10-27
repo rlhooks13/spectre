@@ -526,7 +526,7 @@ class ScanService : LifecycleService() {
     }
 
     companion object {
-        private const val TAG = "FieldwatchScan"
+        private const val TAG = "${app.fieldwatch.domain.Brand.LOG_TAG}Scan"
         const val CHANNEL = "fieldwatch_scan"
         const val ACTION_STOP = "app.fieldwatch.STOP_SCAN"
         private const val NOTIF_ID = 42

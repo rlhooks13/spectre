@@ -16,6 +16,7 @@ import app.fieldwatch.BuildConfig
 import app.fieldwatch.FieldwatchApp
 import app.fieldwatch.domain.AircraftTrail
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.Brand
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapOverlay
 import app.fieldwatch.domain.MapFrame
@@ -1871,7 +1872,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 val dir = File(app.cacheDir, "debrief").apply { mkdirs() }
                 val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
                     .format(java.util.Date())
-                val file = File(dir, "fieldwatch-sit-compare-$stamp.pdf")
+                val file = File(dir, "${Brand.FILE_PREFIX}-sit-compare-$stamp.pdf")
                 publishExport(0.32f, LanguageText.text("ui.loading.map.tiles"))
                 val tiles = pathTilesForFigure(doc.pathFigure)
                 val extraTiles = doc.extraFigures.map { pathTilesForFigure(it) }
@@ -1904,7 +1905,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun compareSubject(doc: DebriefDoc): String =
-        if (doc.windowLine.isNotBlank()) "Fieldwatch sit compare — ${doc.windowLine}"
+        if (doc.windowLine.isNotBlank()) "${Brand.NAME} sit compare — ${doc.windowLine}"
         else LanguageText.text("ui.fieldwatch.sit.compare")
 
     fun startSitCompareAiExport() {
@@ -1921,7 +1922,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        "Fieldwatch sit compare AI export — ${thisSide.name} vs ${second.name}",
+                        "${Brand.NAME} sit compare AI export —${thisSide.name} vs ${second.name}",
                     )
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
@@ -2571,7 +2572,9 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun suggestedSignaturesName(): String {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
             .format(java.util.Date())
-        return "fieldwatch-signatures-$stamp.json"
+        // Not "spectre-signatures-…": that is upstream's legacy format id (ADR-0001), and the
+        // file name shouldn't look like it.
+        return "${Brand.FILE_PREFIX}-signature-pack-$stamp.json"
     }
 
     private fun signaturePackJson(): String {
@@ -2653,7 +2656,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             runCatching {
                 val text = withContext(Dispatchers.IO) {
                     CatalogRemote.fetch(
-                        userAgent = "Fieldwatch/${BuildConfig.VERSION_NAME}",
+                        userAgent = Brand.userAgent(BuildConfig.VERSION_NAME),
                     )
                 }
                 val parsed = SignatureExchange.parsePack(text)
@@ -2752,7 +2755,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun suggestedSettingsName(): String {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.US)
             .format(java.util.Date())
-        return "fieldwatch-settings-$stamp.json"
+        return "${Brand.FILE_PREFIX}-settings-$stamp.json"
     }
 
     private fun settingsPackJson(): String {
@@ -2944,7 +2947,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     LanguagePack.template(BuildConfig.VERSION_NAME)
                 }
                 val dir = java.io.File(app.cacheDir, "language").apply { mkdirs() }
-                val file = java.io.File(dir, "fieldwatch-language-en.json")
+                val file = java.io.File(dir, "${Brand.FILE_PREFIX}-language-en.json")
                 withContext(Dispatchers.IO) { file.writeText(json) }
                 val uri = FileProvider.getUriForFile(app, "${app.packageName}.files", file)
                 Intent(Intent.ACTION_SEND).apply {
@@ -3268,7 +3271,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 val dir = File(app.cacheDir, "debrief").apply { mkdirs() }
                 val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
                     .format(java.util.Date())
-                val file = File(dir, "fieldwatch-debrief-$stamp.pdf")
+                val file = File(dir, "${Brand.FILE_PREFIX}-debrief-$stamp.pdf")
                 publishExport(0.32f, LanguageText.text("ui.loading.map.tiles"))
                 val tiles = pathTilesForFigure(doc.pathFigure)
                 val extraTiles = doc.extraFigures.map { pathTilesForFigure(it) }
@@ -3365,7 +3368,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun debriefSubject(doc: DebriefDoc): String =
-        if (doc.heading.startsWith("FIELDWATCH SIT")) doc.heading else LanguageText.text("ui.fieldwatch.field.debrief.last")
+        if (DebriefReport.isSitHeading(doc.heading)) doc.heading else LanguageText.text("ui.fieldwatch.field.debrief.last")
 
     private suspend fun fieldDebriefDoc(): DebriefDoc {
         publishExport(0.08f, LanguageText.text("ui.gathering.sit"))
@@ -3488,7 +3491,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     type = "text/plain"
                     putExtra(
                         Intent.EXTRA_SUBJECT,
-                        if (window != null) "Fieldwatch AI export — sit ${window.sitName}"
+                        if (window != null) "${Brand.NAME} AI export — sit ${window.sitName}"
                         else LanguageText.text("ui.fieldwatch.ai.export.last"),
                     )
                     putExtra(Intent.EXTRA_TEXT, text)
@@ -3570,7 +3573,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 )
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "Fieldwatch AI export — $title")
+                    putExtra(Intent.EXTRA_SUBJECT, "${Brand.NAME} AI export — $title")
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
             }.onSuccess { intent ->
@@ -3626,7 +3629,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                 )
                 Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
-                    putExtra(Intent.EXTRA_SUBJECT, "Fieldwatch device detail — $title")
+                    putExtra(Intent.EXTRA_SUBJECT, "${Brand.NAME} device detail — $title")
                     putExtra(Intent.EXTRA_TEXT, text)
                 }
             }.onSuccess { intent ->

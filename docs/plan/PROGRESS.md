@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: gate fix for the startup crash, PR #5 (waiting on CI, then squash-merge). Next: P0-3 part 2 (dependency verification, protected PR).
-- Branch: `p0/fix-viewmodel-init-order`
+- Current step: P0-4a (brand literals), PR #7 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4b (English copy values).
+- Branch: `p0/4a-brand-literals`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T06:44Z
+- Last cycle: 2026-10-27T07:35Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -19,6 +19,8 @@
 - Permission rules: `gh pr merge --delete-branch` was silently denied while a plain `gh pr merge --squash` worked, and `cat` and some piped `git ls-files` commands are denied too. Merged agent branches stay on the remote until a rule allows `git push origin --delete p<phase>/*` or `gh pr merge --delete-branch`. Remote branches `p0/1-agent-scaffolding` and `p0/2-repo-hygiene` are waiting for that.
 - **Staging test keystore (P0-3).** The guard hook blocks `keytool -genkeypair` ("signing locally"), so the agent can't create the committed, non-secret staging test keystore that PLAN's Build types call for. Until then, staging is signed with each machine's debug key, so a CI staging APK can't update a locally built one. Either generate `app/signing/staging-test.jks` on the host and commit it (add `!app/signing/staging-test.jks` to `.gitignore`; use alias `staging` and store and key password `spectre-staging`, which the build already expects), or confirm that the debug key is acceptable for staging.
 - **Phone screen sleeps.** At 06:22Z the screen was dozing while USB-powered, even with `stay_on_while_plugged_in=7`, so the screenshots came out black until `input keyevent KEYCODE_WAKEUP`. Check the screen timeout and Samsung's power settings.
+- **PR #6 (P0-3 part 2, protected): sign and merge.** It adds `gradle/verification-metadata.xml` (SHA-256, trust on first use) and raises `test-baseline.txt` to 767. CI's `Unit tests` and `APK` pass with verification on; `Protected paths` fails only for want of your signature. After #6 lands, the baseline can go to 769 (P0-4a adds `BrandTest`).
+- **P0-4e applicationId go-ahead.** CHARTER's identity decision names `io.github.rlhooks13.spectre`, but its hard stops say the agent never changes the applicationId. The agent won't make that change until you confirm in this session. Changing it means a fresh install: data from `app.fieldwatch` doesn't carry over unless the user exports and imports it.
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -37,7 +39,7 @@ The owner skipped the supervised dry run on 2026-10-27 (UTC) and told the agent 
 | `adb -s RFCX205JR3K get-state` | Pass: `device` |
 | Push notification | Partial: the terminal notification was sent, but the mobile push wasn't (Remote Control inactive) |
 | PR changing a non-protected file: CI runs, squash-merge | Pass: PR #2's APK, Unit tests and Protected paths checks passed, and it was squash-merged as `cd37758` |
-| PR changing `CLAUDE.md`: `Protected paths` fails | Pending |
+| PR changing `CLAUDE.md`: `Protected paths` fails | Pass, checked with PR #6, which changes protected `gradle/verification-metadata.xml` and `docs/plan/test-baseline.txt` and has unsigned agent commits: `Protected paths` failed (run 40464487804) |
 | Push under `.github/workflows/` rejected | Pending (P0-8) |
 | `gh secret list` / ruleset edit gives 403 | Partial: blocked locally by the guard hook before reaching GitHub. The server-side 403 isn't verified |
 | Re-create the loop with the `loop` skill | Pending (at the 6-day loop-age check) |
@@ -47,6 +49,33 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
+
+- 2026-10-27: **P0-4a Brand literals.** PR #7.
+  - PLAN: P0-4 is split into P0-4a to P0-4e. 4d is protected, and 4e waits for the owner (see Needs human).
+  - New `domain/Brand`: `NAME`, `NAME_UPPER`, `FILE_PREFIX`, `REPO_URL`, `LOG_TAG`, `userAgent()`.
+  - Now using `Brand`:
+    - GPX creator, KML/GeoJSON names, WiGLE `appRelease`.
+    - Sit export file names and share subjects; map, log, signatures, settings, language, debrief and compare file names.
+    - TAK default callsign `Spectre-<tag>`, heartbeat and tombstone remarks, KML track name.
+    - Crash report header and clipboard label; PDF, debrief and compare headers; GNSS raw-log header.
+    - The 3 AI prompts. They also drop the `(app.fieldwatch)` app id.
+    - User-Agent `Spectre/<ver> (+https://github.com/rlhooks13/spectre)` on tiles, the sensor list and the catalog fetch.
+    - Logcat tags; the Settings "about" line; the "Not a … pack" errors.
+  - Kept on purpose: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names, upstream download URLs (P0-7 disables or replaces them), and language copy (P0-4b).
+  - 12 tests updated to the new strings (none removed). New `BrandTest` (+3) pins the User-Agent, the kept stable ids and sit-heading detection.
+  - Review fixes:
+    - Debrief share subject: `debriefSubject` checked `startsWith("FIELDWATCH SIT")`, which the rename would have broken. Now `DebriefReport.isSitHeading` with a shared prefix.
+    - Two spaces that edits dropped are restored.
+    - Last `"Fieldwatch · gone"` tombstone; shared `CotEvent.TOMBSTONE_REMARKS`.
+    - Missed share subjects and the device-detail header.
+    - Three TAK tests that would now pass whatever happens assert `Brand.NAME`.
+    - The signature export is `spectre-signature-pack-…`, so it can't be confused with the legacy `spectre-signatures` id.
+  - Result: 770 tests green. Staging installed and cold-started on the phone with 0 `FATAL`.
+- 2026-10-27: **P0-3 Build, part 2 (dependency verification).** PR #6, protected, waiting for the owner's signature.
+  - The first metadata came from a warm cache and left out the `junit-bom` 5.9.2/5.9.3 `.module` files, so CI failed verification.
+  - Regenerating with an empty `--gradle-user-home` added them plus one `kotlinx-serialization-bom` pom. Every other checksum matched.
+  - `lintDebug` has 9 pre-existing errors (for example `MissingPermission`, `BleAdParser.kt:31`). That's for P0-8.
+- 2026-10-27: **Gate fix** PR #5 merged as `a7d5d92`.
 
 - 2026-10-27: **Gate fix: startup crash in `FieldwatchViewModel`.** PR #5. Follow-up: `cachedCameraReport` can compute twice under concurrent calls (upstream, performance only). Revisit when P5-1/P5-2 move the camera report out of the ViewModel.
   - The bug was found by P0-3's device check and reproduced on `main` (see the P0-3 entry).

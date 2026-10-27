@@ -260,7 +260,7 @@ object SitDiff {
             takeaway = compareTakeaway(onlyThis.size, onlySecond.size, both.size, mineCount(thisSit, second)),
             sections = sections,
             extraAttention = extraHits,
-            heading = "FIELDWATCH SIT COMPARE",
+            heading = "${Brand.NAME_UPPER} SIT COMPARE",
             pdfKicker = "SIT COMPARE",
             pdfTitle = "Sit compare",
             pathFigure = AircraftTrail.applyWalk(

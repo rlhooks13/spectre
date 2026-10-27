@@ -306,7 +306,7 @@ class TakPublishTest {
         )
         assertTrue(xml.contains("&#10;"))
         assertTrue(xml.contains("Axon (here)&#10;BLE  AA:BB:CC:DD:EE:01  -60 dBm"))
-        assertFalse(xml.contains("Fieldwatch · "))
+        assertFalse(xml.contains("${Brand.NAME} · "))
     }
 
     @Test
@@ -690,10 +690,10 @@ class TakPublishTest {
 
     @Test
     fun selfMarkerCarriesTheGnssLineAndNoCoordinatesInRemarks() {
-        val plain = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Fieldwatch-AB23")
+        val plain = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Spectre-AB23")
         assertTrue(plain.contains("uid=\"FIELDWATCH-SELF-AB23\""))
-        assertTrue(plain.contains("callsign=\"Fieldwatch-AB23\""))
-        assertTrue(plain.contains("Fieldwatch TAK heartbeat (this phone)"))
+        assertTrue(plain.contains("callsign=\"Spectre-AB23\""))
+        assertTrue(plain.contains("Spectre TAK heartbeat (this phone)"))
         assertFalse(plain.contains("GNSS"))
         val xml = CotEvent.selfXml(40.0, -74.0, 0L, tag, "Fieldwatch-AB23", remarksExtra = "Possible GNSS interference · Medium")
         assertTrue(xml.contains("Possible GNSS interference · Medium"))
@@ -718,7 +718,7 @@ class TakPublishTest {
             remarks = "Axon (here)\nBLE",
         )
         assertTrue(named.contains("callsign=\"Axon (here)\""))
-        assertFalse(named.contains("Fieldwatch"))
+        assertFalse(named.contains(Brand.NAME))
     }
 
     @Test
@@ -738,7 +738,7 @@ class TakPublishTest {
         )
         assertTrue(xml.contains("callsign=\"Axon (here)\""))
         assertTrue(xml.contains("stale=\"1970-01-01T01:00:00.000Z\""))
-        assertFalse(xml.contains("Fieldwatch"))
+        assertFalse(xml.contains(Brand.NAME))
         val face = CotEvent.face(cam, fleets, emptyList(), advertised = false, tag = tag)
         val again = CotEvent.render(
             uid = CotEvent.uid(cam, tag),
@@ -825,7 +825,7 @@ class TakPublishTest {
         )
         assertFalse(shared.contains("via "))
         assertEquals("Scout 1", TakInstall.callsign("Scout 1", other))
-        assertEquals("Fieldwatch-CD34", TakInstall.callsign("", other))
+        assertEquals("Spectre-CD34", TakInstall.callsign("", other))
         assertEquals("Scout 1", TakInstall.callsign("Scout 1", tag))
     }
 

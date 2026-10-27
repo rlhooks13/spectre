@@ -75,7 +75,7 @@ object SettingsExchange {
             json.decodeFromString(SettingsPack.serializer(), trimmed)
         } catch (e: Exception) {
             throw IllegalArgumentException(
-                "Not a Fieldwatch settings pack. Export from Settings → Export settings.",
+                "Not a ${Brand.NAME} settings pack. Export from Settings → Export settings.",
                 e,
             )
         }
@@ -86,7 +86,7 @@ object SettingsExchange {
         }
         if (pack.format != SettingsPack.FORMAT) {
             throw IllegalArgumentException(
-                "Not a Fieldwatch settings pack (open a fieldwatch-settings JSON file).",
+                "Not a ${Brand.NAME} settings pack (open a settings JSON file exported from ${Brand.NAME} or Fieldwatch).",
             )
         }
         return pack

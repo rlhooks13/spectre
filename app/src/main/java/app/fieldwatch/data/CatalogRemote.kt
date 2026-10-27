@@ -12,7 +12,7 @@ object CatalogRemote {
         url: String = STOCK_PACK_URL,
         connectTimeoutMs: Int = 10_000,
         readTimeoutMs: Int = 15_000,
-        userAgent: String = "Fieldwatch",
+        userAgent: String = app.fieldwatch.domain.Brand.userAgent(app.fieldwatch.BuildConfig.VERSION_NAME),
     ): String {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             instanceFollowRedirects = true

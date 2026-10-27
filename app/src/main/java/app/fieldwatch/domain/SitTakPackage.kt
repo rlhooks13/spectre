@@ -274,7 +274,7 @@ object SitTakPackage {
         return buildString {
             append("""<?xml version="1.0" encoding="UTF-8"?>""").append('\n')
             append("""<kml xmlns="http://www.opengis.net/kml/2.2"><Document>""").append('\n')
-            append("  <name>Fieldwatch sit tracks</name>\n")
+            append("  <name>${Brand.NAME} sit tracks</name>\n")
             tracks.forEach { (name, points) ->
                 append("  <Placemark>\n")
                 append("    <name>${CotEvent.xmlEscape(name)}</name>\n")

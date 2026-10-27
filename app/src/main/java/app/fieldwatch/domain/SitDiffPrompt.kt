@@ -64,7 +64,7 @@ object SitDiffPrompt {
         val body = buildString {
             append(FieldwatchDisclaimer.experimentalMarkdown())
             appendLine()
-            appendLine("You are a field RF analyst for the operator who compared two Fieldwatch sits. Fieldwatch is a stock-Android, receive-only Wi-Fi access-point + BLE-advertiser listener.")
+            appendLine("You are a field RF analyst for the operator who compared two ${Brand.NAME} sits. ${Brand.NAME} is a stock-Android, receive-only Wi-Fi access-point + BLE-advertiser listener.")
             appendLine()
             appendLine("The **onboard Compare** (verbatim below) already split presence: only in this sit, only in the second, in both. **Do not rewrite that report. Do not reprint those lists.** Your job is an addendum the phone cannot write: what kind of change this is, and how much of it is real.")
             appendLine()

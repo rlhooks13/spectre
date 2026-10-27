@@ -167,6 +167,11 @@ private fun SitPathPlot.Figure.withDemoText(t: (String) -> String): SitPathPlot.
  * the last 15 minutes plus GPS co-travel of tracker-like radios.
  */
 object DebriefReport {
+    /** A sit debrief's heading starts with this; the share subject relies on it. */
+    const val SIT_HEADING_PREFIX = "${Brand.NAME_UPPER} SIT"
+
+    fun isSitHeading(heading: String): Boolean = heading.startsWith(SIT_HEADING_PREFIX)
+
     private const val WINDOW_MS = 15 * 60_000L
     private const val SHORT_MS = 5 * 60_000L
     private const val MOVE_M = 45.0
@@ -581,7 +586,7 @@ object DebriefReport {
             "last 15 minutes (${utc(windowStart)} → ${utc(windowEnd)} UTC)"
         }
         val heading = if (win.sitName != null) {
-            "FIELDWATCH SIT — ${win.sitName}"
+            "$SIT_HEADING_PREFIX — ${win.sitName}"
         } else {
             LanguageText.text("ui.fieldwatch.field.debrief")
         }
@@ -975,7 +980,7 @@ object DebriefReport {
         } else {
             LanguageText.text("ui.last.15.minutes.3")
         }
-        append("$whenPhrase Fieldwatch heard ${wifi.size} Wi-Fi access points and ${ble.size} BLE advertisers")
+        append("$whenPhrase ${Brand.NAME} heard ${wifi.size} Wi-Fi access points and ${ble.size} BLE advertisers")
         append(" (${named.size} signature-matched")
         if (mineHeard > 0) append(", $mineHeard marked mine")
         append(", ${hidden.size} hidden SSIDs, $randomized randomized BLE). ")

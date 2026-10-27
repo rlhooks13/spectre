@@ -239,7 +239,7 @@ class WifiRadio(
     }
 
     companion object {
-        private const val TAG = "FieldwatchWifi"
+        private const val TAG = "${app.fieldwatch.domain.Brand.LOG_TAG}Wifi"
         private const val QUOTA_SCANS = 4
         private const val QUOTA_WINDOW_MS = 120_000L
         const val FAST_INTERVAL_MS = 8_000L

@@ -180,6 +180,13 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 4. **Identity.**
    - applicationId, `Brand`, and rebranded `strings.xml`, English copy values, and the literals: TAK callsign, GPX creator, export names, log prefix, UA.
    - Remove upstream's social links. Rename the disclaimer to `SpectreDisclaimer` and bump `disclaimerRev`.
+   - Split into sub-steps so each PR stays reviewable:
+     - **P0-4a** `Brand` plus the non-copy literals: TAK callsign, GPX/KML/GeoJSON/WiGLE creator, export file names and titles, log tags, User-Agent, crash and report headers. Stable identifiers stay: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names.
+     - **P0-4b** English copy values (`ChromeLines`, `LanguageCopy`) and `strings.xml`. Keys never change. Also the hard-coded English copy outside the language map: `PlaceLookup.kt` (online-lookup line) and the `GnssInterference.kt` explanations. The `SitTakPackage` zip folder fallback `"fieldwatch"` stays as an id.
+     - **P0-4c** Remove upstream's social links.
+     - **P0-4d** (protected) `SpectreDisclaimer` and the `disclaimerRev` bump.
+     - **P0-4e** applicationId `io.github.rlhooks13.spectre`. The charter's hard stops forbid the agent from changing the applicationId, so this waits for the owner's explicit go-ahead in the session.
+     - Catalog `notes` that mention Fieldwatch go through the catalog change checklist, or onto BrandGuard's allowlist (P0-6).
 5. **Language packs.**
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.
