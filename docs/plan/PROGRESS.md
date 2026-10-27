@@ -55,10 +55,13 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
 - 2026-10-27: **P0-7d Camera-alert region notice.** Branch `p0/7d-camera-region-notice`.
-  - New key `settings.layer.alert.region` (BODY): some countries restrict apps that warn drivers about traffic cameras, including Germany, Switzerland and France, so check the law where you drive before turning on an alert.
-  - It shows under the alert switches of every sensor-layer block (plate readers now; Other sensors when P1-E5 brings it back). It's always shown, not keyed to the phone's region: the phone's locale isn't where it's driven, and the notice reads no location.
-  - It names no statute, so it can't go stale on one. Bundled packs show it in English until translated.
-  - Test: `CameraAlertNoticeTest` (the key names the three countries; every `SensorLayerBlock` call has a notice).
+  - New key `settings.layer.alert.region` (BODY). It says some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving, so check the law before turning on an alert.
+  - `SensorLayerBlock` draws it under "Voice Alerts", above the switches, so every layer gets it (plate readers now; Other sensors with P1-E5).
+  - Always shown, never keyed to the phone's region. It names no statute. See ADR-0012.
+  - Translated in the de, fr and it packs; the other packs show it in English for now.
+  - Test: `CameraAlertNoticeTest` (the English names the three countries; de, fr and it translate it).
+  - **Follow-up:** someone whose alert was already on from Fieldwatch sees the notice only by opening layer settings. ADR-0012 defers a one-time prompt.
+  - **Tightened headroom:** the line takes about 1.1 KB of the language-pack cap's ADR-0011 headroom.
 - 2026-10-27: **P0-4g Re-synced PR #10** with `main` after #17 (merge `83b0722`). Unit tests pass locally. The owner was told #10 can be reviewed and signed once its CI is green.
 - 2026-10-27: **P0-4g Language-pack cap 264 → 280 KiB (ADR-0011).** PR #17, merged as `3a8ca3d`. Branch `p0/4g-language-pack-cap` (the first push went to `p0/language-pack-cap`, which has no PR; delete it once a branch-delete rule exists).
   - **Found when** re-syncing PR #10 after #16: `LanguagePackTest.capFillingPackIsAcceptedAndNotShipped` failed. A pack with every line at its slot cap must be either accepted, or refused and within 8 KiB of `LanguagePack.MAX_BYTES`.

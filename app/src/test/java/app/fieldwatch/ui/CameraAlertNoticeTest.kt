@@ -1,7 +1,8 @@
 package app.fieldwatch.ui
 
 import app.fieldwatch.domain.EnglishCopy
-import org.junit.Assert.assertEquals
+import app.fieldwatch.domain.LanguagePack
+import app.fieldwatch.domain.LanguageParse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -16,12 +17,19 @@ class CameraAlertNoticeTest {
     }
 
     @Test
-    fun noticeSitsUnderEveryCameraAlertBlock() {
-        val source = repoFile("src/main/java/app/fieldwatch/ui/screen/SettingsScreen.kt").readText()
-        val blocks = Regex("(?<!fun )SensorLayerBlock\\(").findAll(source).count()
-        assertTrue(blocks > 0)
-        assertEquals(blocks, Regex("(?<!fun )CameraAlertNotice\\(\\)").findAll(source).count())
-        assertTrue(source.contains("LanguageText.text(\"settings.layer.alert.region\")"))
+    fun bundledPacksForThoseCountriesTranslateIt() {
+        // German, French and Italian cover the three countries' languages (ADR-0012).
+        val expected = mapOf(
+            "de" to listOf("Deutschland", "Schweiz", "Frankreich"),
+            "fr" to listOf("Allemagne", "Suisse", "France"),
+            "it" to listOf("Germania", "Svizzera", "Francia"),
+        )
+        for ((tag, countries) in expected) {
+            val bytes = repoFile("src/main/assets/lang/$tag.json").readBytes()
+            val preview = (LanguagePack.parse(bytes) as LanguageParse.Ok).preview
+            val line = preview.accepted["settings.layer.alert.region"]
+            assertTrue(tag, line != null && countries.all { line.contains(it) })
+        }
     }
 
     private fun repoFile(path: String): File {
