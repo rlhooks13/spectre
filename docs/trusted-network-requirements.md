@@ -2,18 +2,18 @@
 
 Requirements for a later implementation. This document does not authorize that work by itself. Do not start it until asked. When asked, implement this document and stop there. Do not ship, tag, sideload, or open a GitHub Release unless that request says so.
 
-Fieldwatch watches Wi-Fi networks the user has marked trusted and alerts when a sighting looks like someone else using that name. Nothing else is flagged. The phone stays receive-only. This work uses scan results the app already collects. It does not connect, probe, or transmit on its own.
+Spectre watches Wi-Fi networks the user has marked trusted and alerts when a sighting looks like someone else using that name. Nothing else is flagged. The phone stays receive-only. This work uses scan results the app already collects. It does not connect, probe, or transmit on its own.
 
 ## Out of scope
 
-- No change to GNSS detection, the GNSS dialog, the red line, or the TAK line on the Fieldwatch marker. A GNSS pin is a separate decision and is not part of this work.
-- Floods stay a note on the Fieldwatch marker. They do not get a pin.
+- No change to GNSS detection, the GNSS dialog, the red line, or the TAK line on the Spectre marker. A GNSS pin is a separate decision and is not part of this work.
+- Floods stay a note on the Spectre marker. They do not get a pin.
 - No catalog change. Trusted networks are not signatures.
 - No user-manual rewrite unless a later request asks for one.
 
 ## Outcome
 
-On a Wi-Fi detail page the user can trust that network's name. Fieldwatch remembers the access points it was shown, the security those access points used, and the places the phone was. Later, a sighting of that name that is weaker, from an unknown maker, or far from those places can alert. When TAK/CoT is on, the alert also drops a pin where the phone was when that suspect was loudest.
+On a Wi-Fi detail page the user can trust that network's name. Spectre remembers the access points it was shown, the security those access points used, and the places the phone was. Later, a sighting of that name that is weaker, from an unknown maker, or far from those places can alert. When TAK/CoT is on, the alert also drops a pin where the phone was when that suspect was loudest.
 
 Untrusted names never alert. A trusted name that still matches what was learned stays quiet.
 
@@ -21,7 +21,7 @@ Untrusted names never alert. A trusted name that still matches what was learned 
 
 The control is **Trust this network**. It sits on Wi-Fi device detail, next to Mine. It is absent on Bluetooth. Mine still means one radio stays listed and does not beep. Trust means the network name is watched. The two switches do not change each other.
 
-Trust is the SSID string Fieldwatch already stores (`ssidClean()` in `WifiRadio.kt`). Match is exact and case-sensitive. Fieldwatch does not have the raw 802.11 bytes. A blank name, a hidden network, and the placeholder `<unknown ssid>` cannot be trusted. The switch stays off and explains that a hidden name cannot be watched.
+Trust is the SSID string Spectre already stores (`ssidClean()` in `WifiRadio.kt`). Match is exact and case-sensitive. Spectre does not have the raw 802.11 bytes. A blank name, a hidden network, and the placeholder `<unknown ssid>` cannot be trusted. The switch stays off and explains that a hidden name cannot be watched.
 
 Turning trust on does not silently keep every access point in view. The phone lists the access points that share that exact name right now, with vendor and band, and the user unchecks any that are not theirs. Only the checked ones are learned. If several vendors are already on that name, the list says so. The user can still trust it.
 
@@ -96,7 +96,7 @@ On screen, MAC addresses follow the masking already used everywhere else. The al
 
 When TAK/CoT is configured, the feed is running, and this feature's TAK switch is on, an episode sends one point for the suspect BSSID.
 
-The pin is where the phone was, not a surveyed position of the access point. It uses the heard-here rule in `TakPublish.heardHereAction`: the pin moves only when a later hear of that same suspect is louder. A weaker hear refreshes the same latitude and longitude on the normal interval so ATAK does not stale-drop it. The callsign does not ride along on the Fieldwatch self marker.
+The pin is where the phone was, not a surveyed position of the access point. It uses the heard-here rule in `TakPublish.heardHereAction`: the pin moves only when a later hear of that same suspect is louder. A weaker hear refreshes the same latitude and longitude on the normal interval so ATAK does not stale-drop it. The callsign does not ride along on the Spectre self marker.
 
 One pin per suspect BSSID. A different suspect BSSID is a different pin. The uid is stable for that BSSID for as long as the name stays trusted.
 
@@ -106,7 +106,7 @@ Callsign, trimmed like the other callsigns:
 
 Remarks: the SSID, the suspect BSSID and vendor, the reason, the confidence, and the time. No claim that the pin is the access point's own coordinates.
 
-Color and CoT type must not be the Fieldwatch self marker (Cyan, uid `FIELDWATCH-SELF`) and must not reuse a heard-radio or Remote ID type. Pick one pair and keep it.
+Color and CoT type must not be the Spectre self marker (Cyan, uid `FIELDWATCH-SELF`) and must not reuse a heard-radio or Remote ID type. Pick one pair and keep it.
 
 Stale time is how long the pin remains after the last hear. Choices are 1 hour, 6 hours, 24 hours, and until deleted. The default is 1 hour. Until deleted means the pin stays until the user untrusts the name, removes that access point, or turns the TAK switch off. Those actions send the tombstone the feed already uses for a dropped marker.
 
@@ -129,7 +129,7 @@ New `AppSettings` fields have defaults so an old settings file still loads. The 
 
 ## What the phone must not do
 
-No association, no `WifiManager` connect, no local-only hotspot, and no extra probe. The scan Fieldwatch already runs stays as it is. Do not describe that scan as passive.
+No association, no `WifiManager` connect, no local-only hotspot, and no extra probe. The scan Spectre already runs stays as it is. Do not describe that scan as passive.
 
 Do not add a transmit path to "test" a network.
 

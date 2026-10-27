@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4c (upstream social links), PR #9 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-5 (language packs). P0-4d is a protected PR the agent drafts for the owner.
-- Branch: `p0/4c-social-links`
+- Current step: P0-6 (BrandGuard), PR #13 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-7 (copy and legal fixes).
+- Branch: `p0/6-brand-guard`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T08:03Z
+- Last cycle: 2026-10-27T09:05Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,80 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4c Upstream social links.** PR #9.
+- 2026-10-27: **P0-6 BrandGuard.** PR #13.
+  - New `BrandGuardTest`: a JVM unit test for now, because build-logic is blocked on the approved-dependency plugins; it moves in P2-1.
+    - **What it scans:** every line of every text file under `app/src/main` (language packs included), `app/build.gradle.kts` and `dist/`.
+    - **What it matches**, case-insensitively: `field[\s_-]?watch`, `off[\s-]?grid[\s-]?pete`, `ogridpete`.
+    - **Masked first:** stable ids (language keys, `app.fieldwatch`, channel and resource names, format ids, the TTS utterance id, TAK UIDs) and CamelCase class names.
+    - **Skipped:** comment lines; `dist/CHANGELOG.md` (history); the legacy `dist/fieldwatch-signatures*.json` packs (until P4-1).
+    - **Unknown file types:** an extension outside the text or binary lists fails a second test.
+  - **Allowlist:** every entry gives a reason, and temporary ones name their step.
+    - Permanent: the MIT copyright line (only in the disclaimer and the card), the import hints, the TAK zip folder id, the card's fork and migration notes, and the sensors data credit.
+    - Temporary:
+      - P0-7: upstream URLs and the card's catalog-update line.
+      - P0-4d (PR #10): the old disclaimer text, the copyright and footer lines, `NOT_REVIEWED`, and the two retired keys' pack lines.
+      - P1-B1: the six catalog notes, matched by phrase.
+    - An entry that no longer matches anything fails the test.
+  - A self-test pins the cases the reviewers raised: raw strings with quotes, nested template literals, `'"'`, raw-string middle lines, "FieldWatch"/"Field Watch", "Off-Grid Pete", `fieldwatch-export-`. It also checks that ids and comments are ignored.
+  - Also fixed a P0-4a miss the guard found: the shared log export file was `fieldwatch-export-…`; it's now `${Brand.FILE_PREFIX}-export-…`.
+  - **Next action when PR #10 is ready to merge:** merge `main` into `p0/4d-spectre-disclaimer`, then:
+    - drop the P0-4d allowlist entries;
+    - add a permanent "About attribution" entry for `ui.copyright.spectre`;
+    - point the disclaimer copyright entry at `SpectreDisclaimer.kt`;
+    - remove the retired keys' lines from the 26 packs.
+    - Otherwise `main` turns red after #10 merges.
+- 2026-10-27: **P0-4f README and docs rebrand.** PR #12, merged as `0e27a1e`.
+  - **`README.md` rewritten for the fork:**
+    - Fork statement; the separate-app claim is conditional on the P0-4e app id.
+    - "Receive-only by default", noting that scans can send OS probe and scan requests.
+    - Future-tense release and Obtainium install.
+    - Build from source and the dist files.
+    - A safety section with the full egress list from the app disclaimer, including the Privacy-mode log caveat and the TAK/CoT feed.
+    - Issues on `rlhooks13/spectre`.
+    - Upstream's first-person text and its 1.0.5 re-signing story are gone.
+    - The copyright and liability holders aren't restated: the README points to LICENSE and the in-app disclaimer until the owner decides PR #10.
+  - **Follow-up once PR #10 merges:** sync the README and instruction-card copyright lines with LICENSE.
+  - **Follow-up for P0-8:** release notes must list the APK SHA-256 and the signing-certificate SHA-256, which the README and card now promise. Added to PLAN P0-8.
+  - **`docs/instruction.txt` and `dist/instruction.txt`** (still identical):
+    - The new header drops upstream's APK hash, signing certificate and APK and manual file names; each release will list hashes.
+    - The upstream re-sign note is replaced with "releases install next to Fieldwatch; export and import to move settings".
+    - Receive-only wording as in the README. The catalog update notes that it currently downloads upstream's pack (P0-7 turns it off). The Limits section names Releases and Obtainium for updates.
+    - Body rebranded; the footer social handles are gone.
+  - **`dist/CHANGELOG.md`** and **`dist/fieldwatch-sensors.txt`** synced and rebranded too.
+  - **`docs/language-pack-requirements.md`, `docs/trusted-network-requirements.md`, `docs/signature-localization-options.md`:** product name rebranded. "Not reviewed or certified by" and "publisher" now name the Spectre contributors.
+    - The two quoted official sentences in `language-pack-requirements.md` are left to PR #10, which already changes them, to avoid a conflict.
+    - The `FIELDWATCH-SELF` UID stays.
+  - **`CHANGELOG.md`:** a note on top that Spectre's entries start at 0.1.0 and the rest is upstream history, kept as written.
+  - **PLAN:** P0-4a, 4b, 4c and 4f ticked; P0-4 stays open until 4d (owner) and 4e (owner) land.
+  - **Not in scope:** `docs/build_manual.py` (the 6,000-line manual source). It's rebuilt from screenshots in P8-3; until then it still says Fieldwatch and isn't shipped.
+- 2026-10-27: **P0-5 Language packs.** PR #11, merged as `fb7397b`.
+  - New `scripts/rebrand_packs.py` (`python -I`, UTF-8, LF).
+    - It rewrites only `"key": "value"` lines inside `strings`, and only where "Fieldwatch"/"FIELDWATCH" stands alone or starts a hyphen compound.
+    - It leaves keys, metadata (`format`, `writtenFor`) and layout alone, checks the JSON before and after, and lists inflected forms per language.
+    - `--check` makes no changes and exits 1 if anything still needs the plain rebrand.
+  - Ran on all 26 bundled packs: 1,288 lines changed, same keys.
+  - 39 inflected forms fixed by hand, then corrected after the localization review:
+    - da: Spectres.
+    - et: apostrophe endings for a silent final letter, read [spekter]: Spectre'i (genitive, 18 lines), Spectre'it (partitive), Spectre'il, Spectre'iga, Spectre'ile, SPECTRE'I.
+    - fi: Spectren, Spectreen, Spectrelle.
+    - hu: Spectre-nek, Spectre-rel, Spectre-t.
+    - tr: Spectre’in, Spectre’i (front-vowel harmony; the first draft wrongly used ’ın/’ı).
+    - sv: also fixed an upstream genitive slip, "Spectres batterisida".
+  - Localization review (independent reviewer with the gates.md Lens 4): da, fi and hu are correct, and agreement in the other 21 packs is fine. The et and tr errors are fixed as above.
+  - Left for the pack authors: Hungarian upstream typos "TEREMI" → "TEREPI" and "a értesítésből" → "az értesítésből" (not brand-related).
+  - Script hardening from review:
+    - Left word boundary that still allows a JSON escape such as `\n` right before the name.
+    - Hyphen compounds are listed for checking.
+    - Any joiner (’ ' ‘ ʼ :) counts as an inflection.
+    - `--check` fails while inflected forms remain.
+    - Line endings are preserved; the shebang enforces `-I`.
+  - New `BrandTest.noBundledPackNamesTheUpstreamApp` checks every pack in `BundledLanguages.all`. It's case-insensitive (`field\s?watch`), allowing only the app id `app.fieldwatch` until P0-4e.
+  - Disclaimer: packs don't translate it; it's compiled English, so the English disclaimer is what users see (the step's condition holds).
+  - Upstream's copyright and footer text in packs stays under the old keys, which PR #10 retires in favor of new ones.
+  - Result: 773 tests green.
+  - PLAN: added P0-4f (README and docs rebrand), which code review asked for on PR #10.
+- 2026-10-27: **P0-4d Disclaimer and legal copy.** PR #10, protected, waiting for the owner's review and signature. It proposes the liability, LICENSE, NOTICE, copyright-line, PDF-footer and language-pack-sentence wording (see the PR table). The two changed attribution lines got new keys (`ui.copyright.spectre`, `ui.footer.operationally.sensitive`), so stale translations can't override them. `DISCLAIMER_REV` goes to 4.
+- 2026-10-27: **P0-4c Upstream social links.** PR #9, merged as `029f39c`.
   - Removed the Settings credit footer's Instagram (`instagram.com/OffGridPete`) and X (`x.com/OGridPete`) chips, the now-unused `SocialChip` composable, and `ic_instagram.xml` and `ic_x.xml`. The footer keeps the copyright line, which P0-4d settles.
   - The language keys `ui.offgridpete.label` and `ui.ogridpete.label` stay (keys are never removed). Their English values change from the upstream handles to "Unused", so the exported template no longer carries them.
   - Removed the now-dead `openUrl` and five unused imports.

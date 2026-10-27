@@ -181,20 +181,24 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - applicationId, `Brand`, and rebranded `strings.xml`, English copy values, and the literals: TAK callsign, GPX creator, export names, log prefix, UA.
    - Remove upstream's social links. Rename the disclaimer to `SpectreDisclaimer` and bump `disclaimerRev`.
    - Split into sub-steps so each PR stays reviewable:
-     - **P0-4a** `Brand` plus the non-copy literals: TAK callsign, GPX/KML/GeoJSON/WiGLE creator, export file names and titles, log tags, User-Agent, crash and report headers. Stable identifiers stay: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names.
-     - **P0-4b** English copy values (`ChromeLines`, `LanguageCopy`) and `strings.xml`. Keys never change. Also the hard-coded English copy outside the language map: `PlaceLookup.kt` (online-lookup line) and the `GnssInterference.kt` explanations. The `SitTakPackage` zip folder fallback `"fieldwatch"` stays as an id.
-     - **P0-4c** Remove upstream's social links.
+     - ✅ **P0-4a** `Brand` plus the non-copy literals: TAK callsign, GPX/KML/GeoJSON/WiGLE creator, export file names and titles, log tags, User-Agent, crash and report headers. Stable identifiers stay: format ids, TAK UIDs (`FIELDWATCH-…`), notification channel ids, internal log file names.
+     - ✅ **P0-4b** English copy values (`ChromeLines`, `LanguageCopy`) and `strings.xml`. Keys never change. Also the hard-coded English copy outside the language map: `PlaceLookup.kt` (online-lookup line) and the `GnssInterference.kt` explanations. The `SitTakPackage` zip folder fallback `"fieldwatch"` stays as an id.
+     - ✅ **P0-4c** Remove upstream's social links.
      - **P0-4d** (protected) `SpectreDisclaimer` and the `disclaimerRev` bump. The same owner-reviewed PR also settles the other legal and attribution copy that names Off Grid Pete LLC:
        - the in-app copyright line `ui.copyright.c.2026.off` (MIT requires keeping upstream's notice; add the Spectre contributors);
        - the debrief PDF footer `ui.off.grid.pete.llc`;
        - `OfficialSentences.NOT_REVIEWED` on the language screen.
      - **P0-4e** applicationId `io.github.rlhooks13.spectre`. The charter's hard stops forbid the agent from changing the applicationId, so this waits for the owner's explicit go-ahead in the session.
      - Catalog `notes` that mention Fieldwatch go through the catalog change checklist, or onto BrandGuard's allowlist (P0-6).
-5. **Language packs.**
+     - ✅ **P0-4f** README and docs rebrand: `README.md`, `docs/language-pack-requirements.md`, the instruction cards (`dist/` and `docs/instruction.txt`), and the other user-facing docs that still name Fieldwatch or present Off Grid Pete LLC as the publisher. Upstream's history and attribution stay.
+5. ✅ **Language packs.**
    - `scripts/rebrand_packs.py` changes **values only** and writes a per-language list of inflected forms.
    - The agent fixes those forms; the localization reviewer checks them.
    - Until the translated disclaimer is reviewed in the protected disclaimer PR, the English disclaimer is shown.
-6. **`BrandGuardTest`** (a build-logic task). It checks values, not keys. Allowlisted: LICENSE/NOTICE, legacy format ids, the About attribution.
+6. ✅ **`BrandGuardTest`** (a build-logic task). It checks values, not keys. Allowlisted: LICENSE/NOTICE, legacy format ids, the About attribution.
+   - Until build-logic exists (Phase 2, blocked on approved build plugins), it's a JVM unit test (`app/src/test/.../BrandGuardTest.kt`) so CI enforces it now. It moves to build-logic in P2-1.
+   - Temporary allowlist entries name the step that removes them (P0-4d, P0-7, P1-B1). Remove each entry in that step's PR; the test fails on any entry that no longer matches.
+   - P1-B1, the first catalog-version PR, also rewords the six catalog notes that still say "Fieldwatch".
 7. **Copy and legal fixes.**
    - The "Nothing is transmitted" line (`ChromeLines.kt:556`) becomes accurate copy about receive-only scanning.
    - Disable the in-app GitHub catalog update until Phase 4.
@@ -204,7 +208,8 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
    - Unit tests, lint, unsigned `assembleRelease`, `assembleStaging`, wrapper validation, a test-count guard summed across modules.
-   - The two-job release workflow (see Release model).
+   - The two-job release workflow (see Release model). The release notes list the APK's SHA-256 and the signing certificate's SHA-256, which the README and install card promise.
+   - CI uploads the staging APK as its artifact; debug is debuggable and unminified (P0-3).
 
 - **Verify:** install the staging and debug builds next to official Fieldwatch. Check scanning, an alert, an export share and the TAK callsign.
 - **Exit:**
