@@ -169,6 +169,7 @@ One JSON object, UTF-8. A leading byte-order mark is stripped before parsing. Un
 | `language` | Required display name, 1 to 40 characters after trim and cleaning. |
 | `languageTag` | Optional. Stored and shown. It does not change the Android locale, layout direction, or number formats. If it is not a short BCP 47 tag, ignore the tag and keep the pack. |
 | `writtenFor` | Optional, at most 32 characters. The Spectre version the author used. Informational. A mismatch does not reject the pack. |
+| `keyRevision` | Optional integer. The newest key revision in the template the author used (ADR-0013). It sets the "new since" count. A value that isn't a positive integer drops the count, not the pack. A pack without it is read as a Fieldwatch pack: `writtenFor` 1.1.27 to 1.1.32 maps to that release's revision, an earlier 1.x version to revision 0, and anything else gives no count. |
 | `strings` | Required object. Key to line. Missing keys stay English. |
 
 Keys in the file use the same ids as the English map. A key is ASCII lowercase letters, digits, and dots, for example `settings.diagnostics` or `live.flood_hide`. The English sentence is not the key.
@@ -234,7 +235,7 @@ The confirm dialog shows:
 - How many lines will change.
 - How many English lines will stay English.
 - How many lines in the file were ignored, including lines that were too long for their slot.
-- How many keys are new since this pack, when `writtenFor` is present and comparable. That count is the keys added after that version which this pack does not translate. Those keys are included in the stay-English count. Omit this line when `writtenFor` is missing or not a version the app can compare. A mismatch still does not reject the pack.
+- How many keys are new since this pack, when `keyRevision` is present or `writtenFor` maps to a revision. That count is the keys added after that revision which this pack does not translate. Those keys are included in the stay-English count. Omit this line when there is no revision to compare. A mismatch still does not reject the pack.
 - The same official sentence as the door: "Language packs are made by other people. They are not reviewed or certified by the Spectre contributors." This sentence is compiled into the APK and is not a pack key. The pack cannot replace it.
 
 The buttons are Import and Cancel. Cancel leaves the current language alone. Import replaces the whole pack. It does not merge. A key that was translated before, and is absent from the new pack, returns to English.
@@ -251,7 +252,7 @@ A language pack leaves the catalog, settings, watches, logs, and sits alone.
 
 ## English template
 
-Export English template writes a `fieldwatch-language` file from the same English map the app uses. `language` is English. `writtenFor` is the current `versionName`. `strings` contains every key. A translator edits the values and the language name, and may delete keys they are not translating. Importing that template unchanged shows English.
+Export English template writes a `fieldwatch-language` file from the same English map the app uses. `language` is English. `writtenFor` is the current `versionName`. `keyRevision` is the newest key revision. `strings` contains every key. A translator edits the values and the language name, and may delete keys they are not translating. Importing that template unchanged shows English.
 
 There is no second hand-maintained copy of the English text. The template is generated from the map.
 
@@ -259,7 +260,7 @@ There is no second hand-maintained copy of the English text. The template is gen
 
 Keys stay stable. Renaming a key makes existing packs show English for that line. Prefer a new key over renaming one.
 
-Each key records the app version that added it. Keys that arrive with the first map share that version. The confirm dialog uses this to count keys new since `writtenFor`.
+Each key records the key revision that added it (ADR-0013). Revision 1 is the map Fieldwatch 1.1.27 introduced. Revisions 2 to 5 are the keys Fieldwatch 1.1.28, 1.1.29, 1.1.31 and 1.1.32 added, and revision 6 is Spectre's Phase 0 keys. Each release that adds keys gets a new revision. The confirm dialog uses this to count keys new since the pack's `keyRevision`.
 
 Changing the English text under the same key is allowed when the meaning stays the same. Packs keep their old line until they are updated, unless the placeholders changed. When the meaning of a safety sentence changes, give it a new key so the old translation falls back to English. Nothing watches the sentences in the background. The edit that changes the English includes this check.
 
@@ -337,7 +338,7 @@ The implementation is done when these are true:
 - WiGLE and other machine-readable headers stay English.
 - ATAK pin remarks and CoT tags stay English. A pack key cannot change them.
 - A Debrief PDF page draws a Cyrillic sentence, and the test fails if those characters are missing.
-- When `writtenFor` is an older known version, confirm reports how many keys were added after it and are not translated. When `writtenFor` is missing, that count is omitted and the pack still loads.
+- When `keyRevision` is older, or `writtenFor` is an older Fieldwatch version, confirm reports how many keys were added after it and are not translated. When neither gives a revision, that count is omitted and the pack still loads.
 - The launcher name stays Spectre.
 - A French phone selects bundled French without an import. A language that is not bundled stays English. Luxembourgish stays English. `fr-LU` selects French and `de-LU` selects German. Croatian, Montenegrin, and `sr-ME` select Croatian. Serbian (`sr` without `ME`) stays English.
 - A missing key in a bundled language stays English.
@@ -361,8 +362,8 @@ The guide needs to say:
 - Stay inside the slot for each key. A tab or a class chip is at most 18 characters. A chip, button, row, or spoken phrase is at most twice the English length and never more than 48 characters. A dialog or other long sentence is at most three times the English length and never more than 700 characters. The language name is at most 40 characters. The file is at most 280 KiB. A line that is too long is left in English. A newline is kept only when the English line has one.
 - For a tab or a class chip, pick a shorter word when the full word would pass 18 characters. A German compound is the usual case. A line over the cap stays English, and the confirm dialog only counts it. It does not point at the word.
 - Leave these words as written: Wi-Fi, Bluetooth, GPS, GNSS, USB, PDF, CSV, ATAK, SSID, MAC, RSSI, and OUI. Translate ordinary words. Translate Spectre terms such as sit, signature, and Extra attention into plain words.
-- After a Spectre update, import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after `writtenFor` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` as the version of that template.
-- Set `language` to the name users should see, and `writtenFor` to the version of the template. One pack replaces another. It does not merge.
+- After a Spectre update, import the pack again and read "new since your pack" on the confirm dialog. That count is the keys added after the pack's `keyRevision` which this pack does not translate. Export a fresh English template and translate those keys. Leave `writtenFor` and `keyRevision` as that template has them.
+- Set `language` to the name users should see. Leave `writtenFor` and `keyRevision` as exported. One pack replaces another. It does not merge.
 - The sentence that packs are not reviewed or certified is official text. It is not in the template, and a pack cannot change it.
 - Tell users to import the file from Settings, or from the first-run door when their phone language is not English and not one of the bundled languages. The guide can describe those steps. The in-app wording for phone users still belongs in the user manual. A bundled language is already in the APK. Do not tell those users to import it.
 

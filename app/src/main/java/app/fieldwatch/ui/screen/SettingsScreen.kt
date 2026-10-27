@@ -1353,6 +1353,13 @@ private fun SensorLayerBlock(
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(top = 4.dp),
         )
+        // Above the switches, so it's read before an alert is turned on (ADR-0012).
+        Text(
+            LanguageText.text("settings.layer.alert.region"),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
         alerts()
     }
 }

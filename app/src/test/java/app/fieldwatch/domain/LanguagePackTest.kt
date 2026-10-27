@@ -214,8 +214,9 @@ class LanguagePackTest {
         assertEquals(EnglishCopy.lines.size - 1, older.stayEnglish)
         assertEquals(EnglishCopy.lines.size - 1, older.newSince)
         assertFalse(older.formatNewer)
+        // Written for 1.1.27, so only the keys Spectre added later count (ADR-0013).
         val current = ok(pack("tab.live" to "Direct", writtenFor = "1.1.27"))
-        assertEquals(0, current.newSince)
+        assertEquals(EnglishCopy.lines.count { it.revision > 1 }, current.newSince)
         val missing = ok(pack("tab.live" to "Direct"))
         assertNull(missing.newSince)
         val odd = ok(pack("tab.live" to "Direct", writtenFor = "v1.1.21"))
