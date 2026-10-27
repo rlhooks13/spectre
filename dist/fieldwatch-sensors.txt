@@ -1,4 +1,4 @@
-fieldwatch-sensors.geojson.gz is the Other sensors list in Fieldwatch.
+fieldwatch-sensors.geojson.gz is the Other sensors list in Spectre (built by upstream Fieldwatch; the file name is kept).
 It holds speed cameras, red lights, gunshot detectors, and other cameras in the United States.
 Plate readers are not in this file.
 

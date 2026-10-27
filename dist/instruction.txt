@@ -7,10 +7,10 @@ Needs Android 10 or newer (API 29+).
 
 Where to get it
 ---------------
-  The APK and the user manual are assets on each GitHub release:
+  The APK will be an asset on each GitHub release:
   https://github.com/rlhooks13/spectre/releases
-  Each release lists the APK's SHA-256 and the signing certificate's SHA-256.
-  Check both before you install.
+  Each release will list the APK's SHA-256 and the signing certificate's
+  SHA-256. Check both before you install.
 
 Spectre is experimental software. Use at your own risk. It does not guarantee
 that trackers or other devices will be found. Each phone has radio limits
@@ -20,8 +20,7 @@ question. Full notice: the disclaimer the app shows on first launch.
 Spectre is not on the Play Store. You install the APK yourself (sideload),
 or let Obtainium track the GitHub releases for you.
 
-Copyright (c) 2026 Off Grid Pete LLC
-Copyright (c) 2026 the Spectre contributors
+Copyright (c) 2026 Off Grid Pete LLC (see LICENSE for the current notice)
 
 License: MIT License. AndroidX/Kotlin remain Apache-2.0; IEEE and
 Bluetooth SIG lookup tables have their own terms (NOTICE). Full text:
@@ -42,9 +41,9 @@ If Android blocks the install:
 Play Protect may warn that the app is not from Play. That is expected for
 a sideload. Choose Install anyway only if you trust this APK.
 
-Spectre installs next to Fieldwatch; it does not update or replace it. To move
-custom signatures and settings, use Export signatures / Export settings in
-Fieldwatch and Import in Spectre.
+Spectre releases install next to Fieldwatch; they do not update or replace it.
+To move custom signatures and settings, use Export signatures / Export
+settings in Fieldwatch and Import in Spectre.
 
 When it finishes, open Spectre from the launcher.
 
@@ -57,9 +56,10 @@ Before or right after first launch:
   • Wi-Fi     ON
   • Bluetooth ON
 
-Spectre only listens to Wi-Fi access-point beacons and BLE advertisements.
-It does not join networks, pair, or scan Bluetooth Classic (HC-05 / HC-06
-will not appear).
+Spectre is receive-only by default: it reads Wi-Fi access-point beacons and
+BLE advertisements. The scans themselves can send the probe and scan requests
+Android makes when it scans. It does not join networks, pair, advertise, or
+scan Bluetooth Classic (HC-05 / HC-06 will not appear).
 
 
 3. Grant what Spectre asks
@@ -300,7 +300,8 @@ Max collection (battery is the cost) — full walk-through:
                rotate size (rotating file is JSON lines; Format is on
                Reports → Log), Watchlist, Named radios (custom name +
                Observer notes). Footer: Spectre version · Catalog N.
-               Update stock catalog from GitHub needs internet; replaces
+               Update stock catalog from GitHub needs internet and
+               currently downloads upstream Fieldwatch's stock pack; replaces
                stock rows (Extra attention too); bookmarks stay. Offline:
                Import signatures. GPS tagging, Online place names and maps, Keep screen
                on, Watchlist alerts, and Beep ship on. Voice on watched
@@ -423,9 +424,10 @@ Limits
   • No direction finding. RSSI is loudness, not distance
   • Live holds about 400 radios (hard cap 900). Debrief reads that
     same RAM, not the log. On a drive, tap Debrief more than once.
-  • Sideload build: not Play-signed, no auto-update
+  • Sideload build: not Play-signed. Updates come from GitHub Releases or
+    Obtainium, not from Play
 
-Read the user manual (a release asset) for install / permissions / max collection (§4, §4.5),
+Read the user manual (being rewritten for Spectre; it will ship as a release asset) for install / permissions / max collection (§4, §4.5),
 Live Display (Sort, Title/Subtitle, extras, §5.3),
 filter presets (§8.4), the stock catalog and class colors (§9.5, Appendix B),
 Decode fields (how to type a map §9.6.1–§9.6.5, stock maps §9.6.6),
@@ -435,5 +437,4 @@ Field Playbooks, Debrief / AI Export (sit-level and one-radio on detail;
 RAM window and trip strategy §11.4.1).
 
 Spectre    https://github.com/rlhooks13/spectre
-Copyright (c) 2026 Off Grid Pete LLC
-Copyright (c) 2026 the Spectre contributors
+Copyright (c) 2026 Off Grid Pete LLC (see LICENSE for the current notice)

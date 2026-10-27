@@ -10,7 +10,7 @@ Decided 20 October 2026. These stay until they are explicitly reopened.
 
 - Signature names stay English on the screen, in speech, and in the TAK callsign. That includes names that are more than a brand, such as "Atrius cart tag" and "Flock Safety Cameras".
 - The available languages do not include catalog notes, Extra attention, or decode labels. Choosing one of those languages leaves that prose in English.
-- A catalog translation is a separate file. The user exports an English template from the catalog on the phone, someone translates it elsewhere, and the user imports it. Fieldwatch does not download it and does not ship one for the bundled languages.
+- A catalog translation is a separate file. The user exports an English template from the catalog on the phone, someone translates it elsewhere, and the user imports it. Spectre does not download it and does not ship one for the bundled languages.
 - The reason to leave them out of the APK: those sentences tell the operator what a hit means. The bundled languages are AI drafts. A wrong warning is worse than a wrong button. Catalog text also changes when the stock catalog is updated, including without an app release, so a translation baked into the APK would go stale.
 
 ## Two kinds of signature text
@@ -77,7 +77,7 @@ Rules for the overlay:
 - Same injection rules as the language pack. Display text only. The official not-reviewed sentence is compiled into the APK and is not a key in this file.
 - Screen fit uses the same slots. Notes and warnings are body text. Decode labels and live chips are controls.
 - Import is its own Settings action, with a confirm dialog. It does not replace the language pack, and Import signatures does not apply it. Update stock catalog does not delete it.
-- The author exports an English template of those display strings from the catalog version on the phone. They host the finished file. The user imports it. Fieldwatch does not download it, does not publish a signature-translation repo, and does not bundle a catalog translation for the stock languages.
+- The author exports an English template of those display strings from the catalog version on the phone. They host the finished file. The user imports it. Spectre does not download it, does not publish a signature-translation repo, and does not bundle a catalog translation for the stock languages.
 - `writtenForCatalog` is informational except for the hash check. A pack written for catalog 92 still loads on catalog 93. Lines whose English changed fall back. New rows stay English.
 
 The language pack and this overlay stay two files. The app version and the catalog version move on different days. One file that held both would let a UI translation touch fleet ids, and a catalog update would force a new UI pack.

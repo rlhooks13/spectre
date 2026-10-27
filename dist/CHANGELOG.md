@@ -1,6 +1,10 @@
 # What's new
 
-Newest first. This is Fieldwatch (`app.fieldwatch`). Each build below is what Settings shows as the version.
+Newest first. Spectre's own entries start with its first release (0.1.0). Everything below this note is upstream Fieldwatch's history, kept as it was written; Spectre forked from Fieldwatch 1.1.32.
+
+## Upstream: Fieldwatch
+
+This is Fieldwatch (`app.fieldwatch`). Each build below is what Settings shows as the version.
 
 Fieldwatch continues the Spectre 1.2.14 field build under a new name, application id, and the MIT License. It does not replace Spectre on a phone.
 

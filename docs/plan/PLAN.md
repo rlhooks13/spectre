@@ -205,7 +205,8 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
    - Unit tests, lint, unsigned `assembleRelease`, `assembleStaging`, wrapper validation, a test-count guard summed across modules.
-   - The two-job release workflow (see Release model).
+   - The two-job release workflow (see Release model). The release notes list the APK's SHA-256 and the signing certificate's SHA-256, which the README and install card promise.
+   - CI uploads the staging APK as its artifact; debug is debuggable and unminified (P0-3).
 
 - **Verify:** install the staging and debug builds next to official Fieldwatch. Check scanning, an alert, an export share and the TAK callsign.
 - **Exit:**

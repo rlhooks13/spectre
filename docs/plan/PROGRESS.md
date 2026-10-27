@@ -52,14 +52,22 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
 
 - 2026-10-27: **P0-4f README and docs rebrand.** Branch `p0/4f-docs-rebrand`.
   - **`README.md` rewritten for the fork:**
-    - Fork statement and install via GitHub Releases or Obtainium (no release yet).
-    - Build from source, the dist files, and a safety section that matches the app's disclaimer.
-    - Two copyright lines, and issues on `rlhooks13/spectre`.
+    - Fork statement; the separate-app claim is conditional on the P0-4e app id.
+    - "Receive-only by default", noting that scans can send OS probe and scan requests.
+    - Future-tense release and Obtainium install.
+    - Build from source and the dist files.
+    - A safety section with the full egress list from the app disclaimer, including the Privacy-mode log caveat and the TAK/CoT feed.
+    - Issues on `rlhooks13/spectre`.
     - Upstream's first-person text and its 1.0.5 re-signing story are gone.
+    - The copyright and liability holders aren't restated: the README points to LICENSE and the in-app disclaimer until the owner decides PR #10.
+  - **Follow-up once PR #10 merges:** sync the README and instruction-card copyright lines with LICENSE.
+  - **Follow-up for P0-8:** release notes must list the APK SHA-256 and the signing-certificate SHA-256, which the README and card now promise. Added to PLAN P0-8.
   - **`docs/instruction.txt` and `dist/instruction.txt`** (still identical):
-    - The new header drops upstream's APK hash, signing certificate and APK and manual file names; each release now lists hashes.
-    - The upstream re-sign note is replaced with "installs next to Fieldwatch; export and import to move settings".
-    - Body rebranded; the footer social handles are gone and there are two copyright lines.
+    - The new header drops upstream's APK hash, signing certificate and APK and manual file names; each release will list hashes.
+    - The upstream re-sign note is replaced with "releases install next to Fieldwatch; export and import to move settings".
+    - Receive-only wording as in the README. The catalog update notes that it currently downloads upstream's pack (P0-7 turns it off). The Limits section names Releases and Obtainium for updates.
+    - Body rebranded; the footer social handles are gone.
+  - **`dist/CHANGELOG.md`** and **`dist/fieldwatch-sensors.txt`** synced and rebranded too.
   - **`docs/language-pack-requirements.md`, `docs/trusted-network-requirements.md`, `docs/signature-localization-options.md`:** product name rebranded. "Not reviewed or certified by" and "publisher" now name the Spectre contributors.
     - The two quoted official sentences in `language-pack-requirements.md` are left to PR #10, which already changes them, to avoid a conflict.
     - The `FIELDWATCH-SELF` UID stays.

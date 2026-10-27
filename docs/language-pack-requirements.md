@@ -2,7 +2,7 @@
 
 Requirements for a later implementation. This document does not authorize that work by itself. Do not start it until asked. When asked, implement this document and stop there. Do not ship, tag, sideload, or open a GitHub Release unless that request says so.
 
-English in the APK is the source of truth. The APK also carries a bundled language for each available language listed below. Those files start as an AI draft. A missing line stays English. The phone language selects a bundled language when one matches. Every other language is a file the user imports. Spectre does not download either kind. Off Grid Pete LLC does not review an imported pack. The app must say that before an imported pack is applied. A bundled language shows a different official sentence, the AI sentence below. The Language page also shows the author-guide sentence. A pack cannot hide any of these sentences.
+English in the APK is the source of truth. The APK also carries a bundled language for each available language listed below. Those files start as an AI draft. A missing line stays English. The phone language selects a bundled language when one matches. Every other language is a file the user imports. Spectre does not download either kind. The Spectre contributors do not review an imported pack. The app must say that before an imported pack is applied. A bundled language shows a different official sentence, the AI sentence below. The Language page also shows the author-guide sentence. A pack cannot hide any of these sentences.
 
 ## Outcome
 
@@ -40,7 +40,7 @@ Reject the whole file when the JSON is nested deeper than one object of strings,
 
 ## Where packs live
 
-Bundled languages are files in this repo, packaged into the APK. The app does not download them. Do not add any other language to this repo, and do not create an Off Grid Pete language-pack repo. A language that is not in the list below is hosted by whoever wrote it. The user obtains that file and imports it.
+Bundled languages are files in this repo, packaged into the APK. The app does not download them. Do not add any other language to this repo, and do not create a Spectre language-pack repo. A language that is not in the list below is hosted by whoever wrote it. The user obtains that file and imports it.
 
 Only the active language is parsed, once, when it is chosen and again on the next process start. The other bundled files stay compressed and unread. A bundled file uses the same line rules as an import. A line that is too long, or whose placeholders do not match, stays English. An imported pack is stored as the cleaned map the app writes. Export settings does not include that file, and it does not include the Language page choice. Follow the phone, English, or a bundled language stays on this phone, the same way the TAK tag does.
 
@@ -368,4 +368,4 @@ The guide needs to say:
 
 ## Manual later
 
-When this is actually shipped, add a short English section to the user manual. It covers the phone language selecting a bundled language, missing lines staying English, the AI sentence and the request to open a GitHub issue, and import and remove for every other language. An imported pack is made by other people and is not reviewed or certified by Off Grid Pete LLC. Add a changelog line. The manual stays English. Do that in the ship, not as a drive-by while the feature is still unreleased. The author guide above is a separate document.
+When this is actually shipped, add a short English section to the user manual. It covers the phone language selecting a bundled language, missing lines staying English, the AI sentence and the request to open a GitHub issue, and import and remove for every other language. An imported pack is made by other people and is not reviewed or certified by the Spectre contributors. Add a changelog line. The manual stays English. Do that in the ship, not as a drive-by while the feature is still unreleased. The author guide above is a separate document.
