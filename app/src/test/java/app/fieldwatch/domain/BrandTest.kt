@@ -10,6 +10,8 @@ class BrandTest {
     fun userAgentNamesTheForkAndItsRepo() {
         assertEquals("Spectre/0.1.0 (+https://github.com/rlhooks13/spectre)", Brand.userAgent("0.1.0"))
         assertFalse(Brand.userAgent("0.1.0").contains("OffGridPete"))
+        // A dev build's commit (P0-8c) stays off the wire.
+        assertEquals("Spectre/0.1.0-dev (+https://github.com/rlhooks13/spectre)", Brand.userAgent("0.1.0-dev+949cd0c73d76.dirty"))
     }
 
     @Test
