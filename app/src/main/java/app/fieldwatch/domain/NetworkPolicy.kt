@@ -27,8 +27,10 @@ enum class Egress {
  * Until [ConfigStore][app.fieldwatch.data.ConfigStore] has loaded settings, nothing is allowed.
  */
 object NetworkPolicy {
+    /** Set only by ConfigStore. Tests use the two-argument [allows] instead of changing it. */
     @Volatile
     var settings: AppSettings? = null
+        internal set
 
     fun allows(egress: Egress): Boolean = allows(egress, settings)
 

@@ -74,13 +74,24 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - sensor lists are allowed, because the dialog is the consent;
     - TAK publish needs `takEnabled` and not Privacy;
     - TAK retract is always allowed, because it withdraws spots already sent.
-  - **Hard-coded tiles:** the five `onlineLookup = true` tile calls now pass `NetworkPolicy.allows(MAP_TILES)`. This also closes the gaps where a queued window or pan prefetch ran on a stale `online` snapshot.
+  - **Hard-coded tiles:** `PathTiles` now asks the policy itself, and its `onlineLookup` parameter is gone. That removes the five hard-coded `true`s, and the gaps where a queued window or pan prefetch ran on a stale `online` snapshot.
+  - **TAK DNS:** the host lookup in `destinations()` asks the policy too.
   - **Ladder:** the V17 (re-enable built-in signatures), V19 (`tagLocation`) and V20 (`keepScreenOn` + `onlineLookup`) bodies are deleted. The version bumps stay.
-  - **Tests:** `NetworkPolicyTest` and `EgressInventoryTest`, which covers files that touch the network, the policy call in each, and no hard-coded `onlineLookup = true`.
+  - **`ConfigStore`:**
+    - It gains an internal `File` constructor for tests.
+    - It sets the policy before it publishes a config.
+    - `NetworkPolicy.settings` is `internal set`.
+  - **Tests:**
+    - `NetworkPolicyTest` covers the rules.
+    - `EgressInventoryTest` checks every non-test source set, `.kt` and `.java`, for sockets, streams, DNS, geocoder, web and HTTP clients. It also checks the policy call in each egress file, and that nothing hard-codes `onlineLookup = true`.
+    - `SettingsLadderTest` upgrades a V16 config: `onlineLookup`, `tagLocation` and `keepScreenOn` stay off, and the policy sees the loaded settings.
   - **Lint:** 9 errors, all the inherited ones (no baseline on `main` until #19).
-  - **Follow-ups:**
-    - V30 still force-enables every fleet once.
-    - The OS network location provider is outside the policy (ADR-0014).
+  - **Follow-ups (ADR-0014 "Not covered"):**
+    - V30 still re-enables every fleet once, as part of its filter migration.
+    - Redirects are checked only after the request.
+    - Tombstones go to the current TAK host.
+    - A switch-off mid-request can be reported as a plain failure.
+    - The OS network location provider is outside the policy.
 - 2026-10-27: **P0-8c merged** as `3be1048` (PR #22). P0-8d now waits for P1-B1's catalog snapshots. P1-A1 and P1-A2 wait for #6, so new dependencies don't break its verification metadata.
 - 2026-10-27: **P0-8c Version from the git tag (ADR-0002).** PR #22. Branch `p0/8c-version-from-tag`.
   - **How:** `app/build.gradle.kts` reads git through `providers.exec`.

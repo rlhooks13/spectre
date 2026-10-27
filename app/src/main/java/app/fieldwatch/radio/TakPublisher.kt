@@ -449,7 +449,7 @@ class TakPublisher {
         if (last.isEmpty() && parked.isEmpty()) return
         val host = settings.takHost.trim().ifBlank { TakDefaults.HOST }
         val port = settings.takPort.coerceIn(1, 65_535)
-        val dests = destinations(host, port)
+        val dests = destinations(host, port, Egress.TAK_RETRACT)
         if (dests.isEmpty()) return
         val spots = LinkedHashMap<String, TakSent>()
         last.forEach { (uid, spot) -> spots[uid] = spot }
@@ -467,7 +467,9 @@ class TakPublisher {
         }
     }
 
-    private fun destinations(host: String, port: Int): List<Pair<InetAddress, Int>> {
+    /** Resolving the host is a DNS query, so it asks the policy for [kind] too. */
+    private fun destinations(host: String, port: Int, kind: Egress = Egress.TAK_PUBLISH): List<Pair<InetAddress, Int>> {
+        if (!NetworkPolicy.allows(kind)) return emptyList()
         val primary = runCatching { InetAddress.getByName(host) }.getOrNull() ?: return emptyList()
         val out = LinkedHashMap<String, Pair<InetAddress, Int>>()
         fun add(addr: InetAddress, p: Int) {
@@ -487,17 +489,12 @@ class TakPublisher {
         bytes: ByteArray,
         kind: Egress = Egress.TAK_PUBLISH,
     ): Boolean {
-        if (!allowed(kind)) return false
+        if (!NetworkPolicy.allows(kind)) return false
         var ok = false
         for ((addr, port) in dests) {
             if (send(addr, port, bytes)) ok = true
         }
         return ok
-    }
-
-    private fun allowed(kind: Egress): Boolean = when (kind) {
-        Egress.TAK_RETRACT -> NetworkPolicy.allows(Egress.TAK_RETRACT)
-        else -> NetworkPolicy.allows(Egress.TAK_PUBLISH)
     }
 
     private fun send(addr: InetAddress, port: Int, bytes: ByteArray): Boolean {

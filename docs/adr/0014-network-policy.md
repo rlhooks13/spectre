@@ -21,17 +21,26 @@
   | `MAP_TILES` | `onlineLookup` |
   | `PLACE_NAMES` | `onlineLookup` and not Privacy (`demoMode`), as the callers already required |
   | `CATALOG_UPDATE` | `Features.IN_APP_CATALOG_UPDATE` (off until P4-6) |
-  | `SENSOR_LIST` | always. Every download follows a dialog that names the source and its terms (P0-7c); that confirmation is the consent. The "Other sensors" list stays off through its blank URL and feature flag. |
-  | `TAK_PUBLISH` | `takEnabled` and not Privacy |
+  | `SENSOR_LIST` | always. Every request follows a user action in the layer's Settings block, which names the source host (P0-7c). Download follows a confirmation dialog with the source and its terms. The update check (a HEAD request) follows the user's Update tap. The "Other sensors" list stays off through its blank URL and feature flag. |
+  | `TAK_PUBLISH` | `takEnabled` and not Privacy. This covers the DNS lookup of the TAK host as well as the packets. |
   | `TAK_RETRACT` | always. When the feed or Privacy turns off, tombstones withdraw the spots the feed already published, so teammates' maps stop showing them. Blocking them would leave the user's spots visible. |
 
-- **`EgressInventoryTest`** fails when network code appears outside these five files, when one of them stops asking the policy, or when a caller hard-codes `onlineLookup = true`.
-- **The V17, V19 and V20 ladder bodies are deleted;** their version bumps stay. Upgrades keep the user's choices.
+- **`PathTiles` asks the policy itself.** Its `onlineLookup` parameter is gone, so no caller can pass a stale or hard-coded value.
+- **`ConfigStore` sets the policy before it publishes a config,** so nothing reacting to new settings finds the policy behind. Only `ConfigStore` can set it.
+- **`EgressInventoryTest`** scans every non-test source set, Kotlin and Java. It fails when network code appears outside these five files, when one of them stops asking the policy, or when a caller hard-codes `onlineLookup = true`. It looks for:
+  - connections and streams: `openConnection`, `openStream`, `URL(...).readText`, sockets, `SocketChannel`;
+  - DNS: `InetAddress.get…ByName`;
+  - geocoding: `getFromLocation…`;
+  - web clients: WebView, DownloadManager, HTTP client libraries.
+- **The V17, V19 and V20 ladder bodies are deleted;** their version bumps stay. `SettingsLadderTest` upgrades a V16 config and checks that `onlineLookup`, `tagLocation` and `keepScreenOn` stay off.
 
 ## Consequences
 - **Settings changes take effect at once:** turning "Online place names and maps" off stops tile and place traffic on the next request, even for work a screen already started.
-- **Old installs keep their choices:** configs older than V17 or V20 no longer get signatures, location tags, screen-on or online lookups forced back on.
+- **Old installs keep their settings:** configs older than V20 no longer get location tags, screen-on or online lookups forced back on.
+- **Signatures are still re-enabled once:** V30 re-enables every fleet once, as part of its move from the fleet filter to the include filter. So a config older than V30 still gets its signatures back on. It isn't a network setting, and changing it is a detection-behavior decision for a later catalog step (follow-up).
 - **Not covered here:**
-  - V30 still re-enables every fleet once. It isn't a network setting; a later catalog step can revisit it.
-  - The OS network location provider (`LocationManager.NETWORK_PROVIDER`) may contact Google. It is a platform service, not app traffic, and it is outside this policy.
+  - **The OS network location provider** (`LocationManager.NETWORK_PROVIDER`) may contact Google. It is a platform service, not app traffic, and it is outside this policy.
+  - **Redirects:** `CatalogRemote` and `FlockFiles` follow redirects. The policy still applies, because the egress kind doesn't change, but the final host is checked only after the request: `FlockFiles.servedFromSource` refuses to install a list from elsewhere. Hop-by-hop host checks like `PathTiles`' are a follow-up.
+  - **Where tombstones go:** they go to the TAK host configured now. If the user changes the host and then turns the feed off, they go to the new host. Remembering each spot's destination is a follow-up.
+  - **A mid-request switch-off:** a refusal returns the egress function's normal failure value. A tile export or a place lookup interrupted by turning the setting off can report it as a failed map or "no name returned". The next request is correct.
 - **New network code** must add an `Egress` kind, a rule here, and an entry in `EgressInventoryTest`.

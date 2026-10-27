@@ -37,8 +37,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
-class ConfigStore(context: Context) {
-    private val file = File(context.filesDir, "config.json")
+class ConfigStore internal constructor(private val file: File) {
+    constructor(context: Context) : this(File(context.filesDir, "config.json"))
+
     private val json = Json {
         prettyPrint = true
         ignoreUnknownKeys = true
@@ -50,8 +51,9 @@ class ConfigStore(context: Context) {
 
     /** Every config change goes through here, so NetworkPolicy always checks the settings in force. */
     private fun publish(next: PersistedConfig) {
-        _config.value = next
+        // Policy first: anything that reacts to the new config must find the policy already updated.
         NetworkPolicy.settings = next.settings
+        _config.value = next
     }
 
     val fleets: List<Fleet> get() = _config.value.fleets
@@ -1251,7 +1253,6 @@ class ConfigStore(context: Context) {
         private const val CATALOG_V16 = 16
         private const val CATALOG_V17 = 17
         private const val CATALOG_V18 = 18
-        private const val CATALOG_V19 = 19
         private const val CATALOG_V20 = 20
         private const val CATALOG_V21 = 21
         private const val CATALOG_V22 = 22

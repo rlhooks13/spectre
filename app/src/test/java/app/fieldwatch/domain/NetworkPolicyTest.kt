@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
 
 class NetworkPolicyTest {
     @Test
@@ -36,20 +35,5 @@ class NetworkPolicyTest {
     @Test
     fun catalogUpdateFollowsItsFeatureFlag() {
         assertEquals(Features.IN_APP_CATALOG_UPDATE, NetworkPolicy.allows(Egress.CATALOG_UPDATE, AppSettings()))
-    }
-
-    // The settings ladder used to force these back on (V19 tagLocation; V20 keepScreenOn and onlineLookup)
-    // and to re-enable every built-in signature the user turned off (V17). Those steps are gone.
-    @Test
-    fun ladderNoLongerForcesSettingsOrSignaturesBackOn() {
-        val source = repoFile("src/main/java/app/fieldwatch/data/ConfigStore.kt").readText()
-        assertFalse(source.contains("tagLocation = true"))
-        assertFalse(source.contains("onlineLookup = true"))
-        assertFalse(source.contains("if (fleet.builtIn && !fleet.enabled) fleet.copy(enabled = true)"))
-    }
-
-    private fun repoFile(path: String): File {
-        val candidates = listOf(File(path), File("app/$path"))
-        return candidates.firstOrNull { it.exists() } ?: candidates.last()
     }
 }
