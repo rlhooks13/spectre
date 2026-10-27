@@ -1,11 +1,12 @@
 # Approved dependencies
 
-This file is protected. The agent may add a dependency only if it appears here (same group/artifact; versions are free to change). Anything else needs an owner-reviewed PR to this file first. Gradle dependency verification (`gradle/verification-metadata.xml`, also protected) pins the checksums.
+This file is protected. The agent may add a dependency only if it appears here (same group/artifact; versions are free to change). Anything else needs an owner-reviewed PR to this file first. A listed plugin id also covers its plugin marker and implementation artifacts, so `build-logic` may depend on them to apply that plugin from a convention plugin. Gradle dependency verification (`gradle/verification-metadata.xml`, also protected) pins the checksums.
 
 ## Already in use
 | Group:artifact | Purpose |
 |---|---|
-| `androidx.compose:compose-bom` and the Compose UI / Material3 / icons-extended artifacts | UI |
+| `com.android.application`, `org.jetbrains.kotlin.android`, `org.jetbrains.kotlin.plugin.compose`, `org.jetbrains.kotlin.plugin.serialization` (plugins) | Build |
+| `androidx.compose:compose-bom`; `androidx.compose.ui:ui`, `ui-graphics`, `ui-tooling`, `ui-tooling-preview`; `androidx.compose.material3:material3`; `androidx.compose.material:material-icons-extended` | UI |
 | `androidx.activity:activity-compose`, `androidx.core:core-ktx` | Platform |
 | `androidx.lifecycle:lifecycle-*` (runtime-ktx, viewmodel-compose, runtime-compose, service) | Lifecycle |
 | `androidx.navigation:navigation-compose` | Navigation (type-safe routes) |
@@ -16,6 +17,8 @@ This file is protected. The agent may add a dependency only if it appears here (
 ## Approved for the plan
 | Group:artifact | Phase | Purpose |
 |---|---|---|
+| `com.android.library`, `org.jetbrains.kotlin.jvm` (plugins) | 2 | Library modules |
+| `com.android.tools.build:gradle`, `org.jetbrains.kotlin:kotlin-gradle-plugin` | 2 | `build-logic` convention plugins (compile-only) |
 | `com.google.devtools.ksp` (plugin) | 2 | Annotation processing |
 | `com.google.dagger:hilt-android`, `hilt-compiler`, `hilt-android-testing`; `com.google.dagger.hilt.android` (plugin) | 2 | DI |
 | `androidx.hilt:hilt-navigation-compose`, `hilt-work`, `hilt-compiler` | 2–5 | DI integration |

@@ -52,7 +52,8 @@ Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a 
 - **Language keys:**
   - Add English with `en("key","English",LanguageSlot.X)` in `ChromeLines.all` or `LanguageCopy.buildLines`.
   - Keys match `^[a-z0-9]+(\.[a-z0-9]+)+$`.
-  - Until the integer key revision lands (Phase 1), every line must have `addedIn == "1.1.27"`, or `EnglishCopy` crashes the app at startup.
+  - List every new key in `LanguageKeyRevisions` at revision `NEWEST` (ADR-0013). The first key-adding PR after a release raises `NEWEST`. A key left out of the table falls to revision 1, which is frozen, so `LanguageKeyRevisionTest` fails.
+  - A line whose meaning changes gets a new key. The old key stays, with the value "Unused".
   - **Never rename a key**, including the 29 that contain "fieldwatch".
   - An unknown key renders as the raw key string.
   - Exports and CoT stay English.
@@ -104,7 +105,7 @@ adb -s $SERIAL shell run-as <appId>.debug ls files/            # debug builds on
 ./gradlew connectedDebugAndroidTest                            # when radio, data or UI changed
 ```
 
-Health checks during a soak filter by the app's package and UID. Device-touching work never runs during a battery-measurement window.
+`adb shell` reads stdin, so inside a script or heredoc give it `</dev/null`. Otherwise it swallows the rest of the script. Health checks during a soak filter by the app's package and UID. Device-touching work never runs during a battery-measurement window.
 
 ## Restart runbook (owner or agent)
 

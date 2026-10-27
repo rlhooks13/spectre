@@ -1572,7 +1572,7 @@ object DebriefPdf {
             textSize = 8f
             isAntiAlias = true
         }
-        canvas.drawText(LanguageText.text("ui.off.grid.pete.llc"), MARGIN, PAGE_H - 18f, f)
+        canvas.drawText(LanguageText.text("ui.footer.operationally.sensitive"), MARGIN, PAGE_H - 18f, f)
         val pn = "$page / $total"
         canvas.drawText(pn, PAGE_W - MARGIN - f.measureText(pn), PAGE_H - 18f, f)
     }

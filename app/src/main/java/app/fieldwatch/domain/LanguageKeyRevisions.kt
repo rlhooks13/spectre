@@ -69,6 +69,7 @@ object LanguageKeyRevisions {
         for (key in listOf(
             "ui.permissions.receive.only", "ui.scan.status.channel", "ui.export.shares.catalog.no.update",
             "settings.layer.download.source", "settings.layer.source", "settings.layer.alert.region",
+            "ui.copyright.spectre", "ui.footer.operationally.sensitive",
         )) put(key, 6)
     }
 

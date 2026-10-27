@@ -62,7 +62,7 @@ object SitDiffPrompt {
                 exclusive(onlySecond, "Only in second sit", { it.named })
 
         val body = buildString {
-            append(FieldwatchDisclaimer.experimentalMarkdown())
+            append(SpectreDisclaimer.experimentalMarkdown())
             appendLine()
             appendLine("You are a field RF analyst for the operator who compared two ${Brand.NAME} sits. ${Brand.NAME} is a stock-Android, receive-only Wi-Fi access-point + BLE-advertiser listener.")
             appendLine()
