@@ -990,7 +990,6 @@
     "ui.gps.tagging.off.fieldwatch": "Funde mit GPS sind AUS. Spectre kann nicht prüfen, ob ein Radio mit Ihnen mitging.",
     "ui.turn.settings.tag.detections.2": "Schalten Sie Einstellungen → Funde mit GPS ein, gehen oder fahren Sie 50+ m und starten Sie die Auswertung erneut.",
     "ui.insufficient.movement.distinguish.radio": "Zu wenig Bewegung, um ein Radio, das bei Ihnen blieb, von einem zu trennen, das Sie passierten. Gehen oder fahren Sie weiter und starten Sie erneut.",
-    "ui.no.finder.tag.retail": "Kein Such-Tag, keine Handelsbake und kein Tragbares blieb bei Ihnen. Hausmarken und andere Radios, die Sie nur passierten, stehen nicht in der Liste.",
     "ui.callouts.below.only.radios": "Die Hinweise unten sind nur Radios, die auf dem Pfad blieben. Radios, die Sie passierten (Ladenfestes, Hausmarken), fehlen.",
     "ui.radios.marked.mine.heard": "Radios, die Sie als Eigen markiert haben. In diesem Fenster gehört. Weiter in der Liste. Kein Piep, solange die Markierung an ist.",
     "ui.marked.mine.first.heard": "Als Eigen markiert. Zuerst gehört, nachdem die Lage begann, und auf dem Pfad geblieben.",

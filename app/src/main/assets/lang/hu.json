@@ -1004,7 +1004,6 @@
     "ui.gps.tagging.off.fieldwatch": "A GPS jelölés KI van kapcsolva. A Spectre nem tudja tesztelni, hogy egy rádió önnel mozgott-e.",
     "ui.turn.settings.tag.detections.2": "Kapcsolja be: Beállítások → Észlelések jelölése GPS-sel, menjen vagy vezessen 50 m-nél többet, majd futtassa újra a Kiértékelést.",
     "ui.insufficient.movement.distinguish.radio": "Kevés a mozgás ahhoz, hogy elválasszunk egy önnel maradt rádiót egy olyantól, amely mellett elhaladt. Menjen vagy vezessen tovább, és futtassa újra.",
-    "ui.no.finder.tag.retail": "Egy kereső, bolti jeladó vagy viselhető sem maradt önnel. A házi címkék és más rádiók, amelyek mellett csak elhaladt, nincsenek a listán.",
     "ui.callouts.below.only.radios": "Az alábbi kiemelések csak olyan rádiók, amelyek az úttal maradtak. A rádiók, amelyek mellett elhaladt (bolti rögzítettek, házi címkék), kimaradnak.",
     "ui.radios.marked.mine.heard": "Rádiók, amelyeket sajátként jelölt. Hallva ebben az ablakban. A listán maradnak. Nincs csipogás, amíg a jelölés be van kapcsolva.",
     "ui.marked.mine.first.heard": "Sajátként jelölve. Először hallva a figyelés kezdete után, és az úttal maradt.",

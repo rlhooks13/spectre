@@ -1003,7 +1003,6 @@
     "ui.gps.tagging.off.fieldwatch": "A marcação GPS está DESLIGADA. O Spectre não pode testar se uma rádio se moveu consigo.",
     "ui.turn.settings.tag.detections.2": "Ligue Definições → Marcar com GPS, caminhe ou conduza mais de 50 m e volte a executar o balanço.",
     "ui.insufficient.movement.distinguish.radio": "Movimento insuficiente para distinguir uma rádio que ficou consigo de uma que cruzou. Caminhe ou conduza mais longe e volte a executar.",
-    "ui.no.finder.tag.retail": "Nenhum localizador, baliza de loja ou vestível ficou consigo. Os localizadores de casa e outras rádios que apenas cruzou não são listados.",
     "ui.callouts.below.only.radios": "Os avisos abaixo são só rádios que ficaram com o caminho. As rádios que cruzou (equipamentos de loja, localizadores de casa) ficam de fora.",
     "ui.radios.marked.mine.heard": "Rádios que marcou como Minhas. Ouvidas nesta janela. Continuam na lista. Sem bip enquanto a marca está ligada.",
     "ui.marked.mine.first.heard": "Marcada Minhas. Ouvida primeiro depois do início da vigília e ficou com o caminho.",

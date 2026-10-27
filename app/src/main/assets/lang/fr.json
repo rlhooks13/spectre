@@ -983,7 +983,6 @@
     "ui.gps.tagging.off.fieldwatch": "Le marquage GPS est ARRÊTÉ. Spectre ne peut pas tester si une radio s'est déplacée avec vous.",
     "ui.turn.settings.tag.detections.2": "Activez Paramètres → Marquer au GPS, marchez ou roulez plus de 50 m, puis relancez le compte rendu.",
     "ui.insufficient.movement.distinguish.radio": "Déplacement insuffisant pour distinguer une radio restée avec vous d'une radio que vous avez croisée. Marchez ou roulez plus loin et relancez.",
-    "ui.no.finder.tag.retail": "Aucune balise, balise de magasin ou portable n'est resté avec vous. Les balises de domicile et les autres radios que vous avez seulement croisées ne sont pas listées.",
     "ui.callouts.below.only.radios": "Les appels ci-dessous ne concernent que les radios restées avec le chemin. Les radios croisées (équipements de magasin, balises de domicile) sont omises.",
     "ui.radios.marked.mine.heard": "Radios que vous avez marquées Miennes. Entendues dans cette fenêtre. Toujours listées. Pas de bip tant que la marque est active.",
     "ui.marked.mine.first.heard": "Marquée Miennes. Entendue d'abord après le début de la veille et restée avec le chemin.",

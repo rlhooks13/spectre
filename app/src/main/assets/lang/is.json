@@ -961,7 +961,6 @@
     "ui.gps.tagging.off.fieldwatch": "GPS-merking er SLÖKKT. Spectre getur ekki prófað hvort radio hreyfðist með þér.",
     "ui.turn.settings.tag.detections.2": "Kveiktu á Stillingar → Merkja greiningar með GPS, gakktu eða keyrðu 50+ m og keyrðu svo Samantekt aftur.",
     "ui.insufficient.movement.distinguish.radio": "Ekki næg hreyfing til að greina radio sem hélst með þér frá því sem þú fórst fram hjá. Gakktu eða keyrðu lengra og keyrðu aftur.",
-    "ui.no.finder.tag.retail": "Enginn finnari, verslunarvitinn eða klæðanlegt hélst með þér. Húsmerki og radio sem þú aðeins fórst fram hjá eru ekki talin.",
     "ui.callouts.below.only.radios": "Neðan eru aðeins radio sem hélst með leiðinni. Radio sem þú fórst fram hjá (verslunarbúnaður, húsmerki) eru sleppt.",
     "ui.radios.marked.mine.heard": "Radio sem þú merktir Mitt. Heyrð í þessum glugga. Enn á lista. Ekkert píp á meðan merking er kveikt.",
     "ui.marked.mine.first.heard": "Merkt Mitt. Fyrst heyrt eftir að vaktin hófst og hélst með leiðinni.",

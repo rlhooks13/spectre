@@ -77,8 +77,13 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **Old keys:** they stay, with "Unused". `-PpruneLanguagePacks` (new; `BundledPackRetiredKeysTest`) removed their lines from the 20 bundled packs that had them: 60 lines, nothing else touched. The test fails whenever a bundled pack still carries a retired key.
   - **Debrief:**
     - section 4 counts phones with you, so it no longer says nothing stayed above a "Phones with you" list;
-    - the takeaway names a phone that joined and kept pace (new key `ui.phone.s.joined.kept.pace`);
-    - a phone that was with you all along isn't named.
+    - the takeaway and the executive summary name a phone that joined and kept pace (`ui.phone.s.joined.kept.pace`), and, more mildly, one that was with you all along (`ui.apple.device.s.path.usually`);
+    - with only phones, the takeaway's core is "No finder tag stayed with the path", not "No signature hits";
+    - section 4's "nothing stayed" line now names all four classes (`ui.nothing.stayed.four.classes`; the old `ui.no.finder.tag.retail` is "Unused" and pruned from all 26 packs).
+  - **Prune tool:**
+    - it finds keys by parsing the JSON;
+    - it edits text by splitting on "\n" only, so CRs and a missing final newline survive;
+    - it has unit tests for middle, last, only and CRLF entries, and every pack parses after pruning.
 - 2026-10-27: **P1-B4 Apple phones.** #56 (P1-B3) merged as dd938cc.
   - **The fix:** `TrackerMatch.kind` takes each fleet's `SignatureClass`. A FINDER-class match is a finder, whatever the name, so "Tattile" is no longer one. A loud carried Apple phone, Mac or AirPods is the new `Kind.PHONE`, never FINDER. With no signature at all, an Offline Finding record still reads as a finder unless its status byte says Apple device or AirPods.
   - **Debrief:** phones get their own "Phones with you" section and Markdown list, with milder wording (5 new keys at revision 6). They don't reach the summary, actions or takeaway.

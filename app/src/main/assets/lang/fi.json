@@ -1004,7 +1004,6 @@
     "ui.gps.tagging.off.fieldwatch": "GPS-merkintä on POIS. Spectre ei voi testata liikkuiko radio mukanasi.",
     "ui.turn.settings.tag.detections.2": "Laita päälle Asetukset → Merkitse havainnot GPS:llä, kävele tai aja yli 50 m, sitten aja Purku uudelleen.",
     "ui.insufficient.movement.distinguish.radio": "Liike ei riitä erottamaan radiota joka pysyi mukanasi sellaisesta jonka ohitit. Kävele tai aja pidemmälle ja aja uudelleen.",
-    "ui.no.finder.tag.retail": "Yksikään paikannin, kaupan majakka tai puettava ei pysynyt mukanasi. Kotipaikantimet ja muut radiot joiden ohi vain kuljit eivät ole listalla.",
     "ui.callouts.below.only.radios": "Alla olevat huomiot ovat vain radioita jotka pysyivät polun mukana. Radiot joiden ohi kuljit (kaupan kiinteät, kotipaikantimet) jätetään pois.",
     "ui.radios.marked.mine.heard": "Radiot jotka merkitset omiksesi. Kuultu tässä ikkunassa. Pysyvät listalla. Ei piippausta kun merkki on päällä.",
     "ui.marked.mine.first.heard": "Merkitty omaksi. Kuultu ensi kerran vahdin alettua ja pysyi polun mukana.",

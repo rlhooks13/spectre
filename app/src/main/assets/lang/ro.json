@@ -1001,7 +1001,6 @@
     "ui.gps.tagging.off.fieldwatch": "Marcajul GPS este OPRIT. Spectre nu poate testa dacă un radio s-a mișcat cu dumneavoastră.",
     "ui.turn.settings.tag.detections.2": "Porniți Setări → Marchează detecțiile cu GPS, mergeți sau conduceți peste 50 m, apoi rulați din nou Raportul.",
     "ui.insufficient.movement.distinguish.radio": "Mișcare insuficientă ca să deosebim un radio care a rămas cu dumneavoastră de unul pe lângă care ați trecut. Mergeți sau conduceți mai departe și rulați din nou.",
-    "ui.no.finder.tag.retail": "Nicio etichetă, baliză de magazin sau purtabil nu a rămas cu dumneavoastră. Etichetele de casă și alte radiouri pe lângă care doar ați trecut nu sunt listate.",
     "ui.callouts.below.only.radios": "Observațiile de mai jos sunt doar radiouri care au rămas cu traseul. Radiourile pe lângă care ați trecut (obiecte fixe din magazin, etichete de casă) sunt omise.",
     "ui.radios.marked.mine.heard": "Radiouri pe care le-ați marcat ale mele. Auzite în această fereastră. Rămân în listă. Fără bip cât marca este pornită.",
     "ui.marked.mine.first.heard": "Marcat al meu. Auzit prima dată după ce a început sesiunea și a rămas cu traseul.",

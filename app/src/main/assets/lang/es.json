@@ -996,7 +996,6 @@
     "ui.gps.tagging.off.fieldwatch": "El marcado GPS está APAGADO. Spectre no puede probar si una radio se movió con usted.",
     "ui.turn.settings.tag.detections.2": "Active Ajustes → Marcar con GPS, camine o conduzca más de 50 m y vuelva a ejecutar el informe.",
     "ui.insufficient.movement.distinguish.radio": "Movimiento insuficiente para distinguir una radio que siguió con usted de una que pasó. Camine o conduzca más lejos y vuelva a ejecutar.",
-    "ui.no.finder.tag.retail": "Ninguna baliza, baliza de comercio o vestible siguió con usted. Las balizas de casa y otras radios que solo pasó no se listan.",
     "ui.callouts.below.only.radios": "Los avisos de abajo solo son radios que siguieron con la ruta. Las radios que pasó (elementos de tienda, balizas de casa) se omiten.",
     "ui.radios.marked.mine.heard": "Radios que marcó como Mías. Oídas en esta ventana. Siguen en la lista. Sin pitido mientras la marca está activa.",
     "ui.marked.mine.first.heard": "Marcada Mías. Oída primero después de empezar la guardia y siguió con la ruta.",

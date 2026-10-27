@@ -997,7 +997,6 @@
     "ui.gps.tagging.off.fieldwatch": "Märk fynd med GPS är AV. Spectre kan inte testa om en radio följde med dig.",
     "ui.turn.settings.tag.detections.2": "Slå på Inställningar → Märk fynd med GPS, gå eller kör 50+ m och kör genomgången igen.",
     "ui.insufficient.movement.distinguish.radio": "För lite rörelse för att skilja en radio som stannade hos dig från en du passerade. Gå eller kör längre och kör om.",
-    "ui.no.finder.tag.retail": "Ingen sökbricka, butiksfyr eller bärbart stannade hos dig. Husmärken och andra radio du bara passerade finns inte i listan.",
     "ui.callouts.below.only.radios": "Markeringarna nedan är bara radio som stannade på spåret. Radio du passerade (butiksfasta, husmärken) saknas.",
     "ui.radios.marked.mine.heard": "Radio du märkt som egen. Hörda i det här fönstret. Kvar i listan. Inget pip medan märket är på.",
     "ui.marked.mine.first.heard": "Märkt egen. Först hörd efter att passet började och stannade på spåret.",

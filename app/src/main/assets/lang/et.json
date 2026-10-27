@@ -964,7 +964,6 @@
     "ui.gps.tagging.off.fieldwatch": "GPS-märgistus on VÄLJAS. Spectre ei saa kontrollida, kas raadio liikus teiega.",
     "ui.turn.settings.tag.detections.2": "Lülitage sisse Sätted → Märgi avastused GPS-iga, kõndige või sõitke 50+ m ja käivitage Kokkuvõte uuesti.",
     "ui.insufficient.movement.distinguish.radio": "Liikumist pole piisavalt, et eristada teiega jäänud raadiot möödunust. Kõndige või sõitke kaugemale ja käivitage uuesti.",
-    "ui.no.finder.tag.retail": "Ükski leidja, poe-majakas ega kantav ei jäänud teiega. Majasildid ja raadiod, millest ainult möödusite, ei ole nimekirjas.",
     "ui.callouts.below.only.radios": "Allpool on ainult raadiod, mis jäid rajaga. Raadiod, millest möödusite (poe seadmed, majasildid), on välja jäetud.",
     "ui.radios.marked.mine.heard": "Raadiod, mille märkisite Minu. Kuuldud selles aknas. Ikka nimekirjas. Piiksu pole, kuni märk on sees.",
     "ui.marked.mine.first.heard": "Märgitud Minu. Esmakordselt kuuldud pärast vahi algust ja jäi rajaga.",

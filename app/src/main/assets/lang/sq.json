@@ -962,7 +962,6 @@
     "ui.gps.tagging.off.fieldwatch": "Shënimi GPS është FIKUR. Spectre nuk mund të provojë nëse një radio lëvizi me ju.",
     "ui.turn.settings.tag.detections.2": "Ndizni Cilësimet → Shëno zbulimet me GPS, ecni ose vozisni 50+ m, pastaj bëni përsëri Përmbledhjen.",
     "ui.insufficient.movement.distinguish.radio": "Lëvizje e pamjaftueshme për të ndarë një radio që qëndroi me ju nga një që e kaluat. Ecni ose vozisni më larg dhe përsëriteni.",
-    "ui.no.finder.tag.retail": "Asnjë etiketë gjetëse, sinjal dyqani ose e veshur nuk qëndroi me ju. Etiketat e shtëpisë dhe radiot që vetëm i kaluat nuk listohen.",
     "ui.callouts.below.only.radios": "Thirrjet poshtë janë vetëm radio që qëndruan me shtegun. Radiot që i kaluat (pajisje dyqani, etiketa shtëpie) janë lënë jashtë.",
     "ui.radios.marked.mine.heard": "Radio që i shënuat Imi. Të dëgjuar në këtë dritare. Ende në listë. Pa bip sa shenja është ndezur.",
     "ui.marked.mine.first.heard": "Shënuar Imi. Dëgjuar së pari pasi nisi roja dhe qëndroi me shtegun.",

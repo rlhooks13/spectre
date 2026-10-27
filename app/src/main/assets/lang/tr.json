@@ -1006,7 +1006,6 @@
     "ui.gps.tagging.off.fieldwatch": "GPS etiket KAPALI. Spectre bir radyonun sizinle hareket edip etmediğini deneyemez.",
     "ui.turn.settings.tag.detections.2": "Ayarlar → Tespitleri GPS ile etiketle’yi açın, 50 m’den fazla yürüyün veya sürün, sonra Değerlendirme’yi yeniden çalıştırın.",
     "ui.insufficient.movement.distinguish.radio": "Sizinle kalan bir radyoyu yanından geçtiğinizden ayırmak için hareket yetersiz. Daha uzağa yürüyün veya sürün ve yeniden çalıştırın.",
-    "ui.no.finder.tag.retail": "Hiçbir etiket, mağaza işaretçisi veya giyilebilir sizinle kalmadı. Ev etiketleri ve yalnız yanından geçtiğiniz diğer radyolar listede değil.",
     "ui.callouts.below.only.radios": "Aşağıdaki notlar yalnız rotayla kalan radyolardır. Yanından geçtikleriniz (mağaza sabitleri, ev etiketleri) atlanır.",
     "ui.radios.marked.mine.heard": "Benim diye işaretlediğiniz radyolar. Bu pencerede duyuldu. Listede kalır. İşaret açıkken bip yok.",
     "ui.marked.mine.first.heard": "Benim işaretli. Oturum başladıktan sonra ilk duyuldu ve rotayla kaldı.",

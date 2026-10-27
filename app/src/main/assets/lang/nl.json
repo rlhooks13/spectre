@@ -989,7 +989,6 @@
     "ui.gps.tagging.off.fieldwatch": "Vondsten met GPS staan UIT. Spectre kan niet testen of een radio met u meeging.",
     "ui.turn.settings.tag.detections.2": "Zet Instellingen → Vondsten met GPS aan, loop of rijd 50+ m en voer de nabespreking opnieuw uit.",
     "ui.insufficient.movement.distinguish.radio": "Te weinig beweging om een radio die bij u bleef te scheiden van een die u passeerde. Loop of rijd verder en voer opnieuw uit.",
-    "ui.no.finder.tag.retail": "Geen zoeklabel, winkelbaken of draagbaar bleef bij u. Huismerken en andere radio's die u alleen passeerde, staan niet in de lijst.",
     "ui.callouts.below.only.radios": "De aanwijzingen hieronder zijn alleen radio's die op het pad bleven. Radio's die u passeerde (winkelvast, huismerken) ontbreken.",
     "ui.radios.marked.mine.heard": "Radio's die u als Eigen hebt gemarkeerd. Gehoord in dit venster. Nog in de lijst. Geen piep zolang de markering aan staat.",
     "ui.marked.mine.first.heard": "Als Eigen gemarkeerd. Eerst gehoord nadat de wacht begon en op het pad gebleven.",

@@ -1005,7 +1005,6 @@
     "ui.gps.tagging.off.fieldwatch": "Značka GPS je VYPNUTÁ. Spectre neověří, jestli rádio jelo s vámi.",
     "ui.turn.settings.tag.detections.2": "Zapněte Nastavení → Označ detekce GPS, jděte nebo jeďte přes 50 m a pak spusťte Vyhodnocení znovu.",
     "ui.insufficient.movement.distinguish.radio": "Málo pohybu, aby se rádio, které zůstalo s vámi, odlišilo od toho, které jste minuli. Jděte nebo jeďte dál a spusťte znovu.",
-    "ui.no.finder.tag.retail": "Žádný hledač, obchodní maják ani nositelné nezůstaly s vámi. Domácí značky a jiná rádia, která jste jen minuli, na seznamu nejsou.",
     "ui.callouts.below.only.radios": "Poznámky níže jsou jen o rádiích, která zůstala u trasy. Rádia, která jste minuli (pevné body obchodu, domácí značky), jsou vynechaná.",
     "ui.radios.marked.mine.heard": "Rádia, která jste označili jako Moje. Slyšená v tomto okně. Pořád v seznamu. Bez pípnutí, dokud je značka zapnutá.",
     "ui.marked.mine.first.heard": "Označeno Moje. Poprvé po startu hlídky a zůstalo u trasy.",

@@ -994,7 +994,6 @@
     "ui.gps.tagging.off.fieldwatch": "Mærk fund med GPS er FRA. Spectre kan ikke teste, om en radio fulgte med dig.",
     "ui.turn.settings.tag.detections.2": "Slå Indstillinger → Mærk fund med GPS til, gå eller kør 50+ m, og kør gennemgangen igen.",
     "ui.insufficient.movement.distinguish.radio": "For lidt bevægelse til at skelne en radio, der blev hos dig, fra en du passerede. Gå eller kør længere og kør igen.",
-    "ui.no.finder.tag.retail": "Intet findertag, ingen butiksbakke og intet bærbart blev hos dig. Husmærker og andre radioer, du kun passerede, står ikke på listen.",
     "ui.callouts.below.only.radios": "Fremhævningerne nedenfor er kun radioer, der blev på sporet. Radioer du passerede (butiksfaste, husmærker) er udeladt.",
     "ui.radios.marked.mine.heard": "Radioer du har mærket som egen. Hørt i dette vindue. Stadig på listen. Intet bip mens mærket er på.",
     "ui.marked.mine.first.heard": "Mærket egen. Først hørt efter at vagten begyndte og blev på sporet.",

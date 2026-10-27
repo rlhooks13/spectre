@@ -1003,7 +1003,6 @@
     "ui.gps.tagging.off.fieldwatch": "Oznaka GPS je ISKLJUČENA. Spectre ne može provjeriti je li radio išao s vama.",
     "ui.turn.settings.tag.detections.2": "Uključite Postavke → Označi detekcije GPS, hodajte ili vozite više od 50 m, zatim opet pokrenite Sažetak.",
     "ui.insufficient.movement.distinguish.radio": "Premalo kretanja da se radio koji je ostao s vama razlikuje od onog koji ste prošli. Hodajte ili vozite dalje i pokrenite opet.",
-    "ui.no.finder.tag.retail": "Nijedna oznaka, trgovinski svjetionik ni nosivo nisu ostali s vama. Kućne oznake i drugi radiji koje ste samo prošli nisu na popisu.",
     "ui.callouts.below.only.radios": "Napomene niže su samo o radijima koji su ostali uz putanju. Radiji koje ste prošli (fiksne točke trgovine, kućne oznake) su izostavljeni.",
     "ui.radios.marked.mine.heard": "Radiji koje ste označili kao Moje. Čuti u ovom prozoru. I dalje na popisu. Bez pipa dok je oznaka uključena.",
     "ui.marked.mine.first.heard": "Označeno Moje. Prvi put nakon početka straže i ostalo uz putanju.",

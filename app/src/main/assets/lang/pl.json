@@ -1002,7 +1002,6 @@
     "ui.gps.tagging.off.fieldwatch": "Znacznik GPS jest WYŁĄCZONY. Spectre nie sprawdzi, czy radio jechało z tobą.",
     "ui.turn.settings.tag.detections.2": "Włącz Ustawienia → Oznacz wykrycia GPS, idź albo jedź ponad 50 m, potem uruchom Odprawę ponownie.",
     "ui.insufficient.movement.distinguish.radio": "Za mało ruchu, by odróżnić radio, które zostało z tobą, od tego, które minąłeś. Idź albo jedź dalej i uruchom ponownie.",
-    "ui.no.finder.tag.retail": "Żaden lokalizator, beacon sklepowy ani noszone nie zostały z tobą. Znaczniki domu i inne radia, które tylko minąłeś, nie są na liście.",
     "ui.callouts.below.only.radios": "Uwagi niżej dotyczą tylko radiów, które zostały przy ścieżce. Radia, które minąłeś (stałe punkty sklepu, znaczniki domu), są pominięte.",
     "ui.radios.marked.mine.heard": "Radia, które oznaczyłeś jako Moje. Słyszane w tym oknie. Nadal na liście. Bez piku, dopóki znacznik jest włączony.",
     "ui.marked.mine.first.heard": "Oznaczone Moje. Pierwszy raz po starcie sesji i zostało przy ścieżce.",
