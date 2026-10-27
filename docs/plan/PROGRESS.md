@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-2 (committed on the branch; check `gh pr list --head p0/2-repo-hygiene` for the PR and its CI)
+- Current step: P0-2, PR #3 (waiting on CI, then squash-merge)
 - Branch: `p0/2-repo-hygiene`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -46,7 +46,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-2 Repo hygiene.** Branch `p0/2-repo-hygiene`.
+- 2026-10-27: **P0-2 Repo hygiene.** PR #3.
   - Added `.gitattributes`: `* text=auto eol=lf`; `*.bat` stays CRLF, because cmd.exe misreads LF batch files; goldens (`**/golden/**`, `*.golden`) and binaries are `-text`.
   - Renormalized: only `gradlew.bat` was stored with CRLF, and its index copy is now LF.
   - Deleted `dist/Fieldwatch.apk`, `dist/Fieldwatch_User_Manual.pdf` and `docs/Fieldwatch_User_Manual.pdf`; `*.apk` is now gitignored with no exceptions, and so are the manual outputs `/docs/*.pdf` and `/dist/*.pdf`.
