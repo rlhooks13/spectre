@@ -3,14 +3,14 @@
 ## Resume pointer
 - State: RUNNING
 - Current step: **P1-B4c Beacons and wearables by class**, after P1-B4b merges. Then B5 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
-  - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
+  - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
   - **Deferred:**
     - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** signing #43; the P0-7c layer choice.
+  - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `p1/b4b-finder-wording`
@@ -22,7 +22,6 @@
 
 ## Needs human (owner)
 **For the owner:**
-- **Sign and merge #43 (P1-A1 follow-ups).** CI is green on Java 17 with Robolectric on SDK 35. The earlier "SDK 35 needs Java 21" note was wrong: a test run showed `java.version` 17.0.20.1 on SDK 35.
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **Decide on the inherited co-travel verdicts (CHARTER: field-dependent logic behind flags that default off).** The finder, beacon, wearable and now phone "moved with you" and "possible tail" verdicts came from Fieldwatch unflagged, and the Debrief has always shown them. Should they go behind a `Features` flag that defaults off (the Debrief loses its tracking assessment until field acceptance), or stay on as inherited behavior? P1-B4 replaced carried-phone FINDER verdicts with milder PHONE ones and left the rest as it found them.
 - **CLAUDE.md command table (protected):** add the build switches the agent added:
@@ -69,6 +68,11 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **Owner: #43 adopted as #58 (8dd258f).**
+  - #58 adopts #43 owner-signed, and #43 is closed.
+  - CI counted 956 passing tests on SDK 35, which confirms that Java 17 runs SDK 35. The baseline is 956, not 858.
+  - #59 merged that main in (a merge commit, no force-push); `check` passes with 961 debug unit tests.
+  - P0-7c stays parked.
 - 2026-10-27: **P1-B4b Finder wording.** #57 (P1-B4) merged as 5da4d2a.
   - **New keys, revision 6:** three Debrief lines no longer list "loud pocket Apple" among finder tags:
     - `ui.finder.tags.class.intro`;
