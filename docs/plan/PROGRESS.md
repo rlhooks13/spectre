@@ -2,13 +2,13 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4h (language key revision, ADR-0013), on branch `p0/4h-language-key-revision`; check `gh pr list --head p0/4h-language-key-revision` for the PR. Next: P0-8c (version from the git tag). Waiting on the owner: PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
+- Current step: P0-8c (version from the git tag), on branch `p0/8c-version-from-tag`; check `gh pr list --head p0/8c-version-from-tag` for the PR. Next: P0-8d (release-notes generator). Waiting on the owner: PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/4h-language-key-revision`
+- Branch: `p0/8c-version-from-tag`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T11:05Z
+- Last cycle: 2026-10-27T12:10Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -16,7 +16,7 @@
   - Review `docs/setup/workflows/release.yml`, sign it, and copy it to `.github/workflows/release.yml`.
   - Add `dryrun/v*` to the `release` environment's allowed deployment tags.
   - Leave `dryrun/v*` out of the `release-tags` ruleset, so scratch tags can be deleted.
-- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys go in `LanguageKeyRevisions` at the newest revision, and the first key-adding PR after a release raises `NEWEST` (ADR-0013).
+- CLAUDE.md: the rule that every line needs `addedIn == "1.1.27"` is obsolete after P0-4h. New keys go in `LanguageKeyRevisions` at the newest revision, and the first key-adding PR after a release raises `NEWEST` (ADR-0013). Also, after P0-8c the device checklist's install needs `-d` once on a phone that has an older build with versionCode 42.
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
 - Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
@@ -61,7 +61,21 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4h Language key revision (ADR-0013).** Branch `p0/4h-language-key-revision`.
+- 2026-10-27: **P0-8c Version from the git tag (ADR-0002).** Branch `p0/8c-version-from-tag`.
+  - **How:** `app/build.gradle.kts` reads git through `providers.exec`.
+    - A commit tagged `vX.Y.Z` or `dryrun/v0.0.Z` builds as that version.
+    - Any other commit builds as `X.Y.Z-dev+<sha12>` from the last `v*` tag it descends from, or `0.0.0-dev+<sha>` before the first release.
+    - versionCode is X·1,000,000 + Y·1,000 + Z, at least 1. A shallow clone or no git gives `0.0.0-dev+unknown`, code 1.
+  - **Checked** with local-only tags, each deleted at once:
+    - `dryrun/v0.0.7` → 0.0.7, code 7;
+    - `v0.1.0` on HEAD → 0.1.0, code 1000;
+    - `v0.1.0` on HEAD~1 → `0.1.0-dev+949cd0c73d76`, code 1000;
+    - no tag → `0.0.0-dev+949cd0c73d76`, code 1.
+  - **Device:** the debug build is now versionCode 1, below the old 42, so `adb install -r -d` (downgrade, debuggable builds only) is needed once. The installed version reads `versionName=0.0.0-dev+949cd0c73d76`, it launches, and there are no crashes.
+  - **Unblocks** #20's version check. The first real tag must be `v0.1.0`, which needs P0-8d notes or a hand-written `docs/release-notes/0.1.0.md`.
+  - **Note for #19:** the APK job's checkout has no `fetch-depth: 0`, so CI dev builds read `0.0.0-dev+<sha>`. That's harmless (CI APKs aren't releases), and the release workflow fetches full history.
+- 2026-10-27: **P0-4h merged** as `949cd0c` (PR #21). PR #10 is re-synced: its two keys `ui.copyright.spectre` and `ui.footer.operationally.sensitive` go in `LanguageKeyRevisions` at revision 6, so the revision-6 count becomes 8. The merge conflicted in the requirements doc; I kept main's "new since" wording and #10's "Spectre contributors" sentence.
+- 2026-10-27: **P0-4h Language key revision (ADR-0013).** PR #21. Branch `p0/4h-language-key-revision`.
   - **Why now:** P0-8c makes the versionName 0.x, so the old `addedIn` "1.1.27" vs `writtenFor` comparison would count every key as new for any Spectre-made pack.
   - **Change:** `EnglishLine.addedIn` (String) → `revision` (Int), from the new `LanguageKeyRevisions` table.
     - Each release commit was diffed for keys: 1 = 1.1.27 (1,099), 2 = 1.1.28 (5), 3 = 1.1.29 (2), 4 = 1.1.31 (53), 5 = 1.1.32 (69), 6 = Spectre Phase 0 (6). `KEY_REVISION = 6`.

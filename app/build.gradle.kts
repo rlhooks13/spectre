@@ -5,6 +5,38 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// ADR-0002: the git tag is the version. A commit tagged vX.Y.Z (or dryrun/v0.0.Z, the release workflow's
+// scratch run) builds as X.Y.Z; any other commit builds as X.Y.Z-dev+<sha> from the last v* tag it descends
+// from, or 0.0.0 before the first release. versionCode is X·1,000,000 + Y·1,000 + Z. The release workflow
+// checks the APK against the tag, so this can't publish a wrong version.
+data class AppVersion(val name: String, val code: Int)
+
+val appVersion: AppVersion = run {
+    val part = "(0|[1-9][0-9]{0,2})"
+    val release = Regex("^v$part\\.$part\\.$part$")
+    val dryRun = Regex("^dryrun/v(0)\\.(0)\\.$part$")
+    fun git(vararg args: String): List<String> {
+        val result = providers.exec {
+            commandLine("git", *args)
+            isIgnoreExitValue = true
+        }
+        if (result.result.get().exitValue != 0) return emptyList()
+        return result.standardOutput.asText.get().lines().map { it.trim() }.filter { it.isNotEmpty() }
+    }
+    fun code(m: MatchResult): Int = m.groupValues.drop(1).map { it.toInt() }.let { (x, y, z) -> x * 1_000_000 + y * 1_000 + z }
+    fun name(m: MatchResult): String = m.groupValues.drop(1).joinToString(".")
+
+    val here = git("tag", "--points-at", "HEAD")
+    val exact = here.firstNotNullOfOrNull { release.matchEntire(it) } ?: here.firstNotNullOfOrNull { dryRun.matchEntire(it) }
+    if (exact != null) {
+        AppVersion(name(exact), code(exact))
+    } else {
+        val last = git("describe", "--tags", "--abbrev=0", "--match", "v[0-9]*").firstOrNull()?.let { release.matchEntire(it) }
+        val sha = git("rev-parse", "--short=12", "HEAD").firstOrNull() ?: "unknown"
+        AppVersion("${last?.let(::name) ?: "0.0.0"}-dev+$sha", maxOf(1, last?.let(::code) ?: 0))
+    }
+}
+
 android {
     namespace = "app.fieldwatch"
     compileSdk = 35
@@ -14,8 +46,8 @@ android {
         applicationId = "app.fieldwatch"
         minSdk = 29
         targetSdk = 35
-        versionCode = 42
-        versionName = "1.1.32"
+        versionCode = appVersion.code
+        versionName = appVersion.name
         vectorDrawables.useSupportLibrary = true
     }
 
