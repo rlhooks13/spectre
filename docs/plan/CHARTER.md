@@ -12,8 +12,8 @@ This file is protected (see `.github/CODEOWNERS`). Changes need the owner's revi
 | Feature boundary | Receive-only by default. Optional active features (Bluetooth Classic, Wi-Fi RTT, Wi-Fi Aware) are off by default and labeled as transmitting. No external hardware |
 | Privacy | First-run choice for online maps and geocoding, plus offline map packs |
 | Depth | Multi-module Gradle + Jetpack (Room, DataStore, Hilt, WorkManager, type-safe Navigation) |
-| Operation | Fully autonomous, releases included. One long `/loop` session in a dedicated Ubuntu VM on the owner's PC, as the non-sudo user `spectre`. A usage watcher pauses work at the configured threshold (default 90%) |
-| Isolation | The VM, with root-owned managed settings that bind only the VM; a GitHub bot account; a dedicated test phone with no personal accounts; the shared Claude account with claude.ai connectors disabled and checked every cycle |
+| Operation | Fully autonomous, releases included. One long `/loop` session in a dedicated WSL2 distro `spectre` (Ubuntu 24.04) on the owner's PC, as the non-sudo user `spectre`. A usage watcher pauses work at the configured threshold (default 90%) |
+| Isolation | The `spectre` distro: Windows drives aren't mounted, Windows programs can't be started, and root-owned managed settings bind only this distro; a GitHub bot account; a dedicated test phone with no personal accounts; the shared Claude account with claude.ai connectors disabled and checked every cycle |
 | Guardrails | The protected paths below need the owner's review. Everything else merges autonomously once all gates are green |
 
 ## Invariants

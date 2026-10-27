@@ -6,8 +6,9 @@
 ## Decision
 
 **Runner**
-- One long `/loop` session in tmux, inside a dedicated Ubuntu VM on the owner's PC, as the non-sudo user `spectre`.
-- **Why a VM:** Claude Code's only tamper-proof lock is the machine-wide managed settings file. On the host, that file would also lock the owner's own sessions (connectors, MCP servers). Inside the VM it binds only the agent, and Linux adds Claude Code's sandbox option.
+- One long `/loop` session in tmux, inside a dedicated WSL2 distro `spectre` (Ubuntu 24.04) on the owner's PC, as the non-sudo user `spectre`.
+- **Why a separate Linux machine:** Claude Code's only tamper-proof lock is the machine-wide managed settings file. On the host, that file would also lock the owner's own sessions (connectors, MCP servers). Inside the distro it binds only the agent.
+- **Why WSL2 instead of VirtualBox:** Hyper-V is already active on this PC, which makes VirtualBox slow and its USB passthrough unreliable. The distro's `/etc/wsl.conf` turns off Windows drive mounting and Windows interop, so the agent can't read the owner's files or start Windows programs. It still shares the host's NAT network; there is no `.wslconfig`, so host services bound to localhost aren't reachable.
 - The session uses the owner's Claude account, with claude.ai connectors disabled by managed settings and checked every cycle.
 - The agent acts on GitHub as a bot account.
 

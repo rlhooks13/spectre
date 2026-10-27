@@ -515,7 +515,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
 ## Autonomous operation
 
 ### One-time setup by the owner (about 2–3 hours; full steps in `docs/setup/SETUP.md`)
-The agent runs inside a **dedicated Ubuntu VM on this PC**. Claude Code's only tamper-proof lock is machine-wide managed settings. Inside a VM that lock binds only the agent, and the owner's own sessions on the host keep their connectors and MCP servers.
+The agent runs inside a **dedicated WSL2 distro `spectre` (Ubuntu 24.04) on this PC**. Claude Code's only tamper-proof lock is machine-wide managed settings. Inside the distro that lock binds only the agent, and the owner's own sessions on the host keep their connectors and MCP servers. The distro's `/etc/wsl.conf` turns off Windows drive mounting and interop.
 
 1. **GitHub** (owner account).
    - Create `rlhooks13/spectre` (public) and `rlhooks13/spectre-corpus` (private).
@@ -530,10 +530,10 @@ The agent runs inside a **dedicated Ubuntu VM on this PC**. Claude Code's only t
    - Use a token **without `workflow` scope**, so it can't change workflow files and can't reach secrets.
    - Fine-grained tokens generally can't be scoped to another user's personal repo, so plan on a classic token with only `repo`. Its Write role confines it.
 3. **Keys.** Generate the release keystore (and later the catalog ECDSA key) on the host, in the owner's account. Store them as `release` environment secrets with two offline backups. They never enter the VM.
-4. **VM.**
-   - Ubuntu LTS under VirtualBox or VMware, about 8 GB RAM, 4 vCPUs and 80 GB disk.
-   - An admin user for setup, and a **non-sudo user `spectre`** for the agent.
-   - USB passthrough of the dedicated phone.
+4. **Distro.**
+   - `wsl --install Ubuntu-24.04 --name spectre`, with Windows drive mounting and interop off.
+   - Root is used only for setup (`wsl -d spectre -u root`). The agent is the **non-sudo user `spectre`**.
+   - The phone is attached with usbipd-win.
    - Installed: JDK 17, the Android SDK (platform-tools, build-tools 35, platform 35), Python 3, git, gh (logged in as the bot), tmux, and Claude Code (logged in to the shared Claude account, subscription only, extra usage off).
 5. **Managed settings** at `/etc/claude-code/managed-settings.json`, root-owned (from `docs/setup/managed-settings.template.json`):
    - `disableClaudeAiConnectors`
@@ -546,10 +546,10 @@ The agent runs inside a **dedicated Ubuntu VM on this PC**. Claude Code's only t
 6. **Dedicated phone.**
    - No personal accounts; static reference tags beside it.
    - USB adb with "Disable adb authorization timeout" and stay-awake on; automatic OS updates off.
-   - The host never runs its own adb server while the VM owns the phone.
-   - The host never sleeps, and the VM autostarts.
+   - Attached to the distro with `usbipd attach --wsl --auto-attach`. The host never runs its own adb server.
+   - The host never sleeps, and a terminal stays open on `wsl -d spectre`.
 7. **Notifications.** Remote Control on, plus the Claude mobile app. GitHub notifications as a fallback.
-8. **Start.** As `spectre`, in tmux: `claude`, then `/loop Run one Spectre cycle exactly as defined in docs/plan/LOOP_PROMPT.md.`
+8. **Start.** In `wsl -d spectre`, in tmux: `claude`, then `/loop Run one Spectre cycle exactly as defined in docs/plan/LOOP_PROMPT.md.`
 9. **Dry run.** One supervised cycle proves:
    - the permissions, the guard hook, and that no connectors are present
    - the watcher and a push notification

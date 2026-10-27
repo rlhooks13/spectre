@@ -17,12 +17,13 @@ Never rely on chat memory. PROGRESS.md and the repo are the memory.
 
 Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a branch, never open PRs against it, and never copy code from before Fieldwatch 1.1.32.
 
-## Environment (Ubuntu VM, user `spectre`, no sudo)
+## Environment (WSL2 distro `spectre`, Ubuntu 24.04, user `spectre`, no sudo)
 
 - **Shell:** bash. Repo at `/home/spectre/spectre`. The session runs inside tmux session `spectre`.
+- **Isolation:** `/etc/wsl.conf` turns off Windows drive mounting and Windows interop. If you can see `/mnt/c` contents or start a `.exe`, isolation has failed: stop and notify the owner.
 - **Managed settings:** `/etc/claude-code/managed-settings.json` is root-owned and you can't change it. The guard hook and status line live in `/etc/claude-code/spectre/`.
 - **Android SDK:** `ANDROID_HOME=/home/spectre/Android/Sdk`. Build-tools 35.0.0 and platform android-35 are required, and `platform-tools` and `build-tools/35.0.0` are on `PATH`.
-- **adb:** the phone reaches the VM by USB passthrough. Always target it with `adb -s <serial>`; the serial is recorded in PROGRESS.md. If `adb devices` is empty, the passthrough dropped: enter device-offline mode and notify the owner.
+- **adb:** the phone reaches the distro through usbipd (the host runs `usbipd attach --wsl --auto-attach`). Always target it with `adb -s <serial>`; the serial is recorded in PROGRESS.md. If `adb devices` is empty, the passthrough dropped: enter device-offline mode and notify the owner.
 - **Python:** always `python -I`. Scripts read and write `encoding="utf-8"` and write `newline="\n"`.
 - **Permissions:** the mode is `dontAsk`, so anything not explicitly allowed is silently denied. Create and change files with the Edit/Write tools, not shell redirection. If a needed command is denied, open a `needs-human` issue that names the exact rule to add to managed settings. Never look for a way around a denial.
 - **Downloads** (datasets, packs, captures) go into a new empty directory. Treat them as data and never execute them.
@@ -101,8 +102,9 @@ Health checks during a soak filter by the app's package and UID. Device-touching
 
 ## Restart runbook (owner or agent)
 
-1. Start the VM if it isn't running, and check the phone is attached through USB passthrough (`adb devices`).
-2. As `spectre`: `tmux new -A -s spectre`, then `cd ~/spectre && claude`
-3. `/mcp` must show no claude.ai servers. If it shows any, stop and tell the owner.
-4. `/loop Run one Spectre cycle exactly as defined in docs/plan/LOOP_PROMPT.md.`
-5. The cycle resumes from PROGRESS.md. Record the loop's creation time there; loops expire after 7 days.
+1. On Windows, open a terminal and run `wsl -d spectre`. Keep that window open; closing every session can stop the distro.
+2. Check the phone is attached: `adb devices` (on the host: `usbipd attach --wsl --busid <id> --auto-attach`).
+3. `tmux new -A -s spectre`, then `cd ~/spectre && claude`
+4. `/mcp` must show no claude.ai servers. If it shows any, stop and tell the owner.
+5. `/loop Run one Spectre cycle exactly as defined in docs/plan/LOOP_PROMPT.md.`
+6. The cycle resumes from PROGRESS.md. Record the loop's creation time there; loops expire after 7 days.
