@@ -44,10 +44,13 @@ class CaptureScrubber private constructor(random: java.util.Random) {
     private val addressMap = HashMap<Long, ByteArray>()
     private val standIns = HashSet<Long>()
 
-    private fun scrub(lines: List<String>): List<String> {
+    private fun scrub(lines: List<String>, alsoAddresses: Collection<String>): List<String> {
         val records = lines.mapNotNull(CaptureRecord::decodeOrNull)
         require(records.count { it is CaptureRecord.Header } <= 1) { "Scrub one capture part at a time (one boot each)." }
         for (r in records) collectAddresses(r)
+        // Other parts' addresses fill in only what this part didn't map itself. Radio unknown: treated as Wi-Fi,
+        // which keeps the OUI only for a universal address.
+        for (a in alsoAddresses) mapAddress(a, ble = false, public = false)
         val reliable = records.filterIsInstance<CaptureRecord.Fix>().filter(::reliable).sortedBy { it.tNs }
         val window = keptWindow(reliable)
         val kept = reliable.filter { window.keepsFix(it) }
@@ -332,9 +335,16 @@ class CaptureScrubber private constructor(random: java.util.Random) {
     }
 
     companion object {
-        /** Scrubs one capture part with a fresh secret. [random] is for tests; production uses SecureRandom. */
-        fun scrubPart(lines: List<String>, random: java.util.Random = SecureRandom()): List<String> =
-            CaptureScrubber(random).scrub(lines)
+        /**
+         * Scrubs one capture part with a fresh secret. [alsoAddresses] are addresses seen in the capture's
+         * other parts, so a copy of one inside this part's payloads is remapped too. [random] is for tests;
+         * production uses SecureRandom.
+         */
+        fun scrubPart(
+            lines: List<String>,
+            random: java.util.Random = SecureRandom(),
+            alsoAddresses: Collection<String> = emptyList(),
+        ): List<String> = CaptureScrubber(random).scrub(lines, alsoAddresses)
 
         private const val DAY_MS = 86_400_000L
         private const val TRIM_M = 500.0

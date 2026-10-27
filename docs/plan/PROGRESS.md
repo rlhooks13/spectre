@@ -77,6 +77,24 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - a capture that repeats its SSID in an unknown vendor IE is blocked, with nothing written and raw kept.
   - **`docs/capture-runbook.md`:** record, pull into a fresh folder, scrub and store, delete raw on the phone and locally, commit to the private `rlhooks13/spectre-corpus`. Scenario notes are generic.
   - **The corpus repo** is confirmed private and empty. No capture has been stored yet; the first real one comes from the owner.
+  - **After both reviews** (both flagged B1: leak values in the failure message would land in test reports and the console):
+    - **Reports:** counts per part and kind only. Values go to `LEAKS.txt` in the raw folder, kept and deleted with the raw data. A test asserts the report has no value.
+    - **Cross-part addresses:** each part is scrubbed with every part's addresses and leak-checked against every part's identifiers.
+    - **Order:** parts sort by full name (start time, then part), so they keep time order across app restarts.
+    - **Atomic writes:** to `.tmp-<id>`, then renamed into place; raw is deleted only after.
+    - **Path safety:**
+      - absolute paths only;
+      - the output must exist inside a git clone;
+      - the raw folder must not be in a git tree;
+      - neither folder inside the other or inside the Spectre checkout;
+      - only capture-named regular files allowed (no links or strays).
+    - **Gradle:** scoped to `testDebugUnitTest`, never up to date when `scrubIn` is set, and passes the project root.
+    - **Runbook:**
+      - wait 10 s, pull with a `tar` stream (no redirection), and compare sha256 on the phone and locally;
+      - delete on the phone only after the corpus push;
+      - commit dates go to the first of the month;
+      - a raw folder awaiting a fix goes within 7 days.
+    - **Tests:** 5 tool tests: clean store, redacted leak block, restart ordering, cross-part address, unsafe folders and strays refused.
 - 2026-10-27: **P1-F2/F3 merged** as `35c53bc` (PR #28).
 - 2026-10-27: **P1-F2 and P1-F3: capture scrubber and leak test (ADR-0017).** PR #28. Branch `p1/f2-capture-scrubber`. Test-side code only, in `testing/capture/`.
   - **Keyed stand-ins:** HMAC-SHA256 with a fresh 32-byte secret per capture, never stored. Stand-ins are consistent within a capture and unlinkable across captures.
