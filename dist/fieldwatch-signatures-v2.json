@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 98,
+    "catalogVersion": 99,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -58682,11 +58682,11 @@
             "colorIndex": 3,
             "rules": [
                 {
-                    "kind": "NAME_CONTAINS",
+                    "kind": "NAME_GLOB",
                     "text": "Tile",
                     "companyId": 0,
                     "dataPrefixHex": "",
-                    "radio": null,
+                    "radio": "BLE",
                     "enabled": true
                 },
                 {
@@ -58706,17 +58706,9 @@
                     "enabled": true
                 },
                 {
-                    "kind": "SERVICE_UUID",
-                    "text": "FEDD",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "MANUFACTURER_ID",
                     "text": "",
-                    "companyId": 199,
+                    "companyId": 1660,
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true

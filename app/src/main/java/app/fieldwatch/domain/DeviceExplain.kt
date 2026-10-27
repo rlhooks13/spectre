@@ -194,7 +194,7 @@ object DeviceExplain {
             0xFE2C -> "Google Fast Pair (often buds/speakers)"
             0xFD5A -> "Samsung SmartTag"
             0xFD44 -> "Apple Find My related"
-            0xFEED, 0xFEDD, 0xFEEC -> "Tile tracker"
+            0xFEED, 0xFEEC -> "Tile tracker"
             0xFEEE -> "Polar heart-rate strap or watch"
             0xFE33 -> "Chipolo item finder"
             0xFD50 -> "Tuya IoT"
@@ -299,7 +299,8 @@ object DeviceExplain {
                 0xFE2C -> out += Hint("audio-personal", "earbuds or a speaker", "Google Fast Pair is present (common on buds and speakers).", 4)
                 0xFD5A -> out += Hint("tag", "a Samsung SmartTag", "SmartTag service UUID.", 7)
                 0xFD44 -> out += Hint("tag", "an Apple Find My accessory", "Find My related UUID.", 6)
-                0xFEED, 0xFEDD, 0xFEEC -> out += Hint("tag", "a Tile tracker", "Tile service UUID.", 7)
+                // Not FEDD: no capture confirms it on a Tile (P1-B2).
+                0xFEED, 0xFEEC -> out += Hint("tag", "a Tile tracker", "Tile service UUID.", 7)
                 0xFEEE -> out += Hint("wearable", "a Polar heart-rate strap or watch", "Polar service UUID.", 7)
             }
         }
@@ -628,7 +629,8 @@ object DeviceExplain {
                     Hint("ap", "a GL.iNet travel router", "Matched signature $raw.", 6)
                 "smarttag" in n ->
                     Hint("tag", "a Samsung SmartTag", "Matched signature $raw.", 8)
-                "tile" in n ->
+                // The Tile signature itself, not any name containing "tile" ("Tattile" is a plate reader).
+                n == "tile trackers" || n == "tile" || n.startsWith("tile ") ->
                     Hint("tag", "a Tile tracker", "Matched signature $raw.", 8)
                 n == "ibeacon" ->
                     Hint("beacon", "an iBeacon", "Matched signature $raw.", 7)

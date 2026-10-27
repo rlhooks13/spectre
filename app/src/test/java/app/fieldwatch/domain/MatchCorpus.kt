@@ -29,6 +29,11 @@ object MatchCorpus {
         val knownUntil: String? = null,
         /** Also must not be labeled a tracker (FINDER) through those signatures' names. */
         val checkFinder: Boolean = false,
+        /**
+         * The tracker label is still wrong until this step, even once the signature no longer matches (a name-token
+         * label, P1-B4). The test fails when it becomes right, so the marker comes off in that step's PR.
+         */
+        val finderKnownUntil: String? = null,
     )
 
     /** A real device that must hit [fleetId]. With [knownUntil], it misses today and that step adds it. */
@@ -147,8 +152,13 @@ object MatchCorpus {
         Target(
             "Tile on its own company id 0x067C",
             sighting("T:tile-067c", mfg = listOf(MfgRecord(0x067C, "0100"))),
-            "fleet-tile", knownUntil = "P1-B2",
+            "fleet-tile",
         ),
+        Target("Tile advertising its name over BLE", sighting("T:tile-name", name = "Tile"), "fleet-tile"),
+        Target("Tile with its name in capitals", sighting("T:tile-caps", name = "TILE"), "fleet-tile"),
+        // Since P1-B2 the name must be exactly Tile; a "Tile Mate" is found through its service UUID instead.
+        // (A "Tile Mate" advertising no FEED, FEEC or 0x067C at all is no longer labeled, by design.)
+        Target("Tile Mate with FEED", sighting("T:tile-mate", name = "Tile Mate", serviceUuids = listOf("FEED")), "fleet-tile"),
         Target(
             "Axon Body camera, BLE on its public OUI",
             sighting("T:axon", mac = mac("00:25:DF", "4A1B2C")).let {
@@ -205,13 +215,20 @@ object MatchCorpus {
         NearMiss(
             "Tattile camera name",
             sighting("NM:tattile", name = "Tattile Vega"),
-            setOf("fleet-tile"), knownUntil = "P1-B2", checkFinder = true,
+            // No longer matches Tile (P1-B2), but TrackerMatch still reads "tile" in the name as a tracker (P1-B4).
+            setOf("fleet-tile"), checkFinder = true, finderKnownUntil = "P1-B4",
         ),
         // Quuppa positioning tags share company id 0x00C7 with old Tile rows.
         NearMiss(
             "Quuppa tag on 0x00C7",
             sighting("NM:quuppa", mfg = listOf(MfgRecord(0x00C7, "01210000"))),
-            setOf("fleet-tile"), knownUntil = "P1-B2", checkFinder = true,
+            setOf("fleet-tile"), checkFinder = true,
+        ),
+        // Tile's name rule is BLE-only: a Wi-Fi network someone named "Tile" isn't a tracker.
+        NearMiss(
+            "Wi-Fi network named Tile",
+            sighting("NM:tile-ssid", kind = RadioKind.WIFI, mac = "AA:BB:CC:00:00:0B", name = "Tile"),
+            setOf("fleet-tile"), checkFinder = true,
         ),
         // Bare vendor ids (ADR-0015). Unnamed, so only the company id can match.
         NearMiss(

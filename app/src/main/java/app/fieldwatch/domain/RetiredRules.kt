@@ -15,12 +15,22 @@ object RetiredRules {
     val ALL: List<Entry> = listOf(
         // P1-B1: Samsung's company id is on every Galaxy phone and Buds.
         Entry("fleet-smarttag", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x0075), retiredIn = 98),
+        // P1-B2: "tile" anywhere in a name hit Tattile cameras; 0x00C7 is Quuppa's; FEDD has no capture behind it.
+        Entry("fleet-tile", MatchRule(RuleKind.NAME_CONTAINS, text = "Tile"), retiredIn = 99),
+        Entry("fleet-tile", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x00C7), retiredIn = 99),
+        Entry("fleet-tile", MatchRule(RuleKind.SERVICE_UUID, text = "FEDD"), retiredIn = 99),
     )
 
-    /** What a rule matches, ignoring whether it is switched on. */
-    private fun key(rule: MatchRule): String =
-        listOf(rule.kind.name, rule.text.uppercase(), rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty())
-            .joinToString("|")
+    /** The Bluetooth base UUID around a 16-bit alias: `0000XXXX-0000-1000-8000-00805F9B34FB`. */
+    private val BASE_UUID = Regex("""^0000([0-9A-F]{4})-0000-1000-8000-00805F9B34FB$""")
+
+    /** What a rule matches, ignoring whether it is switched on. A long-form base UUID reads as its 16-bit alias. */
+    private fun key(rule: MatchRule): String {
+        val text = rule.text.trim().uppercase().let { t ->
+            if (rule.kind == RuleKind.SERVICE_UUID || rule.kind == RuleKind.SERVICE_DATA) BASE_UUID.matchEntire(t)?.groupValues?.get(1) ?: t else t
+        }
+        return listOf(rule.kind.name, text, rule.companyId, rule.dataPrefixHex.uppercase(), rule.radio?.name.orEmpty()).joinToString("|")
+    }
 
     private val keys: Map<String, Set<String>> = ALL.groupBy({ it.fleetId }, { key(it.rule) }).mapValues { it.value.toSet() }
 

@@ -7,42 +7,26 @@ import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.PersistedConfig
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureExchange
+import app.fieldwatch.testing.ConfigUpgrade
 import app.fieldwatch.testing.TestFiles
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.io.File
-import java.nio.file.Files
 
 /**
  * P1-B1, catalog v98: SmartTag drops its bare Samsung company-id rule (0x0075 is on every Galaxy phone and Buds) and
  * keeps FD5A, and six notes stop naming Fieldwatch. Upgrades go through the real 1.1.32 config (P1-A3's fixture).
  */
 class CatalogV98LadderTest {
-    private val json = Json { encodeDefaults = true; ignoreUnknownKeys = true; prettyPrint = true }
-
     @After
     fun forgetSettings() {
         NetworkPolicy.settings = null
     }
 
-    private fun upgrade(edit: (PersistedConfig) -> PersistedConfig = { it }): PersistedConfig {
-        val dir = Files.createTempDirectory("v98").toFile()
-        try {
-            val file = File(dir, "config.json")
-            val old = json.decodeFromString(PersistedConfig.serializer(), TestFiles.repoFile("src/test/resources/fixtures/fieldwatch-1.1.32/config.json").readText())
-            file.writeText(json.encodeToString(PersistedConfig.serializer(), edit(old)))
-            val store = ConfigStore(file)
-            runBlocking { store.load() }
-            return store.config.value
-        } finally {
-            dir.deleteRecursively()
-        }
-    }
+    private fun upgrade(edit: (PersistedConfig) -> PersistedConfig = { it }): PersistedConfig =
+        ConfigUpgrade.load(edit(ConfigUpgrade.fieldwatch1132()))
 
     private fun PersistedConfig.fleet(id: String): Fleet = fleets.single { it.id == id }
 
@@ -51,7 +35,7 @@ class CatalogV98LadderTest {
     @Test
     fun aFieldwatchConfigLosesTheBareSamsungRuleAndKeepsFd5a() {
         val cfg = upgrade()
-        assertEquals(98, cfg.version)
+        assertEquals(ConfigStore.CATALOG_VERSION, cfg.version)
         val tag = cfg.fleet("fleet-smarttag")
         assertFalse(tag.hasSamsungId())
         assertTrue(tag.rules.any { it.kind == RuleKind.SERVICE_UUID && it.text == "FD5A" })

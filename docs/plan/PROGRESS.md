@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B2 Tile** (catalog v99), after P0-8d merges. Then B3 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B3 AirTag** (Offline Finding status bits), after P1-B2 (catalog v99) merges. Then B4 onward. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **#43** (P1-A1 follow-ups: Robolectric on SDK 35 only, the crypto guard on `preBuild`, baseline 858) waits for the owner's signature. A2, A3, B1 and P0-8d added about 60 tests above 858, so the next protected PR raises the baseline again.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -61,6 +61,26 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B2 Tile (catalog v99).** #54 (P0-8d) merged first.
+  - **The fix:** Tile matches on its own company id 0x067C, FEED and FEEC, and the BLE-only exact name "Tile". It no longer matches on:
+    - "tile" anywhere in a name (Tattile cameras);
+    - Quuppa's 0x00C7;
+    - FEDD, which no capture confirms.
+  - **Retirement:** the three rules are in `catalog/retired.json` and `RetiredRules`, so they go on load. patchBuiltIn adds the new rules, and the v99 step only moves the version. A user's Tile on/off choice stays.
+  - **Snapshots:** v99 is added, and v98 is frozen.
+  - **Corpus:**
+    - new target: a BLE device named Tile;
+    - new near-miss: a Wi-Fi network named Tile;
+    - new `finderKnownUntil` marker for the Tattile camera, which still reads as a tracker through TrackerMatch's name tokens until P1-B4.
+  - **Release-notes golden:** lists the Tile rule changes and five corpus verdicts.
+  - **Review fixes:**
+    - `DeviceExplain` no longer explains a Tattile camera or a FEDD advertiser as "a Tile tracker". Before, the "tile" substring check hid the Tattile branch. Both have tests.
+    - `RetiredRules` normalizes long-form base UUIDs.
+    - `CatalogV99LadderTest` covers the stale-config, overlay and import paths.
+    - Ladder tests share `testing/ConfigUpgrade`.
+    - New corpus targets: "TILE", and "Tile Mate" with FEED.
+    - ADR-0015 marks the B1 and B2 rows done.
+  - **By design:** a "Tile Mate" that advertises no FEED, FEEC or 0x067C is no longer labeled.
 - 2026-10-27: **P0-8d Release-notes generator.** #53 (P1-B1) merged first.
   - **What it generates.** `testing/ReleaseNotes` lists every label and verdict change between two frozen catalog snapshots:
     - **Signatures:** added or removed, renamed, reclassed, on or off, attention notes, rules added or retired, decodes, notes.

@@ -117,6 +117,7 @@ class StockCatalogFileTest {
         const val FIRST_SNAPSHOT = 97
         val FROZEN = mapOf(
             97 to "dd932a77b805e9e04cfac29c1120544fed5e4ae7e4443280c432a0db90a78ac3",
+            98 to "23e200b04b8e5aea0b52b537ce64f5e63c3ab04ae3976c3fc2f254a8d8f18944",
         )
     }
 

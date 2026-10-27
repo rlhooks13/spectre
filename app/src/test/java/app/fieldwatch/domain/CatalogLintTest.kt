@@ -121,7 +121,7 @@ class CatalogLintTest {
             "fleet-dji/0x08AA" to "P1-B10",
         )
 
-        private val SHORT_NAME: Map<String, String> = mapOf("fleet-tile/Tile/ANY" to "P1-B2") + listOf(
+        private val SHORT_NAME: Map<String, String> = listOf(
             "fleet-amazon/Echo/BLE", "fleet-apple-device/iPad/ANY", "fleet-arlo/Arlo/ANY", "fleet-seos/Seos/BLE",
             "fleet-seos/Yale/BLE", "fleet-asus/ASUS/WIFI", "fleet-audi-mmi/Audi/BLE", "fleet-bmw/BMW/BLE",
             "fleet-bose/Bose/BLE", "fleet-byd/BYD/BLE", "fleet-dji/DJI/BLE", "fleet-dji/DJI/WIFI",
@@ -145,8 +145,6 @@ class CatalogLintTest {
             "fleet-unifi-ap#1 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#3 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#4 -> fleet-unifi" to "ADR-0015",
-            "fleet-tattile#0 -> fleet-tile" to "P1-B2",
-            "fleet-tattile#1 -> fleet-tile" to "P1-B2",
             "fleet-liteon-camera-radio#25 -> fleet-tplink" to "P1-B10",
         )
 

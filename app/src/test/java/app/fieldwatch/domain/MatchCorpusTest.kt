@@ -77,7 +77,11 @@ class MatchCorpusTest {
                 TrackerMatch.kind(miss.sighting.copy(fleetIds = got), names) == TrackerMatch.Kind.FINDER
             if (miss.knownUntil == null) {
                 assertEquals(miss.label, emptySet<String>(), wrong)
-                assertFalse("${miss.label} is labeled a tracker", finder)
+                if (miss.finderKnownUntil == null) {
+                    assertFalse("${miss.label} is labeled a tracker", finder)
+                } else {
+                    assertTrue("${miss.label} (tracker label): fixed? Remove finderKnownUntil = ${miss.finderKnownUntil} in that step's PR.", finder)
+                }
             } else {
                 val fix = "fixed? Remove knownUntil = ${miss.knownUntil} in that step's PR."
                 assertTrue("${miss.label}: $fix", wrong.isNotEmpty())
@@ -102,10 +106,16 @@ class MatchCorpusTest {
     fun casesNameRealSignaturesAndOpenSteps() {
         val ids = fleets.map { it.id }.toSet()
         val plan = repoFile("../docs/plan/PLAN.md").readLines()
-        val steps = (MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits).map { it.label to it.knownUntil } +
-            MatchCorpus.targets.map { it.label to it.knownUntil }
+        val steps = (MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits).flatMap {
+            listOf(it.label to it.knownUntil, it.label to it.finderKnownUntil)
+        } + MatchCorpus.targets.map { it.label to it.knownUntil }
         for (miss in MatchCorpus.nearMisses + MatchCorpus.randomAddressOuiHits) {
             assertTrue(miss.label, ids.containsAll(miss.mustNotMatch))
+            if (miss.finderKnownUntil != null) {
+                // The finder marker is for a case whose signature is already right and only its label is wrong.
+                assertTrue("${miss.label}: finderKnownUntil needs checkFinder", miss.checkFinder)
+                assertEquals("${miss.label}: set knownUntil or finderKnownUntil, not both", null, miss.knownUntil)
+            }
         }
         for (t in MatchCorpus.targets) assertTrue(t.label, t.fleetId in ids)
         for ((label, step) in steps) {

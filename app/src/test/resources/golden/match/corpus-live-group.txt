@@ -11,8 +11,17 @@ T:tile-feed	target	Tile on FEED
   expect fleet-tile
   -> fleet-tile [FINDER]
 T:tile-067c	target	Tile on its own company id 0x067C
-  expect fleet-tile, missed until P1-B2
-  -> (none)
+  expect fleet-tile
+  -> fleet-tile [FINDER]
+T:tile-name	target	Tile advertising its name over BLE
+  expect fleet-tile
+  -> fleet-tile [FINDER]
+T:tile-caps	target	Tile with its name in capitals
+  expect fleet-tile
+  -> fleet-tile [FINDER]
+T:tile-mate	target	Tile Mate with FEED
+  expect fleet-tile
+  -> fleet-tile [FINDER]
 T:axon	target	Axon Body camera, BLE on its public OUI
   expect fleet-axon
   -> fleet-axon [LAW_ENFORCEMENT, attention]
@@ -21,7 +30,7 @@ T:flock	target	Flock camera Wi-Fi BSSID
   -> fleet-flock-cameras [SURVEILLANCE, attention]
 T:tattile	target	Tattile camera name
   expect fleet-tattile
-  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+  -> fleet-tattile [SURVEILLANCE, attention]
 T:raven	target	ShotSpotter sensor name
   expect fleet-raven
   -> fleet-raven [SURVEILLANCE]
@@ -47,11 +56,14 @@ NM:iphone	near-miss	Companion iPhone (Continuity 0x10 with Offline Finding)
   must not fleet-airtag
   -> fleet-apple-device [PHONE]
 NM:tattile	near-miss	Tattile camera name
-  must not fleet-tile (nor be a finder), wrong until P1-B2
-  -> fleet-tattile [SURVEILLANCE, attention]; fleet-tile [FINDER]
+  must not fleet-tile (nor be a finder), still labeled a tracker until P1-B4
+  -> fleet-tattile [SURVEILLANCE, attention]
 NM:quuppa	near-miss	Quuppa tag on 0x00C7
-  must not fleet-tile (nor be a finder), wrong until P1-B2
-  -> fleet-tile [FINDER]
+  must not fleet-tile (nor be a finder)
+  -> (none)
+NM:tile-ssid	near-miss	Wi-Fi network named Tile
+  must not fleet-tile (nor be a finder)
+  -> (none)
 NM:dji	near-miss	Unnamed DJI accessory on 0x08AA (a mic or action camera, not a drone)
   must not fleet-dji, wrong until P1-B10
   -> fleet-dji [DRONE]

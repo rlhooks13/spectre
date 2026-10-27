@@ -14,6 +14,45 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-tile",
+            "retiredIn": 99,
+            "step": "P1-B2",
+            "reason": "\"Tile\" anywhere in a name matched Tattile plate-reader cameras. Replaced by the exact name Tile, BLE only.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Tile",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-tile",
+            "retiredIn": 99,
+            "step": "P1-B2",
+            "reason": "Company id 0x00C7 is Quuppa's, used by positioning tags. Tile's own is 0x067C.",
+            "rule": {
+                "kind": "MANUFACTURER_ID",
+                "text": "",
+                "companyId": 199,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-tile",
+            "retiredIn": 99,
+            "step": "P1-B2",
+            "reason": "No capture confirms FEDD on a Tile. It can come back with one.",
+            "rule": {
+                "kind": "SERVICE_UUID",
+                "text": "FEDD",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }
