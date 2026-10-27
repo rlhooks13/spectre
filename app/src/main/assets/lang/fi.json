@@ -1106,7 +1106,6 @@
     "settings.layer.alert.camera": "Hälytys muista kameroista",
     "settings.layer.download.title": "Lataa rekisterinlukijat.",
     "settings.layer.more": "Päivitys lisää jokaisen rekisterinlukijan.",
-    "settings.layer.download.body": "Lataus on Yhdysvaltojen rekisterinlukijoiden luettelo, noin 37 MB. Voit päivittää sen myöhemmin. Se jää tähän puhelimeen.",
     "settings.layer.other.download.title": "Lataa muut anturit.",
     "settings.layer.other.download.body": "Noin 1 MB. Sen voi päivittää myöhemmin. Se jää tähän puhelimeen.",
     "settings.layer.download.action": "Lataa",

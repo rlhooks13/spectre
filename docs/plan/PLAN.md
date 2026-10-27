@@ -208,7 +208,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Split into sub-steps:
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
      - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
-     - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation.
+     - ✅ **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation. The dialog names the source host and points to its terms; the existing 80 MB cap and `FlockParseException` validation are kept and tested. The operator's name and the data license aren't verified yet (needs-human).
      - **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.

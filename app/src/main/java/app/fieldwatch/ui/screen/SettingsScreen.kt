@@ -1220,7 +1220,14 @@ fun SettingsScreen(
         AlertDialog(
             onDismissRequest = vm::dismissFlockDownload,
             title = { Text(LanguageText.text("settings.layer.download.title")) },
-            text = { Text(LanguageText.text("settings.layer.download.body")) },
+            text = {
+                Text(
+                    LanguageText.text(
+                        "settings.layer.download.source",
+                        mapOf("host" to app.fieldwatch.data.FlockFiles.sourceHost(app.fieldwatch.data.SensorList.PLATES)),
+                    ),
+                )
+            },
             confirmButton = {
                 TextButton(onClick = vm::confirmFlockDownload) {
                     Text(LanguageText.text("settings.layer.download.action"))

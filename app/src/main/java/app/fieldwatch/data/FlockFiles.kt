@@ -78,6 +78,10 @@ object FlockFiles {
 
     fun file(dir: File, list: SensorList = SensorList.PLATES): File = File(dir, list.fileName)
 
+    /** The site a list downloads from, named in the download dialog. Empty when the list has no URL. */
+    fun sourceHost(list: SensorList): String =
+        if (list.url.isBlank()) "" else runCatching { URL(list.url).host }.getOrDefault("")
+
     fun peek(dir: File, list: SensorList = SensorList.PLATES): Header? = peekFile(file(dir, list))
 
     fun camerasFrom(bytes: ByteArray): List<FlockCamera> = parseStream(bytes)

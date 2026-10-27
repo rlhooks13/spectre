@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-7b (sensor layer off), PR #15 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced with main after #14 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7c (dontgetflocked).
-- Branch: `p0/7b-sensor-layer-off`
+- Current step: P0-7c (plate-list source and terms), on branch `p0/7c-plate-list-source`; check `gh pr list --head p0/7c-plate-list-source` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected; re-synced after #15 and safe to merge) and the P0-4e applicationId go-ahead. Next: P0-7d (camera-alert region notice).
+- Branch: `p0/7c-plate-list-source`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T09:55Z
+- Last cycle: 2026-10-27T10:15Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -21,6 +21,10 @@
 - **Phone screen sleeps.** At 06:22Z the screen was dozing while USB-powered, even with `stay_on_while_plugged_in=7`, so the screenshots came out black until `input keyevent KEYCODE_WAKEUP`. Check the screen timeout and Samsung's power settings.
 - **PR #6 (P0-3 part 2, protected): sign and merge.** It adds `gradle/verification-metadata.xml` (SHA-256, trust on first use) and raises `test-baseline.txt` to 767. CI's `Unit tests` and `APK` pass with verification on; `Protected paths` fails only for want of your signature. After #6 lands, the baseline can go to 769 (P0-4a adds `BrandTest`).
 - **P0-4e applicationId go-ahead.** CHARTER's identity decision names `io.github.rlhooks13.spectre`, but its hard stops say the agent never changes the applicationId. The agent won't make that change until you confirm in this session. Changing it means a fresh install: data from `app.fieldwatch` doesn't carry over unless the user exports and imports it.
+- **dontgetflocked operator and license (P0-7c).**
+  - The agent couldn't verify who runs `data.dontgetflocked.com` or what terms or license cover `cameras.geojson.gz`. A web search found nothing authoritative, and `WebFetch` is denied.
+  - The download dialog therefore names only the host and says "Spectre does not run that site; check it for its terms before you download".
+  - Please confirm the operator and terms, or add a WebFetch allow rule for `dontgetflocked.com` so the agent can read them. If the data is OpenStreetMap-derived (ODbL), the dialog should also credit "© OpenStreetMap contributors".
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -50,7 +54,18 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-7b Sensor layer off.** PR #15.
+- 2026-10-27: **P0-7c Plate-list source and terms.** Branch `p0/7c-plate-list-source`.
+  - **Dialog:** the plate-reader download dialog uses new key `settings.layer.download.source`: "…from {host}. Spectre does not run that site; check it for its terms before you download. The list is crowdsourced and not complete…".
+    - `{host}` comes from the download URL via the new `FlockFiles.sourceHost()`, so the copy can't drift from the real source.
+    - The old key `settings.layer.download.body` is retired ("Unused"), and its translations are dropped from the 26 packs.
+  - **Size cap:** `FlockFiles.MAX_BYTES` is 80 MB, about 2× the published 37.7 MB. `download()` checks Content-Length and stops reading past the cap. Now pinned by a test.
+  - **Schema validation:** `parseFlock` throws `FlockParseException` on malformed input (already tested), `MIN_COUNT` rejects tiny lists, and a "too many cameras" cap applies. A bad parse never replaces a saved list.
+  - **Counts and hashes only:** the agent didn't download the dataset.
+  - **Not verified:** the operator's name and the data license (needs-human above).
+  - New `PlateListSourceTest` (+2).
+  - Result: 783 tests green.
+- 2026-10-27: **PR #10 re-synced after #15.** The BrandGuard allowlist conflict is resolved (neither side's removed entries stay). 784 tests green on the branch.
+- 2026-10-27: **P0-7b Sensor layer off.** PR #15, merged as `271db7e`.
   - **Why off:** PLAN's two options were a build script or the layer off. A build script means fetching and replacing a 40,112-row ODbL dataset that a test pins, so the layer is off for now. P1-E5 (new) brings it back with `scripts/build_sensors.py` and a list this project hosts.
   - **What's off:**
     - `Features.OTHER_SENSORS_LAYER = false`.

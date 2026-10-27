@@ -228,7 +228,14 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.alert.camera", "Alert for other cameras", LanguageSlot.CONTROL),
     en("settings.layer.download.title", "Download license plate readers.", LanguageSlot.CONTROL),
     en("settings.layer.more", "Update to include every plate reader.", LanguageSlot.BODY),
-    en("settings.layer.download.body", "United States plate-reader list, about 37 MB. You can update it later. It stays on this phone.", LanguageSlot.BODY),
+    // Superseded by settings.layer.download.source (P0-7c): the dialog now names the source and its terms.
+    en("settings.layer.download.body", "Unused", LanguageSlot.BODY),
+    en(
+        "settings.layer.download.source",
+        "United States plate-reader list, about 37 MB, from {host}. Spectre does not run that site; check it for its terms before you download. " +
+            "The list is crowdsourced and not complete. It stays on this phone, and you can update it later.",
+        LanguageSlot.BODY,
+    ),
     en("settings.layer.other.download.title", "Download other sensors.", LanguageSlot.CONTROL),
     en("settings.layer.other.download.body", "About 1 MB. You can update it later. It stays on this phone.", LanguageSlot.BODY),
     en("settings.layer.download.action", "Download", LanguageSlot.CONTROL),
