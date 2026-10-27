@@ -2,19 +2,19 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P1-F1 (Capture v1, ADR-0016), on branch `p1/f1-capture-v1`; check `gh pr list --head p1/f1-capture-v1` for the PR.
-  - **Then:** P1-F2 (scrubber) and P1-F3 (leak test), both pure JVM.
+- Current step: P1-F2 and P1-F3 (capture scrubber and leak test, ADR-0017), on branch `p1/f2-capture-scrubber`; check `gh pr list --head p1/f2-capture-scrubber` for the PR.
+  - **Then:** P1-F4 (private-repo storage, plus a scrub-and-check tool that deletes raw captures).
   - **Deferred:**
     - 1B–1E are fixes, so they wait for the 1A safety net: P1-A1, A2 and A3 (A1 waits for #6, and A2 and A3 build on it). P1-A6 waits for build-logic (P2-1).
     - 1F is the plan's independent workstream, so it goes now.
     - P0-8d waits for P1-B1's snapshots.
   - **Waiting on the owner:** PR #6 (P0-3 part 2), PR #10 (P0-4d), PR #19 (P0-8a), PR #20 (P0-8b), all protected; the P0-4e applicationId go-ahead; and the dontgetflocked operator and terms (P0-7c).
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/f1-capture-v1`
+- Branch: `p1/f2-capture-scrubber`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T15:00Z
+- Last cycle: 2026-10-27T15:30Z
 
 ## Needs human (owner)
 - PR #19 (P0-8a): review `docs/setup/workflows/android.yml`, sign it, and copy it over `.github/workflows/android.yml`. Add `app/lint-baseline.xml` to the `protected` regex in `.github/workflows/protected-paths.yml`, so the agent can't grow the lint baseline alone (CI also blocks growth).
@@ -67,7 +67,51 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P1-F1 Capture v1 (ADR-0016).** Branch `p1/f1-capture-v1`.
+- 2026-10-27: **P1-F2 and P1-F3: capture scrubber and leak test (ADR-0017).** Branch `p1/f2-capture-scrubber`. Test-side code only, in `testing/capture/`.
+  - **Keyed stand-ins:** HMAC-SHA256 with a fresh 32-byte secret per capture, never stored. Stand-ins are consistent within a capture and unlinkable across captures.
+  - **Addresses:** remapped, keeping the OUI on universal and public addresses and the type bits on random BLE. Their copies inside payloads, in either byte order, get the same stand-in.
+  - **Names, SSIDs and WPS identity:** same-length printable stand-ins.
+  - **Rotating ids remapped:** the Offline Finding key, FD5A, and FEAA except TLM.
+  - **Times:** shifted by a secret offset.
+  - **Path:** the first and last 500 m go, with their records; the rest is rotated and moved to a synthetic origin. A path under 1 km keeps no fixes, but keeps its radio data.
+  - **Header:** the model is scrubbed and the boot count dropped.
+  - **Leak check:** searches the scrubbed output for every original address (colon form, plus hex in both byte orders) and every name (text and hex).
+  - **Tests (8):**
+    - the leak check finds everything in an unscrubbed capture, and nothing after scrubbing;
+    - OUI and type bits kept;
+    - embedded addresses remapped consistently;
+    - rotating ids consistent, TLM kept;
+    - same-length names;
+    - the path is trimmed to 21 of 31 fixes and the 2.2 km spacing survives;
+    - a short path keeps no fixes;
+    - different captures get different stand-ins.
+  - **After both reviews** (B1 path trim, location re-identification, scrubber and leak-check gaps, false positives, performance). These replaced parts of the above:
+    - **Path:**
+      - only reliable GPS fixes (gps, ≤50 m, not last-known) are kept or used;
+      - anchors are the medians of the first and last 5;
+      - the window runs from the last time the track is within 500 m (straight line) of the start to the first time it comes within 500 m of the end;
+      - fixes within 500 m of either anchor are dropped, so jitter at home never counts as travel.
+    - **Times and altitude:** a sub-day time shift (the time of day moves) and a secret altitude shift.
+    - **One part, one secret:** `scrubPart` makes a fresh secret per call and refuses a second header.
+    - **Also remapped:**
+      - AD 0x30 and 0x24 names, AD 0x1B identity addresses;
+      - WPS 0x1020 and 0x1049, with WPS walked across split IEs;
+      - P2P and WFD IEs, RNR (with Short SSID), Multiple BSSID, Mesh ID, Interworking, Multi-Link, Cisco 133;
+      - Apple TLVs wherever they sit: 0x12 key, 0x05 and 0x0F hashes, 0x10 auth tag.
+    - **Padding and placeholders:** zero-length AD bytes are stepped over (scan response after padding), and truncated ADs are clipped. Placeholder addresses don't rewrite padding.
+    - **Address remap:** one pass with a hash map, and collision-free.
+    - **Leak check:** searches field values and whole-byte payload positions (no JSON keys, so no false hits), compares names as bytes (non-UTF-8 too), and searches reassembled WPS.
+    - **Tests:** 21, including jitter at home, an outlier network fix, a lowercase BSSID, address-only-in-payload detection, padding then scan response, P2P and RNR, a placeholder address, and moved header times and bearings.
+  - **Known v1 gaps (ADR-0017 Residual risk):**
+    - route shape can be map-matched (the private repo is the control);
+    - AP fingerprints and other unscrubbed IEs link records;
+    - Fast Pair and CDP payloads aren't remapped;
+    - free text in other vendors' IEs isn't searched;
+    - the leak test only finds identifiers its parsers know.
+
+    They go to v2, using the owner's first real captures.
+- 2026-10-27: **P1-F1 merged** as `c06ec57` (PR #27).
+- 2026-10-27: **P1-F1 Capture v1 (ADR-0016).** PR #27. Branch `p1/f1-capture-v1`.
   - **Format:** `CaptureRecord`, newline-delimited JSON with header, ble, wifi and fix records. It keeps elapsed-realtime ns from the radio's own stamps, full ScanRecord hex, every Wi-Fi IE, and the raw PHY, address-type, SID, width and standard ints.
   - **Hooks:** `Capture.sink`, null by default, sits in `BleRadio.emit`, in `WifiRadio.emitResults` (before the 350 ms throttle), and in `onProviderFix` (before `acceptFix`).
   - **Debug only:** a new debug source set holds `CaptureRecorder` and `CaptureInstaller` (a non-exported provider).
