@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4a (brand literals), on branch `p0/4a-brand-literals`; check `gh pr list --head p0/4a-brand-literals` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4b (English copy values).
+- Current step: P0-4a (brand literals), PR #7 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected) and the P0-4e applicationId go-ahead. Next: P0-4b (English copy values).
 - Branch: `p0/4a-brand-literals`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
@@ -50,7 +50,7 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4a Brand literals.** Branch `p0/4a-brand-literals`.
+- 2026-10-27: **P0-4a Brand literals.** PR #7.
   - PLAN: P0-4 is split into P0-4a to P0-4e. 4d is protected, and 4e waits for the owner (see Needs human).
   - New `domain/Brand`: `NAME`, `NAME_UPPER`, `FILE_PREFIX`, `REPO_URL`, `LOG_TAG`, `userAgent()`.
   - Now using `Brand`:
