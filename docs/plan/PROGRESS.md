@@ -2,12 +2,12 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: P0-4f (README and docs rebrand), PR #12 (waiting on CI, then squash-merge). Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-6 (BrandGuard).
-- Branch: `p0/4f-docs-rebrand`
+- Current step: P0-6 (BrandGuard), on branch `p0/6-brand-guard`; check `gh pr list --head p0/6-brand-guard` for the PR. Waiting on the owner: PR #6 (P0-3 part 2, protected), PR #10 (P0-4d, protected) and the P0-4e applicationId go-ahead. Next: P0-7 (copy and legal fixes).
+- Branch: `p0/6-brand-guard`
 - Phone serial: RFCX205JR3K
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`), adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T08:47Z
+- Last cycle: 2026-10-27T09:05Z
 
 ## Needs human (owner)
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -50,7 +50,19 @@ None yet. The agent adds an entry here, plus a `field-capture` issue, for each s
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
-- 2026-10-27: **P0-4f README and docs rebrand.** PR #12.
+- 2026-10-27: **P0-6 BrandGuard.** Branch `p0/6-brand-guard`.
+  - New `BrandGuardTest`: a JVM unit test for now, because build-logic is blocked on the approved-dependency plugins; it moves in P2-1.
+    - It scans the string literals of every `app/src/main` `.kt` file, plus `res`/manifest/text-asset lines and `dist/` text.
+    - It matches `Fieldwatch|FIELDWATCH|OffGridPete|OGridPete|Off Grid Pete`. It's case-sensitive, so lowercase legacy ids don't match.
+    - Skipped: lang packs (covered by BrandTest), `dist/CHANGELOG.md` (history) and the `dist/*.json` legacy catalog packs.
+  - The allowlist gives a reason for every entry:
+    - **Permanent:** TAK UIDs, the "exported from Spectre or Fieldwatch" import hints, the upstream MIT copyright line, the manifest app-class and theme identifiers, the disclaimer's liability parties, and the install card's fork and migration notes.
+    - **Temporary:**
+      - P0-7: upstream catalog and sensor URLs.
+      - P0-4d / PR #10: "Do not use Fieldwatch", the `ui.off.grid.pete.llc` key, `NOT_REVIEWED`.
+      - Catalog-checklist PR: the `DefaultCatalog` notes.
+  - A second test checks that the matcher catches a literal and ignores identifiers.
+- 2026-10-27: **P0-4f README and docs rebrand.** PR #12, merged as `0e27a1e`.
   - **`README.md` rewritten for the fork:**
     - Fork statement; the separate-app claim is conditional on the P0-4e app id.
     - "Receive-only by default", noting that scans can send OS probe and scan requests.
