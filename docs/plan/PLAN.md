@@ -410,7 +410,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - **P1-B11f** Chipolo FE65 (item 6, optional).
     - **P1-B12 Police-row fixes** (research §1, items 7–14). Split:
       - ✅ **P1-B12a** Novatel to ISP, Compex to ISP, AirLink to VEHICLE; no attention note, no default watch (items 7–9; catalog v109).
-      - **P1-B12b** Reveal Media's BodyWorn names to the Utility Inc row, and `RS2-*` (item 10).
+      - ✅ **P1-B12b** Reveal Media's BodyWorn names to the Utility Inc row, and `RS2-*` (item 10; catalog v110). Utility gains only `glob("BodyWorn*")`, and `RS2-*` is retired.
       - **P1-B12c** ShotSpotter `D4:11:D6` and Rhombus `CC:47:BD` Wi-Fi only (item 11).
       - **P1-B12d** LiteOn camera radio review (item 12), and the Verkada and Avigilon notes (items 13–14: Verkada's OUI Wi-Fi only; Avigilon waits for a capture).
       - **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109).

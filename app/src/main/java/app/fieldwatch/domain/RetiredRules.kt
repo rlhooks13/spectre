@@ -68,6 +68,10 @@ object RetiredRules {
         Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "SmartTag"), retiredIn = 108),
         Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "Smart Tag"), retiredIn = 108),
         Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "Galaxy SmartTag"), retiredIn = 108),
+        // P1-B12b: BodyWorn is Utility's camera, not Reveal's (moved to Utility Inc); RS2-* is a generic 2015 prefix.
+        Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_CONTAINS, text = "BodyWorn"), retiredIn = 110),
+        Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_GLOB, text = "BodyWorn*"), retiredIn = 110),
+        Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_GLOB, text = "RS2-*"), retiredIn = 110),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v109 -->
-### Signatures (stock catalog v97 → v109)
+<!-- generated: catalog v97 -> v110 -->
+### Signatures (stock catalog v97 → v110)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
@@ -39,6 +39,7 @@
 - **Oura** (wearable): stopped matching on name contains "Oura" (BLE); now also matches on name glob "Oura" (BLE); name glob "Oura *" (BLE); name glob "Oura-*" (BLE); name glob "Oura_*" (BLE).
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).
 - **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI).
+- **Reveal Media** (law enforcement): attention note reworded; stopped matching on name contains "BodyWorn"; name glob "BodyWorn*"; name glob "RS2-*"; notes reworded.
 - **ASSA ABLOY** (lock): stopped matching on name contains "Seos" (BLE); name contains "Yale" (BLE); now also matches on name glob "Seos" (BLE); name glob "Seos *" (BLE); name glob "Seos-*" (BLE); name glob "Seos_*" (BLE).
 - **Samsung SmartTags** (finder): stopped matching on name contains "SmartTag"; name contains "Smart Tag"; name contains "Galaxy SmartTag"; Bluetooth company id 0x0075; now also matches on name glob "Smart Tag" (BLE); name glob "Smart Tag2" (BLE); name glob "Galaxy SmartTag*" (BLE); decoded fields changed.
 - **Sony** (audio): stopped matching on name contains "Sony" (BLE); now also matches on name glob "Sony" (BLE); name glob "Sony *" (BLE); name glob "Sony-*" (BLE); name glob "Sony_*" (BLE); notes reworded.
@@ -46,6 +47,7 @@
 - **Tile Trackers** (finder): stopped matching on name contains "Tile"; service uuid "FEDD"; Bluetooth company id 0x00C7; now also matches on name glob "Tile" (BLE); Bluetooth company id 0x067C.
 - **Tuya** (home): stopped matching on name contains "TUYA" (BLE).
 - **UniFi AP** (isp): stopped matching on name contains "UBNT" (WIFI).
+- **Utility Inc** (law enforcement): attention note reworded; now also matches on name glob "BodyWorn*"; notes reworded.
 - **Motorola Vigilant** (surveillance): stopped matching on name contains "Vigilant"; now also matches on name glob "Vigilant"; name glob "Vigilant-*"; name glob "Vigilant_*".
 - **Volkswagen** (vehicle): stopped matching on name contains "VW" (BLE); now also matches on name glob "VW" (BLE); name glob "VW *" (BLE); name glob "VW-*" (BLE); name glob "VW_*" (BLE).
 - **Wyze** (camera): stopped matching on name contains "Wyze".
@@ -58,11 +60,14 @@
 - Target: Offline Finding record too short to read: was Apple AirTags (finder), now Find My device (finder).
 - Target: Find My accessory service FD44 alone: was Apple AirTags (finder), now Find My device (finder).
 - Target: Find My tag named "Find My" over BLE: was Apple AirTags (finder), now Find My device (finder).
+- Target: BodyWorn body camera by name: was Reveal Media (law enforcement, extra attention), now Utility Inc (law enforcement, extra attention).
 - Target: Tile on its own company id 0x067C: was no signature, now Tile Trackers (finder).
 - Target: Tattile camera name: was Tattile (surveillance, extra attention), Tile Trackers (finder), now Tattile (surveillance, extra attention).
 - Near miss: Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40: was Google (phone), Google Find Hub (finder), now Find Hub accessory (headphones or phone) (audio), Google (phone).
 - Near miss: Third-party Find My tag on FD44, Offline Finding status 0x20: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
+- Near miss: Accessory named My BodyWorn mount: was Reveal Media (law enforcement, extra attention), now no signature.
+- Near miss: Device named RS2-0042: was Reveal Media (law enforcement, extra attention), now no signature.
 - Near miss: Kogan Smart Tag (a Find Hub tag): was Google Find Hub (finder), Samsung SmartTags (finder), now Google Find Hub (finder).
 - Near miss: NOVOO Smart Tag by name: was Samsung SmartTags (finder), now no signature.
 - Near miss: Clone tag named XYZ SmartTag, no FD5A: was Samsung SmartTags (finder), now no signature.

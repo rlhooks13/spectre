@@ -2802,16 +2802,15 @@ object DefaultCatalog {
         colorIndex = Hue.LAW,
         kind = SignatureClass.LAW_ENFORCEMENT,
         matchAny = true,
-        notes = "Reveal Media / BodyWorn camera. Common in UK and some US agencies. Quiet units will not appear.",
-        attentionNote = "Reveal Media body-worn camera (D-series / BodyWorn). Name-only when advertised. Patrol units may stay quiet. Pattern match, not that officer. Look with your eyes.",
+        notes = "Reveal Media body camera. Common in UK and some US agencies. Quiet units will not appear.",
+        attentionNote = "Reveal Media body-worn camera (D-series). Name-only when advertised. Patrol units may stay quiet. Pattern match, not that officer. Look with your eyes.",
         builtIn = true,
         rules = listOf(
             name("Reveal Media"),
             glob("Reveal D*"),
             glob("Reveal-D*"),
-            name("BodyWorn"),
-            glob("BodyWorn*"),
-            glob("RS2-*"),
+            // P1-B12b (research §1 item 10): BodyWorn is Utility's camera (Utility became Coreforce in October 2025), so
+            // its names moved to Utility Inc; "RS2-*" (a 2015 model, a generic prefix) is retired.
         ),
     )
 
@@ -3905,10 +3904,14 @@ object DefaultCatalog {
         colorIndex = Hue.LAW,
         kind = SignatureClass.LAW_ENFORCEMENT,
         matchAny = true,
-        notes = "Utility, Inc vehicle or public-safety access point.",
-        attentionNote = "Utility, Inc radio. Reported in public-safety vehicle AP work. Pattern match, not that agency. Look with your eyes.",
+        notes = "Utility, Inc vehicle or public-safety access point, or its BodyWorn body camera.",
+        attentionNote = "Utility, Inc radio or BodyWorn body camera. Reported in public-safety vehicle AP work. Pattern match, not that agency or that officer. Look with your eyes.",
         builtIn = true,
-        rules = withWifiOuis(emptyList(), ApVendorOuis.UTILITY_INC),
+        rules = withWifiOuis(emptyList(), ApVendorOuis.UTILITY_INC) + listOf(
+            // P1-B12b: BodyWorn's name, moved from Reveal Media as the anchored glob only (its "contains" twin matched
+            // nothing more but "BodyWorn" mid-name). Last, in the order an upgraded config gets it.
+            glob("BodyWorn*"),
+        ),
     )
 
     private fun cisco() = Fleet(

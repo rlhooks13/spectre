@@ -1386,6 +1386,50 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V109
         }
+        if (version < CATALOG_V110) {
+            // P1-B12b: Reveal Media's BodyWorn names are retired (RetiredRules strips them on load) and patchBuiltIn
+            // appends the glob BodyWorn* to Utility Inc switched on. Utility is an older row with its own vehicle-AP OUIs,
+            // so only what concerns the moved name carries over:
+            // - the glob starts off where the user had a BodyWorn name, or the whole Reveal row, switched off (a config
+            //   from before Reveal existed, v74, had nothing to switch off);
+            // - a Utility row the user had switched off comes back on with only the moved name on, so BodyWorn cameras
+            //   stay labeled and the vehicle APs the user silenced stay silent (as v107 did);
+            // - a filter that showed Reveal shows Utility too; a hide set and the watchlist are left alone (no Utility
+            //   watch alongside Reveal's means the user removed its default watch).
+            // Each row's note and attention note change only where still v109 stock.
+            val oldReveal = cfg.fleets.firstOrNull { it.id == REVEAL && it.builtIn }
+            val movedOff = oldReveal != null &&
+                (!oldReveal.enabled || oldReveal.rules.any { !it.enabled && ruleKey(it) in RETIRED_BODYWORN_KEYS_V110 })
+            val moved = ruleKey(MOVED_TO_UTILITY_V110)
+            fleets = fleets.map { fleet ->
+                val old = NOTES_V109[fleet.id]
+                if (old == null || !fleet.builtIn) return@map fleet
+                val stock = catalog.getValue(fleet.id)
+                val notes = fleet.copy(
+                    notes = if (fleet.notes == old.first) stock.notes else fleet.notes,
+                    attentionNote = if (fleet.attentionNote == old.second) stock.attentionNote else fleet.attentionNote,
+                )
+                if (fleet.id != UTILITY) return@map notes
+                val rowOff = !fleet.enabled && !movedOff
+                notes.copy(
+                    enabled = fleet.enabled || rowOff,
+                    rules = fleet.rules.map { r ->
+                        when {
+                            ruleKey(r) == moved -> if (movedOff) r.copy(enabled = false) else r
+                            rowOff -> r.copy(enabled = false)
+                            else -> r
+                        }
+                    },
+                )
+            }
+            if (oldReveal != null && fleets.any { it.id == UTILITY }) {
+                fun FilterState.showUtility() =
+                    if (REVEAL in includeFleetIds) copy(includeFleetIds = includeFleetIds + UTILITY) else this
+                filter = filter.showUtility()
+                presets = presets.map { p -> if (p.isBuiltIn()) p else p.copy(filter = p.filter.showUtility()) }
+            }
+            version = CATALOG_V110
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1453,7 +1497,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 109
+        const val CATALOG_VERSION = 110
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1560,7 +1604,30 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V106 = 106
         private const val CATALOG_V107 = 107
         private const val CATALOG_V108 = 108
-        private const val CATALOG_V109 = CATALOG_VERSION
+        private const val CATALOG_V109 = 109
+        private const val CATALOG_V110 = CATALOG_VERSION
+
+        private const val REVEAL = "fleet-reveal-media"
+        private const val UTILITY = "fleet-utility-inc"
+
+        /** P1-B12b: the BodyWorn name v110 added to Utility Inc, and the two Reveal Media names it replaces. Written out. */
+        private val MOVED_TO_UTILITY_V110 = MatchRule(RuleKind.NAME_GLOB, text = "BodyWorn*")
+        private val RETIRED_BODYWORN_KEYS_V110 = setOf(
+            MatchRule(RuleKind.NAME_CONTAINS, text = "BodyWorn"),
+            MatchRule(RuleKind.NAME_GLOB, text = "BodyWorn*"),
+        ).map { it.matchKey() }.toSet()
+
+        /** The exact v109 stock note and attention note of the two rows v110 rewords (catalog/snapshots/v109.json). */
+        private val NOTES_V109 = mapOf(
+            REVEAL to (
+                "Reveal Media / BodyWorn camera. Common in UK and some US agencies. Quiet units will not appear." to
+                    "Reveal Media body-worn camera (D-series / BodyWorn). Name-only when advertised. Patrol units may stay quiet. Pattern match, not that officer. Look with your eyes."
+                ),
+            UTILITY to (
+                "Utility, Inc vehicle or public-safety access point." to
+                    "Utility, Inc radio. Reported in public-safety vehicle AP work. Pattern match, not that agency. Look with your eyes."
+                ),
+        )
 
         /**
          * P1-B12a: the rows v109 takes out of law enforcement, with their exact v108 stock note and attention note

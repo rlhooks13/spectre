@@ -599,6 +599,45 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-reveal-media",
+            "retiredIn": 110,
+            "step": "P1-B12b",
+            "reason": "BodyWorn is Utility, Inc's body camera, not Reveal Media's. Moved to the Utility Inc row as the anchored glob BodyWorn* only.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "BodyWorn",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-reveal-media",
+            "retiredIn": 110,
+            "step": "P1-B12b",
+            "reason": "BodyWorn is Utility, Inc's body camera, not Reveal Media's. Moved to the Utility Inc row.",
+            "rule": {
+                "kind": "NAME_GLOB",
+                "text": "BodyWorn*",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-reveal-media",
+            "retiredIn": 110,
+            "step": "P1-B12b",
+            "reason": "RS2-* targets a 2015 Reveal model and is a generic prefix; Reveal's current lines are R1, K, KS, D and Calla.",
+            "rule": {
+                "kind": "NAME_GLOB",
+                "text": "RS2-*",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }

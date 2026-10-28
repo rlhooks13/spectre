@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 109,
+    "catalogVersion": 110,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -52878,38 +52878,14 @@
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "BodyWorn",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "BodyWorn*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_GLOB",
-                    "text": "RS2-*",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
                 }
             ],
             "minPeers": 0,
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Reveal Media / BodyWorn camera. Common in UK and some US agencies. Quiet units will not appear.",
-            "attentionNote": "Reveal Media body-worn camera (D-series / BodyWorn). Name-only when advertised. Patrol units may stay quiet. Pattern match, not that officer. Look with your eyes.",
+            "notes": "Reveal Media body camera. Common in UK and some US agencies. Quiet units will not appear.",
+            "attentionNote": "Reveal Media body-worn camera (D-series). Name-only when advertised. Patrol units may stay quiet. Pattern match, not that officer. Look with your eyes.",
             "builtIn": true,
             "kind": "LAW_ENFORCEMENT"
         },
@@ -62031,14 +62007,22 @@
                     "dataPrefixHex": "",
                     "radio": "WIFI",
                     "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "BodyWorn*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
                 }
             ],
             "minPeers": 0,
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Utility, Inc vehicle or public-safety access point.",
-            "attentionNote": "Utility, Inc radio. Reported in public-safety vehicle AP work. Pattern match, not that agency. Look with your eyes.",
+            "notes": "Utility, Inc vehicle or public-safety access point, or its BodyWorn body camera.",
+            "attentionNote": "Utility, Inc radio or BodyWorn body camera. Reported in public-safety vehicle AP work. Pattern match, not that agency or that officer. Look with your eyes.",
             "builtIn": true,
             "kind": "LAW_ENFORCEMENT"
         },
