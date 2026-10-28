@@ -149,7 +149,9 @@ class CatalogLintTest {
             "fleet-unifi-ap#1 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#2 -> fleet-unifi" to "ADR-0015",
             "fleet-unifi-ap#3 -> fleet-unifi" to "ADR-0015",
-            "fleet-liteon-camera-radio#25 -> fleet-tplink" to "P1-B10",
+            // The same rule (vendor IE 00:0A:EB, waiting on P1-B10 and capture #70); P1-B12d moved the static-range OUIs
+            // to the end, so its index changed.
+            "fleet-liteon-camera-radio#16 -> fleet-tplink" to "P1-B10",
         )
 
         private fun repoFile(path: String): File {

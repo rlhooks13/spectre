@@ -703,6 +703,69 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "D8:F3:BC on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "D8:F3:BC", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "C0:35:32 on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "C0:35:32", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "E0:0A:F6 on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "E0:0A:F6", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "E4:AA:EA on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "E4:AA:EA", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "F4:6A:DD on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "F4:6A:DD", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "F8:A2:D6 on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "F8:A2:D6", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "D0:39:57 on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "D0:39:57", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "E8:D0:FC on any radio; its first byte is in the BLE static-random range. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {"kind": "OUI", "text": "E8:D0:FC", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-liteon-camera-radio",
+            "retiredIn": 113,
+            "step": "P1-B12d",
+            "reason": "Vendor IE 00:80:19 is registered to Dayna Communications; no capture ties it to these Wi-Fi modules (research §1 item 12).",
+            "rule": {"kind": "VENDOR_IE_OUI", "text": "00:80:19", "companyId": 0, "dataPrefixHex": "", "radio": null}
         }
     ]
 }

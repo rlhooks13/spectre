@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 112,
+    "catalogVersion": 113,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -45658,7 +45658,7 @@
         },
         {
             "id": "fleet-liteon-camera-radio",
-            "name": "LiteOn camera radio",
+            "name": "LiteOn Wi-Fi module",
             "enabled": true,
             "matchAny": true,
             "colorIndex": 6,
@@ -45674,14 +45674,6 @@
                 {
                     "kind": "OUI",
                     "text": "3C:91:80",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "D8:F3:BC",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -45737,47 +45729,7 @@
                 },
                 {
                     "kind": "OUI",
-                    "text": "C0:35:32",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
                     "text": "94:08:53",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "E0:0A:F6",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "E4:AA:EA",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "F4:6A:DD",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "F8:A2:D6",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -45794,22 +45746,6 @@
                 {
                     "kind": "OUI",
                     "text": "00:F4:8D",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "D0:39:57",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "OUI",
-                    "text": "E8:D0:FC",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -45857,18 +45793,74 @@
                 },
                 {
                     "kind": "VENDOR_IE_OUI",
-                    "text": "00:80:19",
+                    "text": "00:0A:EB",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true
                 },
                 {
-                    "kind": "VENDOR_IE_OUI",
-                    "text": "00:0A:EB",
+                    "kind": "OUI",
+                    "text": "D8:F3:BC",
                     "companyId": 0,
                     "dataPrefixHex": "",
-                    "radio": null,
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "C0:35:32",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "E0:0A:F6",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "E4:AA:EA",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "F4:6A:DD",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "F8:A2:D6",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "D0:39:57",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "E8:D0:FC",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
                     "enabled": true
                 }
             ],
@@ -45876,10 +45868,10 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Wi-Fi module prefixes commonly seen on camera boards (LiteOn and similar). 08:3A:88 is Universal Global Scientific Industrial, not Lite-On. Not Flock's IEEE block. Doorbells and other OEM radios use these chips. A name that starts with Flock- or B4:1E:52 is Flock Safety Cameras.",
+            "notes": "Wi-Fi module prefixes (LiteOn and similar) found in cameras, doorbells, conference-room screen sharing (Barco ClickShare), gates, car head-up displays and other OEM devices. Not a camera by itself, and not Flock: 08:3A:88 is Universal Global Scientific Industrial, not Lite-On. A name that starts with Flock- or B4:1E:52 is Flock Safety Cameras.",
             "attentionNote": "",
             "builtIn": true,
-            "kind": "CAMERA"
+            "kind": "OTHER"
         },
         {
             "id": "fleet-lockly",

@@ -163,6 +163,12 @@ NM:ble-d411d6	near-miss	Static random BLE address starting D4:11:D6
 NM:ble-cc47bd	near-miss	Static random BLE address starting CC:47:BD
   must not fleet-rhombus
   -> (none)
+NM:ble-f46add	near-miss	Static random BLE address starting F4:6A:DD
+  must not fleet-liteon-camera-radio
+  -> (none)
+NM:ble-public-f46add	near-miss	Public BLE address on F4:6A:DD (accepted miss until P1-B8)
+  must not fleet-liteon-camera-radio
+  -> (none)
 NM:ble-c47905	near-miss	Static random BLE address starting C4:79:05
   must not fleet-uniview
   -> (none)
@@ -288,7 +294,7 @@ RND:Axon	random-oui	Random BLE address on Axon's OUI
   -> fleet-axon [LAW_ENFORCEMENT, attention]
 RND:LiteOn	random-oui	Random BLE address on LiteOn's OUI
   hits by design until P1-B8 classifies the address
-  -> fleet-liteon-camera-radio [CAMERA]
+  -> fleet-liteon-camera-radio [OTHER]
 RND:Arlo	random-oui	Random BLE address on Arlo's OUI
   hits by design until P1-B8 classifies the address
   -> fleet-arlo [CAMERA]

@@ -1447,6 +1447,30 @@ class ConfigStore internal constructor(private val file: File) {
             fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V112, ADDED_RULES_V112)
             version = CATALOG_V112
         }
+        if (version < CATALOG_V113) {
+            // P1-B12d: LiteOn's static-range OUIs and vendor IE 00:80:19 are retired (RetiredRules strips them on load);
+            // patchBuiltIn appends the OUIs Wi-Fi only, and each takes an "off" from its own retired rule. The row's
+            // name, class and notes change only where still v112 stock.
+            val oldLiteOn = cfg.fleets.firstOrNull { it.id == LITEON && it.builtIn }
+            val off = LITEON_WIFI_ONLY_V113.filter { oui ->
+                oldLiteOn?.rules?.any { !it.enabled && ruleKey(it) == ruleKey(MatchRule(RuleKind.OUI, text = oui)) } == true
+            }.map { ruleKey(MatchRule(RuleKind.OUI, text = it, radio = RadioKind.WIFI)) }.toSet()
+            fleets = fleets.map { fleet ->
+                if (fleet.id != LITEON || !fleet.builtIn) return@map fleet
+                val stock = catalog.getValue(LITEON)
+                fleet.copy(
+                    name = if (fleet.name == V112_LITEON_NAME) stock.name else fleet.name,
+                    kind = if (fleet.kind == SignatureClass.CAMERA) stock.kind else fleet.kind,
+                    notes = if (fleet.notes == V112_LITEON_NOTES) stock.notes else fleet.notes,
+                    rules = fleet.rules.map { r -> if (ruleKey(r) in off) r.copy(enabled = false) else r },
+                )
+            }
+            // A watch still labeled with the old stock name takes the new one (its alerts say "camera" otherwise).
+            watchlist = watchlist.map { w ->
+                if (w.fleetId == LITEON && w.label == V112_LITEON_NAME) w.copy(label = catalog.getValue(LITEON).name) else w
+            }
+            version = CATALOG_V113
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1514,7 +1538,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 112
+        const val CATALOG_VERSION = 113
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1624,7 +1648,20 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V109 = 109
         private const val CATALOG_V110 = 110
         private const val CATALOG_V111 = 111
-        private const val CATALOG_V112 = CATALOG_VERSION
+        private const val CATALOG_V112 = 112
+        private const val CATALOG_V113 = CATALOG_VERSION
+
+        private const val LITEON = "fleet-liteon-camera-radio"
+
+        /** P1-B12d: LiteOn's OUIs in the BLE static-random range, Wi-Fi only from v113. Written out. */
+        private val LITEON_WIFI_ONLY_V113 =
+            listOf("D8:F3:BC", "C0:35:32", "E0:0A:F6", "E4:AA:EA", "F4:6A:DD", "F8:A2:D6", "D0:39:57", "E8:D0:FC")
+
+        /** The exact v112 stock LiteOn name and note (catalog/snapshots/v112.json). */
+        private const val V112_LITEON_NAME = "LiteOn camera radio"
+        private const val V112_LITEON_NOTES = "Wi-Fi module prefixes commonly seen on camera boards (LiteOn and similar). " +
+            "08:3A:88 is Universal Global Scientific Industrial, not Lite-On. Not Flock's IEEE block. Doorbells and other OEM " +
+            "radios use these chips. A name that starts with Flock- or B4:1E:52 is Flock Safety Cameras."
 
         /** The exact v110 stock Rhombus attention note (catalog/snapshots/v110.json). */
         private const val V110_RHOMBUS_ATTENTION = "Rhombus cloud cameras on buildings and some public sites. IEEE " +

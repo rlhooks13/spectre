@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B12d** (LiteOn camera radio review; Verkada and Avigilon notes), after P1-B12c merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
+- Current step: **P1-B12e** (the manual and the release-notes wording for P1-B12), after P1-B12d merges. Then P1-B13. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,34 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12d LiteOn is a Wi-Fi module row (catalog v113).** #105 (P1-B12f) merged as 17c9083.
+  - **Row:**
+    - "LiteOn camera radio" is now "LiteOn Wi-Fi module", class OTHER (the WiGLE audit found ClickShare, gates and car HUDs on these prefixes); the id stays;
+    - its eight static-range OUIs are Wi-Fi only;
+    - vendor IE `00:80:19` (Dayna) is retired.
+    - Vendor IE `00:0A:EB` (TP-Link) stays under P1-B10 and capture #70.
+  - **Explain:** the module hint (weight 3, "a Wi-Fi module") matches the new and old names.
+  - **Ladder v113:**
+    - each OUI's "off" carries to its own Wi-Fi replacement;
+    - the name, class and notes change only where still stock;
+    - a watch labeled with the old name takes the new one.
+  - **Verkada:** no member UUIDs in any row (pinned by a test). Its OUI `E0:A7:00` moves to P1-B14.
+  - **Avigilon:** waits for capture #106 (opened).
+  - **Reviews:** the independent reviewer had one BLOCKING finding, fixed: the rename moved the row onto the generic weight-7 explain hint, so a module prefix read as "most likely". Also fixed:
+    - a stale test name;
+    - the lint comment;
+    - more confuser cases (SMARTGATE on D0:39:57, a car HUD on 74:4C:A1, a public F4:6A:DD accepted miss);
+    - the Verkada UUID guard;
+    - per-OUI carry asserts;
+    - the watch label;
+    - the KDoc;
+    - the PLAN overlay list (v112, v113) and P1-B12e text.
+    - Rebutted:
+      - retiring `00:0A:EB` here (P1-B10 owns it);
+      - a general retired-to-replacement carry helper. It can be folded later, and the overlay work will need one.
+  - **Tests:** `CatalogV113LadderTest` (6), and the class-level corpus test now also forbids CAMERA and SURVEILLANCE. 1096 tests.
+  - **Goldens:** `since-v97.md` shows the rename, the class change, the retired IE and the OUIs going Wi-Fi only. The F4:6A:DD random near miss goes to no signature. The random-address case moves from camera to other. The corpus goldens add the cases. The 1.1.32 import config is at v113.
+  - **Device:** `Success`, new pid 19304, 0 crash lines, config `"version": 113`, row renamed.
 - 2026-10-28: **P1-B12f Uniview, Hatch and Arlo OUIs Wi-Fi only (catalog v112).** #104 (P1-B12c) merged as dfe06c1. Done before P1-B12d because Uniview's chance match raised an attention card.
   - **Rules:** Uniview `C4:79:05`, Hatch `C8:FA:9C` and Arlo `FC:9C:98` (any radio, first byte in the BLE static-random range) are retired, and the same OUIs come back Wi-Fi only. LiteOn's eight wait for P1-B12d. Pwnagotchi's six-byte prefix is a full address, so it stays.
   - **Accepted loss until P1-B8:** a real Uniview or Arlo BLE radio on a public address with no matching name. It's pinned as a near miss. Hatch keeps 0x0434.

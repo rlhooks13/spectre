@@ -149,6 +149,10 @@ object MatchCorpus {
     val notLawEnforcement: List<Pair<String, Sighting>> = listOf(
         "Inseego MiFi hotspot on 28:80:A2" to sighting("NLE:mifi", kind = RadioKind.WIFI, mac = mac("28:80:A2", "0A0B0C"), name = "Verizon-MiFi8800L-ABCD"),
         "Sierra Wireless AirCard on a generic Sierra block" to sighting("NLE:aircard", kind = RadioKind.WIFI, mac = mac("00:A0:D5", "0A0B0C"), name = "AirCard-1234"),
+        // P1-B12d: a Barco ClickShare conference-room dongle on a LiteOn module prefix (the WiGLE audit's largest group).
+        "Barco ClickShare on LiteOn's F4:6A:DD" to sighting("NLE:clickshare", kind = RadioKind.WIFI, mac = mac("F4:6A:DD", "0A0B0C"), name = "ClickShare-1863"),
+        "Gate controller on LiteOn's D0:39:57" to sighting("NLE:smartgate", kind = RadioKind.WIFI, mac = mac("D0:39:57", "0A0B0C"), name = "SMARTGATE_4A1B"),
+        "Car head-up display on LiteOn's 74:4C:A1" to sighting("NLE:car-hud", kind = RadioKind.WIFI, mac = mac("74:4C:A1", "0A0B0C"), name = "HUD_4A1B"),
         "Third-party router on a Compex module, 04:F0:21" to sighting("NLE:compex", kind = RadioKind.WIFI, mac = mac("04:F0:21", "0A0B0C"), name = "HomeRouter-5G"),
     )
 
@@ -286,6 +290,17 @@ object MatchCorpus {
             "Static random BLE address starting CC:47:BD",
             sighting("NM:ble-cc47bd", mac = mac("CC:47:BD", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
             setOf("fleet-rhombus"),
+        ),
+        // P1-B12d: and for LiteOn's static-range prefixes.
+        NearMiss(
+            "Static random BLE address starting F4:6A:DD",
+            sighting("NM:ble-f46add", mac = mac("F4:6A:DD", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-liteon-camera-radio"),
+        ),
+        NearMiss(
+            "Public BLE address on F4:6A:DD (accepted miss until P1-B8)",
+            sighting("NM:ble-public-f46add", mac = mac("F4:6A:DD", "4A1B2D")).let { it.copy(facts = it.facts.copy(addressType = "Public")) },
+            setOf("fleet-liteon-camera-radio"),
         ),
         // P1-B12f: the same for Uniview (an attention row), Hatch and Arlo.
         NearMiss(
