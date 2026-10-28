@@ -525,14 +525,14 @@ object TakPublish {
     fun hasAttention(device: Sighting, fleets: List<Fleet>): Boolean {
         if (device.fleetIds.isEmpty()) return false
         val byId = fleets.associateBy { it.id }
-        return device.fleetIds.any { id -> byId[id]?.attentionNote?.isNotBlank() == true }
+        return device.definiteFleetIds.any { id -> byId[id]?.attentionNote?.isNotBlank() == true }
     }
 
     fun onWatchlist(device: Sighting, watchlist: List<WatchTarget>): Boolean =
         watchlist.any { target ->
             when {
                 target.deviceKey != null -> target.deviceKey == device.key && target.alert
-                target.fleetId != null -> target.fleetId in device.fleetIds
+                target.fleetId != null -> target.fleetId in device.definiteFleetIds
                 else -> false
             }
         }
@@ -651,9 +651,10 @@ object TakPublish {
             device.payloadUasId?.trim()?.takeIf { it.isNotEmpty() }?.let { return it.take(32) }
         }
         val byId = fleets.associateBy { it.id }
-        device.fleetIds.firstOrNull { id -> byId[id]?.attentionNote?.isNotBlank() == true }
+        // A "possible" match (P1-B8) never names the contact sent to TAK peers.
+        device.definiteFleetIds.firstOrNull { id -> byId[id]?.attentionNote?.isNotBlank() == true }
             ?.let { id -> byId[id]?.name?.trim()?.takeIf { it.isNotEmpty() }?.let { return it.take(32) } }
-        device.fleetIds.firstOrNull()
+        device.definiteFleetIds.firstOrNull()
             ?.let { id -> byId[id]?.name?.trim()?.takeIf { it.isNotEmpty() }?.let { return it.take(32) } }
         val advertisedName = device.name.trim()
         if (advertisedName.isNotEmpty() && !advertisedName.equals(device.mac, ignoreCase = true)) {

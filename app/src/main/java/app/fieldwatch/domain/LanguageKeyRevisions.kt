@@ -81,6 +81,8 @@ object LanguageKeyRevisions {
             "ui.typical.wearable.companion", "ui.typical.wearable.joined.sit", "ui.wearable.s.stayed.kinds",
             "ui.co.travel.split.kinds", "ui.wearables.own.kit.recorder", "ui.wearable.s.path.recorder",
             "ui.they.do.not.typically.recorder",
+            // P1-B8b: a signature matched only by a vendor prefix on a rotating BLE address.
+            "ui.signature.possible",
         )) put(key, 6)
     }
 

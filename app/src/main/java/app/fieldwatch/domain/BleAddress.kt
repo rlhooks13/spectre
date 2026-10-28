@@ -68,6 +68,39 @@ object BleAddress {
         return engine.matchedOnlyByAddress(device, fleet)
     }
 
+    /**
+     * [device] after a match (P1-B8b): its "possible" matches ([Sighting.possibleFleetIds]), and no OUI vendor on a
+     * rotating address ([withoutRotatingVendor]). [byId] holds the matched fleets. With the flag off, or for Wi-Fi, a
+     * leftover possible set is cleared; otherwise the same instance comes back when nothing changes.
+     */
+    fun reading(
+        device: Sighting,
+        byId: Map<String, Fleet>,
+        engine: SignatureEngine,
+        enabled: Boolean = Features.BLE_ADDRESS_CLASSIFIER,
+    ): Sighting {
+        if (!enabled || device.kind != RadioKind.BLE) {
+            return if (device.possibleFleetIds.isEmpty()) device else device.copy(possibleFleetIds = emptySet())
+        }
+        val cls = classify(device)
+        val possible = if (cls in DEFINITE) emptySet() else device.fleetIds.filterTo(HashSet()) { id ->
+            byId[id]?.let { engine.matchedOnlyByAddress(device, it) } == true
+        }
+        val vendor = if (cls == BleAddressClass.ROTATING) null else device.vendor
+        return if (possible == device.possibleFleetIds && vendor == device.vendor) device
+        else device.copy(possibleFleetIds = possible, vendor = vendor)
+    }
+
+    /**
+     * No OUI vendor on a rotating BLE address: its leading bytes are random, so the vendor they spell is chance
+     * (`RadioDb.vendorForMac` has only the MAC, not the address type, so this runs where the sighting is built).
+     * A static random address keeps its vendor, as it keeps a definite match ([DEFINITE]). Flag-gated.
+     */
+    fun withoutRotatingVendor(device: Sighting, enabled: Boolean = Features.BLE_ADDRESS_CLASSIFIER): Sighting {
+        if (!enabled || device.kind != RadioKind.BLE || device.vendor == null) return device
+        return if (classify(device) == BleAddressClass.ROTATING) device.copy(vendor = null) else device
+    }
+
     private fun rotatingEcosystem(device: Sighting): Boolean {
         val records = device.facts.mfgRecords.ifEmpty {
             val id = device.manufacturerId ?: return@ifEmpty emptyList()

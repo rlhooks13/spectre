@@ -894,6 +894,7 @@ internal object ChromeLines {
         en("ui.typical.watch.joined.sit", "Unused", LanguageSlot.BODY),
         en("ui.typical.wearable.joined.sit", "Typical of a wearable that joined the sit (you put it on, or someone walking with you). Not typically a planted tracker; a recorder you don't recognize is worth a look.", LanguageSlot.BODY),
         en("ui.phones.with.you.label", "Phones with you", LanguageSlot.CONTROL),
+        en("ui.signature.possible", "possible", LanguageSlot.CONTROL),
         en("ui.phones.with.you.body", "Apple devices (phone, iPad, Mac, Watch, AirPods) that stayed loud with you. Usually your own or a companion's. A phone or iPad can be hidden too, so account for any you don't recognize.", LanguageSlot.BODY),
         en("ui.phones.with.you.heading", "Phones with you (Apple phone / iPad / Mac / Watch / AirPods — usually own kit or a companion)", LanguageSlot.BODY),
         en("ui.typical.phone.carried", "Typical of a phone or earbuds you or a companion carry. Usually not planted, but account for it if it isn't yours.", LanguageSlot.BODY),

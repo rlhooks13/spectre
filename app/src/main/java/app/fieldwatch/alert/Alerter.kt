@@ -30,6 +30,7 @@ import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.MacUtil
 import app.fieldwatch.domain.RadioBookmarks
 import app.fieldwatch.domain.Sighting
+import app.fieldwatch.domain.definiteFleetIds
 import app.fieldwatch.domain.WatchTarget
 import app.fieldwatch.domain.spokenWatchPhrase
 import app.fieldwatch.domain.testWatchPhrase
@@ -670,7 +671,8 @@ internal fun shouldRaiseWatch(
     if (target.deviceKey != null && !target.alert) return false
     return when {
         target.deviceKey != null -> device.key == target.deviceKey
-        target.fleetId != null -> target.fleetId in device.fleetIds
+        // A "possible" match (vendor prefix only on a rotating BLE address, P1-B8) doesn't alert.
+        target.fleetId != null -> target.fleetId in device.definiteFleetIds
         else -> false
     }
 }

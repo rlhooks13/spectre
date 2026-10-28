@@ -78,6 +78,7 @@ import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.Rssi
 import app.fieldwatch.domain.RssiSample
 import app.fieldwatch.domain.Sighting
+import app.fieldwatch.domain.definiteFleetIds
 import app.fieldwatch.domain.SignatureCandidate
 import app.fieldwatch.domain.SignatureCandidates
 import app.fieldwatch.domain.SignatureFamilyHint
@@ -4045,6 +4046,16 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
 
     fun fleetName(id: String): String = app.config.fleets.firstOrNull { it.id == id }?.name ?: id
 
+    /**
+     * One matched signature's name as a chip or list row shows it: a "possible" match (P1-B8) carries the marker.
+     * Titles and guesses don't use this; they read [definiteFleetIds] only, so a possible match never drives them.
+     */
+    fun signatureLabel(device: Sighting, id: String): String =
+        if (id in device.possibleFleetIds) "${fleetName(id)} (${LanguageText.text("ui.signature.possible")})" else fleetName(id)
+
+    /** Names of [device]'s definite matches, for titles and guesses (P1-B8). */
+    fun definiteNames(device: Sighting): List<String> = device.definiteFleetIds.map { fleetName(it) }
+
     fun fleetKind(id: String): SignatureClass? = app.config.fleets.firstOrNull { it.id == id }?.kind
 
     fun fleetColor(id: String): Int =
@@ -4054,7 +4065,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
         app.config.fleets.firstOrNull { it.id == id }?.attentionNote.orEmpty()
 
     fun hasAttention(device: Sighting): Boolean =
-        device.fleetIds.any { fleetAttentionNote(it).isNotBlank() }
+        device.definiteFleetIds.any { fleetAttentionNote(it).isNotBlank() }
 
     fun hasObserverNote(device: Sighting): Boolean =
         watchObserverNoteFor(device.key) != null

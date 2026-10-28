@@ -297,7 +297,9 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - **No capture by the 0.1.0 gate:** drop the bare id and keep the names and service UUIDs.
 - **Shipped behind flags** (default off; acceptance checks listed in the Decision policy):
   - ✅ **P1-B8a Classifier** (split from P1-B8): `BleAddress.classify`, `SignatureEngine.matchedOnlyByAddress`, the flag-gated `BleAddress.possibleOnly` query, and `Features.BLE_ADDRESS_CLASSIFIER = false`. Domain only; nothing reads it yet.
-  - **P1-B8b Wiring** (split from P1-B8): behind the same flag, a "possible" hit shows as possible, with no attention card or alert; `RadioDb.vendorForMac` skips rotating BLE addresses; the corpus's `randomAddressOuiHits` assert "possible" and drop `knownUntil = "P1-B8"`.
+  - ✅ **P1-B8b Wiring** (split from P1-B8): behind the same flag, a "possible" hit shows as possible, with no attention card or alert; rotating BLE addresses get no OUI vendor; the corpus's `randomAddressOuiHits` assert "possible" with the classifier on.
+    - As built: the vendor skip is `BleAddress.withoutRotatingVendor`, applied where `DeviceStore` builds each sighting, because `RadioDb.vendorForMac` sees only the MAC, not the address type. `knownUntil = "P1-B8"` stays until the flag turns on.
+    - **Before the flag turns on (P1-B8c):** Sit pinning (`SitRadio.from` stores `fleetIds`), exports, the log and CoT carry the possible state, so a possible hit isn't saved or sent as definite.
   - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.
     - Otherwise the class is **UNKNOWN** unless there's evidence: an ecosystem that requires random addresses (Apple 0x004C, FD5A, FD6F, Find Hub) means random; persistence over 20 minutes means stable.
