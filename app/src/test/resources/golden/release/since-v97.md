@@ -1,13 +1,13 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v111 -->
-### Signatures (stock catalog v97 → v111)
+<!-- generated: catalog v97 -> v112 -->
+### Signatures (stock catalog v97 → v112)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
 - **AirLink** (vehicle): class law enforcement → vehicle; no longer flagged for extra attention; notes reworded.
 - **Apple AirTags** (finder): stopped matching on name contains "Find My"; Bluetooth company id 0x004C data starting 12; service uuid "FD44"; notes reworded.
 - **Amazon** (home): stopped matching on name contains "Echo" (BLE); now also matches on name glob "Echo" (BLE); name glob "Echo *" (BLE); name glob "Echo-*" (BLE); name glob "Echo_*" (BLE).
-- **Arlo** (camera): stopped matching on name contains "Arlo".
+- **Arlo** (camera): stopped matching on name contains "Arlo"; oui "FC:9C:98"; now also matches on oui "FC:9C:98" (WIFI).
 - **ASUS** (isp): stopped matching on name contains "ASUS" (WIFI).
 - **Audi MMI** (vehicle): stopped matching on name contains "Audi" (BLE); now also matches on name glob "Audi" (BLE); name glob "Audi *" (BLE); name glob "Audi-*" (BLE); name glob "Audi_*" (BLE).
 - **BlueTOAD Spectra** (surveillance): notes reworded.
@@ -26,6 +26,7 @@
 - **Ford** (vehicle): stopped matching on name contains "Ford" (BLE); now also matches on name glob "Ford" (BLE); name glob "Ford *" (BLE); name glob "Ford-*" (BLE); name glob "Ford_*" (BLE).
 - **goTenna** (mesh): notes reworded.
 - **Hak5 Pineapple** (hacking): stopped matching on name contains "Hak5".
+- **Hatch** (home): stopped matching on oui "C8:FA:9C"; now also matches on oui "C8:FA:9C" (WIFI).
 - **Hobby BLE serial** (hacking): attention note reworded; stopped matching on name contains "BT05" (BLE); now also matches on name glob "BT05" (BLE); name glob "BT05 *" (BLE); name glob "BT05-*" (BLE); name glob "BT05_*" (BLE); notes reworded.
 - **HP** (home): stopped matching on name contains "ENVY" (BLE); now also matches on name glob "HP ENVY*" (BLE).
 - **JBL / Harman** (audio): stopped matching on name contains "JBL" (BLE); now also matches on name glob "JBL" (BLE); name glob "JBL *" (BLE); name glob "JBL-*" (BLE); name glob "JBL_*" (BLE).
@@ -48,6 +49,7 @@
 - **Tile Trackers** (finder): stopped matching on name contains "Tile"; service uuid "FEDD"; Bluetooth company id 0x00C7; now also matches on name glob "Tile" (BLE); Bluetooth company id 0x067C.
 - **Tuya** (home): stopped matching on name contains "TUYA" (BLE).
 - **UniFi AP** (isp): stopped matching on name contains "UBNT" (WIFI).
+- **Uniview** (surveillance): stopped matching on oui "C4:79:05"; now also matches on oui "C4:79:05" (WIFI).
 - **Utility Inc** (law enforcement): attention note reworded; now also matches on name glob "BodyWorn*"; notes reworded.
 - **Motorola Vigilant** (surveillance): stopped matching on name contains "Vigilant"; now also matches on name glob "Vigilant"; name glob "Vigilant-*"; name glob "Vigilant_*".
 - **Volkswagen** (vehicle): stopped matching on name contains "VW" (BLE); now also matches on name glob "VW" (BLE); name glob "VW *" (BLE); name glob "VW-*" (BLE); name glob "VW_*" (BLE).
@@ -69,6 +71,10 @@
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: Static random BLE address starting D4:11:D6: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Static random BLE address starting CC:47:BD: was Rhombus (surveillance, extra attention), now no signature.
+- Near miss: Static random BLE address starting C4:79:05: was Uniview (surveillance, extra attention), now no signature.
+- Near miss: Public BLE address on C4:79:05, no name (accepted miss until P1-B8): was Uniview (surveillance, extra attention), now no signature.
+- Near miss: Static random BLE address starting C8:FA:9C: was Hatch (home), now no signature.
+- Near miss: Static random BLE address starting FC:9C:98: was Arlo (camera), now no signature.
 - Near miss: Accessory named My BodyWorn mount: was Reveal Media (law enforcement, extra attention), now no signature.
 - Near miss: Device named RS2-0042: was Reveal Media (law enforcement, extra attention), now no signature.
 - Near miss: Kogan Smart Tag (a Find Hub tag): was Google Find Hub (finder), Samsung SmartTags (finder), now Google Find Hub (finder).

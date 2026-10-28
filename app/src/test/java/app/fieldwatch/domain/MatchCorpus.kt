@@ -198,6 +198,9 @@ object MatchCorpus {
         // P1-B12c: the OUIs still find their Wi-Fi.
         Target("ShotSpotter sensor Wi-Fi on D4:11:D6", sighting("T:shotspotter-wifi", kind = RadioKind.WIFI, mac = mac("D4:11:D6", "0A0B0C"), name = "SST-0042"), "fleet-raven"),
         Target("Rhombus camera Wi-Fi on CC:47:BD", sighting("T:rhombus-wifi", kind = RadioKind.WIFI, mac = mac("CC:47:BD", "0A0B0C"), name = "R200-0042"), "fleet-rhombus"),
+        Target("Uniview camera Wi-Fi on C4:79:05", sighting("T:uniview-wifi", kind = RadioKind.WIFI, mac = mac("C4:79:05", "0A0B0C"), name = "IPC-0042"), "fleet-uniview"),
+        Target("Arlo base station Wi-Fi on FC:9C:98", sighting("T:arlo-fc-wifi", kind = RadioKind.WIFI, mac = mac("FC:9C:98", "0A0B0C"), name = "VMB-0042"), "fleet-arlo"),
+        Target("Hatch sound machine Wi-Fi on C8:FA:9C", sighting("T:hatch-wifi", kind = RadioKind.WIFI, mac = mac("C8:FA:9C", "0A0B0C"), name = "HR-0042"), "fleet-hatch"),
         // P1-B12b: BodyWorn is Utility's (now Coreforce) body camera.
         Target("BodyWorn body camera by name", sighting("T:bodyworn", name = "BodyWorn-4A1B"), "fleet-utility-inc"),
         // P1-B11d: SmartTag's own names, whole and over BLE.
@@ -283,6 +286,28 @@ object MatchCorpus {
             "Static random BLE address starting CC:47:BD",
             sighting("NM:ble-cc47bd", mac = mac("CC:47:BD", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
             setOf("fleet-rhombus"),
+        ),
+        // P1-B12f: the same for Uniview (an attention row), Hatch and Arlo.
+        NearMiss(
+            "Static random BLE address starting C4:79:05",
+            sighting("NM:ble-c47905", mac = mac("C4:79:05", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-uniview"),
+        ),
+        // Accepted until P1-B8's classifier: a real Uniview BLE radio on a public address with no Uniview name is missed too.
+        NearMiss(
+            "Public BLE address on C4:79:05, no name (accepted miss until P1-B8)",
+            sighting("NM:ble-public-c47905", mac = mac("C4:79:05", "4A1B2D")).let { it.copy(facts = it.facts.copy(addressType = "Public")) },
+            setOf("fleet-uniview"),
+        ),
+        NearMiss(
+            "Static random BLE address starting C8:FA:9C",
+            sighting("NM:ble-c8fa9c", mac = mac("C8:FA:9C", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-hatch"),
+        ),
+        NearMiss(
+            "Static random BLE address starting FC:9C:98",
+            sighting("NM:ble-fc9c98", mac = mac("FC:9C:98", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-arlo"),
         ),
         // P1-B12b: a BodyWorn camera isn't Reveal Media's, and "RS2-" is a generic prefix (an RS2 power tool, a router).
         // "BodyWorn" mid-name (the retired contains rule) isn't Utility's camera either.

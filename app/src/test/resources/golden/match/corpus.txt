@@ -52,6 +52,15 @@ T:shotspotter-wifi	target	ShotSpotter sensor Wi-Fi on D4:11:D6
 T:rhombus-wifi	target	Rhombus camera Wi-Fi on CC:47:BD
   expect fleet-rhombus
   -> fleet-rhombus [SURVEILLANCE, attention]
+T:uniview-wifi	target	Uniview camera Wi-Fi on C4:79:05
+  expect fleet-uniview
+  -> fleet-uniview [SURVEILLANCE, attention]
+T:arlo-fc-wifi	target	Arlo base station Wi-Fi on FC:9C:98
+  expect fleet-arlo
+  -> fleet-arlo [CAMERA]
+T:hatch-wifi	target	Hatch sound machine Wi-Fi on C8:FA:9C
+  expect fleet-hatch
+  -> fleet-hatch [HOME]
 T:bodyworn	target	BodyWorn body camera by name
   expect fleet-utility-inc
   -> fleet-utility-inc [LAW_ENFORCEMENT, attention]
@@ -153,6 +162,18 @@ NM:ble-d411d6	near-miss	Static random BLE address starting D4:11:D6
   -> (none)
 NM:ble-cc47bd	near-miss	Static random BLE address starting CC:47:BD
   must not fleet-rhombus
+  -> (none)
+NM:ble-c47905	near-miss	Static random BLE address starting C4:79:05
+  must not fleet-uniview
+  -> (none)
+NM:ble-public-c47905	near-miss	Public BLE address on C4:79:05, no name (accepted miss until P1-B8)
+  must not fleet-uniview
+  -> (none)
+NM:ble-c8fa9c	near-miss	Static random BLE address starting C8:FA:9C
+  must not fleet-hatch
+  -> (none)
+NM:ble-fc9c98	near-miss	Static random BLE address starting FC:9C:98
+  must not fleet-arlo
   -> (none)
 NM:bodyworn-mid	near-miss	Accessory named My BodyWorn mount
   must not fleet-reveal-media, fleet-utility-inc

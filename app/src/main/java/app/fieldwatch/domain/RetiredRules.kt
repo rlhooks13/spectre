@@ -75,6 +75,10 @@ object RetiredRules {
         // P1-B12c: OUIs in the BLE static-random range (0xD4, 0xCC) matched random BLE addresses; Wi-Fi only now.
         Entry("fleet-raven", MatchRule(RuleKind.OUI, text = "D4:11:D6"), retiredIn = 111),
         Entry("fleet-rhombus", MatchRule(RuleKind.OUI, text = "CC:47:BD"), retiredIn = 111),
+        // P1-B12f: the same, for the other rows' OUIs in that range (LiteOn's wait for P1-B12d).
+        Entry("fleet-uniview", MatchRule(RuleKind.OUI, text = "C4:79:05"), retiredIn = 112),
+        Entry("fleet-hatch", MatchRule(RuleKind.OUI, text = "C8:FA:9C"), retiredIn = 112),
+        Entry("fleet-arlo", MatchRule(RuleKind.OUI, text = "FC:9C:98"), retiredIn = 112),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

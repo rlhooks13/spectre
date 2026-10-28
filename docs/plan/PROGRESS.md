@@ -102,6 +102,18 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12f Uniview, Hatch and Arlo OUIs Wi-Fi only (catalog v112).** #104 (P1-B12c) merged as dfe06c1. Done before P1-B12d because Uniview's chance match raised an attention card.
+  - **Rules:** Uniview `C4:79:05`, Hatch `C8:FA:9C` and Arlo `FC:9C:98` (any radio, first byte in the BLE static-random range) are retired, and the same OUIs come back Wi-Fi only. LiteOn's eight wait for P1-B12d. Pwnagotchi's six-byte prefix is a full address, so it stays.
+  - **Accepted loss until P1-B8:** a real Uniview or Arlo BLE radio on a public address with no matching name. It's pinned as a near miss. Hatch keeps 0x0434.
+  - **Ladder v112:** `carryRetiredOff`.
+  - **Reviews** (no BLOCKING, no MAJOR). Fixed: a Hatch Wi-Fi target, the public-address case pinned, the Arlo target's name no longer co-matching Netgear, and a negative off-carry test.
+    - Rebutted:
+      - OUIs in the resolvable or non-resolvable ranges (0x00–0x7F). P1-B8's classifier reads those as "possible" (pinned in `randomAddressOuiHits`), but it counts STATIC as definite, so only static-range OUIs need this per-row fix.
+      - Arlo's hard-coded OUI. It's explicit on purpose; a first-byte helper would move OUIs silently.
+    - Noted for P1-B12e: the release notes read "stopped matching on oui X; now also matches on oui X (WIFI)" for a radio narrowing.
+  - **Tests:** `CatalogV112LadderTest` (3). Corpus: Wi-Fi targets for all three, static-random BLE near misses for all three, and the public Uniview case. 1091 tests.
+  - **Goldens:** `since-v97.md` lists the three rows' OUIs as Wi-Fi only, and the three random-BLE near misses going to no signature. The corpus goldens add the cases. The 1.1.32 import config is at v112.
+  - **Device:** `Success`, new pid 11903, 0 crash lines, config `"version": 112`.
 - 2026-10-28: **P1-B12c ShotSpotter and Rhombus OUIs Wi-Fi only (catalog v111).** #103 (P1-B12b) merged as 19486a2.
   - **Rules:** Raven / ShotSpotter's `oui("D4:11:D6")` and Rhombus's `oui("CC:47:BD")` (any radio) are retired. The same OUIs come back Wi-Fi only. 0xD4 and 0xCC are in the BLE static-random range, so random BLE addresses matched them by chance. Rhombus's attention note now says "Wi-Fi OUI".
   - **Trade-off:** a Rhombus BLE device on a public address with no Rhombus name is now missed. Rhombus isn't finder-class, and research item 11 accepts this.

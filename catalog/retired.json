@@ -664,6 +664,45 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-uniview",
+            "retiredIn": 112,
+            "step": "P1-B12f",
+            "reason": "Uniview's OUI C4:79:05 on any radio. 0xC4 is in the BLE static-random range, so random BLE addresses matched it by chance (with an attention card). Replaced by the same OUI, Wi-Fi only.",
+            "rule": {
+                "kind": "OUI",
+                "text": "C4:79:05",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-hatch",
+            "retiredIn": 112,
+            "step": "P1-B12f",
+            "reason": "Hatch's OUI C8:FA:9C on any radio. 0xC8 is in the BLE static-random range, so random BLE addresses matched it by chance. Replaced by the same OUI, Wi-Fi only; its company id and names find its BLE.",
+            "rule": {
+                "kind": "OUI",
+                "text": "C8:FA:9C",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-arlo",
+            "retiredIn": 112,
+            "step": "P1-B12f",
+            "reason": "Arlo's OUI FC:9C:98 on any radio. 0xFC is in the BLE static-random range, so random BLE addresses matched it by chance. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {
+                "kind": "OUI",
+                "text": "FC:9C:98",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }
