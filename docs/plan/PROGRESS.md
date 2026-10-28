@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B11c** (FD44 and "Find My" to `fleet-findmy`), after P1-B11b merges. P1-B11 is split a–f in PLAN.
+- Current step: **P1-B11d** (SmartTag: anchored names, state decode, co-travel on the privacy ID), after P1-B11c merges. P1-B11 is split a–f in PLAN.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,34 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B11c FD44 and "Find My" label Find My device, not AirTags (catalog v107).** #86 (P1-B11b) merged as 170bc96.
+  - **Research claim** (§1 item 2): FD44 is Apple's Find My accessory service, and third-party tags and AirPods send it too, so on AirTags it mislabeled them.
+  - **Rules:** AirTags' `uuid("FD44")` and `name("Find My")` are retired (`RetiredRules`, `retired.json`, v107). Find My device gains `uuid("FD44")` and `bleName("Find My")` (BLE-only now).
+  - **ADR-0020:** a radio sending FD44 stays a finder, as it was under AirTags.
+    - `routeOfflineFinding` moves it only to AirTags (type 1).
+    - `TrackerMatch.finderHits` keeps Find My device a finder on type 0 or 3 when FD44 is present.
+    - The research's routing of types 0 and 3 away, and its question of whether separated AirPods under-warn, are left for captures (field-capture issue #87).
+  - **Ladder v107:**
+    - a moved rule switched off on AirTags, or the AirTags row switched off, starts off;
+    - a Find My device row switched off comes back on with only the moved rules on;
+    - watches, filters and presets on AirTags cover Find My device, as v100 did;
+    - the stock note is reworded only where unedited.
+    - The v100 step now switches off only the 0x12 rule it moved; it had started switching off every rule on today's row.
+  - **Reviews:** the independent reviewer had one BLOCKING finding, fixed: the v100 step switched off FD44 and "Find My" too. Also fixed:
+    - FD44 type 0/3 radios had stopped being finders (`finderHits`);
+    - the watch and filter carry;
+    - row switches;
+    - the name-rule carry test;
+    - the Wi-Fi near miss that passed without the change (now "Find My Hotspot");
+    - the duplicate corpus case;
+    - the note and KDoc;
+    - FD44 aliases computed once (`TrackerMatch.sendsFindMyAccessoryService`).
+    - Rebutted: the stock-pack overlay skipping the ladder (in-app catalog update is off; recheck before Phase 4 turns it on); the three-place retired list (the ladder test fails if they drift).
+    - Deferred (ADR-0020): name-only "Find My" as "possible".
+  - **Catalog checklist:** v107, ladder step, v107 snapshot with v106 frozen, dist pack, two `retired.json` entries; the row count is unchanged.
+  - **Tests:** `CatalogV107LadderTest` (8), `FindMyAccessoryServiceTest` (4). Corpus: targets FD44 alone, AirTag with FD44, BLE "Find My Tag"; near misses: a third-party tag and AirPods with FD44 (not AirTags), Wi-Fi "Find My Hotspot" (nothing).
+  - **Goldens:** `since-v97.md` lists the moved rules and each case that changed from Apple AirTags to Find My device (Wi-Fi: to nothing); the corpus goldens add the new cases; the 1.1.32 import config is at v107.
+  - **Device:** `Success`, pid 29183 → 7425, 0 FATAL/ANR/AndroidRuntime lines, config `"version": 107`, and the screencap shows the live list (no disclaimer).
 - 2026-10-28: **P1-B11b Find Hub headphones and phones are not tags (catalog v106).** #85 (P1-B11a) merged as 8749ce0.
   - **Research claim** (§1 item 1): Find Hub headphones (Sony, JBL, Pixel Buds, Jabra, Moto Buds) and phones send the same FEAA 0x40 frame as a tag. AirGuard tells phones (Flags 0x02) from tags (0x06) by the Flags byte, which Spectre already stores.
   - **New row:** `fleet-find-hub-accessory`, "Find Hub accessory (headphones or phone)", class AUDIO, rule FEAA 40, the Find Hub decode.

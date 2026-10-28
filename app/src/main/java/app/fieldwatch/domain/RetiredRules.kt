@@ -61,6 +61,9 @@ object RetiredRules {
         Entry("fleet-volkswagen", MatchRule(RuleKind.NAME_CONTAINS, text = "VW", radio = RadioKind.BLE), retiredIn = 103),
         // The UniFi AP row already has the anchored UBNT* (as in P1-B5b).
         Entry("fleet-unifi-ap", MatchRule(RuleKind.NAME_CONTAINS, text = "UBNT", radio = RadioKind.WIFI), retiredIn = 103),
+        // P1-B11c: FD44 and "Find My" are any Find My accessory's (third-party tags, AirPods); "Find My device" takes them.
+        Entry("fleet-airtag", MatchRule(RuleKind.NAME_CONTAINS, text = "Find My"), retiredIn = 107),
+        Entry("fleet-airtag", MatchRule(RuleKind.SERVICE_UUID, text = "FD44"), retiredIn = 107),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

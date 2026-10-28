@@ -327,12 +327,12 @@ class SignatureEngine {
      * Offline Finding (0x12) is the Find My network protocol, not an AirTag
      * identity. iPhones advertise it so the network can locate them. Drop
      * AirTags when Continuity / Apple Device already labeled the radio,
-     * unless the advertised name is AirTag or UUID FD44 is present.
+     * unless the advertised name is AirTag or UUID FD44 is present (P1-B11c: FD44 then keeps "Find My device").
      */
     private fun dropAirTagsWhenAppleDevice(hits: MutableSet<String>, device: Sighting) {
         if ("fleet-airtag" !in hits && FIND_MY !in hits) return
         if (device.name.contains("AirTag", ignoreCase = true)) return
-        if (hasFindMyAccessoryUuid(device)) return
+        if (TrackerMatch.sendsFindMyAccessoryService(device)) return
         val appleProduct = "fleet-apple-device" in hits || "fleet-apple-audio" in hits
         if (appleProduct || TrackerMatch.isAppleContinuity(device)) {
             hits.remove("fleet-airtag")
@@ -347,10 +347,15 @@ class SignatureEngine {
      * separated form has length 0x19 and the near-owner form 0x02; both put the status byte first. A "Find My device"
      * hit moves to the row that type names, when the catalog has that row. A Find My accessory or a record too short to
      * read stays "Find My device": still a finder, never silently dropped.
+     *
+     * P1-B11c (ADR-0020): a radio that also sends FD44 (Apple's Find My accessory service) stays a finder, as it was
+     * under AirTags before. It moves to AirTags on an AirTag type; on any other type it stays "Find My device".
      */
     private fun routeOfflineFinding(hits: MutableSet<String>, device: Sighting, compiled: Compiled) {
         if (FIND_MY !in hits) return
-        val target = when (TrackerMatch.offlineFindingType(device) ?: return) {
+        val type = TrackerMatch.offlineFindingType(device) ?: return
+        if (type != TrackerMatch.OF_AIRTAG && TrackerMatch.sendsFindMyAccessoryService(device)) return
+        val target = when (type) {
             TrackerMatch.OF_APPLE_DEVICE -> "fleet-apple-device"
             TrackerMatch.OF_AIRTAG -> "fleet-airtag"
             TrackerMatch.OF_AIRPODS -> "fleet-apple-audio"
@@ -395,11 +400,6 @@ class SignatureEngine {
         }
     }
 
-    private fun hasFindMyAccessoryUuid(device: Sighting): Boolean {
-        val want = uuidAliases("FD44")
-        val have = device.serviceUuids + device.facts.serviceData.map { it.uuid }
-        return have.any { uuid -> uuidAliases(uuid).any { it in want } }
-    }
 
     /** Tesla phone-key ads use Apple iBeacon so iOS can find the car. Label Tesla, not iBeacon. */
     private fun isTeslaPhoneKeyIBeacon(device: Sighting): Boolean {

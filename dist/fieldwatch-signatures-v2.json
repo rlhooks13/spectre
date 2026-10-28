@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 106,
+    "catalogVersion": 107,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -882,22 +882,6 @@
                 {
                     "kind": "NAME_CONTAINS",
                     "text": "AirTag",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Find My",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "SERVICE_UUID",
-                    "text": "FD44",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -24463,13 +24447,29 @@
                     "dataPrefixHex": "12",
                     "radio": null,
                     "enabled": true
+                },
+                {
+                    "kind": "SERVICE_UUID",
+                    "text": "FD44",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_CONTAINS",
+                    "text": "Find My",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
                 }
             ],
             "minPeers": 0,
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Apple Find My network tag or accessory (Offline Finding) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. This row's rule also finds nameless AirTags, iPhones and AirPods for their own rows; switching it off stops those too. Addresses rotate.",
+            "notes": "Apple Find My network tag or accessory (Offline Finding, or Apple's Find My accessory service FD44) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. A radio sending FD44 stays here whatever type it reports, because tags send it. This row's rules also find nameless AirTags, iPhones and AirPods for their own rows; switching them off stops those too. Addresses rotate.",
             "attentionNote": "",
             "builtIn": true,
             "kind": "FINDER"

@@ -205,7 +205,7 @@ class SignatureExchangeTest {
     }
 
     @Test
-    fun findMyUuidKeepsAirTagEvenWithContinuity() {
+    fun findMyUuidKeepsAFinderEvenWithContinuity() {
         val accessory = ble(
             name = "",
             manufacturerId = 0x004C,
@@ -220,7 +220,9 @@ class SignatureExchangeTest {
             ),
         )
         val hits = SignatureEngine().match(listOf(accessory), stock).getValue(accessory.key)
-        assertTrue("FD44 is a Find My accessory", "fleet-airtag" in hits)
+        // P1-B11c: FD44 is any Find My accessory's (third-party tags, AirPods), so it says "Find My device", not AirTag.
+        assertTrue("FD44 is a Find My accessory", "fleet-findmy" in hits)
+        assertFalse("FD44 alone doesn't say AirTag", "fleet-airtag" in hits)
         assertTrue("Continuity still labels Apple Device", "fleet-apple-device" in hits)
     }
 
