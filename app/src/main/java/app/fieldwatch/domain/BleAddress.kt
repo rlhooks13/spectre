@@ -1,9 +1,9 @@
 package app.fieldwatch.domain
 
 /**
- * What kind of address a BLE radio advertises from (P1-B8). A signature that matched only through an address rule
- * (OUI or MAC prefix) means something only on a stable address: a rotating one's leading bytes are random, so an
- * OUI "hit" there is chance. Behind [Features.BLE_ADDRESS_CLASSIFIER].
+ * What kind of address a BLE radio advertises from (P1-B8). A signature that matched only through a vendor prefix
+ * (an OUI, or a MAC prefix of at most 3 bytes) means something only on a stable address: a rotating one's leading
+ * bytes are random, so a vendor-prefix "hit" there is chance. Behind [Features.BLE_ADDRESS_CLASSIFIER].
  */
 enum class BleAddressClass {
     /** IEEE-assigned (API 35 addressType Public). */
@@ -12,10 +12,10 @@ enum class BleAddressClass {
     /** Random static: random, but fixed until power cycle (API 35 Random with top bits 11). */
     STATIC,
 
-    /** Resolvable or non-resolvable private: rotates (API 35 Random, top bits 00 or 01, or an ecosystem that rotates). */
+    /** Resolvable or non-resolvable private: rotates (API 35 Random or Anonymous otherwise, or a rotating ecosystem). */
     ROTATING,
 
-    /** No address type, but heard on one address for over [BleAddress.STABLE_MS]: stable in practice. */
+    /** No address type, but heard on one address without a break for [BleAddress.STABLE_MS]. */
     STABLE,
 
     /** No evidence either way. */
@@ -23,11 +23,18 @@ enum class BleAddressClass {
 }
 
 object BleAddress {
-    /** How long one address must persist, with no address type, to count as stable. */
+    /** How long one address must be heard without a break, with no address type, to count as stable. */
     const val STABLE_MS = 20 * 60_000L
 
-    /** Service UUIDs of ecosystems whose BLE addresses always rotate: SmartTag FD5A, exposure notification FD6F, Find Hub FCB2. */
+    /**
+     * Service UUIDs of ecosystems whose tags must rotate their address: Samsung SmartTag FD5A, exposure notification
+     * FD6F, and IETF DULT FCB2. Google Find Hub is FEAA with a 0x40 or 0x41 frame ([isFindHub]): plain FEAA is
+     * Eddystone, which fixed beacons on static addresses send.
+     */
     private val ROTATING_UUIDS = setOf("FD5A", "FD6F", "FCB2")
+
+    /** The only classes a vendor-prefix hit is definite on (the step: "a non-PUBLIC/STATIC address shows as possible"). */
+    private val DEFINITE = setOf(BleAddressClass.PUBLIC, BleAddressClass.STATIC)
 
     /**
      * Recomputed from the sighting as it stands, so every merge that adds an address type, a payload or more time
@@ -40,14 +47,15 @@ object BleAddress {
             "anonymous" -> return BleAddressClass.ROTATING
         }
         if (rotatingEcosystem(device)) return BleAddressClass.ROTATING
-        if (device.lastSeen - device.firstSeen >= STABLE_MS) return BleAddressClass.STABLE
+        if (longestPresenceMs(device) >= STABLE_MS) return BleAddressClass.STABLE
         return BleAddressClass.UNKNOWN
     }
 
     /**
-     * [fleet] hit [device] only through an address rule, and the address isn't known to be stable (PUBLIC, STATIC or
-     * STABLE): the hit shows as "possible", with no attention card or alert, until a non-address rule backs it up.
-     * Always false while the flag is off.
+     * [fleet], one [device] matched, hit only through a vendor prefix, and the address isn't PUBLIC or STATIC: the hit
+     * shows as "possible", with no attention card or alert, until a non-address rule backs it up. STABLE doesn't count
+     * as definite: a resolvable address held for 20 minutes (a connected phone, a separated tag) is still random, and
+     * reading it as definite would let a chance collision with, say, Axon's OUI stand. Always false while the flag is off.
      */
     fun possibleOnly(
         device: Sighting,
@@ -56,20 +64,34 @@ object BleAddress {
         enabled: Boolean = Features.BLE_ADDRESS_CLASSIFIER,
     ): Boolean {
         if (!enabled || device.kind != RadioKind.BLE) return false
-        if (classify(device) in setOf(BleAddressClass.PUBLIC, BleAddressClass.STATIC, BleAddressClass.STABLE)) return false
+        if (classify(device) in DEFINITE) return false
         return engine.matchedOnlyByAddress(device, fleet)
     }
 
     private fun rotatingEcosystem(device: Sighting): Boolean {
-        val apple = device.manufacturerId == 0x004C || device.facts.mfgRecords.any { it.companyId == 0x004C }
-        if (apple) return true
-        val uuids = device.serviceUuids + device.facts.serviceData.map { it.uuid }
-        return uuids.any { u -> shortUuid(u) in ROTATING_UUIDS }
+        val records = device.facts.mfgRecords.ifEmpty {
+            val id = device.manufacturerId ?: return@ifEmpty emptyList()
+            listOf(MfgRecord(id, device.manufacturerDataHex))
+        }
+        // Apple's own frames (Continuity, Offline Finding) rotate. The iBeacon layout (02 15) on 0x004C doesn't count:
+        // Minew, Kontakt, Estimote and other fixed beacons send it from static addresses.
+        if (records.any { it.companyId == 0x004C && !it.dataHex.filter(Char::isLetterOrDigit).uppercase().startsWith("0215") }) return true
+        val uuids = (device.serviceUuids + device.facts.serviceData.map { it.uuid }).flatMap(::uuidAliases).toSet()
+        if (uuids.any { it in ROTATING_UUIDS }) return true
+        return device.facts.serviceData.any(::isFindHub)
     }
 
-    private fun shortUuid(uuid: String): String {
-        val u = uuid.uppercase()
-        return if (u.length == 36 && u.startsWith("0000") && u.endsWith("-0000-1000-8000-00805F9B34FB")) u.substring(4, 8) else u
+    /** Google Find Hub: Eddystone service data FEAA whose frame type (first byte) is 0x40 or 0x41. */
+    private fun isFindHub(record: ServiceDataRecord): Boolean {
+        if ("FEAA" !in uuidAliases(record.uuid)) return false
+        val frame = record.dataHex.filter(Char::isLetterOrDigit).take(2).uppercase()
+        return frame == "40" || frame == "41"
+    }
+
+    /** The longest stretch heard without a break; with no presence spans, the whole sighting. */
+    private fun longestPresenceMs(device: Sighting): Long {
+        if (device.presence.isEmpty()) return device.lastSeen - device.firstSeen
+        return device.presence.maxOf { (it.end ?: device.lastSeen) - it.start }
     }
 
     private fun topBits(mac: String): Int? = MacUtil.normalize(mac).substringBefore(":").toIntOrNull(16)?.let { it shr 6 }

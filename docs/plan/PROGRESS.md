@@ -87,6 +87,16 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - `SignatureEngine.matchedOnlyByAddress` is true when an any-rule signature hit only through OUI or MAC-prefix rules.
     - `BleAddress.possibleOnly` = flag on, BLE, not PUBLIC/STATIC/STABLE, and address-only.
     - `Features.BLE_ADDRESS_CLASSIFIER = false`: it turns on once the heuristic agrees with addressType over a 24 h capture on the phone (Android 16, so agent-runnable) and the static-tag checks pass.
+  - **Review fixes (both reviewers):**
+    - A full MAC rule (what "make a signature from this radio" saves) backs a hit up; only OUI and MAC prefixes of at most 3 bytes are vendor-prefix rules.
+    - "Find Hub" is FEAA frames 0x40/0x41; FCB2 is IETF DULT, kept and labeled. Plain Eddystone FEAA doesn't count.
+    - Apple's iBeacon layout (02 15), sent by fixed third-party beacons, doesn't count as Apple's rotating ecosystem.
+    - Only PUBLIC and STATIC make a vendor-prefix hit definite, as the step says. STABLE doesn't: a 20-minute random address on Axon's OUI stays "possible".
+    - STABLE needs 20 minutes of unbroken presence, not first-to-last seen.
+    - An all-rules signature made only of vendor-prefix rules counts.
+    - A fleet the device didn't match is never "possible".
+    - UUIDs go through `uuidAliases`.
+    - `RadioFacts.merge` keeps a known address type over a later "Unknown".
 - 2026-10-27: **P1-B7 Readings.** #64 (P1-B6) merged as 6aaabe8.
   - **RSSI:** `Rssi.measured` is −127..−1. It used to be −127..126, so 0 (an unset or missing level) and the positive values no radio reports counted as hears, and a 0 read as the strongest signal in ranges and the latest reading. `SitPathPlot`'s own `rssi == 0` check is now redundant and gone.
   - **Decoder cache:** `SignatureFieldDecoder`'s parse cache is a synchronized LRU of 512. It was an unbounded `ConcurrentHashMap` keyed by payload, and rotating payloads never repeat.

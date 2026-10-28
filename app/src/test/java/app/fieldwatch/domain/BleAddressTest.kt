@@ -5,17 +5,18 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** P1-B8a: the BLE address classifier and the address-only "possible" query, both behind a flag that is off. */
+/** P1-B8a: the BLE address classifier and the vendor-prefix-only "possible" query, both behind a flag that is off. */
 class BleAddressTest {
     private val fleets = DefaultCatalog.fleets()
     private val engine = SignatureEngine()
     private val arlo = fleets.single { it.id == "fleet-arlo" }
+    private val axon = fleets.single { it.id == "fleet-axon" }
 
-    private fun ble(mac: String, type: String? = null, seenMs: Long = 0L) = Sighting(
+    private fun ble(mac: String, type: String? = null, seenMs: Long = 0L, fleetIds: Set<String> = emptySet()) = Sighting(
         key = "BLE:$mac", kind = RadioKind.BLE, mac = mac, name = "", rssi = -60, rssiMin = -70, rssiMax = -50,
         channel = 0, frequencyMhz = 0, vendor = null, randomized = false, hiddenSsid = false, serviceUuids = emptyList(),
         manufacturerId = null, manufacturerDataHex = "", rawHex = "", extras = "", firstSeen = 0L, lastSeen = seenMs,
-        hitCount = 1, fleetIds = emptySet(), rssiHistory = emptyList(), presence = emptyList(),
+        hitCount = 1, fleetIds = fleetIds, rssiHistory = emptyList(), presence = emptyList(),
         facts = RadioFacts(addressType = type),
     )
 
@@ -25,48 +26,114 @@ class BleAddressTest {
         assertEquals(BleAddressClass.STATIC, BleAddress.classify(ble("C8:62:64:4A:1B:2C", "Random")))
         assertEquals(BleAddressClass.ROTATING, BleAddress.classify(ble("48:62:64:4A:1B:2C", "Random")))
         assertEquals(BleAddressClass.ROTATING, BleAddress.classify(ble("08:62:64:4A:1B:2C", "Random")))
+        // Top bits 10 are reserved for random addresses: not static.
+        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(ble("88:62:64:4A:1B:2C", "Random")))
         assertEquals(BleAddressClass.ROTATING, BleAddress.classify(ble("48:62:64:4A:1B:2C", "Anonymous")))
+        // "Unknown" from the stack is no type: the heuristic decides.
+        assertEquals(BleAddressClass.UNKNOWN, BleAddress.classify(ble("48:62:64:4A:1B:2C", "Unknown")))
     }
 
-    /** Without addressType: a rotating ecosystem means rotating; 20 minutes on one address means stable; else unknown. */
+    /** Without a type: a rotating ecosystem means rotating; 20 minutes heard without a break means stable. */
     @Test
     fun withoutATypeEvidenceDecides() {
         val plain = ble("48:62:64:4A:1B:2C")
         assertEquals(BleAddressClass.UNKNOWN, BleAddress.classify(plain))
-        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(manufacturerId = 0x004C)))
+        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(manufacturerId = 0x004C, manufacturerDataHex = "1005031C0F2A7B")))
         assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(serviceUuids = listOf("FD5A"))))
         assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(serviceUuids = listOf("0000FD6F-0000-1000-8000-00805F9B34FB"))))
-        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(facts = RadioFacts(serviceData = listOf(ServiceDataRecord("FCB2", "40"))))))
+        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(plain.copy(facts = RadioFacts(serviceData = listOf(ServiceDataRecord("FCB2", "01"))))))
+        // Google Find Hub: FEAA frames 0x40 and 0x41. Plain Eddystone (0x10, URL) is a fixed beacon.
+        for (frame in listOf("40", "41")) {
+            assertEquals(frame, BleAddressClass.ROTATING, BleAddress.classify(plain.copy(facts = RadioFacts(serviceData = listOf(ServiceDataRecord("FEAA", frame + "00"))))))
+        }
+        assertEquals(BleAddressClass.UNKNOWN, BleAddress.classify(plain.copy(facts = RadioFacts(serviceData = listOf(ServiceDataRecord("FEAA", "1000"))))))
         assertEquals(BleAddressClass.STABLE, BleAddress.classify(ble("48:62:64:4A:1B:2C", seenMs = BleAddress.STABLE_MS)))
         assertEquals(BleAddressClass.UNKNOWN, BleAddress.classify(ble("48:62:64:4A:1B:2C", seenMs = BleAddress.STABLE_MS - 1)))
     }
 
-    /** The corpus's random-address OUI hits (P1-B8 fixtures): address-only, so "possible" with the flag on. */
+    /** An Apple Continuity radio stays rotating however long it's heard; an iBeacon on 0x004C (a fixed beacon) can be stable. */
     @Test
-    fun anAddressOnlyHitOnARotatingAddressIsPossible() {
+    fun appleRotatesButAnIbeaconCanBeStable() {
+        val long = ble("48:62:64:4A:1B:2C", seenMs = BleAddress.STABLE_MS * 3)
+        assertEquals(BleAddressClass.ROTATING, BleAddress.classify(long.copy(manufacturerId = 0x004C, manufacturerDataHex = "1005031C0F2A7B")))
+        assertEquals(BleAddressClass.STABLE, BleAddress.classify(long.copy(manufacturerId = 0x004C, manufacturerDataHex = "0215" + "00".repeat(21))))
+    }
+
+    /** Stable means heard without a break: two hears 21 minutes apart are not 21 minutes of presence. */
+    @Test
+    fun stableNeedsUnbrokenPresence() {
+        val gappy = ble("48:62:64:4A:1B:2C", seenMs = BleAddress.STABLE_MS + 60_000).copy(
+            presence = listOf(PresenceSpan(0L, 30_000L), PresenceSpan(BleAddress.STABLE_MS + 30_000, null)),
+        )
+        assertEquals(BleAddressClass.UNKNOWN, BleAddress.classify(gappy))
+        val unbroken = gappy.copy(presence = listOf(PresenceSpan(0L, null)))
+        assertEquals(BleAddressClass.STABLE, BleAddress.classify(unbroken))
+    }
+
+    /** The corpus's random-address OUI hits (P1-B8 fixtures): vendor-prefix only, so "possible" with the flag on. */
+    @Test
+    fun aVendorPrefixHitOnARotatingAddressIsPossible() {
         for (case in MatchCorpus.randomAddressOuiHits) {
             val fleet = fleets.single { it.id in case.mustNotMatch }
-            assertTrue(case.label, engine.matchedOnlyByAddress(case.sighting, fleet))
-            assertTrue(case.label, BleAddress.possibleOnly(case.sighting, fleet, engine, enabled = true))
-            assertFalse("flag off", BleAddress.possibleOnly(case.sighting, fleet, engine, enabled = false))
+            val matched = case.sighting.copy(fleetIds = setOf(fleet.id))
+            assertTrue(case.label, engine.matchedOnlyByAddress(matched, fleet))
+            assertTrue(case.label, BleAddress.possibleOnly(matched, fleet, engine, enabled = true))
+            assertFalse("flag off", BleAddress.possibleOnly(matched, fleet, engine, enabled = false))
         }
     }
 
     @Test
-    fun aStableAddressOrANonAddressRuleMakesItDefinite() {
-        val random = ble("48:62:64:4A:1B:2C", "Random")
+    fun aDefiniteAddressOrANonAddressRuleMakesItDefinite() {
+        val random = ble("48:62:64:4A:1B:2C", "Random", fleetIds = setOf("fleet-arlo"))
         assertTrue(BleAddress.possibleOnly(random, arlo, engine, enabled = true))
         assertFalse("public", BleAddress.possibleOnly(random.copy(facts = RadioFacts(addressType = "Public")), arlo, engine, enabled = true))
-        assertFalse("seen 20 min, no type", BleAddress.possibleOnly(ble("48:62:64:4A:1B:2C", seenMs = BleAddress.STABLE_MS), arlo, engine, enabled = true))
-        // A name rule backs the OUI up: no longer address-only.
+        assertFalse("static", BleAddress.possibleOnly(random.copy(mac = "C8:62:64:4A:1B:2C"), arlo, engine, enabled = true))
+        // A name rule backs the OUI up: no longer vendor-prefix only.
         val named = random.copy(name = "Arlo Pro 4")
         assertFalse(engine.matchedOnlyByAddress(named, arlo))
         assertFalse(BleAddress.possibleOnly(named, arlo, engine, enabled = true))
+        // A fleet the device didn't match is never "possible".
+        assertFalse(engine.matchedOnlyByAddress(random.copy(fleetIds = emptySet()), arlo))
+    }
+
+    /** STABLE isn't definite: a random address on Axon's OUI held 20 minutes on a pre-API-35 phone stays "possible". */
+    @Test
+    fun aStableButUntypedAddressStaysPossible() {
+        val axonOui = ble("00:25:DF:4A:1B:2C", seenMs = BleAddress.STABLE_MS * 2, fleetIds = setOf("fleet-axon"))
+        assertEquals(BleAddressClass.STABLE, BleAddress.classify(axonOui))
+        assertTrue(BleAddress.possibleOnly(axonOui, axon, engine, enabled = true))
+    }
+
+    /** A full address a user saved from one radio names that radio; it isn't a chance vendor-prefix collision. */
+    @Test
+    fun aFullMacRuleBacksTheHitUp() {
+        val device = ble("48:62:64:4A:1B:2C", "Random")
+        val mine = engine.suggestFleet(device).let { it.copy(rules = it.rules.filter { r -> r.kind == RuleKind.MAC_PREFIX }) }
+        val matched = device.copy(fleetIds = setOf(mine.id))
+        assertFalse(engine.matchedOnlyByAddress(matched, mine))
+        assertFalse(BleAddress.possibleOnly(matched, mine, engine, enabled = true))
+    }
+
+    /** An all-rules signature made only of vendor-prefix rules (and a radio kind) is vendor-prefix only too. */
+    @Test
+    fun anAllRulesOuiSignatureCounts() {
+        val fleet = Fleet(id = "user-oui", name = "OUI only", matchAny = false, rules = listOf(
+            MatchRule(RuleKind.RADIO_KIND, radio = RadioKind.BLE), MatchRule(RuleKind.OUI, text = "48:62:64"),
+        ))
+        assertTrue(engine.matchedOnlyByAddress(ble("48:62:64:4A:1B:2C", "Random", fleetIds = setOf("user-oui")), fleet))
+    }
+
+    /** A known address type isn't replaced by a later "Unknown" from the stack. */
+    @Test
+    fun aKnownAddressTypeSurvivesALaterUnknown() {
+        assertEquals("Random", RadioFacts(addressType = "Random").merge(RadioFacts(addressType = "Unknown")).addressType)
+        assertEquals("Public", RadioFacts(addressType = "Unknown").merge(RadioFacts(addressType = "Public")).addressType)
+        assertEquals("Random", RadioFacts(addressType = "Random").merge(RadioFacts()).addressType)
     }
 
     @Test
     fun theFlagIsOff() {
         assertFalse(Features.BLE_ADDRESS_CLASSIFIER)
-        assertFalse(BleAddress.possibleOnly(ble("48:62:64:4A:1B:2C", "Random"), arlo, engine))
+        assertFalse(BleAddress.possibleOnly(ble("48:62:64:4A:1B:2C", "Random", fleetIds = setOf("fleet-arlo")), arlo, engine))
     }
 }
