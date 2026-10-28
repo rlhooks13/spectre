@@ -406,9 +406,15 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
           - ✅ **P1-B11d1** Whole BLE names (`Smart Tag`, `Smart Tag2`, `Galaxy SmartTag*`) in place of the three "contains" names, and the FD5A decode: the state, with overmature offline emphasized (catalog v108). Byte 12 waits for a capture.
           - **P1-B11d2** Co-travel keyed on the SmartTag privacy ID, behind a flag that defaults to off (ADR-0019). Acceptance: a capture of a separated SmartTag across address changes links into one radio in `CaptureReplay`, and two tags never link. It also decides how reports show the privacy ID (a bystander tag's day-long handle). P1-B11d1 left it out of the decode.
           - **P1-B11d3** A finder hit by name alone reads as "possible": SmartTag without FD5A, and Find My's BLE name (ADR-0020). It needs a name-only "possible" outside the address classifier. Acceptance: corpus cases for each, and no attention card or alert on a name-only hit.
-        - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed).
+        - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed). Waits for P1-B11d3 (name-only and FEEC-only "possible") and capture issue #90.
         - **P1-B11f** Chipolo FE65 (item 6, optional).
-    - **P1-B12 Police-row fixes** (research §1, items 7–14).
+    - **P1-B12 Police-row fixes** (research §1, items 7–14). Split:
+      - ✅ **P1-B12a** Novatel to ISP, Compex to ISP, AirLink to VEHICLE; no attention note, no default watch (items 7–9; catalog v109).
+      - **P1-B12b** Reveal Media's BodyWorn names to the Utility Inc row, and `RS2-*` (item 10).
+      - **P1-B12c** ShotSpotter `D4:11:D6` and Rhombus `CC:47:BD` Wi-Fi only (item 11).
+      - **P1-B12d** LiteOn camera radio review (item 12), and the Verkada and Avigilon notes (items 13–14: Verkada's OUI Wi-Fi only; Avigilon waits for a capture).
+      - **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109).
+      - Before `IN_APP_CATALOG_UPDATE` turns on (Phase 4): the stock-pack overlay must replay what ladder steps do beyond rows (v107 and v109 watchlist, filter and preset changes), because it moves the version past them.
     - **P1-B13 Recording-device-row fixes** (research §1, items 15–21).
     - **P1-B14 New signatures** (research §2), in batches.
   - **P1-B15 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5; after the rest of P1-B). It was numbered P1-B11 in ADR-0018's first draft; the owner's research steps took that number on 2026-10-28.

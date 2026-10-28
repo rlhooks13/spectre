@@ -142,6 +142,16 @@ object MatchCorpus {
     /** [s] with the advertising Flags byte (AD type 0x01): 0x06 LE-only, 0x02 also BR/EDR (dual mode). */
     private fun withFlags(s: Sighting, flags: Int) = s.copy(facts = s.facts.copy(advFlags = flags))
 
+    /**
+     * P1-B12a: consumer and fleet gear on OUIs a police row once claimed. They still match their (now non-police) rows,
+     * so the check is by class: no law-enforcement match and no attention note. Synthetic addresses.
+     */
+    val notLawEnforcement: List<Pair<String, Sighting>> = listOf(
+        "Inseego MiFi hotspot on 28:80:A2" to sighting("NLE:mifi", kind = RadioKind.WIFI, mac = mac("28:80:A2", "0A0B0C"), name = "Verizon-MiFi8800L-ABCD"),
+        "Sierra Wireless AirCard on a generic Sierra block" to sighting("NLE:aircard", kind = RadioKind.WIFI, mac = mac("00:A0:D5", "0A0B0C"), name = "AirCard-1234"),
+        "Third-party router on a Compex module, 04:F0:21" to sighting("NLE:compex", kind = RadioKind.WIFI, mac = mac("04:F0:21", "0A0B0C"), name = "HomeRouter-5G"),
+    )
+
     /** The real devices behind each confuser's signature. Pinned by hand, so a rule fix can't drop them. */
     val targets: List<Target> = listOf(
         // P1-B11b: a Find Hub tag is LE-only (Flags 0x06), or sends no Flags byte; either way it stays a tag.

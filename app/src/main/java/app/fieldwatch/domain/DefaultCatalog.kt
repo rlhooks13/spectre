@@ -3850,11 +3850,12 @@ object DefaultCatalog {
         id = "fleet-airlink",
         name = "AirLink",
         enabled = true,
-        colorIndex = Hue.LAW,
-        kind = SignatureClass.LAW_ENFORCEMENT,
+        // P1-B12a (research §1 item 9): six of its seven OUIs are generic Sierra Wireless blocks (a module maker that
+        // also sold consumer AirCard hotspots), so a vehicle or fleet router, not law enforcement.
+        colorIndex = Hue.VEHICLE,
+        kind = SignatureClass.VEHICLE,
         matchAny = true,
-        notes = "Sierra Wireless AirLink vehicle / fleet gateway. Common in public-safety and commercial fleets. Hidden SSIDs still hit on the board vendor.",
-        attentionNote = "Sierra Wireless AirLink vehicle gateway. Common in US police and public-safety fleets; also commercial fleet. Hidden or renamed SSIDs still hit on the Sierra Wireless IEEE OUI. Pattern match, not that agency or that car. Look with your eyes.",
+        notes = "Sierra Wireless AirLink vehicle or fleet router, used by delivery, transit and utility fleets as well as public safety. Most of its OUIs are general Sierra Wireless blocks, also on consumer AirCard hotspots. Hidden SSIDs still hit on the board vendor.",
         builtIn = true,
         rules = withWifiOuis(
             listOf(
@@ -3869,11 +3870,12 @@ object DefaultCatalog {
         id = "fleet-compex",
         name = "Compex",
         enabled = true,
-        colorIndex = Hue.LAW,
-        kind = SignatureClass.LAW_ENFORCEMENT,
+        // P1-B12a (research §1 item 8): Compex Systems makes Wi-Fi modules and embedded AP/CPE boards; no source ties its
+        // OUIs to police vehicles.
+        colorIndex = Hue.HOME_CAM,
+        kind = SignatureClass.ISP,
         matchAny = true,
-        notes = "Compex vehicle or agency Wi-Fi access point. Same boards appear on other Compex radios.",
-        attentionNote = "Compex Wi-Fi AP. Some US public-safety agencies use these in vehicles. The same IEEE OUIs appear on other Compex radios. Pattern match, not that agency. Look with your eyes.",
+        notes = "Compex Systems Wi-Fi module or embedded access point. Its boards are inside many vendors' routers and outdoor links.",
         builtIn = true,
         rules = withWifiOuis(
             listOf(
@@ -3887,11 +3889,11 @@ object DefaultCatalog {
         id = "fleet-novatel",
         name = "Novatel Wireless",
         enabled = true,
-        colorIndex = Hue.LAW,
-        kind = SignatureClass.LAW_ENFORCEMENT,
+        // P1-B12a (research §1 item 7): IEEE lists 28:80:A2 as "Inseego Wireless, Inc", maker of consumer MiFi hotspots.
+        colorIndex = Hue.HOME_CAM,
+        kind = SignatureClass.ISP,
         matchAny = true,
-        notes = "Novatel Wireless / Inseego vehicle radio. The same prefix is also on some consumer MiFi hotspots.",
-        attentionNote = "Novatel Wireless / Inseego OUI 28:80:A2. Reported in public-safety vehicle AP work. Same prefix is also on some Inseego consumer MiFi radios. Pattern match, not that agency. Look with your eyes.",
+        notes = "Novatel Wireless / Inseego mobile hotspot or modem (IEEE: Inseego Wireless). Mostly consumer MiFi hotspots.",
         builtIn = true,
         rules = withWifiOuis(emptyList(), ApVendorOuis.NOVATEL),
     )

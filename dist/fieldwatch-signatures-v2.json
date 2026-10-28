@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 108,
+    "catalogVersion": 109,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -737,10 +737,10 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Sierra Wireless AirLink vehicle / fleet gateway. Common in public-safety and commercial fleets. Hidden SSIDs still hit on the board vendor.",
-            "attentionNote": "Sierra Wireless AirLink vehicle gateway. Common in US police and public-safety fleets; also commercial fleet. Hidden or renamed SSIDs still hit on the Sierra Wireless IEEE OUI. Pattern match, not that agency or that car. Look with your eyes.",
+            "notes": "Sierra Wireless AirLink vehicle or fleet router, used by delivery, transit and utility fleets as well as public safety. Most of its OUIs are general Sierra Wireless blocks, also on consumer AirCard hotspots. Hidden SSIDs still hit on the board vendor.",
+            "attentionNote": "",
             "builtIn": true,
-            "kind": "LAW_ENFORCEMENT"
+            "kind": "VEHICLE"
         },
         {
             "id": "fleet-airties",
@@ -20384,7 +20384,7 @@
             "name": "Compex",
             "enabled": true,
             "matchAny": true,
-            "colorIndex": 7,
+            "colorIndex": 6,
             "rules": [
                 {
                     "kind": "NAME_GLOB",
@@ -20423,10 +20423,10 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Compex vehicle or agency Wi-Fi access point. Same boards appear on other Compex radios.",
-            "attentionNote": "Compex Wi-Fi AP. Some US public-safety agencies use these in vehicles. The same IEEE OUIs appear on other Compex radios. Pattern match, not that agency. Look with your eyes.",
+            "notes": "Compex Systems Wi-Fi module or embedded access point. Its boards are inside many vendors' routers and outdoor links.",
+            "attentionNote": "",
             "builtIn": true,
-            "kind": "LAW_ENFORCEMENT"
+            "kind": "ISP"
         },
         {
             "id": "fleet-cradlepoint",
@@ -48946,7 +48946,7 @@
             "name": "Novatel Wireless",
             "enabled": true,
             "matchAny": true,
-            "colorIndex": 7,
+            "colorIndex": 6,
             "rules": [
                 {
                     "kind": "OUI",
@@ -48961,10 +48961,10 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Novatel Wireless / Inseego vehicle radio. The same prefix is also on some consumer MiFi hotspots.",
-            "attentionNote": "Novatel Wireless / Inseego OUI 28:80:A2. Reported in public-safety vehicle AP work. Same prefix is also on some Inseego consumer MiFi radios. Pattern match, not that agency. Look with your eyes.",
+            "notes": "Novatel Wireless / Inseego mobile hotspot or modem (IEEE: Inseego Wireless). Mostly consumer MiFi hotspots.",
+            "attentionNote": "",
             "builtIn": true,
-            "kind": "LAW_ENFORCEMENT"
+            "kind": "ISP"
         },
         {
             "id": "fleet-nuki",

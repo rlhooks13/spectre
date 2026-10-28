@@ -624,11 +624,12 @@ object DeviceExplain {
                 n == "cradlepoint" ->
                     Hint("hotspot", "a Cradlepoint vehicle router (often public-safety / fleet)", "Matched signature $raw.", 7)
                 n == "airlink" ->
-                    Hint("hotspot", "a Sierra Wireless AirLink vehicle gateway", "Matched signature $raw.", 7)
+                    // P1-B12a: fleet routers and modules, not police (research §1 items 7–9).
+                    Hint("hotspot", "a Sierra Wireless AirLink or AirCard router", "Matched signature $raw.", 7)
                 n == "compex" ->
-                    Hint("hotspot", "a Compex access point (sometimes public-safety / fleet)", "Matched signature $raw.", 6)
+                    Hint("hotspot", "a Compex Wi-Fi module or embedded access point", "Matched signature $raw.", 6)
                 n == "novatel wireless" ->
-                    Hint("hotspot", "a Novatel Wireless / Inseego vehicle radio", "Matched signature $raw.", 6)
+                    Hint("hotspot", "a Novatel Wireless / Inseego mobile hotspot or modem", "Matched signature $raw.", 6)
                 n == "utility inc" ->
                     Hint("hotspot", "a Utility, Inc vehicle or public-safety radio", "Matched signature $raw.", 6)
                 "gl.inet" in n || n == "glinet" ->
