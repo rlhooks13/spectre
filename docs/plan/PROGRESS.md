@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B11d** (SmartTag: anchored names, state decode, co-travel on the privacy ID), after P1-B11c merges. P1-B11 is split a–f in PLAN.
+- Current step: **P1-B11e** (Tile: no finder alert for FEEC only, and the decode offset), after P1-B11d1 merges. P1-B11 is split a–f in PLAN. P1-B11d2 (privacy-ID co-travel, flagged off) and P1-B11d3 (name-only "possible") come after P1-B11f.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,31 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B11d1 SmartTag whole names and state decode (catalog v108).** #88 (P1-B11c) merged as 0a94468.
+  - **Split:** P1-B11d is split into d1 (names, decode), d2 (privacy-ID co-travel, behind an off flag per ADR-0019) and d3 (a name-only finder hit as "possible", for SmartTag and Find My).
+  - **Names:** the "contains" rules `SmartTag`, `Smart Tag` and `Galaxy SmartTag` (any radio) are retired. The BLE globs `Smart Tag`, `Smart Tag2` and `Galaxy SmartTag*` replace them. FD5A is listed first, in the order an upgraded config gets the rules.
+  - **Decode:** FD5A byte 0, gated on its high five bits being 0x10. States:
+    - 1–3 offline (just separated, over 15 min, over 24 h; over 24 h is emphasized);
+    - 4–6 paired or connected, with a note that the state can lag and doesn't say whose phone;
+    - 0 and 7 "state not known".
+    - The privacy ID is left out, because reports would carry a bystander tag's day-long handle. P1-B11d2 decides how reports show it.
+  - **Ladder v108:** each retired name's "off" carries only to its own replacements. The built-in row gains the decode where it has none.
+  - **Reviews** (no BLOCKING). Fixed:
+    - the per-fleet "off" carry, now per rule;
+    - states 0 and 7 as bare digits;
+    - the connected note (lag caveat, no "near you" claim);
+    - near misses for every retired rule;
+    - a target for bare `Smart Tag`;
+    - the exact-glob and user-copy ladder tests;
+    - the privacy ID in reports (left out);
+    - the `SMART_TAG` constant.
+    - Rebutted:
+      - a shared decode-refresh helper (one use so far);
+      - raising the test baseline. That file is protected, and the owner sets it.
+  - **Tests:** `CatalogV108LadderTest` (5), `SignatureFieldDecoderTest.catalogSmartTagState`, and `ReleaseNotesTest` now drops the SmartTag line, whatever it says. 1071 tests.
+  - **Corpus:** targets `Smart Tag`, `Smart Tag2`, `Galaxy SmartTag2`. Near misses: Kogan Smart Tag (Find Hub only now), NOVOO Smart Tag, `XYZ SmartTag`, `My Galaxy SmartTag holder`, Wi-Fi "Smart Tag" and "Galaxy SmartTag Setup".
+  - **Goldens:** `since-v97.md` lists the retired and added names, "decoded fields changed", and each near miss losing its SmartTag label. The corpus goldens add the cases. The 1.1.32 import config is at v108.
+  - **Device:** `Success`, new pid 15244, 0 FATAL/ANR/AndroidRuntime lines, config `"version": 108`, and the screencap shows the live list (no disclaimer).
 - 2026-10-28: **P1-B11c FD44 and "Find My" label Find My device, not AirTags (catalog v107).** #86 (P1-B11b) merged as 170bc96.
   - **Research claim** (§1 item 2): FD44 is Apple's Find My accessory service, and third-party tags and AirPods send it too, so on AirTags it mislabeled them.
   - **Rules:** AirTags' `uuid("FD44")` and `name("Find My")` are retired (`RetiredRules`, `retired.json`, v107). Find My device gains `uuid("FD44")` and `bleName("Find My")` (BLE-only now).

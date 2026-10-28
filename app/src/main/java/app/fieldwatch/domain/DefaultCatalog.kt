@@ -449,11 +449,15 @@ object DefaultCatalog {
         notes = "Samsung SmartTag / SmartTag+ item finder. Addresses often rotate.",
         builtIn = true,
         rules = listOf(
-            name("SmartTag"),
-            name("Smart Tag"),
-            name("Galaxy SmartTag"),
             uuid("FD5A"),
+            // P1-B11d (research §1 item 3): whole names, BLE only. "Smart Tag" anywhere in a name labeled other brands'
+            // Find Hub tags ("Kogan Smart Tag", "NOVOO Smart Tag") as Samsung. After FD5A, in the order an upgraded
+            // config gets them (patchBuiltIn appends).
+            bleGlob("Smart Tag"),
+            bleGlob("Smart Tag2"),
+            bleGlob("Galaxy SmartTag*"),
         ),
+        decode = CatalogDecodes.smartTag,
     )
 
     private fun ibeacon() = Fleet(

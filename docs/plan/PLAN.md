@@ -402,7 +402,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - ✅ **P1-B11c** FD44 and `name("Find My")` to `fleet-findmy` (item 2; catalog v107).
           - The name is BLE-only. A radio sending FD44 stays a finder: it routes only to AirTags (ADR-0020).
           - Open for captures: routing FD44 types 0 and 3 away, and whether separated AirPods (type 3) should read as a finder.
-        - **P1-B11d** SmartTag: anchored names, state decode, and co-travel on the privacy ID (item 3).
+        - **P1-B11d** SmartTag: anchored names, state decode, and co-travel on the privacy ID (item 3). Split:
+          - ✅ **P1-B11d1** Whole BLE names (`Smart Tag`, `Smart Tag2`, `Galaxy SmartTag*`) in place of the three "contains" names, and the FD5A decode: the state, with overmature offline emphasized (catalog v108). Byte 12 waits for a capture.
+          - **P1-B11d2** Co-travel keyed on the SmartTag privacy ID, behind a flag that defaults to off (ADR-0019). Acceptance: a capture of a separated SmartTag across address changes links into one radio in `CaptureReplay`, and two tags never link. It also decides how reports show the privacy ID (a bystander tag's day-long handle). P1-B11d1 left it out of the decode.
+          - **P1-B11d3** A finder hit by name alone reads as "possible": SmartTag without FD5A, and Find My's BLE name (ADR-0020). It needs a name-only "possible" outside the address classifier. Acceptance: corpus cases for each, and no attention card or alert on a name-only hit.
         - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed).
         - **P1-B11f** Chipolo FE65 (item 6, optional).
     - **P1-B12 Police-row fixes** (research §1, items 7–14).

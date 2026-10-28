@@ -64,6 +64,10 @@ object RetiredRules {
         // P1-B11c: FD44 and "Find My" are any Find My accessory's (third-party tags, AirPods); "Find My device" takes them.
         Entry("fleet-airtag", MatchRule(RuleKind.NAME_CONTAINS, text = "Find My"), retiredIn = 107),
         Entry("fleet-airtag", MatchRule(RuleKind.SERVICE_UUID, text = "FD44"), retiredIn = 107),
+        // P1-B11d: SmartTag names anywhere in a name, on any radio, labeled other brands' Find Hub tags as Samsung.
+        Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "SmartTag"), retiredIn = 108),
+        Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "Smart Tag"), retiredIn = 108),
+        Entry("fleet-smarttag", MatchRule(RuleKind.NAME_CONTAINS, text = "Galaxy SmartTag"), retiredIn = 108),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

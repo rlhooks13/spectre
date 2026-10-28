@@ -185,6 +185,10 @@ object MatchCorpus {
             sighting("T:smarttag-svcdata", serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
             "fleet-smarttag",
         ),
+        // P1-B11d: SmartTag's own names, whole and over BLE.
+        Target("SmartTag advertising Smart Tag", sighting("T:smarttag-name", name = "Smart Tag"), "fleet-smarttag"),
+        Target("SmartTag2 advertising Smart Tag2", sighting("T:smarttag-name2", name = "Smart Tag2"), "fleet-smarttag"),
+        Target("Galaxy SmartTag2 by name", sighting("T:smarttag-galaxy", name = "Galaxy SmartTag2"), "fleet-smarttag"),
         Target("Tile on FEED", sighting("T:tile-feed", serviceUuids = listOf("FEED")), "fleet-tile"),
         Target(
             "Tile on its own company id 0x067C",
@@ -253,6 +257,26 @@ object MatchCorpus {
             "AirPods sending FD44 and an AirPods status 0x30",
             sighting("NM:findmy-airpods", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x30))),
             setOf("fleet-airtag"),
+        ),
+        // P1-B11d: other brands' Find Hub tags are sold as "<Brand> Smart Tag"; they're Find Hub, not Samsung.
+        NearMiss(
+            "Kogan Smart Tag (a Find Hub tag)",
+            sighting("NM:kogan-smart-tag", name = "Kogan Smart Tag", serviceData = findHubFrame("41")),
+            setOf("fleet-smarttag"),
+        ),
+        NearMiss("NOVOO Smart Tag by name", sighting("NM:novoo-smart-tag", name = "NOVOO Smart Tag"), setOf("fleet-smarttag")),
+        // "SmartTag" and "Galaxy SmartTag" anywhere in a name: a clone, and a name that only mentions the product.
+        NearMiss("Clone tag named XYZ SmartTag, no FD5A", sighting("NM:clone-smarttag", name = "XYZ SmartTag"), setOf("fleet-smarttag")),
+        NearMiss("BLE name My Galaxy SmartTag holder, no FD5A", sighting("NM:galaxy-smarttag-mention", name = "My Galaxy SmartTag holder"), setOf("fleet-smarttag")),
+        NearMiss(
+            "Wi-Fi network named \"Galaxy SmartTag Setup\"",
+            sighting("NM:galaxy-smarttag-wifi", kind = RadioKind.WIFI, mac = mac("02:55:66", "778899"), name = "Galaxy SmartTag Setup"),
+            setOf("fleet-smarttag"), checkFinder = true,
+        ),
+        NearMiss(
+            "Wi-Fi network named \"Smart Tag\"",
+            sighting("NM:smarttag-wifi", kind = RadioKind.WIFI, mac = mac("02:33:44", "556677"), name = "Smart Tag"),
+            setOf("fleet-smarttag"), checkFinder = true,
         ),
         // "Find My" anywhere in a name, on any radio, used to say AirTag: a Wi-Fi network with the words in it.
         NearMiss(
