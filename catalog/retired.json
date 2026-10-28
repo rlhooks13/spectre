@@ -638,6 +638,32 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-raven",
+            "retiredIn": 111,
+            "step": "P1-B12c",
+            "reason": "ShotSpotter's OUI D4:11:D6 on any radio. 0xD4 is in the BLE static-random range, so random BLE addresses matched it by chance. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {
+                "kind": "OUI",
+                "text": "D4:11:D6",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-rhombus",
+            "retiredIn": 111,
+            "step": "P1-B12c",
+            "reason": "Rhombus's OUI CC:47:BD on any radio. 0xCC is in the BLE static-random range, so random BLE addresses matched it by chance. Replaced by the same OUI, Wi-Fi only.",
+            "rule": {
+                "kind": "OUI",
+                "text": "CC:47:BD",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }

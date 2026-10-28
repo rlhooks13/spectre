@@ -411,10 +411,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - **P1-B12 Police-row fixes** (research §1, items 7–14). Split:
       - ✅ **P1-B12a** Novatel to ISP, Compex to ISP, AirLink to VEHICLE; no attention note, no default watch (items 7–9; catalog v109).
       - ✅ **P1-B12b** Reveal Media's BodyWorn names to the Utility Inc row, and `RS2-*` (item 10; catalog v110). Utility gains only `glob("BodyWorn*")`, and `RS2-*` is retired.
-      - **P1-B12c** ShotSpotter `D4:11:D6` and Rhombus `CC:47:BD` Wi-Fi only (item 11).
+      - ✅ **P1-B12c** ShotSpotter `D4:11:D6` and Rhombus `CC:47:BD` Wi-Fi only (item 11; catalog v111).
       - **P1-B12d** LiteOn camera radio review (item 12), and the Verkada and Avigilon notes (items 13–14: Verkada's OUI Wi-Fi only; Avigilon waits for a capture).
-      - **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109).
-      - Before `IN_APP_CATALOG_UPDATE` turns on (Phase 4): the stock-pack overlay must replay what ladder steps do beyond rows (v107 and v109 watchlist, filter and preset changes), because it moves the version past them.
+      - **P1-B12f** The other any-radio OUIs in the BLE static-random range (first byte 0xC0–0xFF): Uniview `C4:79:05` (an attention row), Hatch `C8:FA:9C` and Arlo `FC:9C:98`. Same fix as P1-B12c, Wi-Fi only (found in P1-B12c's review). The general fix, where only a PUBLIC address makes an OUI-only BLE hit definite, belongs to P1-B8's classifier, which is behind its flag.
+      - **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109). It also gives the rule radios P1-B12c and P1-B12f changed (Wi-Fi OUIs).
+      - Before `IN_APP_CATALOG_UPDATE` turns on (Phase 4): the stock-pack overlay must replay what ladder steps do beyond adding rows, because it moves the version past them: the v107, v109 and v110 watchlist, filter, preset and row-switch changes, and an "off" carried from a retired rule to its replacement (`carryRetiredOff`, v101–v103, v108, v111).
     - **P1-B13 Recording-device-row fixes** (research §1, items 15–21).
     - **P1-B14 New signatures** (research §2), in batches.
   - **P1-B15 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5; after the rest of P1-B). It was numbered P1-B11 in ADR-0018's first draft; the owner's research steps took that number on 2026-10-28.

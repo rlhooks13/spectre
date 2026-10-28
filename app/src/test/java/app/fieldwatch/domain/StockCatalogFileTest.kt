@@ -129,6 +129,7 @@ class StockCatalogFileTest {
             107 to "30bb497ea928e43462b4af10b0e287bc76a00712d0f51c32ed219ce685f5f006",
             108 to "0e40a49a968f0af154a0b1da0913bf0c9fa2d12e055a950064d6e854c7cb4cb8",
             109 to "913c57555e7c8a537c7d4a46d1b01c698c70897564353cf067fa5d9efd43e611",
+            110 to "3c2f289b56901469d2f25b8b266ad0a8e11d5fb102639c85326c8eec3eb2960d",
         )
     }
 

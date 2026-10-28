@@ -46,6 +46,12 @@ T:smarttag	target	SmartTag on FD5A
 T:smarttag-svcdata	target	SmartTag with FD5A in service data only
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:shotspotter-wifi	target	ShotSpotter sensor Wi-Fi on D4:11:D6
+  expect fleet-raven
+  -> fleet-raven [SURVEILLANCE]
+T:rhombus-wifi	target	Rhombus camera Wi-Fi on CC:47:BD
+  expect fleet-rhombus
+  -> fleet-rhombus [SURVEILLANCE, attention]
 T:bodyworn	target	BodyWorn body camera by name
   expect fleet-utility-inc
   -> fleet-utility-inc [LAW_ENFORCEMENT, attention]
@@ -142,6 +148,12 @@ NM:findmy-thirdparty	near-miss	Third-party Find My tag on FD44, Offline Finding 
 NM:findmy-airpods	near-miss	AirPods sending FD44 and an AirPods status 0x30
   must not fleet-airtag
   -> fleet-findmy [FINDER]
+NM:ble-d411d6	near-miss	Static random BLE address starting D4:11:D6
+  must not fleet-raven
+  -> (none)
+NM:ble-cc47bd	near-miss	Static random BLE address starting CC:47:BD
+  must not fleet-rhombus
+  -> (none)
 NM:bodyworn-mid	near-miss	Accessory named My BodyWorn mount
   must not fleet-reveal-media, fleet-utility-inc
   -> (none)

@@ -387,10 +387,9 @@ object DefaultCatalog {
             uuid("3300"),
             uuid("3400"),
             uuid("3500"),
-            oui("D4:11:D6"),
             // P1-B5a: "RAVEN" anywhere hit "Ravenclaw" and "Ravens fan". The exact name and a "RAVEN-xxxx" or
             // "RAVEN_xxxx" style still match; no capture shows which a Raven uses, so this trades some recall for
-            // fewer false labels (UUIDs and the OUI above still find it). Last, as patchBuiltIn appends them, so an
+            // fewer false labels (UUIDs, and on Wi-Fi the OUI, still find it). Last, as patchBuiltIn appends them, so an
             // upgraded row equals stock (ConfigStore.ADDED_RULES_V101).
             glob("RAVEN"),
             glob("RAVEN-*"),
@@ -398,6 +397,9 @@ object DefaultCatalog {
             // Its Wi-Fi Direct SSID, in the observed shape "DIRECT-rR-Raven-607"
             // (SignatureExchangeTest.ravenWifiDirectSsidHitsRavenOnly).
             wifiGlob("DIRECT-??-Raven-*"),
+            // P1-B12c (research §1 item 11): ShotSpotter's OUI, Wi-Fi only. 0xD4 is in the BLE static-random range, so
+            // on BLE it matched random addresses by chance. Last, as patchBuiltIn appends it.
+            wifiOui("D4:11:D6"),
         ),
     )
 
@@ -2706,12 +2708,14 @@ object DefaultCatalog {
         kind = SignatureClass.SURVEILLANCE,
         matchAny = true,
         notes = "Rhombus cloud camera. BLE is loudest when the camera is unregistered or offline.",
-        attentionNote = "Rhombus cloud cameras on buildings and some public sites. IEEE CC:47:BD or a Rhombus name. BLE often only while unregistered or offline. Pattern match, not that camera. Look with your eyes.",
+        attentionNote = "Rhombus cloud cameras on buildings and some public sites. Wi-Fi OUI CC:47:BD or a Rhombus name. BLE often only while unregistered or offline. Pattern match, not that camera. Look with your eyes.",
         builtIn = true,
         rules = listOf(
-            oui("CC:47:BD"),
             name("Rhombus"),
             glob("Rhombus*"),
+            // P1-B12c (research §1 item 11): Rhombus's OUI, Wi-Fi only. 0xCC is in the BLE static-random range, so on BLE
+            // it matched random addresses by chance; the Rhombus names still find its BLE. Last, as patchBuiltIn appends it.
+            wifiOui("CC:47:BD"),
         ),
     )
 

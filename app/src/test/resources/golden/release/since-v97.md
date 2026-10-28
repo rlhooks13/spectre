@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v110 -->
-### Signatures (stock catalog v97 → v110)
+<!-- generated: catalog v97 -> v111 -->
+### Signatures (stock catalog v97 → v111)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
@@ -38,8 +38,9 @@
 - **Nuki** (lock): stopped matching on name contains "Nuki" (BLE).
 - **Oura** (wearable): stopped matching on name contains "Oura" (BLE); now also matches on name glob "Oura" (BLE); name glob "Oura *" (BLE); name glob "Oura-*" (BLE); name glob "Oura_*" (BLE).
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).
-- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI).
+- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; oui "D4:11:D6"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI); oui "D4:11:D6" (WIFI).
 - **Reveal Media** (law enforcement): attention note reworded; stopped matching on name contains "BodyWorn"; name glob "BodyWorn*"; name glob "RS2-*"; notes reworded.
+- **Rhombus** (surveillance): attention note reworded; stopped matching on oui "CC:47:BD"; now also matches on oui "CC:47:BD" (WIFI).
 - **ASSA ABLOY** (lock): stopped matching on name contains "Seos" (BLE); name contains "Yale" (BLE); now also matches on name glob "Seos" (BLE); name glob "Seos *" (BLE); name glob "Seos-*" (BLE); name glob "Seos_*" (BLE).
 - **Samsung SmartTags** (finder): stopped matching on name contains "SmartTag"; name contains "Smart Tag"; name contains "Galaxy SmartTag"; Bluetooth company id 0x0075; now also matches on name glob "Smart Tag" (BLE); name glob "Smart Tag2" (BLE); name glob "Galaxy SmartTag*" (BLE); decoded fields changed.
 - **Sony** (audio): stopped matching on name contains "Sony" (BLE); now also matches on name glob "Sony" (BLE); name glob "Sony *" (BLE); name glob "Sony-*" (BLE); name glob "Sony_*" (BLE); notes reworded.
@@ -66,6 +67,8 @@
 - Near miss: Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40: was Google (phone), Google Find Hub (finder), now Find Hub accessory (headphones or phone) (audio), Google (phone).
 - Near miss: Third-party Find My tag on FD44, Offline Finding status 0x20: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
+- Near miss: Static random BLE address starting D4:11:D6: was Raven / ShotSpotter (surveillance), now no signature.
+- Near miss: Static random BLE address starting CC:47:BD: was Rhombus (surveillance, extra attention), now no signature.
 - Near miss: Accessory named My BodyWorn mount: was Reveal Media (law enforcement, extra attention), now no signature.
 - Near miss: Device named RS2-0042: was Reveal Media (law enforcement, extra attention), now no signature.
 - Near miss: Kogan Smart Tag (a Find Hub tag): was Google Find Hub (finder), Samsung SmartTags (finder), now Google Find Hub (finder).

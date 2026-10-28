@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 110,
+    "catalogVersion": 111,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -50616,14 +50616,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "OUI",
-                    "text": "D4:11:D6",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_GLOB",
                     "text": "RAVEN",
                     "companyId": 0,
@@ -50650,6 +50642,14 @@
                 {
                     "kind": "NAME_GLOB",
                     "text": "DIRECT-??-Raven-*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "D4:11:D6",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "WIFI",
@@ -52897,14 +52897,6 @@
             "colorIndex": 1,
             "rules": [
                 {
-                    "kind": "OUI",
-                    "text": "CC:47:BD",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "Rhombus",
                     "companyId": 0,
@@ -52919,6 +52911,14 @@
                     "dataPrefixHex": "",
                     "radio": null,
                     "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "CC:47:BD",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
+                    "enabled": true
                 }
             ],
             "minPeers": 0,
@@ -52926,7 +52926,7 @@
             "clusterByOui": false,
             "sequentialMac": false,
             "notes": "Rhombus cloud camera. BLE is loudest when the camera is unregistered or offline.",
-            "attentionNote": "Rhombus cloud cameras on buildings and some public sites. IEEE CC:47:BD or a Rhombus name. BLE often only while unregistered or offline. Pattern match, not that camera. Look with your eyes.",
+            "attentionNote": "Rhombus cloud cameras on buildings and some public sites. Wi-Fi OUI CC:47:BD or a Rhombus name. BLE often only while unregistered or offline. Pattern match, not that camera. Look with your eyes.",
             "builtIn": true,
             "kind": "SURVEILLANCE"
         },

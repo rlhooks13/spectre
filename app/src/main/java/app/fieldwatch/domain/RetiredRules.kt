@@ -72,6 +72,9 @@ object RetiredRules {
         Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_CONTAINS, text = "BodyWorn"), retiredIn = 110),
         Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_GLOB, text = "BodyWorn*"), retiredIn = 110),
         Entry("fleet-reveal-media", MatchRule(RuleKind.NAME_GLOB, text = "RS2-*"), retiredIn = 110),
+        // P1-B12c: OUIs in the BLE static-random range (0xD4, 0xCC) matched random BLE addresses; Wi-Fi only now.
+        Entry("fleet-raven", MatchRule(RuleKind.OUI, text = "D4:11:D6"), retiredIn = 111),
+        Entry("fleet-rhombus", MatchRule(RuleKind.OUI, text = "CC:47:BD"), retiredIn = 111),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */
