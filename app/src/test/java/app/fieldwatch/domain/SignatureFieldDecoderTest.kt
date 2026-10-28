@@ -543,10 +543,19 @@ class SignatureFieldDecoderTest {
             bleService("FEAA", "40$eid" + "00", fleet.id),
             listOf(fleet),
         )
-        assertEquals("nearby", quiet.single().text)
+        // P1-B11a: 0x40 only means protection isn't active yet; it doesn't suggest "your own tag".
+        assertEquals("not yet in separated mode", quiet.single().text)
         assertFalse(quiet.single().emphasis)
-        assertTrue(quiet.single().note.contains("own tag"))
-        assertTrue(quiet.single().note.contains("joined"))
+        assertTrue(quiet.single().note.contains("planted recently"))
+        assertFalse(quiet.single().note.contains("own tag"))
+        // A 32-byte (SECP256R1) EID reads whole in eid32; a 20-byte frame has no eid32. A 21-byte frame (no flags byte)
+        // still shows its EID, as AdvPayloadDecoder reads it.
+        val eid32 = "22".repeat(32)
+        val long = SignatureFieldDecoder.decodeSighting(bleService("FEAA", "40$eid32" + "00", fleet.id), listOf(fleet))
+        assertEquals(List(32) { "22" }.joinToString(" "), long.display("eid32"))
+        assertTrue(rows.none { it.id == "eid32" })
+        val bare = SignatureFieldDecoder.decodeSighting(bleService("FEAA", "40$eid", fleet.id), listOf(fleet))
+        assertEquals(List(20) { "11" }.joinToString(" "), bare.display("eid"))
     }
 
     @Test
@@ -568,12 +577,13 @@ class SignatureFieldDecoderTest {
             listOf(fleet),
         )
         assertEquals("2", near.display("network_id"))
-        assertEquals("near owner", near.display("mode"))
+        assertEquals("marked near owner", near.display("mode"))
         val quiet = SignatureFieldDecoder.liveChips(bleService("FCB2", "0201", fleet.id), listOf(fleet))
-        assertEquals("near owner", quiet.single().text)
+        assertEquals("marked near owner", quiet.single().text)
         assertFalse(quiet.single().emphasis)
-        assertTrue(quiet.single().note.contains("own tag"))
-        assertTrue(quiet.single().note.contains("joined"))
+        // P1-B11a: the near-owner bit can linger 30+ minutes after separation; it doesn't clear a planted tag.
+        assertTrue(quiet.single().note.contains("half an hour"))
+        assertFalse(quiet.single().note.contains("own tag"))
     }
 
     @Test
@@ -586,7 +596,7 @@ class SignatureFieldDecoderTest {
         assertTrue(mode.live)
         assertEquals(listOf("0"), mode.liveEmphasis)
         assertTrue(mode.enumNotes?.get("0")?.contains("about a day") == true)
-        assertTrue(mode.enumNotes?.get("1")?.contains("own tag") == true)
+        assertTrue(mode.enumNotes?.get("1")?.contains("half an hour") == true)
         val older = """
             {"format":"fieldwatch-signatures","formatVersion":1,"catalogVersion":1,"fleets":[
               {"id":"fleet-x","name":"X","rules":[{"kind":"SERVICE_DATA","text":"FCB2"}],

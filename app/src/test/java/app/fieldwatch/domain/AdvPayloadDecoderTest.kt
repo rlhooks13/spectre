@@ -98,6 +98,10 @@ class AdvPayloadDecoderTest {
         val fields = AdvPayloadDecoder.decodeService(ServiceDataRecord("FEAA", "41$eid" + "00"))
         assertEquals("separated (unwanted-tracking mode)", fields.first { it.label == "Find Hub" }.value)
         assertTrue(fields.none { it.label.startsWith("Eddystone") })
+        // P1-B11a: 0x40 means protection isn't active yet, not that the owner is near.
+        val notYet = AdvPayloadDecoder.decodeService(ServiceDataRecord("FEAA", "40$eid" + "00"))
+        assertEquals("not yet in separated mode", notYet.first { it.label == "Find Hub" }.value)
+        assertTrue(notYet.none { it.value.contains("owner") })
     }
 
     @Test

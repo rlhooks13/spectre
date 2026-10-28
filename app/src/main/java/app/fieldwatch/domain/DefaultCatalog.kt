@@ -1510,7 +1510,7 @@ object DefaultCatalog {
         colorIndex = Hue.FIND_MY,
         kind = SignatureClass.FINDER,
         matchAny = true,
-        notes = "Google Find Hub / Find My Device network tag (Chipolo, Pebblebee, moto tag, and other partners). Nearby vs separated frames. Separated mode can hold a MAC about a day. Addresses otherwise rotate. Pattern match, not that bag.",
+        notes = "Google Find Hub / Find My Device network tag (Chipolo, Pebblebee, moto tag, and other partners). Frames show whether unwanted-tracking protection is on (separated) or not yet on. Separated mode can hold a MAC about a day. Addresses otherwise rotate. Pattern match, not that bag.",
         builtIn = true,
         decode = CatalogDecodes.findHub,
         rules = listOf(

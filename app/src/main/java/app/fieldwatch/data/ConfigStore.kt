@@ -2,6 +2,7 @@ package app.fieldwatch.data
 
 import android.content.Context
 import app.fieldwatch.domain.AppSettings
+import app.fieldwatch.domain.CatalogDecodes
 import app.fieldwatch.domain.NetworkPolicy
 import app.fieldwatch.domain.withFeatureGates
 import app.fieldwatch.domain.DefaultCatalog
@@ -1271,6 +1272,30 @@ class ConfigStore internal constructor(private val file: File) {
             fleets = fleets.map(::withoutDuplicateRules)
             version = CATALOG_V104
         }
+        if (version < CATALOG_V105) {
+            // P1-B11a: Find Hub's 0x40 and DULT's near-owner notes no longer suggest "often your own tag" (a timer or a
+            // lingering bit, not ownership), and Find Hub reads a 32-byte EID too. A decode still carrying the old stock
+            // sentence gets the new stock decode; one the user edited keeps their edit. Notes are untouched.
+            fleets = fleets.map { fleet ->
+                val old = fleet.decode?.fields.orEmpty().any { field ->
+                    field.enumNotes?.values?.any { it.contains(OLD_OWN_TAG_NOTE_V104) } == true
+                }
+                val stock = catalog[fleet.id]
+                when {
+                    !old -> fleet
+                    // Unedited stock: the whole new decode (wording and the 32-byte EID).
+                    fleet.builtIn && fleet.id in REFRESHED_DECODES_V105 && stock != null -> fleet.copy(decode = stock.decode)
+                    // A user copy or edited decode: only the retired sentences are swapped.
+                    else -> fleet.copy(decode = CatalogDecodes.withoutOwnTagNotes(fleet.decode))
+                }
+            }
+            // The Find Hub row note said "Nearby vs separated frames"; replace it only where it's still stock.
+            fleets = fleets.map { fleet ->
+                if (fleet.id != "fleet-find-hub" || !fleet.notes.contains(OLD_FIND_HUB_NOTE_V104)) return@map fleet
+                fleet.copy(notes = fleet.notes.replace(OLD_FIND_HUB_NOTE_V104, NEW_FIND_HUB_NOTE_V105))
+            }
+            version = CATALOG_V105
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1338,7 +1363,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 104
+        const val CATALOG_VERSION = 105
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1440,7 +1465,18 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V101 = 101
         private const val CATALOG_V102 = 102
         private const val CATALOG_V103 = 103
-        private const val CATALOG_V104 = CATALOG_VERSION
+        private const val CATALOG_V104 = 104
+        private const val CATALOG_V105 = CATALOG_VERSION
+
+        /** Rows whose stock decode v105 refreshes (P1-B11a). */
+        private val REFRESHED_DECODES_V105 = setOf("fleet-find-hub", "fleet-dult")
+
+        /** The sentence the v104 stock Find Hub and DULT notes shared; still present means the decode is unedited stock. */
+        private const val OLD_OWN_TAG_NOTE_V104 = "With you the whole sit, this is often your own tag."
+
+        private const val OLD_FIND_HUB_NOTE_V104 = "Nearby vs separated frames."
+        private const val NEW_FIND_HUB_NOTE_V105 =
+            "Frames show whether unwanted-tracking protection is on (separated) or not yet on."
 
         /**
          * The exact v97 stock wording of the notes v98 reworded (P1-B1), from catalog/snapshots/v97.json. A note still
