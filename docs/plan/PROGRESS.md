@@ -52,6 +52,10 @@
 **For the owner:**
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
 - **CLAUDE.md (protected), if you agree:** exempt OSM snapshot data PRs (`catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2). P0-7e1 adds about 178,000 data lines (one per camera), plus about 400 lines of script, test and docs.
+- **IEEE lists for `radiodb.bin`: the agent can't read `~/ieee-2026-10-27/`.** Listing it and copying from it were both denied on 2026-10-28, because it's outside the working directories.
+  - Either copy `oui.csv`, `mam.csv`, `oui36.csv` and `cid.csv` into `~/spectre/scripts/.lookup-cache/` yourself,
+  - or allow `Bash(cp /home/spectre/ieee-2026-10-27/*.csv /home/spectre/spectre/scripts/.lookup-cache/)` in managed settings.
+  - The agent then runs `python -I scripts/build_lookups.py --offline` in its own PR.
 - **Full ODbL text, optional.** `LICENSE-ODbL.txt` is a notice that gives the license's URI, attribution and where the data is published. As the agent reads ODbL 1.0 §4.2(b), a URI may stand in for a full copy, but a reviewer couldn't confirm that offline.
   - To ship the full text, either put `odbl-10.txt` in `~/` for the agent to append (data only), or allow `Bash(curl -sSfL --max-time 60 --max-filesize 200000 -o * https://opendatacommons.org/licenses/odbl/odbl-10.txt)` in managed settings. The agent's `curl` call was denied on 2026-10-28.
 
