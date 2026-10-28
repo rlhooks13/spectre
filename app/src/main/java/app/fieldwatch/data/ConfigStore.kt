@@ -1430,6 +1430,17 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V110
         }
+        if (version < CATALOG_V111) {
+            // P1-B12c: ShotSpotter's and Rhombus's any-radio OUIs are retired (RetiredRules strips them on load) and
+            // patchBuiltIn appends the same OUIs Wi-Fi only, which carry an "off" from the retired rule. Rhombus's
+            // attention note named the OUI without the radio; it changes only where still v110 stock.
+            fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V111, ADDED_RULES_V111)
+            fleets = fleets.map { fleet ->
+                if (fleet.id != "fleet-rhombus" || !fleet.builtIn || fleet.attentionNote != V110_RHOMBUS_ATTENTION) fleet
+                else fleet.copy(attentionNote = catalog.getValue(fleet.id).attentionNote)
+            }
+            version = CATALOG_V111
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1457,7 +1468,7 @@ class ConfigStore internal constructor(private val file: File) {
     }
 
     /**
-     * [fleets] with each built-in row's newly [added] name globs switched off where that row in [before] (the config
+     * [fleets] with each built-in row's newly [added] rules switched off where that row in [before] (the config
      * as loaded, before RetiredRules stripped it) had a retired rule switched off: the user's "off" on the rule a
      * catalog step replaced carries to its replacements.
      */
@@ -1497,7 +1508,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 110
+        const val CATALOG_VERSION = 111
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1605,7 +1616,13 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V107 = 107
         private const val CATALOG_V108 = 108
         private const val CATALOG_V109 = 109
-        private const val CATALOG_V110 = CATALOG_VERSION
+        private const val CATALOG_V110 = 110
+        private const val CATALOG_V111 = CATALOG_VERSION
+
+        /** The exact v110 stock Rhombus attention note (catalog/snapshots/v110.json). */
+        private const val V110_RHOMBUS_ATTENTION = "Rhombus cloud cameras on buildings and some public sites. IEEE " +
+            "CC:47:BD or a Rhombus name. BLE often only while unregistered or offline. Pattern match, not that camera. " +
+            "Look with your eyes."
 
         private const val REVEAL = "fleet-reveal-media"
         private const val UTILITY = "fleet-utility-inc"
@@ -2115,6 +2132,12 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-seos" to globs(RadioKind.BLE, "Seos", "Seos *", "Seos-*", "Seos_*"),
             "fleet-sony" to globs(RadioKind.BLE, "Sony", "Sony *", "Sony-*", "Sony_*"),
             "fleet-volkswagen" to globs(RadioKind.BLE, "VW", "VW *", "VW-*", "VW_*"),
+        )
+
+        /** P1-B12c: the Wi-Fi-only OUIs v111 added in place of each row's retired any-radio OUI. Written out. */
+        private val ADDED_RULES_V111 = mapOf(
+            "fleet-raven" to listOf(MatchRule(RuleKind.OUI, text = "D4:11:D6", radio = RadioKind.WIFI)),
+            "fleet-rhombus" to listOf(MatchRule(RuleKind.OUI, text = "CC:47:BD", radio = RadioKind.WIFI)),
         )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */

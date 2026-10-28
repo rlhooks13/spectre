@@ -195,6 +195,9 @@ object MatchCorpus {
             sighting("T:smarttag-svcdata", serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
             "fleet-smarttag",
         ),
+        // P1-B12c: the OUIs still find their Wi-Fi.
+        Target("ShotSpotter sensor Wi-Fi on D4:11:D6", sighting("T:shotspotter-wifi", kind = RadioKind.WIFI, mac = mac("D4:11:D6", "0A0B0C"), name = "SST-0042"), "fleet-raven"),
+        Target("Rhombus camera Wi-Fi on CC:47:BD", sighting("T:rhombus-wifi", kind = RadioKind.WIFI, mac = mac("CC:47:BD", "0A0B0C"), name = "R200-0042"), "fleet-rhombus"),
         // P1-B12b: BodyWorn is Utility's (now Coreforce) body camera.
         Target("BodyWorn body camera by name", sighting("T:bodyworn", name = "BodyWorn-4A1B"), "fleet-utility-inc"),
         // P1-B11d: SmartTag's own names, whole and over BLE.
@@ -269,6 +272,17 @@ object MatchCorpus {
             "AirPods sending FD44 and an AirPods status 0x30",
             sighting("NM:findmy-airpods", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x30))),
             setOf("fleet-airtag"),
+        ),
+        // P1-B12c: a static random BLE address (top bits 11) can start with 0xD4 or 0xCC by chance.
+        NearMiss(
+            "Static random BLE address starting D4:11:D6",
+            sighting("NM:ble-d411d6", mac = mac("D4:11:D6", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-raven"),
+        ),
+        NearMiss(
+            "Static random BLE address starting CC:47:BD",
+            sighting("NM:ble-cc47bd", mac = mac("CC:47:BD", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
+            setOf("fleet-rhombus"),
         ),
         // P1-B12b: a BodyWorn camera isn't Reveal Media's, and "RS2-" is a generic prefix (an RS2 power tool, a router).
         // "BodyWorn" mid-name (the retired contains rule) isn't Utility's camera either.

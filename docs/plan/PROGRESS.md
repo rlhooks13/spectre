@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B12c** (ShotSpotter and Rhombus OUIs Wi-Fi only), after P1-B12b merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
+- Current step: **P1-B12d** (LiteOn camera radio review; Verkada and Avigilon notes), after P1-B12c merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,26 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12c ShotSpotter and Rhombus OUIs Wi-Fi only (catalog v111).** #103 (P1-B12b) merged as 19486a2.
+  - **Rules:** Raven / ShotSpotter's `oui("D4:11:D6")` and Rhombus's `oui("CC:47:BD")` (any radio) are retired. The same OUIs come back Wi-Fi only. 0xD4 and 0xCC are in the BLE static-random range, so random BLE addresses matched them by chance. Rhombus's attention note now says "Wi-Fi OUI".
+  - **Trade-off:** a Rhombus BLE device on a public address with no Rhombus name is now missed. Rhombus isn't finder-class, and research item 11 accepts this.
+  - **Ladder v111:** `carryRetiredOff` carries an "off" from the retired OUI. Rhombus's attention note changes only where still stock.
+  - **Reviews** (no BLOCKING, no MAJOR). Fixed:
+    - a stale Raven comment;
+    - the Rhombus attention note;
+    - PROGRESS;
+    - the PLAN Phase 4 overlay note, which now also covers the off-carry steps;
+    - the location of the `ADDED_RULES_V111` constant;
+    - the `carryRetiredOff` KDoc ("rules", not "name globs");
+    - a negative off-carry test.
+    - New step P1-B12f: Uniview `C4:79:05`, Hatch `C8:FA:9C` and Arlo `FC:9C:98` have the same static-random-range problem. The general fix (only PUBLIC makes an OUI-only BLE hit definite) goes with P1-B8's classifier flag.
+    - P1-B12e now covers the manual's rule radios.
+    - Rebutted:
+      - a pre-v80 "off" carrying past v80's reset (it is the user's own switch, as in v101);
+      - sharing the `randomOn` fixture (those cases are definite on purpose).
+  - **Tests:** `CatalogV111LadderTest` (4). Corpus: Wi-Fi targets on both OUIs; near misses for static random BLE addresses on both. 1088 tests.
+  - **Goldens:** `since-v97.md` shows both rows "stopped matching on oui …; now also matches on oui … (WIFI)", and the two BLE near misses going to no signature. The corpus goldens add the cases. The 1.1.32 import config is at v111.
+  - **Device:** `Success`, new pid 4102, 0 crash lines, config `"version": 111`.
 - 2026-10-28: **P1-B12b BodyWorn to Utility Inc, RS2-* retired (catalog v110).** #102 (P1-B12a) merged as adc57bc.
   - **Rules:**
     - Reveal Media's `name("BodyWorn")`, `glob("BodyWorn*")` and `glob("RS2-*")` are retired.
