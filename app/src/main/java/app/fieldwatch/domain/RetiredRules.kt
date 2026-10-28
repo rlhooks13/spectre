@@ -79,6 +79,16 @@ object RetiredRules {
         Entry("fleet-uniview", MatchRule(RuleKind.OUI, text = "C4:79:05"), retiredIn = 112),
         Entry("fleet-hatch", MatchRule(RuleKind.OUI, text = "C8:FA:9C"), retiredIn = 112),
         Entry("fleet-arlo", MatchRule(RuleKind.OUI, text = "FC:9C:98"), retiredIn = 112),
+        // P1-B12d: LiteOn's static-range OUIs (Wi-Fi only now), and a vendor IE registered to Dayna Communications.
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "D8:F3:BC"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "C0:35:32"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "E0:0A:F6"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "E4:AA:EA"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "F4:6A:DD"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "F8:A2:D6"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "D0:39:57"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "E8:D0:FC"), retiredIn = 113),
+        Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.VENDOR_IE_OUI, text = "00:80:19"), retiredIn = 113),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

@@ -279,11 +279,12 @@ class SignatureExchangeTest {
         for (id in listOf(
             "fleet-gopro", "fleet-osmo", "fleet-insta360",
             "fleet-wyze", "fleet-ring", "fleet-arlo", "fleet-eufy",
-            "fleet-liteon-camera-radio",
             "fleet-nest", "fleet-tapo", "fleet-reolink",
         )) {
             assertEquals(id, SignatureClass.CAMERA, ids.getValue(id).kind)
         }
+        // P1-B12d: LiteOn's prefixes are general Wi-Fi modules (ClickShare, gates, car HUDs), not cameras.
+        assertEquals(SignatureClass.OTHER, ids.getValue("fleet-liteon-camera-radio").kind)
         assertEquals(SignatureClass.GLASSES, ids.getValue("fleet-meta-glasses").kind)
         assertEquals(SignatureClass.ISP, ids.getValue("fleet-unifi-ap").kind)
         assertEquals(SignatureClass.ISP, ids.getValue("fleet-unifi").kind)
@@ -938,8 +939,13 @@ class SignatureExchangeTest {
         assertTrue(ringDevice.attentionNotes(stock).none { it.first.contains("Flock") })
         assertTrue(moduleDevice.attentionNotes(stock).isEmpty())
         assertTrue(poleDevice.attentionNotes(stock).any { it.first == "Flock Safety Cameras" })
-        val ringGuess = DeviceExplain.guess(ringDevice, listOf("LiteOn camera radio", "Ring"))
+        val liteOnName = stock.single { it.id == "fleet-liteon-camera-radio" }.name
+        val ringGuess = DeviceExplain.guess(ringDevice, listOf(liteOnName, "Ring"))
         assertTrue(ringGuess.headline, ringGuess.headline.contains("Ring", ignoreCase = true))
+        // P1-B12d: a module prefix alone is a weak hint, never "most likely", and never a camera.
+        val moduleGuess = DeviceExplain.guess(moduleDevice, listOf(liteOnName))
+        assertFalse(moduleGuess.headline, moduleGuess.headline.contains("camera", ignoreCase = true))
+        assertTrue(moduleGuess.confidence != DeviceExplain.Confidence.HIGH)
     }
 
     @Test

@@ -139,15 +139,19 @@ class MatchCorpusTest {
         }
     }
 
-    /** P1-B12a: consumer and fleet gear on these OUIs is never law enforcement and gets no attention card. */
+    /**
+     * P1-B12a, P1-B12d: consumer and fleet gear on OUIs a police or camera row once claimed is never law enforcement,
+     * surveillance or a camera, and gets no attention card.
+     */
     @Test
     fun consumerGearOnOncePoliceOuisIsntLawEnforcement() {
         val cases = MatchCorpus.notLawEnforcement
         val hits = engine.match(cases.map { it.second }, fleets)
+        val watchful = setOf(SignatureClass.LAW_ENFORCEMENT, SignatureClass.SURVEILLANCE, SignatureClass.CAMERA)
         for ((label, s) in cases) {
             val got = hits.getValue(s.key)
             assertTrue("$label still matches its row", got.isNotEmpty())
-            assertFalse(label, got.any { byId.getValue(it).kind == SignatureClass.LAW_ENFORCEMENT })
+            assertFalse(label, got.any { byId.getValue(it).kind in watchful })
             assertTrue(label, s.copy(fleetIds = got).attentionNotes(fleets).isEmpty())
         }
     }

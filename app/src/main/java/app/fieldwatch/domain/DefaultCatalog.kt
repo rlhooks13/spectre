@@ -348,25 +348,33 @@ object DefaultCatalog {
         ),
     )
 
-    /** Component-vendor prefixes seen on camera boards, including some Flock poles. Not Flock's IEEE block. */
+    /** General Wi-Fi module prefixes (LiteOn and similar), in cameras and many other devices. Not Flock's IEEE block. */
     private fun liteOnCameraRadio() = Fleet(
         id = "fleet-liteon-camera-radio",
-        name = "LiteOn camera radio",
-        colorIndex = Hue.CAMERA,
-        kind = SignatureClass.CAMERA,
+        // P1-B12d (research §1 item 12): a WiGLE audit found about 8,000 non-Flock SSIDs on each of 74:4C:A1, F4:6A:DD
+        // and D0:39:57 (Barco ClickShare, SMARTGATE_*, an Audi HUD). These are general Wi-Fi module prefixes, so the row
+        // says so and is OTHER, not CAMERA. The id stays.
+        name = "LiteOn Wi-Fi module",
+        colorIndex = Hue.HOME_CAM,
+        kind = SignatureClass.OTHER,
         matchAny = true,
-        notes = "Wi-Fi module prefixes commonly seen on camera boards (LiteOn and similar). 08:3A:88 is Universal Global Scientific Industrial, not Lite-On. Not Flock's IEEE block. Doorbells and other OEM radios use these chips. A name that starts with Flock- or B4:1E:52 is Flock Safety Cameras.",
+        notes = "Wi-Fi module prefixes (LiteOn and similar) found in cameras, doorbells, conference-room screen sharing (Barco ClickShare), gates, car head-up displays and other OEM devices. Not a camera by itself, and not Flock: 08:3A:88 is Universal Global Scientific Industrial, not Lite-On. A name that starts with Flock- or B4:1E:52 is Flock Safety Cameras.",
         builtIn = true,
         rules = buildList {
             listOf(
-                "70:C9:4E", "3C:91:80", "D8:F3:BC", "80:30:49",
-                "14:5A:FC", "14:B5:CD", "74:4C:A1", "08:3A:88", "9C:2F:9D", "C0:35:32",
-                "94:08:53", "E0:0A:F6", "E4:AA:EA", "F4:6A:DD", "F8:A2:D6", "24:B2:B9",
-                "00:F4:8D", "D0:39:57", "E8:D0:FC", "B8:1E:A4",
+                "70:C9:4E", "3C:91:80", "80:30:49",
+                "14:5A:FC", "14:B5:CD", "74:4C:A1", "08:3A:88", "9C:2F:9D",
+                "94:08:53", "24:B2:B9",
+                "00:F4:8D", "B8:1E:A4",
                 "70:08:94", "58:00:E3", "5C:93:A2", "64:6E:69",
             ).forEach { add(oui(it)) }
-            add(vendorIe("00:80:19"))
+            // 00:80:19 (Dayna Communications) was retired in P1-B12d: no capture ties it to these modules.
             add(vendorIe("00:0A:EB"))
+            // P1-B12d: the prefixes in the BLE static-random range (first byte 0xC0-0xFF), Wi-Fi only, as P1-B12c and
+            // P1-B12f did. Last, as patchBuiltIn appends them.
+            listOf(
+                "D8:F3:BC", "C0:35:32", "E0:0A:F6", "E4:AA:EA", "F4:6A:DD", "F8:A2:D6", "D0:39:57", "E8:D0:FC",
+            ).forEach { add(wifiOui(it)) }
         },
     )
 

@@ -723,10 +723,11 @@ object DeviceExplain {
                     Hint("pentest", "a GhostESP ESP32 audit board", "Matched signature $raw.", 7)
                 n == "bruce" ->
                     Hint("pentest", "a Bruce ESP32 pentest board", "Matched signature $raw.", 7)
-                n == "liteon camera radio" ->
+                // P1-B12d renamed the row; a config the user renamed keeps the old name. A module prefix is a weak hint.
+                n == "liteon wi-fi module" || n == "liteon camera radio" ->
                     Hint(
                         "module",
-                        "a camera-module radio (LiteOn or similar)",
+                        "a Wi-Fi module (LiteOn or similar)",
                         "Matched signature $raw.",
                         3,
                     )

@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v112 -->
-### Signatures (stock catalog v97 → v112)
+<!-- generated: catalog v97 -> v113 -->
+### Signatures (stock catalog v97 → v113)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
@@ -31,6 +31,7 @@
 - **HP** (home): stopped matching on name contains "ENVY" (BLE); now also matches on name glob "HP ENVY*" (BLE).
 - **JBL / Harman** (audio): stopped matching on name contains "JBL" (BLE); now also matches on name glob "JBL" (BLE); name glob "JBL *" (BLE); name glob "JBL-*" (BLE); name glob "JBL_*" (BLE).
 - **Kevo** (lock): stopped matching on name contains "Kevo" (BLE).
+- **LiteOn Wi-Fi module** (other): renamed from LiteOn camera radio; class camera → other; stopped matching on oui "D8:F3:BC"; oui "C0:35:32"; oui "E0:0A:F6"; oui "E4:AA:EA"; oui "F4:6A:DD"; oui "F8:A2:D6"; oui "D0:39:57"; oui "E8:D0:FC"; vendor ie oui "00:80:19"; now also matches on oui "D8:F3:BC" (WIFI); oui "C0:35:32" (WIFI); oui "E0:0A:F6" (WIFI); oui "E4:AA:EA" (WIFI); oui "F4:6A:DD" (WIFI); oui "F8:A2:D6" (WIFI); oui "D0:39:57" (WIFI); oui "E8:D0:FC" (WIFI); notes reworded.
 - **Logitech** (home): stopped matching on name contains "Logi" (BLE); now also matches on name glob "Logi" (BLE); name glob "Logi *" (BLE); name glob "Logi-*" (BLE); name glob "Logi_*" (BLE).
 - **Mercedes MBUX** (vehicle): stopped matching on name contains "MBUX" (WIFI).
 - **Microsoft Device** (phone): stopped matching on name contains "Xbox" (BLE); now also matches on name glob "Xbox" (BLE); name glob "Xbox *" (BLE); name glob "Xbox-*" (BLE); name glob "Xbox_*" (BLE).
@@ -71,6 +72,8 @@
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: Static random BLE address starting D4:11:D6: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Static random BLE address starting CC:47:BD: was Rhombus (surveillance, extra attention), now no signature.
+- Near miss: Static random BLE address starting F4:6A:DD: was LiteOn camera radio (camera), now no signature.
+- Near miss: Public BLE address on F4:6A:DD (accepted miss until P1-B8): was LiteOn camera radio (camera), now no signature.
 - Near miss: Static random BLE address starting C4:79:05: was Uniview (surveillance, extra attention), now no signature.
 - Near miss: Public BLE address on C4:79:05, no name (accepted miss until P1-B8): was Uniview (surveillance, extra attention), now no signature.
 - Near miss: Static random BLE address starting C8:FA:9C: was Hatch (home), now no signature.
@@ -105,6 +108,7 @@
 - Near miss: Fan gear named Ravens: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Device named Vigilante: was Motorola Vigilant (surveillance, extra attention), now no signature.
 - Near miss: Wi-Fi Direct group a person named for a Raven cam: was Raven / ShotSpotter (surveillance), now no signature.
+- Random address: Random BLE address on LiteOn's OUI: was LiteOn camera radio (camera), now LiteOn Wi-Fi module (other).
 
 ### Feature switches
 
