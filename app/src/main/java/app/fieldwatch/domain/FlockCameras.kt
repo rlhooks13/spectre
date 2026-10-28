@@ -80,7 +80,7 @@ fun sensorNotice(hit: FlockHit): Pair<String, Map<String, String>> = when (hit.k
 }
 
 fun AppSettings.alertsFor(kind: SensorKind): Boolean = when (kind) {
-    SensorKind.PLATE -> flockLayer && flockAlert
+    SensorKind.PLATE -> Features.PLATE_LAYER && flockLayer && flockAlert
     SensorKind.SPEED -> sensorLayer && speedAlert
     SensorKind.RED -> sensorLayer && redAlert
     SensorKind.GUNSHOT -> sensorLayer && gunshotAlert
@@ -88,7 +88,7 @@ fun AppSettings.alertsFor(kind: SensorKind): Boolean = when (kind) {
 }
 
 fun AppSettings.anySensorAlert(): Boolean =
-    (flockLayer && flockAlert) ||
+    (Features.PLATE_LAYER && flockLayer && flockAlert) ||
         (sensorLayer && (speedAlert || redAlert || gunshotAlert || cameraAlert))
 
 /**

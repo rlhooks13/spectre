@@ -1040,8 +1040,6 @@
     "settings.layer.alert.speed": "Brīdinājums par ātruma kamerām",
     "settings.layer.alert.gun": "Brīdinājums par šāvienu detektoriem",
     "settings.layer.alert.camera": "Brīdinājums par citām kamerām",
-    "settings.layer.download.title": "Lejupielādēt numurzīmju lasītājus.",
-    "settings.layer.more": "Atjauninājums iekļauj katru numurzīmju lasītāju.",
     "settings.layer.other.download.title": "Lejupielādēt citus sensorus.",
     "settings.layer.other.download.body": "Aptuveni 1 MB. Vēlāk to var atjaunināt. Tas paliek šajā tālrunī.",
     "settings.layer.download.action": "Lejupielādēt",

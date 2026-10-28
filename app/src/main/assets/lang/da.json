@@ -1079,8 +1079,6 @@
     "settings.layer.alert.speed": "Alarm for fartkameraer",
     "settings.layer.alert.gun": "Alarm for skuddetektorer",
     "settings.layer.alert.camera": "Alarm for andre kameraer",
-    "settings.layer.download.title": "Hent nummerpladelæsere.",
-    "settings.layer.more": "Opdater for at tage hver nummerpladelæser med.",
     "settings.layer.other.download.title": "Hent andre sensorer.",
     "settings.layer.other.download.body": "Omkring 1 MB. Du kan opdatere den senere. Den bliver på denne telefon.",
     "settings.layer.download.action": "Hent",

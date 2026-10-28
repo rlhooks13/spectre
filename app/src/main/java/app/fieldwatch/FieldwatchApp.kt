@@ -31,6 +31,7 @@ import app.fieldwatch.data.MapKeyStore
 import app.fieldwatch.data.PlaceStore
 import app.fieldwatch.data.SitStore
 import app.fieldwatch.domain.CoTravel
+import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.FilterEngine
 import app.fieldwatch.domain.FlockApproach
 import app.fieldwatch.domain.FlockCamera
@@ -561,6 +562,8 @@ class FieldwatchApp : Application() {
     private fun startUp() {
         if (started) return
         started = true
+        // P0-7c: before anything can read it. Three stats on app-private storage.
+        runCatching { FlockFiles.retirePlatesDownload(filesDir) }
         config = ConfigStore(this)
         RadioDb.init(this)
         devices = DeviceStore()
@@ -913,7 +916,7 @@ class FieldwatchApp : Application() {
     fun syncFlock(force: Boolean = false) {
         if (!::config.isInitialized) return
         val settings = config.settings
-        val showPlates = settings.flockLayer
+        val showPlates = settings.flockLayer && Features.PLATE_LAYER
         val showOther = settings.sensorLayer
         if (!settings.anySensorAlert()) {
             flockLatch.clear()
@@ -928,7 +931,7 @@ class FieldwatchApp : Application() {
         val gen = ++flockLoadGen
         scope.launch(Dispatchers.IO) {
             val cameras = ArrayList<FlockCamera>()
-            if (showPlates) FlockFiles.read(filesDir, SensorList.PLATES)?.cameras?.let { cameras.addAll(it) }
+            // P0-7c: no downloaded plate-reader list is read; the bundled OpenStreetMap snapshot (P0-7e) replaces it.
             if (showOther) FlockFiles.read(filesDir, SensorList.OTHER)?.cameras?.let { cameras.addAll(it) }
             if (gen != flockLoadGen) return@launch
             val now = config.settings

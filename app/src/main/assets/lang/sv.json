@@ -1082,8 +1082,6 @@
     "settings.layer.alert.speed": "Varning för fartkameror",
     "settings.layer.alert.gun": "Varning för skottdetektorer",
     "settings.layer.alert.camera": "Varning för andra kameror",
-    "settings.layer.download.title": "Hämta skyltläsare.",
-    "settings.layer.more": "Uppdatera för att ta med varje registreringsskyltsläsare.",
     "settings.layer.other.download.title": "Hämta andra sensorer.",
     "settings.layer.other.download.body": "Ungefär 1 MB. Du kan uppdatera den senare. Den stannar på den här telefonen.",
     "settings.layer.download.action": "Hämta",

@@ -1091,8 +1091,6 @@
     "settings.layer.alert.speed": "Opozorilo za radarje",
     "settings.layer.alert.gun": "Opozorilo za detektorje strelov",
     "settings.layer.alert.camera": "Opozorilo za druge kamere",
-    "settings.layer.download.title": "Prenesi bralnike tablic.",
-    "settings.layer.more": "Posodobitev vključi vsak bralnik tablic.",
     "settings.layer.other.download.title": "Prenesi druge senzorje.",
     "settings.layer.other.download.body": "Približno 1 MB. Pozneje jo lahko posodobite. Ostane v tem telefonu.",
     "settings.layer.download.action": "Prenesi",

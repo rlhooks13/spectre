@@ -1091,8 +1091,6 @@
     "settings.layer.alert.speed": "Upozornit na rychlostní kamery",
     "settings.layer.alert.gun": "Upozornit na detektory výstřelu",
     "settings.layer.alert.camera": "Upozornit na jiné kamery",
-    "settings.layer.download.title": "Stáhnout čtečky značek.",
-    "settings.layer.more": "Aktualizace přidá každou čtečku značek.",
     "settings.layer.other.download.title": "Stáhnout jiné senzory.",
     "settings.layer.other.download.body": "Asi 1 MB. Později jej můžete aktualizovat. Zůstane v tomto telefonu.",
     "settings.layer.download.action": "Stáhnout",

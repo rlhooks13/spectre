@@ -34,6 +34,14 @@ object Features {
      * including a no-tail commute and a tag-joins-late walk, and the preconditions in PLAN (P1-B9).
      */
     const val LATE_TAIL_FIX = false
+
+    /**
+     * The plate-reader camera layer and its alert (ADR-0018). Off between P0-7c, which removed the third-party
+     * download, and P0-7e, which bundles the OpenStreetMap snapshot and turns this on. While off, the layer and its
+     * "ahead" alert are hidden rather than shown on with no data, which would be a silent alert. Users' saved
+     * switches are left as they are, so they carry over.
+     */
+    const val PLATE_LAYER = false
 }
 
 /**

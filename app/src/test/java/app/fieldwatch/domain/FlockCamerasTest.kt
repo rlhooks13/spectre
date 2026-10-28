@@ -59,8 +59,8 @@ class FlockCamerasTest {
         assertEquals(0x1f, zipped[0].toInt() and 0xff)
         assertEquals(parseFlock(StringReader(FIXTURE)).map { it.key }, FlockFiles.camerasFrom(zipped).map { it.key })
         val dir = tempDir()
-        assertFalse(FlockFiles.commitParsed(dir, zipped, "etag", 10L))
-        assertFalse(FlockFiles.file(dir).exists())
+        assertFalse(FlockFiles.commitParsed(dir, zipped, "etag", 10L, SensorList.PLATES))
+        assertFalse(FlockFiles.file(dir, SensorList.PLATES).exists())
     }
 
     @Test
@@ -170,8 +170,8 @@ class FlockCamerasTest {
                 },
             )
         }
-        assertTrue(FlockFiles.install(dir, cameras, "\"abc\"", 1_700_000_000_000L))
-        val saved = FlockFiles.read(dir)
+        assertTrue(FlockFiles.install(dir, cameras, "\"abc\"", 1_700_000_000_000L, SensorList.PLATES))
+        val saved = FlockFiles.read(dir, SensorList.PLATES)
         assertEquals(FlockApproach.MIN_COUNT, saved!!.cameras.size)
         assertEquals(cameras.first().key, saved.cameras.first().key)
         assertEquals(cameras.first().facings, saved.cameras.first().facings)
@@ -187,12 +187,12 @@ class FlockCamerasTest {
         assertEquals(SensorKind.SPEED, saved.cameras.first { it.key == 3L }.kind)
         assertEquals(SensorKind.GUNSHOT, saved.cameras.first { it.key == 4L }.kind)
         assertTrue(saved.cameras.first { it.key == 4L }.facings.isEmpty())
-        val before = FlockFiles.file(dir).readBytes()
-        assertFalse(FlockFiles.commitParsed(dir, """{"type":"FeatureCollection","features":[]}""".toByteArray(), "new", 9L))
-        assertFalse(FlockFiles.commitParsed(dir, byteArrayOf('{'.code.toByte()), "new", 9L))
-        assertTrue(before.contentEquals(FlockFiles.file(dir).readBytes()))
-        assertFalse(FlockFiles.install(dir, cameras.take(3), "nope", 2L))
-        assertEquals("\"abc\"", FlockFiles.peek(dir)!!.etag)
+        val before = FlockFiles.file(dir, SensorList.PLATES).readBytes()
+        assertFalse(FlockFiles.commitParsed(dir, """{"type":"FeatureCollection","features":[]}""".toByteArray(), "new", 9L, SensorList.PLATES))
+        assertFalse(FlockFiles.commitParsed(dir, byteArrayOf('{'.code.toByte()), "new", 9L, SensorList.PLATES))
+        assertTrue(before.contentEquals(FlockFiles.file(dir, SensorList.PLATES).readBytes()))
+        assertFalse(FlockFiles.install(dir, cameras.take(3), "nope", 2L, SensorList.PLATES))
+        assertEquals("\"abc\"", FlockFiles.peek(dir, SensorList.PLATES)!!.etag)
     }
 
     @Test
@@ -338,22 +338,22 @@ class FlockCamerasTest {
     fun aBadDownloadDoesNotReplaceAGoodFile() {
         val dir = tempDir()
         val raw = platesJson(FlockApproach.MIN_COUNT)
-        assertTrue(FlockFiles.commitParsed(dir, raw.toByteArray(), "e", 3L))
-        val saved = FlockFiles.read(dir)!!
+        assertTrue(FlockFiles.commitParsed(dir, raw.toByteArray(), "e", 3L, SensorList.PLATES))
+        val saved = FlockFiles.read(dir, SensorList.PLATES)!!
         assertEquals(SensorKind.PLATE, saved.cameras.first { it.key == 1L }.kind)
-        val before = FlockFiles.file(dir).readBytes()
-        assertFalse(FlockFiles.commitParsed(dir, byteArrayOf(1, 2, 3), "e2", 4L))
-        assertEquals("e", FlockFiles.peek(dir)!!.etag)
-        assertEquals(FlockApproach.MIN_COUNT, FlockFiles.read(dir)!!.cameras.size)
-        assertTrue(before.contentEquals(FlockFiles.file(dir).readBytes()))
-        assertFalse(FlockFiles.commitParsed(dir, platesJson(3).toByteArray(), "short", 5L))
-        assertEquals("e", FlockFiles.peek(dir)!!.etag)
+        val before = FlockFiles.file(dir, SensorList.PLATES).readBytes()
+        assertFalse(FlockFiles.commitParsed(dir, byteArrayOf(1, 2, 3), "e2", 4L, SensorList.PLATES))
+        assertEquals("e", FlockFiles.peek(dir, SensorList.PLATES)!!.etag)
+        assertEquals(FlockApproach.MIN_COUNT, FlockFiles.read(dir, SensorList.PLATES)!!.cameras.size)
+        assertTrue(before.contentEquals(FlockFiles.file(dir, SensorList.PLATES).readBytes()))
+        assertFalse(FlockFiles.commitParsed(dir, platesJson(3).toByteArray(), "short", 5L, SensorList.PLATES))
+        assertEquals("e", FlockFiles.peek(dir, SensorList.PLATES)!!.etag)
     }
 
     @Test
     fun anOlderPlateFileStillReads() {
         val dir = tempDir()
-        DataOutputStream(FileOutputStream(FlockFiles.file(dir))).use { out ->
+        DataOutputStream(FileOutputStream(FlockFiles.file(dir, SensorList.PLATES))).use { out ->
             out.write(byteArrayOf('F'.code.toByte(), 'W'.code.toByte(), 'F'.code.toByte(), 'C'.code.toByte()))
             out.writeShort(2)
             out.writeInt(FlockApproach.MIN_COUNT)
@@ -372,14 +372,14 @@ class FlockCamerasTest {
                 out.writeByte(0)
             }
         }
-        val saved = FlockFiles.read(dir)!!
+        val saved = FlockFiles.read(dir, SensorList.PLATES)!!
         assertEquals(2, saved.header.version)
         assertEquals(SensorKind.PLATE, saved.cameras.first().kind)
         assertTrue(saved.cameras.first().flock)
         assertEquals("Vigilant", saved.cameras.first { it.key == 2L }.brand)
-        assertTrue(FlockFiles.peek(dir)!!.version >= FlockFiles.ALL_PLATES)
+        assertTrue(FlockFiles.peek(dir, SensorList.PLATES)!!.version >= FlockFiles.ALL_PLATES)
         val flockOnly = tempDir()
-        DataOutputStream(FileOutputStream(FlockFiles.file(flockOnly))).use { out ->
+        DataOutputStream(FileOutputStream(FlockFiles.file(flockOnly, SensorList.PLATES))).use { out ->
             out.write(byteArrayOf('F'.code.toByte(), 'W'.code.toByte(), 'F'.code.toByte(), 'C'.code.toByte()))
             out.writeShort(1)
             out.writeInt(FlockApproach.MIN_COUNT)
@@ -394,11 +394,11 @@ class FlockCamerasTest {
                 out.writeByte(0)
             }
         }
-        val old = FlockFiles.read(flockOnly)!!
+        val old = FlockFiles.read(flockOnly, SensorList.PLATES)!!
         assertEquals(1, old.header.version)
         assertEquals(SensorKind.PLATE, old.cameras.first().kind)
         assertTrue(old.cameras.first().flock)
-        assertFalse(FlockFiles.peek(flockOnly)!!.version >= FlockFiles.ALL_PLATES)
+        assertFalse(FlockFiles.peek(flockOnly, SensorList.PLATES)!!.version >= FlockFiles.ALL_PLATES)
     }
 
     @Test

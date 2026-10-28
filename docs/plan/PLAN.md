@@ -210,7 +210,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - Split into sub-steps:
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
      - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
-     - **P0-7c Remove the dontgetflocked download** (owner decision 2026-10-27, ADR-0018 §1; before 0.1.0).
+     - ✅ **P0-7c Remove the dontgetflocked download** (owner decision 2026-10-27, ADR-0018 §1; before 0.1.0). As built:
+       - The plates layer and its alert are hidden behind `Features.PLATE_LAYER = false` until P0-7e has data to show. Saved switches are left untouched.
+       - The janitor runs synchronously at start, and no code reads the plates file any more.
+       - `layerToggle` decides the switch and is unit-tested.
+       - The `ui.cameras.plates.missing` change moves to P0-7e: until data is bundled, its text ("not on this phone") is still true.
        - `SensorList.PLATES.url` goes blank, and the PLATES dialog and Settings wiring are removed. `dontgetflocked` leaves every non-test source.
        - The generic download code, `Egress.SENSOR_LIST` and its inventory entry stay for "Other sensors" (P1-E5). ADR-0014's row is updated.
        - Port `PlateListSourceTest`, don't delete it: a blank URL and empty host; no non-test source names dontgetflocked; turning on the plates layer makes no request.
@@ -230,6 +234,10 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
        - **Reading it.** Parsed once, off the main thread.
        - **License and credit.** `LICENSE-ODbL.txt` in the repo and the APK, saying where the database is published. `NOTICE` names the ODbL paths. The fixed credit "© OpenStreetMap contributors · openstreetmap.org/copyright" goes in the UI, the PDF and the exports (exports stay English). One new key, "Map data as of {date}".
        - **No phone request.** The phone makes no network request for this layer until P4-7.
+       - **From P0-7c:**
+         - Turn `Features.PLATE_LAYER` on.
+         - Read the snapshot in `FieldwatchApp.syncFlock` and `FieldwatchViewModel.cameraReport`, where P0-7c left the plates read empty.
+         - Give `ui.cameras.plates.missing` a new key for "the bundled camera data couldn't be read"; the old key goes "Unused".
      - ✅ **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
