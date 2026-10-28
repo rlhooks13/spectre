@@ -125,7 +125,7 @@ object AdvPayloadDecoder {
                             "tag",
                             "a Google Find Hub tag",
                             if (frame == 0x41) "Find Hub separated (unwanted-tracking) frame."
-                            else "Find Hub nearby frame.",
+                            else "Find Hub frame, not yet in separated (unwanted-tracking) mode.",
                             8,
                         )
                         else -> out += RoleHint("beacon", "an Eddystone beacon", "Eddystone service data.", 6)
@@ -562,7 +562,8 @@ object AdvPayloadDecoder {
             0x20 -> listOf(Field("Eddystone-TLM", "telemetry (battery / temperature / advert count)"))
             0x30 -> listOf(Field("Eddystone-EID", "ephemeral ID (rotating)"))
             0x40, 0x41 -> {
-                val mode = if (bytes[0].toInt() and 0xFF == 0x41) "separated (unwanted-tracking mode)" else "nearby / with owner"
+                // 0x40 means protection isn't active yet, not that the owner is near (P1-B11a).
+                val mode = if (bytes[0].toInt() and 0xFF == 0x41) "separated (unwanted-tracking mode)" else "not yet in separated mode"
                 val eidLen = when {
                     bytes.size >= 33 -> 32
                     bytes.size >= 21 -> 20

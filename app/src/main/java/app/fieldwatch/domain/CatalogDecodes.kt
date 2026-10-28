@@ -348,9 +348,35 @@ internal object CatalogDecodes {
         ),
     )
 
+    private const val FIND_HUB_NOT_YET_NOTE =
+        "Unwanted-tracking protection isn't active yet. It can take hours to switch on after a tag leaves its owner, so a tag planted recently can still show this. It doesn't tell you whose tag it is."
+    private const val DULT_NEAR_OWNER_NOTE =
+        "Marked near its owner. The mark can stay on for half an hour or more after the tag leaves its owner, so a tag planted recently can still show it. It doesn't tell you whose tag it is."
+
     /**
-     * Google Find Hub Network on FEAA. Frame 0x40 nearby, 0x41 separated.
-     * Next 20 or 32 bytes are the rotating EID (not a serial).
+     * The v104 notes that suggested a not-yet-separated tag is "often your own" (P1-B11a), and their replacements.
+     * [withoutOwnTagNotes] swaps them wherever they turn up: stock rows, user copies, and imported packs.
+     */
+    private val RETIRED_NOTES = mapOf(
+        "Nearby its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys." to FIND_HUB_NOT_YET_NOTE,
+        "Near its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys." to DULT_NEAR_OWNER_NOTE,
+    )
+
+    /** [decode] with any retired "often your own tag" note replaced (P1-B11a). The same instance when there's none. */
+    fun withoutOwnTagNotes(decode: FleetDecode?): FleetDecode? {
+        if (decode == null || decode.fields.none { f -> f.enumNotes?.values?.any { it in RETIRED_NOTES } == true }) return decode
+        return decode.copy(
+            fields = decode.fields.map { f ->
+                val notes = f.enumNotes ?: return@map f
+                f.copy(enumNotes = notes.mapValues { (_, note) -> RETIRED_NOTES[note] ?: note })
+            },
+        )
+    }
+
+    /**
+     * Google Find Hub Network on FEAA. Frame 0x40: unwanted-tracking protection not active yet; 0x41: separated.
+     * Then the rotating EID (not a serial), 20 bytes (SECP160R1) or 32 (SECP256R1), then a hashed-flags byte
+     * (P1-B11a; research §1 item 1).
      */
     val findHub: FleetDecode = FleetDecode(
         source = DecodeSource.SERVICE_DATA,
@@ -359,17 +385,22 @@ internal object CatalogDecodes {
             u8(
                 "mode", "Mode", 0,
                 enumLabels = mapOf(
-                    "64" to "nearby",
+                    "64" to "not yet in separated mode",
                     "65" to "separated",
                 ),
                 live = true,
                 liveEmphasis = listOf("65"),
                 enumNotes = mapOf(
                     "65" to "Separated from its owner. The address can hold still for about a day.",
-                    "64" to "Nearby its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys.",
+                    // 0x40 only means protection hasn't switched on yet: a timer starts it hours after the tag leaves
+                    // its owner, so a tag planted recently still shows this. It says nothing about whose tag it is.
+                    "64" to FIND_HUB_NOT_YET_NOTE,
                 ),
             ),
+            // As AdvPayloadDecoder reads it: a frame of 21+ bytes holds at least a 20-byte EID; one of 33+ holds a
+            // 32-byte EID, which `eid32` shows in full (a field past the payload's end is skipped).
             hex("eid", "Ephemeral ID", 1, length = 20),
+            hex("eid32", "Ephemeral ID (32-byte key)", 1, length = 32),
         ),
     )
 
@@ -387,13 +418,16 @@ internal object CatalogDecodes {
                 bitOffset = 0, bitWidth = 1,
                 enumLabels = mapOf(
                     "0" to "separated",
-                    "1" to "near owner",
+                    // A mark the tag sets, which can linger after separation; not proof the owner is near (P1-B11a).
+                    "1" to "marked near owner",
                 ),
                 live = true,
                 liveEmphasis = listOf("0"),
                 enumNotes = mapOf(
                     "0" to "Separated from its owner. The address can hold still for about a day.",
-                    "1" to "Near its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys.",
+                    // The near-owner bit can stay set 30+ minutes after separation (research §1 item 5), so it
+                    // doesn't clear a tag planted recently.
+                    "1" to DULT_NEAR_OWNER_NOTE,
                 ),
             ),
         ),

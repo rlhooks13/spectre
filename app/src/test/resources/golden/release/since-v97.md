@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v104 -->
-### Signatures (stock catalog v97 → v104)
+<!-- generated: catalog v97 -> v105 -->
+### Signatures (stock catalog v97 → v105)
 
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12.
 - **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.
@@ -15,8 +15,10 @@
 - **Cisco** (isp): notes reworded.
 - **Cradlepoint** (law enforcement): stopped matching on name glob "IBR*" (WIFI); now also matches on name glob "IBR350*" (WIFI); name glob "IBR1150*" (WIFI).
 - **DJI** (drone): stopped matching on name contains "DJI" (BLE); name contains "DJI" (WIFI).
+- **DULT tracker** (finder): decoded fields changed.
 - **Eero** (isp): stopped matching on name contains "eero" (WIFI).
 - **eufy Security** (camera): stopped matching on name contains "eufy".
+- **Google Find Hub** (finder): decoded fields changed; notes reworded.
 - **FOBO TPMS** (vehicle): stopped matching on name contains "FOBO" (BLE).
 - **Ford** (vehicle): stopped matching on name contains "Ford" (BLE); now also matches on name glob "Ford" (BLE); name glob "Ford *" (BLE); name glob "Ford-*" (BLE); name glob "Ford_*" (BLE).
 - **goTenna** (mesh): notes reworded.

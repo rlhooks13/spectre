@@ -142,6 +142,8 @@ object SignatureExchange {
                     id = raw.id.ifBlank { UUID.randomUUID().toString() },
                     kind = raw.kind.folded(),
                     rules = raw.rules.withoutDuplicates(),
+                    // Nor a retired "often your own tag" note (P1-B11a).
+                    decode = CatalogDecodes.withoutOwnTagNotes(raw.decode),
                 ),
             )
             if (fleet.rules.isEmpty()) {

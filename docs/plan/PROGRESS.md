@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B11 Tracker-row fixes** (research §1, items 1–6), after P0-7e2 merges.
+- Current step: **P1-B11b** (Find Hub tag vs accessory by the Flags byte), after P1-B11a merges. P1-B11 is split a–f in PLAN.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -32,7 +32,7 @@
     - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/7e2-osm-snapshot-app`
+- Branch: `p1/b11a-finder-wording`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -102,6 +102,38 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B11a Finder wording and EID (catalog v105).** #84 (P0-7e2) merged as 5b23265.
+  - **Split:** P1-B11 is split into a–f in PLAN.
+  - **Find Hub 0x40:** labeled "not yet in separated mode". Its note says protection switches on hours after a tag leaves its owner, so a tag planted recently can still show it. It no longer says "often your own tag". `AdvPayloadDecoder`'s "nearby / with owner" changed to match.
+  - **DULT near owner:** the note says the mark can stay on 30+ minutes after separation, and doesn't suggest ownership.
+  - **Find Hub EID:** as `AdvPayloadDecoder` reads it. `eid` shows 20 bytes for a frame of 21+ bytes, and a new `eid32` shows 32 bytes for one of 33+; a field past the payload's end is skipped.
+  - **DULT chip:** reads "marked near owner".
+  - **Other wording:** the role hint for 0x40 and the Find Hub row note ("Nearby vs separated frames") are reworded.
+  - **Retired sentence:** `CatalogDecodes.withoutOwnTagNotes` swaps the two exact v104 sentences for the new ones. The ladder applies it to user copies, and import applies it to incoming packs, so an older pack can't bring it back.
+  - **Ladder:** an unedited stock decode gets the new stock decode; an edited one keeps the edit. Row notes are untouched, except the stock Find Hub sentence.
+  - **Reviews** (no BLOCKING). Fixed:
+    - user edits overwritten;
+    - exact-length EID gates;
+    - leftover "nearby" wording;
+    - user copies and imports;
+    - no ladder test;
+    - the DULT chip;
+    - a firmer timing claim than the research supports.
+    - Accepted: comparing a pre-v105 sit with a later one can show "nearby → not yet in separated mode".
+  - **Catalog checklist:**
+    - `CATALOG_VERSION` 105;
+    - a ladder step refreshing the `fleet-find-hub` and `fleet-dult` decodes;
+    - a v105 snapshot, and v104 frozen;
+    - the dist pack regenerated.
+    - No rules changed, so no retired entries and no stock-count change.
+  - **Goldens:**
+    - `since-v97.md`: v97 → v105, with "decoded fields changed" for DULT and Find Hub;
+    - `import-1.1.32/config.json`: version 105.
+  - **Tests:**
+    - `SignatureFieldDecoderTest` expects the new wording and covers the 32- and 21-byte EID cases.
+    - `AdvPayloadDecoderTest` covers the 0x40 label.
+    - `CatalogV105LadderTest` (new, 5 tests): unedited, edited, user copy, older-pack import, and the row note.
+  - **Device:** the config upgraded to `"version": 105`, with no FATAL, ANR or AndroidRuntime lines.
 - 2026-10-28: **P0-7e2 OSM plate-reader snapshot in the app.** #83 (P0-7e1) merged as 47bbb01.
   - **Asset:** a cacheable Gradle task (`OsmSnapshotAsset`) builds `assets/cameras/osm-alpr.jsonl` from `catalog/osm/` (the meta on one line, then the rows), registered as a generated assets dir for every variant.
     - The Android build unpacks a `.gz` asset, so it ships plain: 6.67 MB stored, 2.51 MB compressed in the APK.

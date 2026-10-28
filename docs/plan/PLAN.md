@@ -392,6 +392,13 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
       - SmartTag: anchored BLE names, its state decode, and co-travel keyed on its privacy ID.
       - No finder alert for FEEC-only Tiles, and fix the Tile decode offset.
       - Reword the DULT near-owner note.
+      - Split into PRs:
+        - ✅ **P1-B11a Wording and EID** (items 1 and 5, catalog v105). Find Hub 0x40 reads "not yet in separated mode", and its note and DULT's near-owner note no longer suggest "often your own tag". Find Hub reads a 20- or 32-byte EID (frames of 22 or 34 bytes).
+        - **P1-B11b** Find Hub tag vs headphones or phone, by the Flags byte (item 1).
+        - **P1-B11c** FD44 and `name("Find My")` to `fleet-findmy` (item 2).
+        - **P1-B11d** SmartTag: anchored names, state decode, and co-travel on the privacy ID (item 3).
+        - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed).
+        - **P1-B11f** Chipolo FE65 (item 6, optional).
     - **P1-B12 Police-row fixes** (research §1, items 7–14).
     - **P1-B13 Recording-device-row fixes** (research §1, items 15–21).
     - **P1-B14 New signatures** (research §2), in batches.

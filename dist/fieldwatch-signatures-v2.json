@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 104,
+    "catalogVersion": 105,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -21854,7 +21854,7 @@
                         "unit": null,
                         "enum": {
                             "0": "separated",
-                            "1": "near owner"
+                            "1": "marked near owner"
                         },
                         "live": true,
                         "liveEmphasis": [
@@ -21862,7 +21862,7 @@
                         ],
                         "enumNotes": {
                             "0": "Separated from its owner. The address can hold still for about a day.",
-                            "1": "Near its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys."
+                            "1": "Marked near its owner. The mark can stay on for half an hour or more after the tag leaves its owner, so a tag planted recently can still show it. It doesn't tell you whose tag it is."
                         },
                         "when": null
                     }
@@ -25378,7 +25378,7 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Google Find Hub / Find My Device network tag (Chipolo, Pebblebee, moto tag, and other partners). Nearby vs separated frames. Separated mode can hold a MAC about a day. Addresses otherwise rotate. Pattern match, not that bag.",
+            "notes": "Google Find Hub / Find My Device network tag (Chipolo, Pebblebee, moto tag, and other partners). Frames show whether unwanted-tracking protection is on (separated) or not yet on. Separated mode can hold a MAC about a day. Addresses otherwise rotate. Pattern match, not that bag.",
             "attentionNote": "",
             "builtIn": true,
             "kind": "FINDER",
@@ -25401,7 +25401,7 @@
                         "modulo": null,
                         "unit": null,
                         "enum": {
-                            "64": "nearby",
+                            "64": "not yet in separated mode",
                             "65": "separated"
                         },
                         "live": true,
@@ -25410,7 +25410,7 @@
                         ],
                         "enumNotes": {
                             "65": "Separated from its owner. The address can hold still for about a day.",
-                            "64": "Nearby its owner. With you the whole sit, this is often your own tag. First heard after the sit started, it is more often someone who joined with their own keys."
+                            "64": "Unwanted-tracking protection isn't active yet. It can take hours to switch on after a tag leaves its owner, so a tag planted recently can still show this. It doesn't tell you whose tag it is."
                         },
                         "when": null
                     },
@@ -25419,6 +25419,22 @@
                         "label": "Ephemeral ID",
                         "offset": 1,
                         "length": 20,
+                        "type": "hex",
+                        "endian": "le",
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": null,
+                        "when": null
+                    },
+                    {
+                        "id": "eid32",
+                        "label": "Ephemeral ID (32-byte key)",
+                        "offset": 1,
+                        "length": 32,
                         "type": "hex",
                         "endian": "le",
                         "bitOffset": null,
