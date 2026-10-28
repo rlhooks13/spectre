@@ -2,7 +2,9 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P0-7e Bundled OSM camera snapshot** (before 0.1.0; ADR-0018), after P0-7c merges. Then **P1-C2 Storage**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P0-7e2** (the snapshot in the app, `PLATE_LAYER` on), after P0-7e1 merges.
+  - Then **P1-B11 to P1-B13**, the research row fixes (owner order 2026-10-28), then P1-B14, then the rest of 1C–1E (P1-C2 next).
+  - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never contact dontgetflocked, tests included:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. The owner chose OpenStreetMap on 2026-10-27 (ADR-0018). P0-7c removes the download, and P0-7e bundles an OSM snapshot built by one Overpass query per data build.
@@ -10,8 +12,13 @@
     - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** the late-tail flag's captures; the plugin servers (Needs human, "Still open"); a vetted list of new signatures, which arrives as a PLAN step.
-  - **Signature additions are on hold:** the owner is researching new signatures (trackers, police and surveillance, recording devices). Don't start any signature-addition work until the owner's vetted list arrives as a PLAN step. Fixes to existing rows under existing steps (P1-B5d, P1-B10) are not additions.
+  - **Waiting on the owner:** the late-tail flag's captures; the plugin servers (Needs human, "Still open").
+  - **Signature research (owner, 2026-10-28):** `docs/signature-research-2026-10.md` (#82, 0f5220c). The hold is lifted, and the work is PLAN P1-B11 to P1-B14.
+    - The doc's ids are registry-checked. Its product-behavior claims are data: verify them.
+    - "Capture needed" rules ship as "possible" or behind an off flag, each with an optional `field-capture` issue, as do the section 3 items.
+  - **IEEE lists (owner, 2026-10-28):** the 2026-10-27 `oui.csv`, `mam.csv`, `oui36.csv` and `cid.csv` are in `~/ieee-2026-10-27/`, because IEEE won't serve them to scripts. They're data only.
+    - Copy them into `scripts/.lookup-cache`, then regenerate `radiodb.bin` with `scripts/build_lookups.py --offline` in its own PR.
+    - The SIG lists download normally.
   - **How the owner is reached (owner decision 2026-10-27):**
     - The owner doesn't use Remote Control. They work only through a manager session on the Windows host, which types into this tmux pane; its messages start with "Owner:".
     - Everything that needs the owner goes under **Needs human (owner)** below. Write each item so it stands on its own, because the manager session reads it and relays it.
@@ -25,7 +32,7 @@
     - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/7c-remove-plates-download`
+- Branch: `p0/7e1-osm-snapshot-data`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -44,7 +51,13 @@
 ## Needs human (owner)
 **For the owner:**
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
-- **CLAUDE.md (protected), if you agree:** exempt OSM snapshot refresh PRs (data, `catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2).
+- **CLAUDE.md (protected), if you agree:** exempt OSM snapshot data PRs (`catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2). P0-7e1 adds about 178,000 data lines (one per camera), plus about 400 lines of script, test and docs.
+- **IEEE lists for `radiodb.bin`: the agent can't read `~/ieee-2026-10-27/`.** Listing it and copying from it were both denied on 2026-10-28, because it's outside the working directories.
+  - Either copy `oui.csv`, `mam.csv`, `oui36.csv` and `cid.csv` into `~/spectre/scripts/.lookup-cache/` yourself,
+  - or allow `Bash(cp /home/spectre/ieee-2026-10-27/*.csv /home/spectre/spectre/scripts/.lookup-cache/)` in managed settings.
+  - The agent then runs `python -I scripts/build_lookups.py --offline` in its own PR.
+- **Full ODbL text, optional.** `LICENSE-ODbL.txt` is a notice that gives the license's URI, attribution and where the data is published. As the agent reads ODbL 1.0 §4.2(b), a URI may stand in for a full copy, but a reviewer couldn't confirm that offline.
+  - To ship the full text, either put `odbl-10.txt` in `~/` for the agent to append (data only), or allow `Bash(curl -sSfL --max-time 60 --max-filesize 200000 -o * https://opendatacommons.org/licenses/odbl/odbl-10.txt)` in managed settings. The agent's `curl` call was denied on 2026-10-28.
 
 **Still open:**
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -89,6 +102,39 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P0-7e1 OSM plate-reader snapshot (data).** #81 (P0-7c) merged as 158153a.
+  - **The script:** `scripts/build_alpr.py` (stdlib only, `python -I`). One Overpass query into a new empty directory; the raw response is deleted after conversion.
+    - It refuses, writing nothing, on an Overpass `remark`, fewer than 1,000 or more than 400,000 cameras, more than 4 MiB gzipped, or a drop of more than 10% without `--allow-drop`. A drop override is recorded in the meta as `dropOverride`.
+    - It retries once on 429, 502, 503 or 504. One build got a 502 and wrote nothing.
+    - Facings match the app's parser (`;` or `,`, `direction` then `camera:direction`, halves up), plus compass points.
+    - Existing tag-table indices are kept across refreshes.
+  - **Built:** 156,273 cameras worldwide, `osmBase` 2026-10-28T03:57:34Z, 2,183,946 bytes gzipped, 3,146 tag sets. A first build was discarded after review found its facings parse wrong.
+    - Committed as `catalog/osm/alpr.jsonl` (6.5 MB, sorted by `sensorKey`), `alpr-meta.json` and `query.overpassql`, with a README.
+  - **License:** `LICENSE-ODbL.txt`, a notice with the ODbL URI (allowed by ODbL §4.3), the attribution and where the database is published (§4.6). `NOTICE` names the ODbL paths.
+  - **Test:** `OsmSnapshotTest` checks:
+    - the format, the query hash and exactly the five tag keys, with clipped, trimmed strings;
+    - the count limits, via the new shared `FlockApproach.MAX_COUNT`;
+    - every row, with numbers not strings and unique facings;
+    - sort order with no duplicates;
+    - the asset layout under 4 MiB gzipped;
+    - that the license ships.
+  - **Reviews** (no BLOCKING). Fixed:
+    - the facings parse, which differed from the app's parser and could silence a "looking your way" alert;
+    - the partial download left behind and uncaught errors;
+    - a late count cap;
+    - non-atomic output;
+    - an unrecorded `--allow-drop`;
+    - tag-index churn;
+    - trailing spaces;
+    - test gaps;
+    - the size measure;
+    - the release-tag offer in the notice.
+    - Flagged for P0-7e2: brand from `manufacturer`.
+    - Open: the full ODbL text, because `curl` was denied (see Needs human).
+  - **PLAN** (owner, 2026-10-28):
+    - P1-B11 to P1-B14 added, the research fixes and additions;
+    - "Not on the map yet" renumbered P1-B15, and ADR-0018 updated;
+    - P0-7e split into e1 (data) and e2 (app).
 - 2026-10-28: **P0-7c Remove the dontgetflocked download.** #79 (the camera-data and co-travel ADRs) merged as ac8a99a.
   - **Removed:**
     - `SensorList.PLATES.url` is blank, and the plates dialog, Update button and host note are gone.

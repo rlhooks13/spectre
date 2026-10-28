@@ -114,7 +114,7 @@ object FlockFiles {
         savedAt: Long,
         list: SensorList,
     ): Boolean {
-        if (cameras.size < FlockApproach.MIN_COUNT || cameras.size > 400_000) return false
+        if (cameras.size < FlockApproach.MIN_COUNT || cameras.size > FlockApproach.MAX_COUNT) return false
         val dest = file(dir, list)
         val tmp = File(dir, "${list.fileName}.write")
         return try {
@@ -325,7 +325,7 @@ object FlockFiles {
                 val version = input.readShort()
                 if (!knownVersion(version)) return null
                 val count = input.readInt()
-                if (count < FlockApproach.MIN_COUNT || count > 400_000) return null
+                if (count < FlockApproach.MIN_COUNT || count > FlockApproach.MAX_COUNT) return null
                 val savedAt = input.readLong()
                 val etagLen = input.readUnsignedShort()
                 if (etagLen > 512) return null
@@ -346,7 +346,7 @@ object FlockFiles {
             val version = input.readShort()
             if (!knownVersion(version)) error("bad flock version")
             val count = input.readInt()
-            if (count < FlockApproach.MIN_COUNT || count > 400_000) error("bad flock count")
+            if (count < FlockApproach.MIN_COUNT || count > FlockApproach.MAX_COUNT) error("bad flock count")
             val savedAt = input.readLong()
             val etagLen = input.readUnsignedShort()
             if (etagLen > 512) error("bad flock etag")

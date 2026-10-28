@@ -83,7 +83,7 @@
 - Snapshot updates ship as **signed data releases on the catalog channel** (P4-4 signing, P4-5 distribution), never as per-phone Overpass queries.
 - Until then, the snapshot only changes with an app release.
 
-### 5. "Not on the map yet" (P1-B11, after P1-B, behind a flag that defaults off)
+### 5. "Not on the map yet" (P1-B15, after P1-B, behind a flag that defaults off)
 
 - **Strong Flock radio hit.** Only these count:
   - a Wi-Fi SSID matching `Flock-*`;
@@ -115,7 +115,7 @@
 - **Replay needs a scrubber extension.** The ADR-0017 scrubber replaces SSIDs and moves the path, so replay needs two additions:
   - SSIDs keep a `Flock-` prefix class marker;
   - the snapshot cameras inside the capture window go through the same secret rotation and offset as the path.
-  - This lands with P1-B11, or the flag stays off.
+  - This lands with P1-B15, or the flag stays off.
 
 ## Consequences
 

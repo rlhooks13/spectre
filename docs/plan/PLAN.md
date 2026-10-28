@@ -226,7 +226,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
        - An idempotent janitor deletes `flock-cameras.bin` and its temp files.
        - Never contact dontgetflocked, tests included.
        - Earlier partial work (source-host dialog, HTTPS-only) is superseded. The parse limits carry over to the snapshot reader.
-     - **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c):
+     - **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c). Split into two PRs:
+       - ✅ **P0-7e1 Data:** `scripts/build_alpr.py`, the committed snapshot in `catalog/osm/`, `LICENSE-ODbL.txt`, `NOTICE` and `OsmSnapshotTest`.
+       - **P0-7e2 App:** the asset, the reader, the credit and the date key, and `PLATE_LAYER` on.
+         - The asset is the meta on one line, then the rows. `OsmSnapshotTest` and the script measure exactly that.
+         - Most cameras (about 71%) say "Flock" only in `manufacturer`. The reader must use `manufacturer` when `brand` is blank, for `isFlock` and `plateBrand`, or most Flock labels are lost.
        - **The script.** `scripts/build_alpr.py` sets the pattern P1-E5 reuses. One Overpass query per data build, never in Gradle or CI, downloaded into a new empty directory and treated as data. One backed-off retry on 429 or 504.
          - It fails, writing nothing, on an Overpass `remark`, a count under `MIN_COUNT`, or a drop of more than 10% without a recorded override.
        - **The snapshot.** Committed as `catalog/osm/alpr.jsonl` (sorted, one camera per line), `alpr-meta.json` (`spectre-alpr-1`, `osmBase`, query hash, count, tag table) and `query.overpassql`. The raw response is deleted. Gradle gzips it into `assets/cameras/osm-alpr.json.gz`.
@@ -370,7 +374,25 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
       - **"Present at start":** take it from in-window presence, not `firstSeen`. A radio heard before the window, then gone, that rejoins mid-window is still treated as present. Also check the 15 s grace against real first-hear delays (scan start, slow advertisers).
       - **Despike** the trail and the path since first heard (`Geo.despikePath`) before the 300 m minimum and the coverage ratio.
       - **Language keys** for the new late-joiner lines. The neighbouring tail copy is hard-coded English too, and moves with it.
-  - **P1-B11 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5; after the rest of P1-B).
+  - **Signature research fixes and additions** (owner decision 2026-10-28; `docs/signature-research-2026-10.md`, #82).
+    - **Order:** P1-B11 to P1-B13 fix wrong labels and missed trackers, so they come next, after the step in progress and before the rest of 1C–1E. P1-B14 follows.
+    - **Rules for all four:**
+      - Each goes through the 0.1.x catalog checklist, with `retired.json` entries for every removed rule.
+      - Add corpus near-miss cases for the confusers the doc lists.
+      - Justify every golden diff.
+      - The doc's ids are registry-checked. Its product-behavior claims are data, to be verified.
+      - Anything marked "capture needed" ships as "possible" or behind a flag that defaults off.
+      - Open optional `field-capture` issues for the section 3 items and for each capture-needed rule.
+    - **P1-B11 Tracker-row fixes** (research §1, items 1–6). Split into PRs as fits.
+      - Tell Find Hub tags from headphones and phones by the Flags byte. Reword the 0x40 state and read the 32-byte EID.
+      - Move FD44 and "Find My" to `fleet-findmy`.
+      - SmartTag: anchored BLE names, its state decode, and co-travel keyed on its privacy ID.
+      - No finder alert for FEEC-only Tiles, and fix the Tile decode offset.
+      - Reword the DULT near-owner note.
+    - **P1-B12 Police-row fixes** (research §1, items 7–14).
+    - **P1-B13 Recording-device-row fixes** (research §1, items 15–21).
+    - **P1-B14 New signatures** (research §2), in batches.
+  - **P1-B15 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5; after the rest of P1-B). It was numbered P1-B11 in ADR-0018's first draft; the owner's research steps took that number on 2026-10-28.
     - **Depends on:** P1-B8 (the classifier), P0-7e (the snapshot), P1-C1 (current fix) and P1-E3 (`ShareHelper`).
     - **Flag:** `Features.UNMAPPED_CAMERA = false`. A unit test enforces `!UNMAPPED_CAMERA || BLE_ADDRESS_CLASSIFIER`.
     - **Strong Flock radio hit:**
