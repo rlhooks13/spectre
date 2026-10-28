@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B11e** (Tile: no finder alert for FEEC only, and the decode offset), after P1-B11d1 merges. P1-B11 is split a–f in PLAN. P1-B11d2 (privacy-ID co-travel, flagged off) and P1-B11d3 (name-only "possible") come after P1-B11f.
+- Current step: **P1-B12b** (Reveal Media's BodyWorn names to Utility Inc), after P1-B12a merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,36 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12a Novatel, Compex and AirLink aren't law enforcement (catalog v109).** #89 (P1-B11d1) merged as bb37a80.
+  - **Field-capture issues** opened, as the owner asked:
+    - #90 Tile FEEC-only and the FEED header (P1-B11e);
+    - #91–#100 research §3: Motorola Solutions, Axis, HeyCyan, Rokid, Teltonika, Pebblebee, soundcore Work, Notta, AirTag 2, Tile FD84;
+    - #101 Yardarm (§2 N9).
+  - **Order:**
+    - P1-B11e waits for P1-B11d3 and #90.
+    - P1-B11f (Chipolo, optional) moves later.
+    - P1-B12 is split a–e, starting with the severity-1 police labels.
+  - **Rows:**
+    - Novatel (Inseego's 28:80:A2): ISP;
+    - Compex (Wi-Fi modules): ISP;
+    - AirLink (mostly generic Sierra Wireless blocks): VEHICLE.
+    - All three: new notes, no attention note, out of the default watchlist.
+    - `DeviceExplain` hints reworded: no "vehicle radio" or "public-safety".
+  - **Ladder v109:** each part (class, color, note, attention note) moves only where it's still v108 stock. The default watch (stock label) goes where the row ends up with no attention note. A watch the user changed stays, and so does one on a row they kept an attention note on.
+  - **Reviews** (no BLOCKING). Fixed:
+    - the explain hints;
+    - class-level corpus cases (`MatchCorpus.notLawEnforcement`: an Inseego MiFi, an AirCard, a Compex-module router);
+    - the watch kept on a row with a user attention note;
+    - rename-proof watch matching;
+    - the user's color;
+    - more ladder tests.
+    - Deferred to PLAN: P1-B12e (the manual still lists the rows as police), and the Phase 4 note that the stock-pack overlay must replay ladder watchlist changes.
+    - Rebutted:
+      - a filter on the police class losing these rows (that is the fix);
+      - Novatel duplicating Inseego, which is now a same-class double label recorded in ADR-0015. Folding the rows can come with B12e.
+  - **Tests:** `CatalogV109LadderTest` (4), `MatchCorpusTest.consumerGearOnOncePoliceOuisIsntLawEnforcement`, and `SignatureExchangeTest`'s class asserts updated. 1076 tests.
+  - **Goldens:** `since-v97.md` adds the three class lines. The 1.1.32 import config is at v109; its watchlist never held these rows. The v108 snapshot hash is frozen.
+  - **Device:** `Success`, new pid 23853, 0 crash lines, config `"version": 109`, and no `watch-fleet-novatel`.
 - 2026-10-28: **P1-B11d1 SmartTag whole names and state decode (catalog v108).** #88 (P1-B11c) merged as 0a94468.
   - **Split:** P1-B11d is split into d1 (names, decode), d2 (privacy-ID co-travel, behind an off flag per ADR-0019) and d3 (a name-only finder hit as "possible", for SmartTag and Find My).
   - **Names:** the "contains" rules `SmartTag`, `Smart Tag` and `Galaxy SmartTag` (any radio) are retired. The BLE globs `Smart Tag`, `Smart Tag2` and `Galaxy SmartTag*` replace them. FD5A is listed first, in the order an upgraded config gets the rules.

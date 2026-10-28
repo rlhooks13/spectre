@@ -1,9 +1,10 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v108 -->
-### Signatures (stock catalog v97 → v108)
+<!-- generated: catalog v97 -> v109 -->
+### Signatures (stock catalog v97 → v109)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
+- **AirLink** (vehicle): class law enforcement → vehicle; no longer flagged for extra attention; notes reworded.
 - **Apple AirTags** (finder): stopped matching on name contains "Find My"; Bluetooth company id 0x004C data starting 12; service uuid "FD44"; notes reworded.
 - **Amazon** (home): stopped matching on name contains "Echo" (BLE); now also matches on name glob "Echo" (BLE); name glob "Echo *" (BLE); name glob "Echo-*" (BLE); name glob "Echo_*" (BLE).
 - **Arlo** (camera): stopped matching on name contains "Arlo".
@@ -14,6 +15,7 @@
 - **Bose** (audio): stopped matching on name contains "Bose" (BLE); now also matches on name glob "Bose" (BLE); name glob "Bose *" (BLE); name glob "Bose-*" (BLE); name glob "Bose_*" (BLE); name glob "LE-Bose*" (BLE).
 - **BYD** (vehicle): stopped matching on name contains "BYD" (BLE); now also matches on name glob "BYD" (BLE); name glob "BYD *" (BLE); name glob "BYD-*" (BLE); name glob "BYD_*" (BLE).
 - **Cisco** (isp): notes reworded.
+- **Compex** (isp): class law enforcement → isp; no longer flagged for extra attention; notes reworded.
 - **Cradlepoint** (law enforcement): stopped matching on name glob "IBR*" (WIFI); now also matches on name glob "IBR350*" (WIFI); name glob "IBR1150*" (WIFI).
 - **DJI** (drone): stopped matching on name contains "DJI" (BLE); name contains "DJI" (WIFI).
 - **DULT tracker** (finder): decoded fields changed.
@@ -32,6 +34,7 @@
 - **Mercedes MBUX** (vehicle): stopped matching on name contains "MBUX" (WIFI).
 - **Microsoft Device** (phone): stopped matching on name contains "Xbox" (BLE); now also matches on name glob "Xbox" (BLE); name glob "Xbox *" (BLE); name glob "Xbox-*" (BLE); name glob "Xbox_*" (BLE).
 - **myQ** (home): stopped matching on name contains "MyQ" (BLE); now also matches on name glob "MyQ" (BLE).
+- **Novatel Wireless** (isp): class law enforcement → isp; no longer flagged for extra attention; notes reworded.
 - **Nuki** (lock): stopped matching on name contains "Nuki" (BLE).
 - **Oura** (wearable): stopped matching on name contains "Oura" (BLE); now also matches on name glob "Oura" (BLE); name glob "Oura *" (BLE); name glob "Oura-*" (BLE); name glob "Oura_*" (BLE).
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).

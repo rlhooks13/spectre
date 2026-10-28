@@ -1363,6 +1363,29 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V108
         }
+        if (version < CATALOG_V109) {
+            // P1-B12a: Novatel, Compex and AirLink aren't law enforcement (research §1 items 7–9). Each part changes only
+            // where it's still v108 stock: the class, the color (Hue.LAW), the note, the attention note (now none). The
+            // default watch goes where the row ends up with no attention note; a watch the user changed stays.
+            fleets = fleets.map { fleet ->
+                val old = LAW_ROWS_V108[fleet.id]
+                if (old == null || !fleet.builtIn) return@map fleet
+                val stock = catalog.getValue(fleet.id)
+                fleet.copy(
+                    kind = if (fleet.kind == SignatureClass.LAW_ENFORCEMENT) stock.kind else fleet.kind,
+                    colorIndex = if (fleet.colorIndex == V108_LAW_HUE) stock.colorIndex else fleet.colorIndex,
+                    notes = if (fleet.notes == old.first) stock.notes else fleet.notes,
+                    attentionNote = if (fleet.attentionNote == old.second) stock.attentionNote else fleet.attentionNote,
+                )
+            }
+            val quiet = fleets.filter { it.id in LAW_ROWS_V108 && it.builtIn && it.attentionNote.isBlank() }.map { it.id }.toSet()
+            watchlist = watchlist.filterNot { w ->
+                val id = w.fleetId ?: return@filterNot false
+                // A default watch's label is the stock name (the same in v108), whatever the user renamed the row to.
+                id in quiet && w == WatchTarget(id = "watch-$id", fleetId = id, label = catalog.getValue(id).name)
+            }
+            version = CATALOG_V109
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1430,7 +1453,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 108
+        const val CATALOG_VERSION = 109
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1536,7 +1559,30 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V105 = 105
         private const val CATALOG_V106 = 106
         private const val CATALOG_V107 = 107
-        private const val CATALOG_V108 = CATALOG_VERSION
+        private const val CATALOG_V108 = 108
+        private const val CATALOG_V109 = CATALOG_VERSION
+
+        /**
+         * P1-B12a: the rows v109 takes out of law enforcement, with their exact v108 stock note and attention note
+         * (catalog/snapshots/v108.json). v109 replaces a text only where it's still equal.
+         */
+        /** Their v108 stock color, Hue.LAW (teal), written out. */
+        private const val V108_LAW_HUE = 7
+
+        private val LAW_ROWS_V108 = mapOf(
+            "fleet-airlink" to (
+                "Sierra Wireless AirLink vehicle / fleet gateway. Common in public-safety and commercial fleets. Hidden SSIDs still hit on the board vendor." to
+                    "Sierra Wireless AirLink vehicle gateway. Common in US police and public-safety fleets; also commercial fleet. Hidden or renamed SSIDs still hit on the Sierra Wireless IEEE OUI. Pattern match, not that agency or that car. Look with your eyes."
+                ),
+            "fleet-compex" to (
+                "Compex vehicle or agency Wi-Fi access point. Same boards appear on other Compex radios." to
+                    "Compex Wi-Fi AP. Some US public-safety agencies use these in vehicles. The same IEEE OUIs appear on other Compex radios. Pattern match, not that agency. Look with your eyes."
+                ),
+            "fleet-novatel" to (
+                "Novatel Wireless / Inseego vehicle radio. The same prefix is also on some consumer MiFi hotspots." to
+                    "Novatel Wireless / Inseego OUI 28:80:A2. Reported in public-safety vehicle AP work. Same prefix is also on some Inseego consumer MiFi radios. Pattern match, not that agency. Look with your eyes."
+                ),
+        )
 
         /**
          * SmartTag's "contains" names v108 retired (P1-B11d), each with the whole BLE names that replace it: an "off" on
