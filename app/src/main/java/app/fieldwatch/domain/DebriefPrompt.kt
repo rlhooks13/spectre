@@ -45,6 +45,7 @@ object DebriefPrompt {
         val in5 = in15.filter { it.lastSeen >= shortStart || it.firstSeen >= shortStart }
         val wifi = in15.filter { it.kind == RadioKind.WIFI }
         val ble = in15.filter { it.kind == RadioKind.BLE }
+        // Signature families list every match, a possible one marked; the "signed" counts are definite only (P1-B8c).
         val signed = in15.filter { it.fleetIds.isNotEmpty() }
         val randomized = ble.count { it.randomized }
         val arrived = in15.filter { it.firstSeen >= windowStart }
@@ -60,7 +61,7 @@ object DebriefPrompt {
         val finders = kinds[TrackerMatch.Kind.FINDER].orEmpty()
         val phones = kinds[TrackerMatch.Kind.PHONE].orEmpty()
         val sigFamilies = signed.groupBy { d ->
-            d.fleetIds.joinToString("+") { names[it] ?: it }
+            d.fleetIds.joinToString("+") { d.signatureText(it, names[it] ?: it) }
         }.mapValues { it.value.size }.toList().sortedByDescending { it.second }
         val bleRssi = ble.map { it.rssi }
         val wifiRssi = wifi.map { it.rssi }
@@ -128,13 +129,13 @@ object DebriefPrompt {
             appendLine("## Working data (for the addendum — do not copy rosters into the answer)")
             appendLine()
             appendLine(
-                "15 min: Wi-Fi ${wifi.size}  BLE ${ble.size}  signed ${signed.size}  hidden SSIDs ${wifi.count { it.hiddenSsid }}  " +
+                "15 min: Wi-Fi ${wifi.size}  BLE ${ble.size}  signed ${signed.count { it.definiteFleetIds.isNotEmpty() }}  hidden SSIDs ${wifi.count { it.hiddenSsid }}  " +
                     "RAND BLE $randomized/${ble.size} (${pct(randomized, ble.size)}%)  " +
                     "first-seen ${arrived.size} (${perMin(arrived.size)}/min)  persistent ${persistent.size}  gone/quiet ${departed.size}",
             )
             appendLine(
                 "5 min: Wi-Fi ${in5.count { it.kind == RadioKind.WIFI }}  BLE ${in5.count { it.kind == RadioKind.BLE }}  " +
-                    "signed ${in5.count { it.fleetIds.isNotEmpty() }}  first-seen ${in5.count { it.firstSeen >= shortStart }}",
+                    "signed ${in5.count { it.definiteFleetIds.isNotEmpty() }}  first-seen ${in5.count { it.firstSeen >= shortStart }}",
             )
             appendLine(
                 "BLE RSSI (n=${ble.size}): ≥−50 ${bandGe(bleRssi, -50)}  −51..−70 ${band(bleRssi, -70, -51)}  " +
@@ -226,7 +227,7 @@ object DebriefPrompt {
         append(" rssi=").append(d.rssi).append("dBm")
         if (d.randomized) append(" RAND")
         if (d.fleetIds.isNotEmpty()) {
-            append(" sig=").append(d.fleetIds.joinToString("+") { names[it] ?: it })
+            append(" sig=").append(d.fleetIds.joinToString("+") { d.signatureText(it, names[it] ?: it) })
         }
         val labels = d.liveDecode.reportLabels()
         if (labels.isNotEmpty()) append(" decoded=").append(labels.joinToString(","))

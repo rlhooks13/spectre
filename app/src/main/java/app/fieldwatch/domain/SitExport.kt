@@ -188,7 +188,7 @@ object SitExport {
     private fun joinedNames(d: Sighting, fleets: List<Fleet>): String {
         if (d.fleetIds.isEmpty() || fleets.isEmpty()) return ""
         val byId = fleets.associateBy { it.id }
-        return d.fleetIds.mapNotNull { byId[it]?.name?.trim()?.takeIf { n -> n.isNotEmpty() } }
+        return d.fleetIds.mapNotNull { id -> byId[id]?.name?.trim()?.takeIf { n -> n.isNotEmpty() }?.let { d.signatureText(id, it) } }
             .sorted()
             .joinToString("; ")
     }

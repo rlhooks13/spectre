@@ -995,7 +995,7 @@ object CotEvent {
     ): String {
         val callsign = if (pilot) TakPublish.pilotCallsign(device)
             else TakPublish.callsign(device, fleets, watchlist)
-        val names = fleets.filter { it.id in device.fleetIds }.map { it.name }.distinct()
+        val names = fleets.filter { it.id in device.fleetIds }.map { device.signatureText(it.id, it.name) }.distinct()
         val kind = if (device.kind == RadioKind.WIFI) "Wi-Fi" else "BLE"
         val where = when {
             pilot -> OperatorLoc.where(device.payloadOpKind)

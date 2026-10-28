@@ -310,7 +310,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - `FastPair.isAccountKeyOnly`;
         - the Debrief inventory's keep rule;
         - TAK's `selected`, its score, and the drone type and group.
-      - **P1-B8c2 Text that leaves the app:** these mark a possible match "(possible)". They stay English.
+      - ✅ **P1-B8c2 Text that leaves the app:** these mark a possible match "(possible)". They stay English. As built, one helper (`possibleMarked`, and `Sighting.signatureText`) feeds every output below. The Debrief guess, the detail title and guess, and the Debrief class chart read definite matches only.
+        - The detail and AI-export share subjects read definite matches only, and so do the bookmark, watch and mine label suggestions (a saved label becomes the TAK callsign).
+        - The AI prompt and Debrief "signed" / "signature-matched" counts are definite only.
+        - Signature notes are marked.
+      - **P1-B8c3 (before the flag turns on):** in-app text that shows the English "(possible)" goes through `ui.signature.possible`. Two places: the Reports path list and the live map read `Dot.fleetNames`, and the detail screen's signature notes read `signatureNotes`. Carry the possible ids on `Dot` and format in the UI.
         - sit export and the log;
         - CoT remarks;
         - the AI prompt;

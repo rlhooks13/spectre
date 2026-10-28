@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B8c2** (the "(possible)" label in exports, the log, CoT, the AI prompt and Debrief text), after P1-B8c1 merges; then **1C (P1-C1 Location)**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B8c3** (in-app "(possible)" through the language key), after P1-B8c2 merges; then **1C (P1-C1 Location)**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b8c1-possible-in-sits`
+- Branch: `p1/b8c2-possible-labels`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -83,6 +83,31 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B8c2 "(possible)" in text that leaves the app (behind the B8 flag).** #74 (P1-B8c1) merged as 8468e6d.
+  - **One English helper:** `possibleMarked(id, name, possible)`, with `Sighting.signatureText`. The UI keeps its language key.
+  - **Marked:**
+    - `SitExport` CSV and JSONL signatures;
+    - the log's JSONL names;
+    - CoT remarks;
+    - `DebriefPrompt` signature families and `sig=`;
+    - Debrief signature groups, stay lines, Wi-Fi and BLE lines, and the signature chart;
+    - `SitDiff` names (from a sighting or a saved row);
+    - the sit-map dot names;
+    - `DeviceDetailText`'s "Matched signatures".
+  - **Definite only:** the Debrief's notable-BLE guess, the Debrief class chart, and `DeviceDetailText`'s title and guess. `DeviceExplain` strips parenthesized text, so a marked name there would read as definite.
+  - **Flag off:** no output changes and no golden moved.
+  - **Test (SitTest):** one test checks a possible match is marked in each output and a definite one reads as before. It also checks the detail title and guess, the per-radio prompt's subject, and signature notes.
+  - **Reviews** (no BLOCKING finding). Fixed:
+    - the per-radio AI prompt's subject, now definite only through the shared `DeviceDetailText.splitNames`, which has no raw-id fallback;
+    - the share subjects;
+    - the bookmark, watch and mine label suggestions, which become the TAK callsign;
+    - signature notes are marked;
+    - the "signed" and "signature-matched" counts;
+    - a blank name no longer becomes a " (possible)" chart bar;
+    - SitDiff credits Extra attention to a definite match;
+    - the test that couldn't fail now checks the title line and the guess.
+  - **Deferred as P1-B8c3:** in-app English "(possible)" in the path and map dot names and the detail notes. Needed before the flag turns on.
+  - **P1-B8 flag:** after P1-B8c3, it waits for its acceptance check (a 24 h addressType capture on the phone, plus the static-tag checks).
 - 2026-10-28: **P1-B8c1 Possible matches in sits (behind the B8 flag).** #73 (P1-B9) merged as 5aff70e.
   - **Split:** P1-B8c becomes c1 (sits and decisions) and c2 (text that leaves the app). About 25 call sites in all, so two reviewable PRs.
   - **`SitRadio.possibleFleetIds`:**

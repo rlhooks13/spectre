@@ -2397,7 +2397,8 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun toggleWatchDevice(device: Sighting) {
         viewModelScope.launch {
             app.config.update { cfg ->
-                val names = device.fleetIds.mapNotNull { id -> cfg.fleets.firstOrNull { it.id == id }?.name }
+                // A suggested label reads definite matches only (P1-B8c): it becomes the TAK callsign.
+                val names = device.definiteFleetIds.mapNotNull { id -> cfg.fleets.firstOrNull { it.id == id }?.name }
                 cfg.copy(
                     watchlist = RadioBookmarks.toggleAlert(
                         cfg.watchlist,
@@ -2480,7 +2481,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
 
     fun setRadioMine(device: Sighting, on: Boolean) {
         viewModelScope.launch {
-            val suggest = RadioBookmarks.suggestLabel(device, device.fleetIds.map { fleetName(it) })
+            val suggest = RadioBookmarks.suggestLabel(device, definiteNames(device))
             app.config.update { cfg ->
                 cfg.copy(watchlist = RadioBookmarks.setMine(cfg.watchlist, device.key, on, suggest))
             }
@@ -2535,7 +2536,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
 
     fun saveRadioNotes(device: Sighting, notes: String) {
         viewModelScope.launch {
-            val suggest = RadioBookmarks.suggestLabel(device, device.fleetIds.map { fleetName(it) })
+            val suggest = RadioBookmarks.suggestLabel(device, definiteNames(device))
             app.config.update { cfg ->
                 cfg.copy(
                     watchlist = RadioBookmarks.upsertNotes(cfg.watchlist, device.key, notes, suggest),
@@ -3575,7 +3576,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     }
                 }
                 val title = MacUtil.redactPrivateText(
-                    device.listTitle(names),
+                    device.listTitle(definiteNames(device)),
                     listOf(device.mac),
                     listOfNotNull(device.payloadUasId),
                     settings.demoMode,
@@ -3631,7 +3632,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     }
                 }
                 val title = MacUtil.redactPrivateText(
-                    device.listTitle(names),
+                    device.listTitle(definiteNames(device)),
                     listOf(device.mac),
                     listOfNotNull(device.payloadUasId),
                     settings.demoMode,
