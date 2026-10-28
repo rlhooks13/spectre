@@ -5,6 +5,7 @@ import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.Fleet
 import app.fieldwatch.domain.MatchCorpus
 import app.fieldwatch.domain.MatchRule
+import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RuleKind
 import app.fieldwatch.domain.SignatureEngine
 import app.fieldwatch.domain.SignatureExchange
@@ -95,11 +96,23 @@ object ReleaseNotes {
         if (a.attentionNote.isNotBlank() && b.attentionNote.isNotBlank() && a.attentionNote != b.attentionNote) out += "attention note reworded"
         val aRules = a.rules.associateBy(::matchKey)
         val bRules = b.rules.associateBy(::matchKey)
-        val gone = (aRules.keys - bRules.keys).map { aRules.getValue(it) }
-        val added = (bRules.keys - aRules.keys).map { bRules.getValue(it) }
+        val goneAll = (aRules.keys - bRules.keys).map { aRules.getValue(it) }
+        val addedAll = (bRules.keys - aRules.keys).map { bRules.getValue(it) }
+        // An any-radio rule replaced by exactly one copy of itself on one radio, switched the same, reads as a narrowing,
+        // not a removal and an addition. A split across radios, or a switch flip, stays a removal plus additions.
+        val narrowed = goneAll.filter { it.radio == null }.mapNotNull { old ->
+            val copies = addedAll.filter { it.radio != null && matchKey(it.copy(radio = null)) == matchKey(old) }
+            copies.singleOrNull()?.takeIf { it.enabled == old.enabled }
+        }
+        val narrowedKeys = narrowed.map { matchKey(it.copy(radio = null)) }.toSet()
+        val gone = goneAll.filterNot { matchKey(it) in narrowedKeys }
+        val added = addedAll - narrowed.toSet()
         val switched = (aRules.keys intersect bRules.keys).filter { aRules.getValue(it).enabled != bRules.getValue(it).enabled }
         if (gone.isNotEmpty()) out += "stopped matching on ${gone.joinToString("; ") { rule(it) }}"
         if (added.isNotEmpty()) out += "now also matches on ${added.joinToString("; ") { rule(it) }}"
+        narrowed.groupBy { it.radio!! }.forEach { (radio, rules) ->
+            out += "now ${radioLabel(radio)} only: ${rules.joinToString(", ") { rule(it.copy(radio = null)) }}"
+        }
         switched.forEach { k -> out += "rule ${rule(bRules.getValue(k))} switched ${if (bRules.getValue(k).enabled) "on" else "off"}" }
         if (a.decode != b.decode) out += "decoded fields changed"
         if (a.notes != b.notes) out += "notes reworded"
@@ -154,6 +167,11 @@ object ReleaseNotes {
     }
 
     private fun klass(f: Fleet): String = f.kind.name.lowercase().replace('_', ' ')
+
+    private fun radioLabel(radio: RadioKind): String = when (radio) {
+        RadioKind.WIFI -> "Wi-Fi"
+        RadioKind.BLE -> "BLE"
+    }
 
     private fun rule(r: MatchRule): String {
         val radio = r.radio?.let { " (${it.name})" }.orEmpty()

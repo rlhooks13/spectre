@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B12e** (the manual and the release-notes wording for P1-B12), after P1-B12d merges. Then P1-B13. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
+- Current step: **P1-B13** (recording-device rows, research §1 items 15–21; the phone's live screen shows a Meta Quest 3 labeled "Ray-Ban / Meta glasses", item 15), after P1-B12e merges. Then P1-B11d3, P1-B11e, P1-B14. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,29 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12e Manual and release-notes wording for P1-B12.** #107 (P1-B12d) merged as f9e5db7. No catalog change.
+  - **Manual (`docs/build_manual.py`):**
+    - AirLink, Compex and Novatel are out of the police, extra-attention and default-watch lists and in the right class and color tables (AirLink: Vehicle/teal; Compex, Novatel: ISP/silver);
+    - "LiteOn Wi-Fi module" is in Other/silver;
+    - the "LiteOn … on Flock" and "Espressif on Flock" claims are gone;
+    - the rule radios are given (Raven, Rhombus, Uniview, Hatch, Arlo; LiteOn's C0–FF prefixes Wi-Fi only);
+    - Utility Inc lists BodyWorn*.
+  - **Release notes:** a rule replaced by exactly one copy of itself on one radio, switched the same, now reads "now Wi-Fi only: oui …", grouped per radio. A split across radios, or a switch flip, stays a removal plus additions.
+  - **Reviews** (no BLOCKING). Fixed:
+    - the class table (Vehicle, ISP, Other);
+    - the color table and a typo;
+    - the four "LiteOn on Flock" leftovers;
+    - the old row name;
+    - the inventory header;
+    - Arlo's radio;
+    - the split-radio and switch-flip cases;
+    - the grouped clause;
+    - the shadowed lambda names;
+    - a `radioLabel` helper.
+    - Rebutted: respelling "(WIFI)" in `rule()`, which would rewrite every existing golden line for spelling alone.
+  - **Tests:** `ReleaseNotesTest.aNarrowedRadioReadsAsOneChange` covers the narrowing, the split and the switch flip. 1097 tests.
+  - **Golden:** in `since-v97.md`, the Arlo, Hatch, LiteOn, Raven, Rhombus and Uniview lines are reworded only ("now Wi-Fi only: …"). No catalog or verdict change.
+  - **Device:** skipped. No app code changed, only the manual, a test-side generator and its golden.
 - 2026-10-28: **P1-B12d LiteOn is a Wi-Fi module row (catalog v113).** #105 (P1-B12f) merged as 17c9083.
   - **Row:**
     - "LiteOn camera radio" is now "LiteOn Wi-Fi module", class OTHER (the WiGLE audit found ClickShare, gates and car HUDs on these prefixes); the id stays;

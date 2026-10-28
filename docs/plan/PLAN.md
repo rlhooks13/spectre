@@ -408,7 +408,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
           - **P1-B11d3** A finder hit by name alone reads as "possible": SmartTag without FD5A, and Find My's BLE name (ADR-0020). It needs a name-only "possible" outside the address classifier. Acceptance: corpus cases for each, and no attention card or alert on a name-only hit.
         - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed). Waits for P1-B11d3 (name-only and FEEC-only "possible") and capture issue #90.
         - **P1-B11f** Chipolo FE65 (item 6, optional).
-    - **P1-B12 Police-row fixes** (research §1, items 7–14). Split:
+    - ✅ **P1-B12 Police-row fixes** (research §1, items 7–14). Split:
       - ✅ **P1-B12a** Novatel to ISP, Compex to ISP, AirLink to VEHICLE; no attention note, no default watch (items 7–9; catalog v109).
       - ✅ **P1-B12b** Reveal Media's BodyWorn names to the Utility Inc row, and `RS2-*` (item 10; catalog v110). Utility gains only `glob("BodyWorn*")`, and `RS2-*` is retired.
       - ✅ **P1-B12c** ShotSpotter `D4:11:D6` and Rhombus `CC:47:BD` Wi-Fi only (item 11; catalog v111).
@@ -419,7 +419,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - Verkada has none of its member UUIDs, and adding its OUI `E0:A7:00` Wi-Fi only moves to P1-B14 (a new rule);
         - Avigilon waits for capture #106.
       - ✅ **P1-B12f** (catalog v112) The other any-radio OUIs in the BLE static-random range (first byte 0xC0–0xFF): Uniview `C4:79:05` (an attention row), Hatch `C8:FA:9C` and Arlo `FC:9C:98`. Same fix as P1-B12c, Wi-Fi only (found in P1-B12c's review). The general fix, where only a PUBLIC address makes an OUI-only BLE hit definite, belongs to P1-B8's classifier, which is behind its flag.
-      - **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109). It also gives the rule radios P1-B12c, P1-B12d and P1-B12f changed (Wi-Fi OUIs). The LiteOn row is now "LiteOn Wi-Fi module", class OTHER, without vendor IE 00:80:19; the manual's "LiteOn 00:80:19 / 00:0A:EB on Flock" claim goes. The release-notes generator should say "oui X now Wi-Fi only" for a rule whose only change is a narrower radio.
+      - ✅ **P1-B12e** Manual: `docs/build_manual.py` lists every row P1-B12 moves under the right class, extra-attention and default-watch lists (AirLink, Compex and Novatel since v109). It also gives the rule radios P1-B12c, P1-B12d and P1-B12f changed (Wi-Fi OUIs). The LiteOn row is now "LiteOn Wi-Fi module", class OTHER, without vendor IE 00:80:19; the manual's "LiteOn 00:80:19 / 00:0A:EB on Flock" claim goes. The release-notes generator should say "oui X now Wi-Fi only" for a rule whose only change is a narrower radio.
       - Before `IN_APP_CATALOG_UPDATE` turns on (Phase 4): the stock-pack overlay must replay what ladder steps do beyond adding rows, because it moves the version past them: the v107, v109 and v110 watchlist, filter, preset and row-switch changes, and an "off" carried from a retired rule to its replacement (`carryRetiredOff`, v101–v103, v108, v111, v112; per OUI in v113), plus the v113 name, class and note changes.
     - **P1-B13 Recording-device-row fixes** (research §1, items 15–21).
     - **P1-B14 New signatures** (research §2), in batches. It also adds Verkada's OUI `E0:A7:00` Wi-Fi only (research §1 item 13, moved here from P1-B12d).
