@@ -81,5 +81,5 @@
 | `IN_APP_CATALOG_UPDATE` | off |
 | `LATE_TAIL_FIX` | off |
 | `OTHER_SENSORS_LAYER` | off |
-| `PLATE_LAYER` | off |
+| `PLATE_LAYER` | on |
 <!-- generated: end -->

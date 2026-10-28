@@ -1157,7 +1157,6 @@
     "ui.cameras.along.path": "Kameraer langs sporet",
     "ui.cameras.along.note": "Inden for ca. {meters} m fra dette spor. En gemt retning tæller, når den pegede mod sporet. Ingen gemt retning tæller som på sporet. En gemt retning, der pegede væk, tælles ikke.",
     "ui.cameras.lists.missing": "Kameralisterne er ikke på denne telefon.",
-    "ui.cameras.plates.missing": "Listen med nummerpladelæsere er ikke på denne telefon.",
     "ui.cameras.other.missing": "Listen med andre kameraer er ikke på denne telefon.",
     "ui.cameras.no.path": "Denne vagt har intet spor, så kameraer langs det tælles ikke.",
     "ui.cameras.none.along": "Intet oplistet kamera var langs dette spor.",

@@ -1125,7 +1125,6 @@
     "ui.cameras.along.path": "Kamera përgjatë shtegut",
     "ui.cameras.along.note": "Brenda rreth {meters} m nga ky shteg. Një drejtim i ruajtur numërohet kur tregonte drejt shtegut. Pa drejtim të ruajtur numërohet si në shteg. Një drejtim i ruajtur që tregonte larg nuk numërohet.",
     "ui.cameras.lists.missing": "Listat e kamerave nuk janë në këtë telefon.",
-    "ui.cameras.plates.missing": "Lista e lexuesve të targave nuk është në këtë telefon.",
     "ui.cameras.other.missing": "Lista e kamerave të tjera nuk është në këtë telefon.",
     "ui.cameras.no.path": "Kjo roje nuk ka shteg, prandaj kamerat përgjatë tij nuk numërohen.",
     "ui.cameras.none.along": "Asnjë kamerë e listuar nuk ishte përgjatë këtij shtegu.",

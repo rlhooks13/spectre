@@ -1154,7 +1154,6 @@
     "ui.cameras.along.path": "Kameras entlang des Pfads",
     "ui.cameras.along.note": "Etwa innerhalb von {meters} m von diesem Pfad. Eine gespeicherte Richtung zählt, wenn sie zum Pfad zeigte. Keine gespeicherte Richtung zählt als auf dem Pfad. Eine gespeicherte Richtung, die wegzeigte, wird nicht gezählt.",
     "ui.cameras.lists.missing": "Die Kameralisten sind nicht auf diesem Telefon.",
-    "ui.cameras.plates.missing": "Die Kennzeichenleser-Liste ist nicht auf diesem Telefon.",
     "ui.cameras.other.missing": "Die Liste anderer Kameras ist nicht auf diesem Telefon.",
     "ui.cameras.no.path": "Diese Lage hat keinen Pfad, daher werden Kameras daran nicht gezählt.",
     "ui.cameras.none.along": "Keine gelistete Kamera lag an diesem Pfad.",

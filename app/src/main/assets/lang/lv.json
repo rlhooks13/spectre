@@ -1118,7 +1118,6 @@
     "ui.cameras.along.path": "Kameras gar ceļu",
     "ui.cameras.along.note": "Apmēram {meters} m no šī ceļa. Saglabāts virziens skaitās, ja tas rādīja uz ceļu. Bez saglabāta virziena skaitās kā uz ceļa. Saglabāts virziens, kas rādīja prom, neskaitās.",
     "ui.cameras.lists.missing": "Kameru saraksti nav šajā tālrunī.",
-    "ui.cameras.plates.missing": "Numuru lasītāju saraksts nav šajā tālrunī.",
     "ui.cameras.other.missing": "Citu kameru saraksts nav šajā tālrunī.",
     "ui.cameras.no.path": "Šai maiņai nav ceļa, tāpēc kameras gar to netiek skaitītas.",
     "ui.cameras.none.along": "Neviena norādītā kamera nebija gar šo ceļu.",

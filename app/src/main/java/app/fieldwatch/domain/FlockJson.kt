@@ -279,7 +279,7 @@ private fun JsonPull.readProperties(): FlockProps {
 
 private fun emptyProps(): FlockProps = FlockProps(0L, "", "", "", "", "", emptyList(), "", "", "", "")
 
-private fun isFlock(brand: String, operatorName: String): Boolean {
+internal fun isFlock(brand: String, operatorName: String): Boolean {
     return brand.contains("flock", ignoreCase = true) || operatorName.contains("flock", ignoreCase = true)
 }
 

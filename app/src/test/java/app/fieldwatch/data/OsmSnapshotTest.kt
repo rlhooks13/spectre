@@ -75,6 +75,74 @@ class OsmSnapshotTest {
         assertTrue("$packed bytes gzipped", packed <= 4 * 1024 * 1024)
     }
 
+    /** The app's asset layout, as Gradle builds it (P0-7e2): the meta on one line, then the rows. */
+    private fun assetBytes(rows: String = File(dir, "alpr.jsonl").readText()): ByteArray {
+        val meta = File(dir, "alpr-meta.json").readLines().joinToString("") { it.trim() }
+        return (meta + "\n" + rows).toByteArray()
+    }
+
+    /** P0-7e2: the app reads every camera, as a plate reader, and labels Flock from manufacturer when brand is blank. */
+    @Test
+    fun theAppReadsTheWholeSnapshot() {
+        val loaded = OsmSnapshot.read(assetBytes().inputStream())!!
+        val count = Json.parseToJsonElement(File(dir, "alpr-meta.json").readText()).jsonObject.getValue("count").jsonPrimitive.int
+        assertEquals(count, loaded.cameras.size)
+        assertTrue(loaded.osmBase.isNotBlank())
+        assertTrue(loaded.cameras.all { it.kind == app.fieldwatch.domain.SensorKind.PLATE })
+        // About 71% of mapped cameras name Flock only in manufacturer (ADR-0018 review); they must stay Flock.
+        val flock = loaded.cameras.count { it.flock }
+        assertTrue("$flock of $count are Flock", flock > count / 2)
+        // A gzipped stream reads the same.
+        val zipped = ByteArrayOutputStream().also { out -> GZIPOutputStream(out).use { it.write(assetBytes()) } }.toByteArray()
+        assertEquals(count, OsmSnapshot.read(zipped.inputStream())!!.cameras.size)
+    }
+
+    @Test
+    fun brandComesFromManufacturerWhenBrandIsBlank() {
+        assertEquals("Flock Safety" to true, OsmSnapshot.brandOf(listOf("Flock Safety", "", "", "", "")))
+        assertEquals("Flock Safety" to true, OsmSnapshot.brandOf(listOf("", "", "Flock Safety", "Q108485435", "")))
+        assertEquals(true, OsmSnapshot.brandOf(listOf("Flock Group Inc.", "", "", "", "")).second)
+        assertEquals(true, OsmSnapshot.brandOf(listOf("", "Q108485435", "", "", "")).second)
+        assertEquals("Motorola Solutions" to false, OsmSnapshot.brandOf(listOf("Motorola Solutions", "", "", "", "City Police")))
+        assertEquals("" to false, OsmSnapshot.brandOf(listOf("x")))
+    }
+
+    /** A malformed row, a short snapshot, or the wrong format reads as nothing, never as half a list. */
+    @Test
+    fun aBrokenSnapshotIsNotHalfLoaded() {
+        val rows = File(dir, "alpr.jsonl").readText()
+        assertEquals(null, OsmSnapshot.read(assetBytes(rows.replaceFirst("]]\n", "]\n")).inputStream()))
+        assertEquals(null, OsmSnapshot.read(assetBytes(rows.lines().take(500).joinToString("\n")).inputStream()))
+        assertEquals(null, OsmSnapshot.read(assetBytes(rows.replaceFirst(Regex("^\\[\\d"), "[7")).inputStream()))
+        assertEquals(null, OsmSnapshot.read("{\"format\":\"other\"}\n".toByteArray().inputStream()))
+        assertEquals(null, OsmSnapshot.read(ByteArray(0).inputStream()))
+        // A tag table in another order would read labels from the wrong fields: refused.
+        val meta = File(dir, "alpr-meta.json").readLines().joinToString("") { it.trim() }
+            .replace("\"manufacturer\",\"manufacturer:wikidata\"", "\"manufacturer:wikidata\",\"manufacturer\"")
+            .replace("\"manufacturer\", \"manufacturer:wikidata\"", "\"manufacturer:wikidata\", \"manufacturer\"")
+        assertEquals(null, OsmSnapshot.read((meta + "\n" + rows).toByteArray().inputStream()))
+        // Junk after a row's facings is refused.
+        val brands = listOf("" to false)
+        assertEquals(null, OsmSnapshot.row("[0,1,1,1,-1,[5]x]", brands))
+        assertTrue(OsmSnapshot.row("[0, 1, 1, 1, -1, [5]]", brands) != null)
+    }
+
+    @Test
+    fun anAgencyNamedFlockDoesNotMakeAnotherMakersCameraFlock() {
+        assertEquals(false, OsmSnapshot.brandOf(listOf("Motorola Solutions", "", "", "", "Little Flock Police Department")).second)
+        assertEquals(true, OsmSnapshot.brandOf(listOf("", "", "", "", "Flock Safety")).second)
+    }
+
+    /** The layer note's date comes from the meta line alone; an unreadable asset gives null, which the note shows. */
+    @Test
+    fun theDateComesFromTheMetaLineAlone() {
+        val base = Json.parseToJsonElement(File(dir, "alpr-meta.json").readText()).jsonObject.getValue("osmBase").jsonPrimitive.content
+        assertEquals(base, OsmSnapshot.readBase(assetBytes().inputStream()))
+        assertEquals(base.take(10), OsmSnapshot.dateOf(base))
+        assertEquals(null, OsmSnapshot.readBase("{\"format\":\"other\",\"osmBase\":\"x\"}\n".toByteArray().inputStream()))
+        assertEquals(null, OsmSnapshot.readBase(ByteArray(0).inputStream()))
+    }
+
     /** The license notice and the snapshot's README ship with it (ADR-0018 §3). */
     @Test
     fun theLicenseShipsWithTheData() {

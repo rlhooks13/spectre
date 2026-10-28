@@ -1160,7 +1160,6 @@
     "ui.cameras.along.path": "Kameror längs spåret",
     "ui.cameras.along.note": "Inom ungefär {meters} m från detta spår. En sparad riktning räknas när den pekade mot spåret. Ingen sparad riktning räknas som på spåret. En sparad riktning som pekade bort räknas inte.",
     "ui.cameras.lists.missing": "Kameralistorna finns inte på den här telefonen.",
-    "ui.cameras.plates.missing": "Listan med skyltläsare finns inte på den här telefonen.",
     "ui.cameras.other.missing": "Listan med andra kameror finns inte på den här telefonen.",
     "ui.cameras.no.path": "Detta pass har inget spår, så kameror längs det räknas inte.",
     "ui.cameras.none.along": "Ingen listad kamera fanns längs detta spår.",

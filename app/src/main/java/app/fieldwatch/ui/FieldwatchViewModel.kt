@@ -33,6 +33,7 @@ import app.fieldwatch.domain.gnssSettings
 import app.fieldwatch.data.CatalogRemote
 import app.fieldwatch.data.DebriefPdf
 import app.fieldwatch.data.FlockFiles
+import app.fieldwatch.data.OsmSnapshot
 import app.fieldwatch.data.SensorList
 import app.fieldwatch.data.LanguageFiles
 import app.fieldwatch.data.LanguageRead
@@ -233,6 +234,9 @@ data class FieldwatchUi(
     val travelDeg: Double = Double.NaN,
 )
 
+/** [FieldwatchViewModel.plateDataDate] when the bundled plate-reader data can't be read. */
+const val PLATE_DATA_UNREADABLE = "unreadable"
+
 /** What a sensor layer's switch does. */
 internal enum class LayerToggle { NONE, OFF, ON, NEEDS_NETWORK, CONFIRM_DOWNLOAD }
 
@@ -263,6 +267,12 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     val flockRevision: StateFlow<Int> = app.flockRevision
     private val _flockLayer = MutableStateFlow(FlockLayerUi())
     val flockLayerUi: StateFlow<FlockLayerUi> = _flockLayer.asStateFlow()
+    /**
+     * The bundled plate-reader data's date ("2026-10-28") for the layer note (P0-7e); empty until read, or
+     * [PLATE_DATA_UNREADABLE] when the asset can't be read.
+     */
+    private val _plateDataDate = MutableStateFlow("")
+    val plateDataDate: StateFlow<String> = _plateDataDate.asStateFlow()
     private val _sensorLayer = MutableStateFlow(FlockLayerUi())
     val sensorLayerUi: StateFlow<FlockLayerUi> = _sensorLayer.asStateFlow()
     private val _mapNotice = MutableStateFlow<MapKeyNotice?>(null)
@@ -707,7 +717,11 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     // finishes, and ViewModelInitOrderTest fails on any property declared below it.
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            // No plate-reader list file is read (P0-7c): the app deletes any old one at start.
+            // The bundled snapshot's data date, for the layer note (P0-7e). No downloaded plate list is read (P0-7c).
+            if (Features.PLATE_LAYER) {
+                // The meta line only: the date, or "unreadable" so the layer note says so instead of a silent alert.
+                _plateDataDate.value = app.plateSnapshotBase()?.let(OsmSnapshot::dateOf) ?: PLATE_DATA_UNREADABLE
+            }
             if (!Features.OTHER_SENSORS_LAYER) {
                 // Upstream's list from before P0-7b; P1-E5 downloads this project's own list.
                 FlockFiles.file(app.filesDir, SensorList.OTHER).delete()
@@ -3384,8 +3398,8 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
      * Other-sensors list while [Features.OTHER_SENSORS_LAYER] is off (P0-7b).
      */
     private fun cameraReport(): PathCameras.Report {
-        // P0-7c: no downloaded plate-reader list is read; P0-7e adds the bundled snapshot here.
-        val plates: List<FlockCamera>? = null
+        // The bundled OpenStreetMap snapshot (P0-7e). It's in the app, so it counts whether or not the layer is on.
+        val plates: List<FlockCamera>? = if (Features.PLATE_LAYER) app.loadPlateSnapshot()?.cameras else null
         val others = if (Features.OTHER_SENSORS_LAYER) FlockFiles.read(app.filesDir, SensorList.OTHER)?.cameras else null
         val index = FlockIndex()
         val all = ArrayList<FlockCamera>((plates?.size ?: 0) + (others?.size ?: 0))

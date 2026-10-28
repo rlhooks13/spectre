@@ -100,6 +100,8 @@ Flock
   0 facing the path
   1 on the path with no direction
 
+© OpenStreetMap contributors · openstreetmap.org/copyright
+
 4. AIRCRAFT
 • TESTSERIAL0000000001
   Last 0.002100, 0.003100

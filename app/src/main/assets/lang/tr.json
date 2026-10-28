@@ -1169,7 +1169,6 @@
     "ui.cameras.along.path": "Rota boyunca kameralar",
     "ui.cameras.along.note": "Bu rotanın yaklaşık {meters} m yakınında. Kayıtlı bir yön, rotaya baktığında sayılır. Kayıtlı yön yoksa rota üzerinde sayılır. Başka yöne bakan kayıtlı bir yön sayılmaz.",
     "ui.cameras.lists.missing": "Kamera listeleri bu telefonda yok.",
-    "ui.cameras.plates.missing": "Plaka okuyucu listesi bu telefonda yok.",
     "ui.cameras.other.missing": "Diğer kamera listesi bu telefonda yok.",
     "ui.cameras.no.path": "Bu oturumun rotası yok, bu yüzden üzerindeki kameralar sayılmaz.",
     "ui.cameras.none.along": "Bu rota boyunca listelenen kamera yoktu.",

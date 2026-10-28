@@ -218,6 +218,8 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.heading", "Layers", LanguageSlot.CONTROL),
     en("settings.layer.flock", "License plate reader cameras", LanguageSlot.CONTROL),
     en("settings.layer.note", "License plate reader cameras on the map. The alert is below.", LanguageSlot.BODY),
+    // P0-7e2: the bundled OpenStreetMap snapshot's date ("2026-10-28"). The credit after it is fixed English.
+    en("settings.layer.osm.date", "Map data as of {date}. Mapped cameras only; the list is crowdsourced and not complete.", LanguageSlot.BODY),
     // Retired with the plate-reader download (P0-7c, ADR-0018): the list is no longer downloaded from a host.
     en("settings.layer.source", "Unused", LanguageSlot.BODY),
     en("settings.layer.other", "Other sensors", LanguageSlot.CONTROL),

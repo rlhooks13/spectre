@@ -93,7 +93,11 @@ object PathCameras {
     fun text(tally: Tally): String {
         // While the Other-sensors layer is off, its list isn't "missing"; it isn't offered.
         val othersOffered = Features.OTHER_SENSORS_LAYER
-        if (!tally.plates && (!tally.others || !othersOffered)) return LanguageText.text("ui.cameras.lists.missing")
+        if (!tally.plates && (!tally.others || !othersOffered)) {
+            // The plate list is bundled (P0-7e): with no Other-sensors list on offer, the only list "missing" is an
+            // unreadable bundled one.
+            return LanguageText.text(if (othersOffered) "ui.cameras.lists.missing" else "ui.cameras.plates.unreadable")
+        }
         if (!tally.pathReady) return LanguageText.text("ui.cameras.no.path")
         return buildString {
             appendLine(
@@ -104,7 +108,7 @@ object PathCameras {
             )
             if (!tally.plates) {
                 appendLine()
-                appendLine(LanguageText.text("ui.cameras.plates.missing"))
+                appendLine(LanguageText.text("ui.cameras.plates.unreadable"))
             }
             if (!tally.others && othersOffered) {
                 appendLine()
@@ -130,6 +134,13 @@ object PathCameras {
                         ),
                     )
                 }
+            }
+            // The camera locations are OpenStreetMap data (ADR-0018 §3); this text goes into exports and the PDF.
+            if (tally.plates) {
+                // Always one blank line before the credit, whichever branch ended the text.
+                if (!endsWith("\n")) appendLine()
+                if (!endsWith("\n\n")) appendLine()
+                append(FlockCredit.PRINT)
             }
         }.trimEnd()
     }

@@ -1167,7 +1167,6 @@
     "ui.cameras.along.path": "Kamerák az út mentén",
     "ui.cameras.along.note": "Körülbelül {meters} m-en belül ettől az úttól. A tárolt irány számít, ha az út felé mutatott. Tárolt irány nélkül az úton lévőnek számít. A tárolt irány, amely elfelé mutatott, nem számít.",
     "ui.cameras.lists.missing": "A kameralisták nincsenek ezen a telefonon.",
-    "ui.cameras.plates.missing": "A rendszámolvasók listája nincs ezen a telefonon.",
     "ui.cameras.other.missing": "A más kamerák listája nincs ezen a telefonon.",
     "ui.cameras.no.path": "Ennek a figyelésnek nincs útja, ezért a mentén lévő kamerák nem számítanak.",
     "ui.cameras.none.along": "Egy felsorolt kamera sem volt ezen az úton.",

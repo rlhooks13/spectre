@@ -1146,7 +1146,6 @@
     "ui.cameras.along.path": "Caméras le long du chemin",
     "ui.cameras.along.note": "À moins d'environ {meters} m de ce chemin. Une direction enregistrée compte si elle pointait vers le chemin. Sans direction enregistrée, elle compte comme sur le chemin. Une direction enregistrée qui pointait ailleurs n'est pas comptée.",
     "ui.cameras.lists.missing": "Les listes de caméras ne sont pas sur ce téléphone.",
-    "ui.cameras.plates.missing": "La liste des lecteurs de plaques n'est pas sur ce téléphone.",
     "ui.cameras.other.missing": "La liste des autres caméras n'est pas sur ce téléphone.",
     "ui.cameras.no.path": "Cette veille n'a pas de chemin, donc les caméras le long de celui-ci ne sont pas comptées.",
     "ui.cameras.none.along": "Aucune caméra listée n'était le long de ce chemin.",
