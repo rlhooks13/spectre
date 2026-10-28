@@ -17,6 +17,12 @@
     - Everything that needs the owner goes under **Needs human (owner)** below. Write each item so it stands on its own, because the manager session reads it and relays it.
     - Push notifications probably won't arrive. Keep sending them where LOOP_PROMPT says, but never block or retry on one, and never open an issue about an undelivered push.
   - **#78** (CLAUDE.md command table, owner-signed) merged as 8c7d71a.
+  - **The agent sets up the test phone itself** (CLAUDE.md "Setting up the test phone yourself", #80, b1842a5).
+    - For Spectre debug and staging builds it accepts Spectre's own first-run disclaimer by UI automation and checks a screencap, and grants runtime permissions over adb (`install -g` or `pm grant`).
+    - It keeps app data between installs (`install -r`, no `pm clear` or uninstall unless a test needs it).
+    - None of this goes in Needs human. Ask the owner only for what adb can't do: replugging, a physical button, field captures.
+    - The CHARTER's "accepts terms of service" stop covers third-party terms (the example is tak.gov). Spectre's own disclaimer on the owner's test phone is authorized by that owner-signed section.
+    - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `p0/7c-camera-data-adr`
@@ -38,7 +44,6 @@
 ## Needs human (owner)
 **For the owner:**
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
-- **The staging build (`io.github.rlhooks13.spectre.staging`) still shows the first-run "Disclaimer and license" screen** (screencap 2026-10-28 20:04 phone time). The owner accepted it on the debug build (`io.github.rlhooks13.spectre.debug`), which now opens on Live. The agent never accepts it, so please accept it on staging once.
 - **CLAUDE.md (protected), if you agree:** exempt OSM snapshot refresh PRs (data, `catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2).
 
 **Still open:**
@@ -93,7 +98,11 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
   - **#78** (CLAUDE.md command table) is owner-signed and the owner merges it. The agent doesn't touch it, and its Needs-human item is removed.
   - **Signature additions on hold** until the owner's vetted list arrives as a PLAN step.
   - **Owner channel:** no Remote Control. The owner's manager session types "Owner:" messages into this pane and relays Needs human. Pushes are best-effort: no blocking, no retries, no issues about them. "Set up Remote Control" is removed from Needs human. #78 merged as 8c7d71a.
-  - **First-run terms:** the debug build opens on Live (the owner accepted). The staging build still shows the screen, so it's in Needs human; the agent didn't accept it.
+  - **First-run terms and permissions:**
+    - #80 (b1842a5) hands phone setup to the agent.
+    - On re-check at 20:22 phone time, both the debug and staging builds open on Live, so the disclaimer was already accepted on both and needed no action.
+    - Both hold fine location, Bluetooth scan and connect, nearby Wi-Fi devices and notifications. Background location isn't in the manifest, so there's nothing to grant.
+    - The staging item is removed from Needs human.
   - **ADR-0018 revised after its review** (no BLOCKING; 6 MAJOR, all taken):
     - P0-7c keeps the shared download path and `SENSOR_LIST` for "Other sensors", and ADR-0014's row is updated.
     - `PlateListSourceTest` is ported, not deleted.
