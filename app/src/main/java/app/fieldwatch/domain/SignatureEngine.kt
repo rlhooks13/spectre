@@ -7,6 +7,14 @@ class SignatureEngine {
 
         /** The bare Offline Finding row, routed by device type (P1-B3). */
         const val FIND_MY = "fleet-findmy"
+        const val FIND_HUB = "fleet-find-hub"
+        const val FIND_HUB_ACCESSORY = "fleet-find-hub-accessory"
+
+        /**
+         * Rows that don't make a Find Hub frame an accessory (P1-B11b): the two Find Hub rows themselves, and Fast Pair,
+         * a protocol Find Hub tags speak too.
+         */
+        private val ACCESSORY_NOT_A_CO_LABEL = setOf(FIND_HUB, FIND_HUB_ACCESSORY, "fleet-fast-pair")
     }
 
     /**
@@ -38,6 +46,7 @@ class SignatureEngine {
             dropGoProWhenPolar(hits)
             routeOfflineFinding(hits, device, compiled)
             dropAirTagsWhenAppleDevice(hits, device)
+            routeFindHubAccessory(hits, device, compiled)
             dropCiscoWhenMeraki(hits)
             byKey[device.key] = hits
         }
@@ -350,6 +359,40 @@ class SignatureEngine {
         if (target !in compiled.planIds) return
         hits.remove(FIND_MY)
         hits += target
+    }
+
+    /**
+     * P1-B11b (research §1 item 1). Headphones, earbuds and phones in Google's Find Hub network send the same 0x40
+     * frame as a tag. A 0x40 frame reads as an accessory, not a tag, only when:
+     * - an identifying audio or phone product row also matched it (not the Fast Pair protocol row, which tags carry
+     *   too, and not a vendor-prefix-only hit), and no other finder row did; or
+     * - [Features.FIND_HUB_FLAGS_ROUTING] is on and the radio is dual-mode: its Flags byte lacks "BR/EDR not
+     *   supported" (0x04). AirGuard tells phones (0x02) from tags (0x06) this way; no Spectre capture confirms it yet,
+     *   so it waits behind the flag.
+     * Otherwise it's a tag. No Flags byte stays a tag: missing a tracker is worse than mislabeled headphones. A 0x41
+     * (separated) frame only matches the tag row. Without the tag row in the catalog, the radio is left unlabeled
+     * rather than called headphones.
+     */
+    private fun routeFindHubAccessory(hits: MutableSet<String>, device: Sighting, compiled: Compiled) {
+        if (FIND_HUB_ACCESSORY !in hits) return
+        val flags = device.facts.advFlags
+        val dualMode = Features.FIND_HUB_FLAGS_ROUTING && flags != null && (flags and 0x04) == 0
+        val plans = compiled.plans.associateBy { it.id }
+        val otherFinder = hits.any { id -> id != FIND_HUB && id != FIND_HUB_ACCESSORY && plans[id]?.fleet?.kind == SignatureClass.FINDER }
+        val coLabeled = !otherFinder && hits.any { id ->
+            val fleet = plans[id]?.fleet ?: return@any false
+            // matchedOnlyByAddress asks about a row already on the sighting; during the match it isn't yet, so say it is.
+            id !in ACCESSORY_NOT_A_CO_LABEL &&
+                (fleet.kind == SignatureClass.AUDIO || fleet.kind == SignatureClass.PHONE) &&
+                !matchedOnlyByAddress(device.copy(fleetIds = setOf(id)), fleet)
+        }
+        hits.remove(FIND_HUB_ACCESSORY)
+        if (!otherFinder && (dualMode || coLabeled)) {
+            hits.remove(FIND_HUB)
+            hits += FIND_HUB_ACCESSORY
+        } else if (FIND_HUB in compiled.planIds) {
+            hits += FIND_HUB
+        }
     }
 
     private fun hasFindMyAccessoryUuid(device: Sighting): Boolean {

@@ -139,6 +139,7 @@ class CatalogLintTest {
         /** Generated positive → the other signatures it hits, with ADR-0015 or the fixing step. */
         private val ALLOWED_COLLISIONS = mapOf(
             "fleet-target-atrius#0 -> fleet-ibeacon" to "ADR-0015",
+            "fleet-find-hub-accessory#0 -> fleet-find-hub" to "ADR-0015",
             "fleet-honeywell-home#4 -> fleet-amazon" to "ADR-0015",
             "fleet-honeywell-home#5 -> fleet-amazon" to "ADR-0015",
             "fleet-marauder#3 -> fleet-hobby-ble" to "ADR-0015",

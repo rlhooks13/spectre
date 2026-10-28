@@ -136,8 +136,29 @@ object MatchCorpus {
     /** The near-owner form: type 0x12, length 0x02 = status, one more byte. Same status bits. */
     private fun offlineFindingNearOwner(status: Int) = "1202" + "%02X".format(status) + "00"
 
+    /** A Find Hub frame (FEAA): frame byte, a 20-byte EID, a hashed-flags byte. */
+    private fun findHubFrame(frame: String) = listOf(ServiceDataRecord("FEAA", frame + "11".repeat(20) + "00"))
+
+    /** [s] with the advertising Flags byte (AD type 0x01): 0x06 LE-only, 0x02 also BR/EDR (dual mode). */
+    private fun withFlags(s: Sighting, flags: Int) = s.copy(facts = s.facts.copy(advFlags = flags))
+
     /** The real devices behind each confuser's signature. Pinned by hand, so a rule fix can't drop them. */
     val targets: List<Target> = listOf(
+        // P1-B11b: a Find Hub tag is LE-only (Flags 0x06), or sends no Flags byte; either way it stays a tag.
+        Target("Find Hub tag, LE-only Flags 0x06, frame 0x40", withFlags(sighting("T:findhub-tag", serviceData = findHubFrame("40")), 0x06), "fleet-find-hub"),
+        Target("Find Hub tag, no Flags byte, frame 0x40", sighting("T:findhub-noflags", serviceData = findHubFrame("40")), "fleet-find-hub"),
+        // Separated (0x41) is a finder whatever the Flags byte says.
+        Target("Find Hub separated frame 0x41 from a dual-mode radio", withFlags(sighting("T:findhub-sep", serviceData = findHubFrame("41")), 0x02), "fleet-find-hub"),
+        // Find Hub tags speak Fast Pair too (FE2C); the protocol row isn't a headphone match.
+        Target(
+            "Find Hub tag also sending Fast Pair FE2C, Flags 0x06",
+            withFlags(sighting("T:findhub-fastpair", serviceData = findHubFrame("40") + ServiceDataRecord("FE2C", "00112233")), 0x06),
+            "fleet-find-hub",
+        ),
+        // A dual-mode Flags byte alone isn't enough while FIND_HUB_FLAGS_ROUTING is off (no capture confirms it yet).
+        Target("Find Hub tag with Flags 0x02 and no headphone match", withFlags(sighting("T:findhub-dualonly", serviceData = findHubFrame("40")), 0x02), "fleet-find-hub"),
+        // Headphones in Find Hub (Sony WH-1000XM5, Pixel Buds Pro 2, JBL): dual mode, Flags 0x02.
+        Target("Sony headphones in Find Hub, dual-mode Flags 0x02, frame 0x40", withFlags(sighting("T:findhub-headphones", name = "WH-1000XM5", serviceData = findHubFrame("40")), 0x02), "fleet-find-hub-accessory"),
         Target("AirTag, Offline Finding status 0x10", sighting("T:airtag", mfg = apple(offlineFinding(0x10))), "fleet-airtag"),
         // An AirTag's other status bits (battery level in bits 6-7) don't change its type.
         Target("AirTag with low battery, status 0xD0", sighting("T:airtag-lowbatt", mfg = apple(offlineFinding(0xD0))), "fleet-airtag"),
@@ -211,6 +232,12 @@ object MatchCorpus {
     )
 
     val nearMisses: List<NearMiss> = listOf(
+        // P1-B11b: Find Hub headphones and phones send the same 0x40 frame as a tag; dual mode, they're not a finder.
+        NearMiss(
+            "Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40",
+            withFlags(sighting("NM:findhub-buds", name = "Pixel Buds Pro 2", serviceData = findHubFrame("40")), 0x02),
+            setOf("fleet-find-hub"), checkFinder = true,
+        ),
         // Samsung's company id is on every Galaxy phone and Buds, not only SmartTags.
         NearMiss(
             "Galaxy phone advertising Samsung 0x0075",

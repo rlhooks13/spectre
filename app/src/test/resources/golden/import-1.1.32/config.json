@@ -128,7 +128,7 @@
         "useFleetFilter": false,
         "watchedOnly": false
     },
-    "fleetCount": 257,
+    "fleetCount": 258,
     "hiddenPresetIds": [
         "wifi"
     ],
@@ -253,7 +253,7 @@
         "wifiFastScan": false
     },
     "takInstallTag": "AB23",
-    "version": 105,
+    "version": 106,
     "watchlist": [
         {
             "alert": true,

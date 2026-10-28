@@ -25,7 +25,11 @@ class MatchCorpusTest {
     fun everyRuleHitsOnItsOwn() {
         val positives = MatchCorpus.positives(fleets)
         assertEquals(MatchCorpus.expectedPositiveCount(fleets), positives.size)
-        assertEquals("Rules that don't hit their own data", emptyList<String>(), positives.filterNot(::hitsAlone).map { it.id })
+        assertEquals(
+            "Rules that don't hit their own data",
+            emptyList<String>(),
+            positives.filterNot(::hitsAlone).map { it.id } - ROUTED_ALONE.keys,
+        )
     }
 
     @Test
@@ -147,7 +151,19 @@ class MatchCorpusTest {
     }
 
     private companion object {
-        /** "fleetId#ruleIndex" a post-filter removes by design, with the reason. Empty today. */
-        val EXPECTED_MISSES: Map<String, String> = mapOf()
+        /**
+         * Rules whose generated positive can't stand alone: routing needs another row (a headphone or phone product
+         * match) before it keeps them. The corpus targets pin the real devices instead.
+         */
+        val ROUTED_ALONE: Map<String, String> = mapOf(
+            "fleet-find-hub-accessory#0" to "P1-B11b: kept only with an audio/phone product match; alone, a Find Hub frame is never called headphones",
+        )
+
+        /** "fleetId#ruleIndex" a post-filter removes by design, with the reason. */
+        val EXPECTED_MISSES: Map<String, String> = mapOf(
+            // P1-B11b: the accessory row's rule alone (a 0x40 frame, no Flags byte, no audio or phone match) is routed to
+            // the tag row, so an unknown radio is never labeled headphones. The real accessory targets pin the routing.
+            "fleet-find-hub-accessory#0" to "routed to fleet-find-hub without dual-mode Flags or an audio/phone match",
+        )
     }
 }

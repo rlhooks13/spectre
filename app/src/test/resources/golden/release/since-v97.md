@@ -1,7 +1,8 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v105 -->
-### Signatures (stock catalog v97 → v105)
+<!-- generated: catalog v97 -> v106 -->
+### Signatures (stock catalog v97 → v106)
 
+- **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12.
 - **Apple AirTags** (finder): stopped matching on Bluetooth company id 0x004C data starting 12; notes reworded.
 - **Amazon** (home): stopped matching on name contains "Echo" (BLE); now also matches on name glob "Echo" (BLE); name glob "Echo *" (BLE); name glob "Echo-*" (BLE); name glob "Echo_*" (BLE).
@@ -49,10 +50,12 @@
 
 ### Verdict changes in the test corpus
 
+- Target: Sony headphones in Find Hub, dual-mode Flags 0x02, frame 0x40: was Google Find Hub (finder), Sony (audio), now Find Hub accessory (headphones or phone) (audio), Sony (audio).
 - Target: Find My accessory, status 0x20: was Apple AirTags (finder), now Find My device (finder).
 - Target: Offline Finding record too short to read: was Apple AirTags (finder), now Find My device (finder).
 - Target: Tile on its own company id 0x067C: was no signature, now Tile Trackers (finder).
 - Target: Tattile camera name: was Tattile (surveillance, extra attention), Tile Trackers (finder), now Tattile (surveillance, extra attention).
+- Near miss: Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40: was Google (phone), Google Find Hub (finder), now Find Hub accessory (headphones or phone) (audio), Google (phone).
 - Near miss: Galaxy phone advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
 - Near miss: Galaxy Buds advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
 - Near miss: Separated iPhone, Offline Finding only: was Apple AirTags (finder), now Apple Device (phone).
@@ -80,6 +83,7 @@
 | Switch | State |
 |---|---|
 | `BLE_ADDRESS_CLASSIFIER` | off |
+| `FIND_HUB_FLAGS_ROUTING` | off |
 | `IN_APP_CATALOG_UPDATE` | off |
 | `LATE_TAIL_FIX` | off |
 | `OTHER_SENSORS_LAYER` | off |

@@ -204,6 +204,7 @@ object DefaultCatalog {
         chipolo(),
         pebblebee(),
         findHub(),
+        findHubAccessory(),
         verkada(),
         vigilant(),
         eufy(),
@@ -1516,6 +1517,26 @@ object DefaultCatalog {
         rules = listOf(
             svcData("FEAA", "40"),
             svcData("FEAA", "41"),
+        ),
+    )
+
+    /**
+     * P1-B11b (research §1 item 1): headphones, earbuds and phones in Google's Find Hub network send the same 0x40
+     * frame as a tag. SignatureEngine.routeFindHubAccessory keeps this row, not "Google Find Hub", for a 0x40 frame that
+     * an audio or phone product row also matched (or, behind Features.FIND_HUB_FLAGS_ROUTING, from a dual-mode radio).
+     */
+    private fun findHubAccessory() = Fleet(
+        id = "fleet-find-hub-accessory",
+        name = "Find Hub accessory (headphones or phone)",
+        enabled = true,
+        colorIndex = Hue.AUDIO,
+        kind = SignatureClass.AUDIO,
+        matchAny = true,
+        notes = "Headphones, earbuds or a phone in Google's Find Hub network (Sony, JBL, Pixel Buds, Jabra, Moto Buds and others). They send the same Find Hub frame as a tag; this one also matched a headphone or phone signature. Its owner can still locate it through Find Hub.",
+        builtIn = true,
+        decode = CatalogDecodes.findHubAccessory,
+        rules = listOf(
+            svcData("FEAA", "40"),
         ),
     )
 

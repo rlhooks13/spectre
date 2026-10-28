@@ -1296,6 +1296,13 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V105
         }
+        if (version < CATALOG_V106) {
+            // P1-B11b: the Find Hub accessory row, which SignatureEngine routes dual-mode or audio/phone 0x40 frames to.
+            val have = fleets.map { it.id }.toSet()
+            val extras = ADDED_IN_V106.mapNotNull { catalog[it] }.filter { it.id !in have }
+            if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
+            version = CATALOG_V106
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1363,7 +1370,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 105
+        const val CATALOG_VERSION = 106
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1466,7 +1473,11 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V102 = 102
         private const val CATALOG_V103 = 103
         private const val CATALOG_V104 = 104
-        private const val CATALOG_V105 = CATALOG_VERSION
+        private const val CATALOG_V105 = 105
+        private const val CATALOG_V106 = CATALOG_VERSION
+
+        /** P1-B11b: Find Hub headphones and phones get their own row, so their 0x40 frames stop reading as a tag. */
+        private val ADDED_IN_V106 = listOf("fleet-find-hub-accessory")
 
         /** Rows whose stock decode v105 refreshes (P1-B11a). */
         private val REFRESHED_DECODES_V105 = setOf("fleet-find-hub", "fleet-dult")

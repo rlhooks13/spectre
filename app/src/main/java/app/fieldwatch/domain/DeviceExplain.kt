@@ -19,9 +19,11 @@ object DeviceExplain {
         appearanceHint(appearance)?.let { hints += it }
         CodDecoder.decodeOrNull(device.facts.deviceClass)?.let { codHint(it)?.let { h -> hints += h } }
         hints += uuidHints(device.serviceUuids + device.facts.serviceData.map { it.uuid })
-        hints += AdvPayloadDecoder.roleHints(device).map {
-            Hint(it.bucket, it.label, it.reason, it.weight)
-        }
+        // A Find Hub frame the engine routed to the accessory row (P1-B11b) isn't a tag; drop the frame's tag hint.
+        val findHubAccessory = signatureNames.any { it.contains("Find Hub accessory", ignoreCase = true) }
+        hints += AdvPayloadDecoder.roleHints(device)
+            .filterNot { findHubAccessory && it.label == "a Google Find Hub tag" }
+            .map { Hint(it.bucket, it.label, it.reason, it.weight) }
         hints += signatureHints(signatureNames)
         if (device.kind == RadioKind.WIFI) hints += wifiHints(device, signatureNames)
 
@@ -312,6 +314,9 @@ object DeviceExplain {
             if (isGenericSignatureName(raw)) return@mapNotNull null
             val n = raw.lowercase()
             when {
+                // P1-B11b: Find Hub headphones and phones, not a tag. Ahead of the tag branch, which "find hub" would hit.
+                "find hub accessory" in n ->
+                    Hint("audio-personal", "Find Hub headphones, earbuds or a phone", "Matched signature $raw.", 8)
                 "airtag" in n || n == "find my" || n == "find my device" || "find hub" in n || "dult" in n ->
                     Hint(
                         "tag",

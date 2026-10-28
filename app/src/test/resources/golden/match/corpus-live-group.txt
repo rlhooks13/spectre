@@ -1,3 +1,21 @@
+T:findhub-tag	target	Find Hub tag, LE-only Flags 0x06, frame 0x40
+  expect fleet-find-hub
+  -> fleet-find-hub [FINDER]
+T:findhub-noflags	target	Find Hub tag, no Flags byte, frame 0x40
+  expect fleet-find-hub
+  -> fleet-find-hub [FINDER]
+T:findhub-sep	target	Find Hub separated frame 0x41 from a dual-mode radio
+  expect fleet-find-hub
+  -> fleet-find-hub [FINDER]
+T:findhub-fastpair	target	Find Hub tag also sending Fast Pair FE2C, Flags 0x06
+  expect fleet-find-hub
+  -> fleet-fast-pair [PHONE]; fleet-find-hub [FINDER]
+T:findhub-dualonly	target	Find Hub tag with Flags 0x02 and no headphone match
+  expect fleet-find-hub
+  -> fleet-find-hub [FINDER]
+T:findhub-headphones	target	Sony headphones in Find Hub, dual-mode Flags 0x02, frame 0x40
+  expect fleet-find-hub-accessory
+  -> fleet-find-hub-accessory [AUDIO]; fleet-sony [AUDIO]
 T:airtag	target	AirTag, Offline Finding status 0x10
   expect fleet-airtag
   -> fleet-airtag [FINDER]
@@ -94,6 +112,9 @@ T:cradlepoint-1150	target	Cradlepoint IBR1150 router
 T:cradlepoint	target	Cradlepoint IBR900 router
   expect fleet-cradlepoint
   -> fleet-cradlepoint [LAW_ENFORCEMENT, attention]
+NM:findhub-buds	near-miss	Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40
+  must not fleet-find-hub (nor be a finder)
+  -> fleet-find-hub-accessory [AUDIO]; fleet-google [PHONE]
 NM:galaxy	near-miss	Galaxy phone advertising Samsung 0x0075
   must not fleet-smarttag (nor be a finder)
   -> (none)
