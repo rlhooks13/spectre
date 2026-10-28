@@ -107,6 +107,8 @@ object FlockApproach {
     const val AHEAD_DEG = 35.0
     const val LOOK_DEG = 60.0
     const val MIN_COUNT = 1_000
+    /** The most cameras a list may hold (and the OSM snapshot's cap, ADR-0018; `scripts/build_alpr.py` MAX_COUNT). */
+    const val MAX_COUNT = 400_000
     const val MAX_FACINGS = 4
     const val MARK_CAP = 250
 

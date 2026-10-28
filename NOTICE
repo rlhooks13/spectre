@@ -32,6 +32,16 @@ public partner / community listings of Google Fast Pair model IDs.
 They are not a Google product and are not covered by the MIT grant
 as original Fieldwatch source.
 
+Mapped plate-reader cameras in catalog/osm/ (and the asset built from it,
+app/src/main/assets/cameras/osm-alpr.json.gz) are OpenStreetMap data:
+
+  © OpenStreetMap contributors, under the Open Database License 1.0
+  (see LICENSE-ODbL.txt). https://www.openstreetmap.org/copyright
+
+That data is not licensed as MIT. It is a derivative database published
+in catalog/osm/ of this repository, with the query and the script
+(scripts/build_alpr.py) that produce it.
+
 Fieldwatch continues the Spectre 1.2.14 field build under a new name,
 application id (app.fieldwatch), and license.
 

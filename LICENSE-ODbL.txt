@@ -1,0 +1,28 @@
+Mapped plate-reader camera data in Spectre
+
+The database of mapped plate-reader (ALPR) cameras in catalog/osm/ of this
+repository, and the file built from it that ships in the app
+(assets/cameras/osm-alpr.json.gz), is a derivative of OpenStreetMap data.
+
+  © OpenStreetMap contributors
+  https://www.openstreetmap.org/copyright
+
+It is made available under the Open Database License 1.0 (ODbL):
+
+  https://opendatacommons.org/licenses/odbl/1-0/
+
+Any rights in individual contents of the database are licensed under the
+Database Contents License: https://opendatacommons.org/licenses/dbcl/1-0/
+
+Where the database is published (ODbL section 4.6):
+  https://github.com/rlhooks13/spectre/tree/main/catalog/osm
+  The database in a given release is at that release's tag,
+  https://github.com/rlhooks13/spectre/tree/<tag>/catalog/osm, and is
+  identified by the osmBase timestamp in its alpr-meta.json.
+  It is produced by one Overpass API query (catalog/osm/query.overpassql),
+  run by scripts/build_alpr.py, which keeps each camera's OpenStreetMap
+  element type and id, position, facing, and manufacturer, brand and
+  operator tags.
+
+This license covers only that data. Spectre's source code is under the
+MIT License (see LICENSE).
