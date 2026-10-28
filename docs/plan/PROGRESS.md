@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B9 Late-tail fix**, after P1-B8b merges. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **1C Platform fixes (P1-C1 Location)**, after P1-B9 merges. P1-B9's flag waits for owner-recorded captures. P1-B8c (possible state in sits, exports, the log and CoT) must land before P1-B8's flag turns on. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b8b-address-wiring`
+- Branch: `p1/b9-late-tail`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -77,6 +77,23 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B9 Late-tail fix (behind a flag).** #72 (P1-B8b) merged as ba52e65.
+  - **Flag:** `Features.LATE_TAIL_FIX = false`. `DebriefReport.document` and `gpsAnalystMarkdown` take `lateTail` (default: the flag) and pass it to `followAssessments`.
+  - **With the flag on:**
+    - the two OWN_LIKELY branches need `presentAtStart`, so a loud tag that joined late goes to the tail test;
+    - `possibleTail` measures coverage against the operator path since the radio's `firstSeen`, and the text says "of path since it was first heard";
+    - a tail needs at least 300 m and 5 minutes of GPS trail;
+    - a late joiner that stayed loud but fails that, or that is loud on you without moving far, is the new private verdict JOINED_LATE. It's listed with the possible tails as "too soon to tell", is in the summary, actions and takeaway, and raises the tracking alert.
+  - **Flag off:** no debrief golden changed. The release-notes golden gains the `LATE_TAIL_FIX | off` row.
+  - **Tests:** `DebriefGoldenTest` covers:
+    - the golden's late-joining pair (both tails);
+    - a tag joining at minute 12 (a tail only when counted from first-heard);
+    - each half of the minimum alone: 3 min, 11 min but 55 m, and 1.2 km in 3 min by car;
+    - just over the minimum (310 m in 5 min): a tail;
+    - a loud tag joining while you sit (listed, not dropped).
+  - **Reviews:** both reviews flagged that "too soon to tell" was dropped from the report (a missed tracker). It's now JOINED_LATE and shown. Deferred to the flag's preconditions in PLAN: own-device address rotation (needs linking), in-window presence and the 15 s grace, despiking, and language keys.
+  - **Device:** one `--no-streaming` install hung to the 300 s timeout, a first for a push install. The retry took under a second. If it recurs, look at the usbip link.
+  - **Acceptance:** 3 owner-recorded captures with ground truth (a no-tail commute and a tag-joins-late walk) in `CaptureReplay`. The owner records them; the flag stays off until then.
 - 2026-10-27: **P1-B8b Address wiring (behind the flag).** #71 (P1-B8a) merged as da6e1ed.
   - **Model:** `Sighting.possibleFleetIds` is a new field with a default, so the format only grows. It's set after every match by `BleAddress.reading` (from `DeviceStore`). A match recomputes when the address type arrives, because `matchIdentity` now includes it.
   - **A "possible" match:**

@@ -25,6 +25,15 @@ object Features {
      * pass (PLAN, feature-flag acceptance).
      */
     const val BLE_ADDRESS_CLASSIFIER = false
+
+    /**
+     * P1-B9's late-tail fix in the Debrief's co-travel test ([DebriefReport]): a radio that joined after the sit
+     * started is never "with you the whole sit", its coverage counts from when it was first heard, and a tail needs
+     * DebriefReport's minimum distance and time of it (shorter is listed as "too soon to tell"). Field-dependent, so
+     * off until its acceptance check passes: at least 3 owner-recorded captures with owner-written ground truth,
+     * including a no-tail commute and a tag-joins-late walk, and the preconditions in PLAN (P1-B9).
+     */
+    const val LATE_TAIL_FIX = false
 }
 
 /**
