@@ -15,8 +15,9 @@ object FastPair {
     /** Account-key Fast Pair with no other signature — plaza chips. Pairing-mode stays. */
     fun isAccountKeyOnly(device: Sighting): Boolean {
         if (device.fastPairPairing) return false
-        if (FLEET_ID !in device.fleetIds) return false
-        return device.fleetIds.size == 1
+        if (FLEET_ID !in device.definiteFleetIds) return false
+        // A possible vendor-prefix hit (P1-B8c) isn't "another signature".
+        return device.definiteFleetIds.size == 1
     }
 
     fun liveLabel(pairing: Boolean): String =

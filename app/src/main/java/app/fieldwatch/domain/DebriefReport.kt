@@ -1346,7 +1346,8 @@ object DebriefReport {
         if (settings.debriefShowUnmatchedRandomBle && settings.debriefShowAllRadios) return true
         if (d.kind != RadioKind.BLE) return true
         if (!d.randomized) return true
-        if (d.fleetIds.isNotEmpty()) return true
+        // A possible vendor-prefix hit on a rotating address is still unmatched rotating BLE (P1-B8c).
+        if (d.definiteFleetIds.isNotEmpty()) return true
         if (d.payloadLat != null && d.payloadLon != null) return true
         if (d.key in bookmarkedKeys) return true
         return false

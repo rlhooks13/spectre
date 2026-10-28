@@ -151,7 +151,15 @@ data class SitRadio(
     @OptIn(ExperimentalSerializationApi::class)
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     val payloadOpPhoneLon: Double? = null,
+    /** The ids in [fleetIds] that are only "possible" (P1-B8, [Sighting.possibleFleetIds]). Not written while empty. */
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val possibleFleetIds: Set<String> = emptySet(),
 ) {
+    /** [fleetIds] less the possible ones: what pins, watches and alerts go by. */
+    val definiteFleetIds: Set<String>
+        get() = definiteOf(fleetIds, possibleFleetIds)
+
     fun toSighting(): Sighting = Sighting(
         key = key,
         kind = kind,
@@ -197,6 +205,7 @@ data class SitRadio(
         payloadOpAt = payloadOpAt,
         payloadOpPhoneLat = payloadOpPhoneLat,
         payloadOpPhoneLon = payloadOpPhoneLon,
+        possibleFleetIds = possibleFleetIds,
     )
 
     companion object {
@@ -238,7 +247,19 @@ data class SitRadio(
             payloadOpAt = device.payloadOpAt,
             payloadOpPhoneLat = device.payloadOpPhoneLat,
             payloadOpPhoneLon = device.payloadOpPhoneLon,
+            possibleFleetIds = device.possibleFleetIds intersect device.fleetIds,
         )
+
+        /**
+         * The possible ids after merging [old] and [next]: possible on either side, unless either side holds the id
+         * as definite, and always among the merged matches. A match that was definite once stays definite for the
+         * sit; one the next hear doesn't carry at all stays as it was.
+         */
+        fun mergedPossible(old: SitRadio, next: Sighting): Set<String> {
+            val possible = old.possibleFleetIds + next.possibleFleetIds
+            if (possible.isEmpty()) return possible
+            return (possible - old.definiteFleetIds - next.definiteFleetIds) intersect (old.fleetIds + next.fleetIds)
+        }
 
         fun trailSample(device: Sighting): List<GpsSample> {
             val fromDevice = Geo.capSpread(device.gpsTrail, Sit.TRAIL_CAP)
@@ -341,7 +362,7 @@ class SitSession(
         for (radio in radios.values) {
             if (radio.key in hiddenKeys) continue
             if (radio.lastSeen < since) continue
-            if (radio.key !in alertKeys && radio.fleetIds.none { it in watchedFleetIds }) continue
+            if (radio.key !in alertKeys && radio.definiteFleetIds.none { it in watchedFleetIds }) continue
             out += radio.toSighting()
         }
         return out
@@ -482,7 +503,7 @@ class SitSession(
         watchedFleetIds: Set<String>,
     ): Boolean = Sit.pinned(
         key = device.key,
-        fleetIds = device.fleetIds,
+        fleetIds = device.definiteFleetIds,
         payload = device.payloadLat != null && device.payloadLon != null,
         extraAttention = device.attentionNotes(fleets).isNotEmpty(),
         watchDeviceKeys = watchDeviceKeys,
@@ -495,7 +516,7 @@ class SitSession(
         watchedFleetIds: Set<String>,
     ): Boolean = Sit.pinned(
         key = row.key,
-        fleetIds = row.fleetIds,
+        fleetIds = row.definiteFleetIds,
         payload = row.payloadLat != null && row.payloadLon != null,
         extraAttention = row.extraAttention,
         watchDeviceKeys = watchDeviceKeys,
@@ -517,7 +538,7 @@ class SitSession(
         drop { row ->
             !pinnedRadio(row, watchDeviceKeys, watchedFleetIds) &&
                 row.kind == RadioKind.BLE &&
-                row.fleetIds.isEmpty()
+                row.definiteFleetIds.isEmpty()
         }
         drop { row -> !pinnedRadio(row, watchDeviceKeys, watchedFleetIds) }
     }
@@ -533,6 +554,7 @@ class SitSession(
         return old.copy(
             name = next.name.ifBlank { old.name },
             fleetIds = old.fleetIds + next.fleetIds,
+            possibleFleetIds = SitRadio.mergedPossible(old, next),
             firstSeen = min(old.firstSeen, next.firstSeen),
             lastSeen = max(old.lastSeen, next.lastSeen),
             hitCount = max(old.hitCount, next.hitCount),

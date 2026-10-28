@@ -1614,7 +1614,7 @@ fun DeviceRow(
         Column(Modifier.padding(horizontal = 12.dp, vertical = if (roomy) 6.dp else 4.dp)) {
             Row(verticalAlignment = Alignment.Top) {
                 RadioClassBadge(
-                    classKind = device.fleetIds.firstOrNull()?.let { vm.fleetKind(it) },
+                    classKind = device.definiteFleetIds.firstOrNull()?.let { vm.fleetKind(it) },
                     accent = accent,
                     compact = compact,
                 )

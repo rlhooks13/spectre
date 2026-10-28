@@ -12,6 +12,8 @@ object SitDiff {
         val bookmarked: Boolean = false,
         val fleetNames: List<String>,
         val fleetIds: List<String> = emptyList(),
+        /** The ids in [fleetIds] that are only "possible" (P1-B8c): they don't make a signature alert. */
+        val possibleFleetIds: List<String> = emptyList(),
         val randomized: Boolean = false,
         val lat: Double? = null,
         val lon: Double? = null,
@@ -89,6 +91,7 @@ object SitDiff {
         bookmarked = device.key in bookmarkedKeys,
         fleetNames = device.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
         fleetIds = device.fleetIds.toList(),
+        possibleFleetIds = device.possibleFleetIds.toList(),
         randomized = device.randomized,
         lat = SitPathPlot.loudestFix(device)?.lat ?: device.latitude,
         lon = SitPathPlot.loudestFix(device)?.lon ?: device.longitude,
@@ -135,6 +138,7 @@ object SitDiff {
         bookmarked = row.key in bookmarkedKeys,
         fleetNames = row.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
         fleetIds = row.fleetIds.toList(),
+        possibleFleetIds = row.possibleFleetIds.toList(),
         randomized = row.randomized,
         lat = SitPathPlot.loudestFix(row.gpsTrail)?.lat,
         lon = SitPathPlot.loudestFix(row.gpsTrail)?.lon,
@@ -310,7 +314,7 @@ object SitDiff {
             }
         }
         val points = (thisSit.radios + second.radios)
-            .filter { it.bookmarked || it.fleetIds.any { id -> id in watchedFleetIds } }
+            .filter { it.bookmarked || it.fleetIds.any { id -> id in watchedFleetIds && id !in it.possibleFleetIds } }
             .distinctBy { it.key }
             .mapNotNull { r ->
                 val advertised = r.advertisedCoord()
