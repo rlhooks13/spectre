@@ -53,6 +53,44 @@ class SignatureFieldDecoderTest {
         assertEquals("Humidity", "53.49 %", rows.first { it.id == "humidity" }.display)
     }
 
+    /**
+     * P1-B7: rotating payloads never repeat, so an unbounded cache grew for as long as the scan ran. It keeps the
+     * most recently used parses, up to its limit, and still answers correctly past it.
+     */
+    @Test
+    fun theParseCacheIsBoundedAndKeepsTheRecentOnes() {
+        val fleet = Fleet(
+            id = "fleet-lru",
+            name = "LRU",
+            decode = FleetDecode(
+                source = DecodeSource.MANUFACTURER_DATA,
+                companyId = 0x0499,
+                fields = listOf(DecodeField(id = "b", label = "B", offset = 0, type = DecodeType.U16, endian = DecodeEndian.BE)),
+            ),
+        )
+        fun decode(i: Int) = SignatureFieldDecoder.decodeSighting(ble(0x0499, "%04X".format(i), fleet.id), listOf(fleet))
+        SignatureFieldDecoder.clearCacheForTests()
+        repeat(SignatureFieldDecoder.CACHE_LIMIT) { i -> assertEquals("$i", decode(i).single().display) }
+        // Use the oldest again, then add one more: the next-oldest goes, not the one just used.
+        decode(0)
+        decode(SignatureFieldDecoder.CACHE_LIMIT)
+        assertTrue(SignatureFieldDecoder.cachedForTests(fleet, "0000"))
+        assertFalse(SignatureFieldDecoder.cachedForTests(fleet, "0001"))
+        repeat(300) { i -> assertEquals("${SignatureFieldDecoder.CACHE_LIMIT + 1 + i}", decode(SignatureFieldDecoder.CACHE_LIMIT + 1 + i).single().display) }
+        assertEquals(SignatureFieldDecoder.CACHE_LIMIT, SignatureFieldDecoder.cacheSizeForTests())
+    }
+
+    /** The cache key is the whole decode: changing only the byte order gives the new value, not the cached one. */
+    @Test
+    fun anEditedDecodeIsNotServedFromTheCache() {
+        val field = DecodeField(id = "b", label = "B", offset = 0, type = DecodeType.U16, endian = DecodeEndian.BE)
+        val be = Fleet(id = "fleet-edit", name = "Edit", decode = FleetDecode(source = DecodeSource.MANUFACTURER_DATA, companyId = 0x0499, fields = listOf(field)))
+        val le = be.copy(decode = be.decode!!.copy(fields = listOf(field.copy(endian = DecodeEndian.LE))))
+        val device = ble(0x0499, "0102", be.id)
+        assertEquals("258", SignatureFieldDecoder.decodeSighting(device, listOf(be)).single().display)
+        assertEquals("513", SignatureFieldDecoder.decodeSighting(device, listOf(le)).single().display)
+    }
+
     @Test
     fun scaleThenOffsetAdd() {
         val fleet = Fleet(

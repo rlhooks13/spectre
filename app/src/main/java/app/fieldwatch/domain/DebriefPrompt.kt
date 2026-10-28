@@ -187,7 +187,7 @@ object DebriefPrompt {
                 if (rows.isEmpty()) {
                     appendLine("- None.")
                 } else {
-                    rows.sortedByDescending { it.rssi }.take(20).forEach { d ->
+                    rows.sortedByDescending { Rssi.rank(it.rssi) }.take(20).forEach { d ->
                         append("- ").append(row(d, names, now, windowStart, customNames, observerNotes))
                         append(" rssiMin=").append(d.rssiMin).append(" rssiMax=").append(d.rssiMax)
                         appendLine()

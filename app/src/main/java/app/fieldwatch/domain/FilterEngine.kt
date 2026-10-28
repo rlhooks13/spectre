@@ -35,7 +35,8 @@ class FilterEngine {
         } else true
         val includeClassOk = if (!filter.useClassFilter || filter.excludeClasses || filter.classes.isEmpty()) true
         else deviceClasses.any { it in filter.classes }
-        val rssiOk = device.rssi >= filter.rssiMin
+        // An unmeasured reading only passes the filter at its floor (-100, "any signal"), never as the loudest.
+        val rssiOk = if (Rssi.measured(device.rssi)) device.rssi >= filter.rssiMin else filter.rssiMin <= -100
         val nameOk = filter.nameQuery.isBlank() ||
             TextMatch.contains(device.name, filter.nameQuery) ||
             TextMatch.contains(device.mac, filter.nameQuery)

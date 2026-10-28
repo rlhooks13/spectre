@@ -760,7 +760,7 @@ object SitPathPlot {
             }
             .groupBy { it.key }
             .forEach { (_, group) ->
-                val d = group.maxBy { it.rssi }
+                val d = group.maxBy { Rssi.rank(it.rssi) }
                 val pin = if (alertsOnly) advertisedFix(d) else null
                 val fix = pin ?: loudestFix(d) ?: return@forEach
                 val bookmarked = d.key in bookmarkedKeys
@@ -850,7 +850,7 @@ object SitPathPlot {
         if (trail.isEmpty()) return null
         return trail.maxWithOrNull(
             compareBy<GpsSample> {
-                if (it.rssi == 0 || !Rssi.measured(it.rssi)) Int.MIN_VALUE else it.rssi
+                if (!Rssi.measured(it.rssi)) Int.MIN_VALUE else it.rssi
             }.thenBy { it.at },
         )
     }

@@ -30,6 +30,14 @@ class TrackerMatchTest {
         assertEquals(TrackerMatch.Kind.PHONE, kind(iphone))
     }
 
+    /** P1-B7: an Apple radio never measured (0 or 127) isn't loud, so it isn't a carried phone. */
+    @Test
+    fun anUnmeasuredAppleDeviceIsNotACarriedPhone() {
+        val unmeasured = apple("1005031C0F2A7B", fleetIds = setOf("fleet-apple-device")).copy(rssi = 0, rssiMax = 0, rssiMin = 0)
+        assertEquals(null, kind(unmeasured))
+        assertEquals(null, kind(unmeasured.copy(rssi = 127, rssiMax = 127, rssiMin = 127)))
+    }
+
     @Test
     fun aQuietAppleDeviceIsNothing() {
         val far = apple("1005031C0F2A7B", fleetIds = setOf("fleet-apple-device")).copy(rssiMax = -80, rssiMin = -90)
