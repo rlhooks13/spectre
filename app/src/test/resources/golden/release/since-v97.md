@@ -79,5 +79,6 @@
 |---|---|
 | `BLE_ADDRESS_CLASSIFIER` | off |
 | `IN_APP_CATALOG_UPDATE` | off |
+| `LATE_TAIL_FIX` | off |
 | `OTHER_SENSORS_LAYER` | off |
 <!-- generated: end -->

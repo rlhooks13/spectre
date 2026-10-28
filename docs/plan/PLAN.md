@@ -306,10 +306,16 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - Recomputed on every merge.
     - An OUI-only BLE hit on a non-PUBLIC/STATIC address shows as "possible", with no attention card or alert, unless a non-OUI rule backs it up.
     - `RadioDb.vendorForMac` skips random addresses.
-  - **P1-B9 Late-tail fix.**
+  - ✅ **P1-B9 Late-tail fix** (code behind `Features.LATE_TAIL_FIX = false`; the flag waits for its captures).
     - Coverage counted from first-heard, used **only inside `possibleTail`**.
     - **OWN_LIKELY requires `presentAtStart`.**
     - Minimum absolute coverage: 300 m and 5 minutes.
+    - As built: a late joiner that stayed loud but is under the minimum, or that is loud on you without moving far, is JOINED_LATE. It's listed with the possible tails as "too soon to tell", is in the summary and takeaway, and raises the tracking alert, so it's never dropped. When the flag turns on, re-bless `debrief/3-late-joining-tags.txt`: its loud AirTag becomes a possible tail.
+    - **Before the flag turns on** (from the B9 reviews):
+      - **Own devices that rotate their address mid-sit:** an own AirTag or iPhone, Galaxy Buds or a phone gets a new address, and so a new sighting with a late `firstSeen`. It must not become a tail or trip the phone alert. This needs linking (Tail v2) or a "predecessor went silent as it appeared" exemption, with confuser tests, and a capture of own kit rotating during a walk.
+      - **"Present at start":** take it from in-window presence, not `firstSeen`. A radio heard before the window, then gone, that rejoins mid-window is still treated as present. Also check the 15 s grace against real first-hear delays (scan start, slow advertisers).
+      - **Despike** the trail and the path since first heard (`Geo.despikePath`) before the 300 m minimum and the coverage ratio.
+      - **Language keys** for the new late-joiner lines. The neighbouring tail copy is hard-coded English too, and moves with it.
 
 **1C. Platform fixes**
 - **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK.

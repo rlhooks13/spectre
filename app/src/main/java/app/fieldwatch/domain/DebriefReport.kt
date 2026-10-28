@@ -184,6 +184,9 @@ object DebriefReport {
     private const val TAIL_HERE_MS = 20_000L
     private const val ON_BODY_MAX = -55
     private const val ON_BODY_MIN = -70
+    /** P1-B9: the least a late joiner must be heard along, in distance and time, to be called a tail. */
+    private const val TAIL_MIN_M = 300.0
+    private const val TAIL_MIN_MS = 5 * 60_000L
 
     fun build(
         devices: List<Sighting>,
@@ -225,6 +228,7 @@ object DebriefReport {
         gnss: List<GnssMark> = emptyList(),
         placeRecords: List<PlaceMemory.Record> = emptyList(),
         cameras: PathCameras.Report? = null,
+        lateTail: Boolean = Features.LATE_TAIL_FIX,
     ): DebriefDoc {
         val names = fleets.associate { it.id to it.name }
         val win = window ?: DebriefWindow(now - WINDOW_MS, now)
@@ -256,7 +260,7 @@ object DebriefReport {
         val classes = TrackerMatch.classesOf(fleets)
         val byKind = inWin.groupBy { TrackerMatch.kind(it, names, classes) }
         fun assess(kind: TrackerMatch.Kind) = followAssessments(
-            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind,
+            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind, lateTail,
         )
         val follow = assess(TrackerMatch.Kind.FINDER)
         val beaconFollow = assess(TrackerMatch.Kind.BEACON)
@@ -265,6 +269,9 @@ object DebriefReport {
         val assessed = follow + beaconFollow + wearableFollow + phoneFollow
         fun List<FollowHit>.open(): List<FollowHit> = filter { it.device.key !in mineKeys }
         val following = follow.filter { it.verdict == Verdict.FOLLOWING }.open()
+        val joinedLate = follow.filter { it.verdict == Verdict.JOINED_LATE }.open()
+        // The possible-tail section: tails, then the late joiners too soon to tell (P1-B9, flag only).
+        val lateArrivals = following + joinedLate
         val withYou = follow.filter { it.verdict == Verdict.MOVED_WITH_YOU }.open()
         val ownLikely = follow.filter { it.verdict == Verdict.OWN_LIKELY }.open()
         val wholeSit = ownLikely + withYou
@@ -426,7 +433,7 @@ object DebriefReport {
         val attentionHits = inWin.flatMap { d ->
             d.attentionNotes(fleets).map { (sig, note) -> Triple(d, sig, note) }
         }
-        val actionBody = actions(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, settings, pathSpan)
+        val actionBody = actions(following, joinedLate, withYou, ownLikely, beaconsWithYou, wearablesWithYou, settings, pathSpan)
             .joinToString("\n") { "  · $it" }
 
         val distanceLine = when {
@@ -452,7 +459,7 @@ object DebriefReport {
             add(DebriefSection(
                 next(),
                 LanguageText.text("ui.executive.summary"),
-                execSummary(wifi, ble, named, hidden, randomized, pathSpan, pathLen, following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, settings, places, win, mineHeard) + craftSentence(pictures),
+                execSummary(wifi, ble, named, hidden, randomized, pathSpan, pathLen, following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, settings, places, win, mineHeard, joinedLate) + craftSentence(pictures),
                 chart = classChart(inWin, fleets),
             ))
             add(DebriefSection(next(), LanguageText.text("ui.where.were"), whereYouWere(settings, path, pathLen, pathSpan, inWin, names, places, windowEnd, customNames, bookmarkedKeys)))
@@ -472,7 +479,7 @@ object DebriefReport {
                 DebriefSection(
                     next(),
                     LanguageText.text("ui.tracking.assessment"),
-                    trackingSection(settings, path, pathSpan, pathLen, following, wholeSit, beaconsWithYou, wearablesWithYou, phonesWithYou),
+                    trackingSection(settings, path, pathSpan, pathLen, lateArrivals, wholeSit, beaconsWithYou, wearablesWithYou, phonesWithYou),
                 ),
             )
             if (wholeSit.isNotEmpty()) {
@@ -492,7 +499,7 @@ object DebriefReport {
                     ),
                 )
             }
-            if (following.isNotEmpty()) {
+            if (lateArrivals.isNotEmpty()) {
                 add(
                     DebriefSection(
                         next(),
@@ -501,7 +508,7 @@ object DebriefReport {
                             (LanguageText.text("ui.finder.tags.were.not") + " ") +
                                 (LanguageText.text("ui.can.mean.someone.started") + " ") +
                                 LanguageText.text("ui.not.finding.not.identity"),
-                            following,
+                            lateArrivals,
                             customNames,
                         ),
                         alert = true,
@@ -627,8 +634,8 @@ object DebriefReport {
             windowLine = windowLine,
             meta = meta,
             disclaimer = SpectreDisclaimer.report(win),
-            trackingAlert = following.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing || wearableFollowing,
-            takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, pathSpan, settings, named),
+            trackingAlert = lateArrivals.isNotEmpty() || ownLikely.isNotEmpty() || withYou.isNotEmpty() || phoneFollowing || wearableFollowing,
+            takeaway = takeaway(following, withYou, ownLikely, beaconsWithYou, wearablesWithYou, phonesWithYou, pathSpan, settings, named, joinedLate),
             sections = sections,
             extraAttention = attentionHits.map { (d, sig, note) ->
                 ExtraAttentionHit(
@@ -722,6 +729,7 @@ object DebriefReport {
         customNames: Map<String, String> = emptyMap(),
         bookmarkedKeys: Set<String> = emptySet(),
         mineKeys: Set<String> = emptySet(),
+        lateTail: Boolean = Features.LATE_TAIL_FIX,
     ): String = buildString {
         val names = fleets.associate { it.id to it.name }
         val win = window ?: DebriefWindow(now - WINDOW_MS, now)
@@ -734,7 +742,7 @@ object DebriefReport {
         val classes = TrackerMatch.classesOf(fleets)
         val byKind = inWin.groupBy { TrackerMatch.kind(it, names, classes) }
         fun assess(kind: TrackerMatch.Kind) = followAssessments(
-            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind,
+            byKind[kind].orEmpty(), names, classes, path, windowStart, windowEnd, kind, lateTail,
         )
         val follow = assess(TrackerMatch.Kind.FINDER)
         val beaconsMd = stayedWithYou(assess(TrackerMatch.Kind.BEACON))
@@ -768,7 +776,7 @@ object DebriefReport {
                 LanguageText.text("ui.they.do.not.typically.recorder"),
         )
         fun List<FollowHit>.open(): List<FollowHit> = filter { it.device.key !in mineKeys }
-        val followingMd = follow.filter { it.verdict == Verdict.FOLLOWING }.open()
+        val followingMd = follow.filter { it.verdict == Verdict.FOLLOWING || it.verdict == Verdict.JOINED_LATE }.open()
         val wholeSitMd = follow.filter {
             it.verdict == Verdict.OWN_LIKELY || it.verdict == Verdict.MOVED_WITH_YOU
         }.open()
@@ -814,7 +822,11 @@ object DebriefReport {
         }
     }
 
-    private enum class Verdict { FOLLOWING, MOVED_WITH_YOU, OWN_LIKELY, STATIONARY, INSUFFICIENT }
+    /**
+     * JOINED_LATE (P1-B9, flag only): first heard after the sit started and stayed loud with you, but too little of it
+     * to call a tail. Shown beside the possible tails, so a tag added late is never dropped from the report.
+     */
+    private enum class Verdict { FOLLOWING, JOINED_LATE, MOVED_WITH_YOU, OWN_LIKELY, STATIONARY, INSUFFICIENT }
 
     private data class FollowHit(
         val device: Sighting,
@@ -828,6 +840,7 @@ object DebriefReport {
     private fun stayedWithYou(hits: List<FollowHit>): List<FollowHit> =
         hits.filter {
             it.verdict == Verdict.FOLLOWING ||
+                it.verdict == Verdict.JOINED_LATE ||
                 it.verdict == Verdict.MOVED_WITH_YOU ||
                 it.verdict == Verdict.OWN_LIKELY
         }
@@ -840,6 +853,7 @@ object DebriefReport {
         windowStart: Long,
         now: Long,
         kind: TrackerMatch.Kind,
+        lateTail: Boolean,
     ): List<FollowHit> {
         val opSpan = Geo.spanM(operatorPath)
         val opLen = Geo.pathLengthM(operatorPath)
@@ -853,17 +867,28 @@ object DebriefReport {
             val ownHere = now - d.lastSeen <= OWN_HERE_MS
             val onBody = d.rssiMax >= ON_BODY_MAX && d.rssiMin >= ON_BODY_MIN && trail.size >= 2
             val cover = opLen > 0.0 && trailLen >= COVER_FRAC * opLen
+            // P1-B9: "with you the whole sit" needs the radio on the air when the sit started. A loud tag that joined
+            // later goes to the tail test instead of being called yours, and stays listed if it's too soon to tell.
+            val ownFromStart = presentAtStart || !lateTail
+            val ownSignal = ownHere && (onBody || (cover && d.rssiMax >= ON_BODY_MAX))
+            // Your path since the radio was first heard, for the late-tail coverage test.
+            fun sinceLen() = Geo.pathLengthM(operatorPath.filter { it.at >= d.firstSeen })
             val (verdict, detail) = when {
                 operatorPath.size < 2 || opSpan < MOVE_M ->
                     Verdict.INSUFFICIENT to "Operator GPS path too short (${opSpan.toInt()} m) to test following."
                 trail.size < 2 ->
                     Verdict.INSUFFICIENT to LanguageText.text("ui.heard.but.not.two")
-                onBody && ownHere ->
+                onBody && ownHere && ownFromStart ->
                     Verdict.OWN_LIKELY to onBodyLine(kind, d, trail.size)
-                cover && ownHere && d.rssiMax >= ON_BODY_MAX ->
+                cover && ownHere && d.rssiMax >= ON_BODY_MAX && ownFromStart ->
                     Verdict.OWN_LIKELY to
                         "Heard along ${trailLen.toInt()} m of your ${opLen.toInt()} m path and still loud (${d.rssiMax} dBm). " +
                         withYouNote(kind, d)
+                ownSignal && !ownFromStart -> {
+                    val tail = if (span >= MOVE_M && trail.size >= 3) possibleTail(trail, span, sinceLen(), true, kind, d) else null
+                    if (tail != null && tail.first == Verdict.FOLLOWING) tail
+                    else Verdict.JOINED_LATE to tooSoonLine(trail, d)
+                }
                 span < MOVE_M * 0.6 ->
                     Verdict.STATIONARY to "Heard near one place (${span.toInt()} m span) while you moved ${opSpan.toInt()} m. Looks stationary — you walked away from it."
                 presentAtStart && stillHere && d.rssiMax >= ON_BODY_MAX ->
@@ -875,13 +900,22 @@ object DebriefReport {
                         "GPS samples span ${span.toInt()} m along your path (${trail.size} fixes). Already on the air when this window opened and still here. " +
                         withYouNote(kind, d)
                 !presentAtStart && span >= MOVE_M && trail.size >= 3 ->
-                    possibleTail(trail, span, opLen, kind, d)
+                    possibleTail(trail, span, if (lateTail) sinceLen() else opLen, lateTail, kind, d)
                 else ->
                     Verdict.STATIONARY to
                         "Heard along ${span.toInt()} m (${trail.size} GPS stamps) but did not stay loud on you. Neighborhood arc / pass-by, not a tail."
             }
             FollowHit(d, label, verdict, detail, span, trail.size)
         }.sortedBy { it.verdict.ordinal }
+    }
+
+    /** P1-B9: a late joiner that stayed loud but was heard too briefly, or along too little of your path, to call a tail. */
+    private fun tooSoonLine(trail: List<GpsSample>, d: Sighting): String {
+        val heardMs = trail.last().at - trail.first().at
+        val heard = "${heardMs / 60_000L} min ${heardMs % 60_000L / 1000L} s"
+        return "Joined after the sit started and stayed loud with you (${d.rssiMax} to ${d.rssiMin} dBm), but was heard along " +
+            "only ${Geo.pathLengthM(trail).toInt()} m over $heard. Too soon to tell a tail from something added to your kit " +
+            "(a tail needs ${TAIL_MIN_M.toInt()} m and ${TAIL_MIN_MS / 60_000L} min). Account for it."
     }
 
     private fun onBodyLine(kind: TrackerMatch.Kind, d: Sighting, stamps: Int): String {
@@ -927,11 +961,16 @@ object DebriefReport {
      * Extra gates on possible tail only. A neighborhood radio heard on a sidewalk
      * arc, or that faded as you walked, is stationary — not a follower.
      * Bag/car tags still cover most of the path and stay loud.
+     *
+     * [coverLen] is the path a tail must cover half of. With [sinceFirstHeard] (P1-B9's late-tail fix) it is your path
+     * since the radio was first heard, not the whole sit's, so a tag that joins late can still cover it; and it must be
+     * heard along at least [TAIL_MIN_M] over [TAIL_MIN_MS], or it's JOINED_LATE: listed, but too soon to tell.
      */
     private fun possibleTail(
         trail: List<GpsSample>,
         span: Double,
-        opLen: Double,
+        coverLen: Double,
+        sinceFirstHeard: Boolean,
         kind: TrackerMatch.Kind,
         device: Sighting,
     ): Pair<Verdict, String> {
@@ -944,8 +983,12 @@ object DebriefReport {
         val fade = peak - last
         val loudN = heard.count { it.rssi >= TRAIL_LOUD_DBM }
         val loudNeed = (heard.size * 2 + 2) / 3
-        val coverNeed = opLen * COVER_FRAC
-        val coverPct = if (opLen <= 0.0) 0 else ((trailLen / opLen) * 100.0).toInt()
+        val pathWords = if (sinceFirstHeard) "your ${coverLen.toInt()} m of path since it was first heard" else "your ${coverLen.toInt()} m path"
+        val coverNeed = coverLen * COVER_FRAC
+        val coverPct = if (coverLen <= 0.0) 0 else ((trailLen / coverLen) * 100.0).toInt()
+            // The path since first heard starts at the first fix after it, so the trail can run a little longer.
+            .let { if (sinceFirstHeard) it.coerceAtMost(100) else it }
+        val heardMs = trail.last().at - trail.first().at
         return when {
             fade >= FADE_DB ->
                 Verdict.STATIONARY to
@@ -953,13 +996,15 @@ object DebriefReport {
             loudN < loudNeed ->
                 Verdict.STATIONARY to
                     "Appeared after the sit started and GPS span was ${span.toInt()} m, but only $loudN/${heard.size} stamps were loud (−75 dBm+). Looks like a pass-by, not a tail."
+            sinceFirstHeard && (trailLen < TAIL_MIN_M || heardMs < TAIL_MIN_MS) ->
+                Verdict.JOINED_LATE to tooSoonLine(trail, device)
             trailLen < coverNeed ->
                 Verdict.STATIONARY to
-                    "Appeared after the sit started, but was only heard along ${trailLen.toInt()} m of your ${opLen.toInt()} m path ($coverPct%). Neighborhood arc / pass-by, not a tail."
+                    "Appeared after the sit started, but was only heard along ${trailLen.toInt()} m of $pathWords ($coverPct%). Neighborhood arc / pass-by, not a tail."
             else -> {
                 val stats =
                     "Appeared after the sit started, then stayed loud with you across ${span.toInt()} m " +
-                        "(${trailLen.toInt()} m of your ${opLen.toInt()} m path, $coverPct%; " +
+                        "(${trailLen.toInt()} m of $pathWords, $coverPct%; " +
                         "$loudN/${heard.size} GPS stamps ≥ −75 dBm). "
                 val note = when (kind) {
                     TrackerMatch.Kind.FINDER ->
@@ -997,6 +1042,7 @@ object DebriefReport {
         places: DebriefPlaces,
         window: DebriefWindow,
         mineHeard: Int = 0,
+        joinedLate: List<FollowHit> = emptyList(),
     ): String = buildString {
         val whenPhrase = if (window.sitName != null) {
             "In sit ${window.sitName}"
@@ -1017,7 +1063,7 @@ object DebriefReport {
         }
         val wholeSit = ownLikely + withYou
         when {
-            following.isNotEmpty() || wholeSit.isNotEmpty() -> {
+            following.isNotEmpty() || wholeSit.isNotEmpty() || joinedLate.isNotEmpty() -> {
                 append((LanguageText.text("ui.tracking.note") + " "))
                 if (wholeSit.isNotEmpty()) {
                     append("${wholeSit.size} finder tag(s) with you the whole sit (your kit or planted before you started): ")
@@ -1027,6 +1073,11 @@ object DebriefReport {
                 if (following.isNotEmpty()) {
                     append("${following.size} possible tail(s) first heard after this sit started: ")
                     append(following.joinToString { trackId(it) })
+                    append(". ")
+                }
+                if (joinedLate.isNotEmpty()) {
+                    append("${joinedLate.size} finder tag(s) joined after this sit started and stayed loud, too soon to tell if following: ")
+                    append(joinedLate.joinToString { trackId(it) })
                     append(". ")
                 }
                 append((LanguageText.text("ui.account.every.mac.fieldwatch") + " "))
@@ -1471,6 +1522,7 @@ object DebriefReport {
 
     private fun actions(
         following: List<FollowHit>,
+        joinedLate: List<FollowHit>,
         withYou: List<FollowHit>,
         ownLikely: List<FollowHit>,
         beaconsWithYou: List<FollowHit>,
@@ -1480,6 +1532,9 @@ object DebriefReport {
     ): List<String> = buildList {
         if (following.isNotEmpty()) {
             add("Possible tail (appeared after this sit started): ${following.joinToString { trackId(it) }}. Pause Live, open detail, note RSSI while you walk a dog-leg. Do not disable someone else’s tag.")
+        }
+        if (joinedLate.isNotEmpty()) {
+            add("Joined after this sit started, too soon to tell: ${joinedLate.joinToString { trackId(it) }}. Keep Live running and walk on; account for it before you dismiss it.")
         }
         if (ownLikely.isNotEmpty() || withYou.isNotEmpty()) {
             add(
@@ -1517,8 +1572,13 @@ object DebriefReport {
         pathSpan: Double,
         settings: AppSettings,
         named: List<Sighting>,
+        joinedLate: List<FollowHit> = emptyList(),
     ): String {
+        val late = joinedLate.joinToString { trackId(it) }
         val extra = buildString {
+            if (joinedLate.isNotEmpty() && following.isNotEmpty()) {
+                append(" Also joined late, too soon to tell: $late.")
+            }
             val (phonesFollowing, phonesAlong) = phonesWithYou.partition { it.verdict == Verdict.FOLLOWING }
             if (phonesFollowing.isNotEmpty()) {
                 append((" " + LanguageText.text("ui.phone.s.joined.kept.pace") + " "))
@@ -1547,6 +1607,9 @@ object DebriefReport {
                     "Also finder tags with you (yours or planted before): ${(ownLikely + withYou).joinToString { trackId(it) }}. Account for every MAC."
             following.isNotEmpty() ->
                 "Possible tail (appeared after this sit started): ${following.joinToString { trackId(it) }}. Account for it on the person/vehicle."
+            joinedLate.isNotEmpty() ->
+                "Joined after this sit started and stayed loud with you, too soon to tell if following: $late. Account for it." +
+                    if (ownLikely.isNotEmpty() || withYou.isNotEmpty()) " Also finder tags with you (yours or planted before): ${(ownLikely + withYou).joinToString { trackId(it) }}." else ""
             !settings.tagLocation ->
                 LanguageText.text("ui.turn.gps.tagging.walk")
             pathSpan < MOVE_M ->

@@ -4,6 +4,7 @@ import app.fieldwatch.domain.AppSettings
 import app.fieldwatch.domain.DebriefReport
 import app.fieldwatch.domain.DebriefWindow
 import app.fieldwatch.domain.DefaultCatalog
+import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.FlockCamera
 import app.fieldwatch.domain.FlockIndex
 import app.fieldwatch.domain.GpsSample
@@ -11,6 +12,7 @@ import app.fieldwatch.domain.PathCameras
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.Sighting
 import app.fieldwatch.domain.SitRadio
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -94,6 +96,7 @@ class DebriefGoldenTest {
         observerNotes: Map<String, String> = emptyMap(),
         mineKeys: Set<String> = emptySet(),
         cameras: PathCameras.Report = cameras(),
+        lateTail: Boolean = Features.LATE_TAIL_FIX,
     ): String {
         val saved = SitFixture.saved(SitFixture.matched(devices, fleets), fleets)
         return DebriefReport.document(
@@ -107,6 +110,7 @@ class DebriefGoldenTest {
             observerNotes = observerNotes,
             mineKeys = mineKeys,
             cameras = cameras,
+            lateTail = lateTail,
         ).toPlainText()
     }
 
@@ -143,8 +147,9 @@ class DebriefGoldenTest {
 
     /**
      * Two tags that join six minutes in and stay with the path to the end. The quieter SmartTag is a possible
-     * tail. The loud AirTag is called "with you the whole sit" today, because the loud-cover OWN_LIKELY branch
-     * doesn't check presence at the start; P1-B9 fixes that and re-blesses this golden.
+     * tail. The loud AirTag is called "with you the whole sit" while [Features.LATE_TAIL_FIX] is off, because the
+     * OWN_LIKELY branches don't check presence at the start; [lateTailFixCallsBothLateTagsTails] pins the fix, and
+     * this golden is re-blessed when the flag turns on.
      */
     @Test
     fun lateJoiningTags() {
@@ -160,6 +165,83 @@ class DebriefGoldenTest {
                 path,
             ),
         )
+    }
+
+    private val lateTags get() = path(55.0).let { path ->
+        listOf(
+            heard("T:smarttag", "5E:11:22:33:44:02", path, 6.0, 20.0) { -64 - (it.toInt() % 5) },
+            heard("T:airtag", "7A:11:22:33:44:04", path, 6.0, 20.0) { -50 },
+        )
+    }
+
+    /** P1-B9: a loud tag that joined late isn't "with you the whole sit"; it's a possible tail like the quiet one. */
+    @Test
+    fun lateTailFixCallsBothLateTagsTails() {
+        val off = debrief("Walk to the station", lateTags, path(55.0), lateTail = false)
+        assertTrue(off.contains("1 finder tag(s) with you the whole sit"))
+        val on = debrief("Walk to the station", lateTags, path(55.0), lateTail = true)
+        assertTrue(on, on.contains("2 possible tail(s) first heard after this sit started"))
+        assertFalse(on, on.contains("finder tag(s) with you the whole sit"))
+    }
+
+    /**
+     * P1-B9: a tag that joins twelve minutes into a 1.1 km walk and stays with you for the last 440 m. It covers only
+     * 40% of the whole path, so it reads as a pass-by today; counted from when it was first heard, it covers all of it.
+     */
+    @Test
+    fun lateTailFixCountsCoverageFromFirstHeard() {
+        val path = path(55.0)
+        val tag = listOf(heard("T:smarttag", "5E:11:22:33:44:02", path, 12.0, 20.0) { -62 })
+        assertFalse(debrief("Walk", tag, path, lateTail = false).contains("possible tail(s) first heard"))
+        val on = debrief("Walk", tag, path, lateTail = true)
+        assertTrue(on, on.contains("1 possible tail(s) first heard after this sit started"))
+        assertTrue(on, on.contains("m of path since it was first heard"))
+    }
+
+    /** Not called a tail, but listed as a late joiner that's too soon to tell: never dropped from the report. */
+    private fun assertTooSoon(text: String) {
+        assertFalse(text, text.contains("possible tail(s) first heard"))
+        assertTrue(text, text.contains("1 finder tag(s) joined after this sit started and stayed loud, too soon to tell"))
+        assertTrue(text, text.contains("Too soon to tell a tail from something added to your kit"))
+    }
+
+    /**
+     * P1-B9: a tag heard only for the last three minutes (165 m) covers all of the path since it appeared, but that's
+     * under the 300 m and 5 minutes a tail needs, so it's too soon to tell. Each half of the minimum counts alone.
+     */
+    @Test
+    fun lateTailFixNeedsThreeHundredMetresAndFiveMinutes() {
+        val path = path(55.0)
+        val tag = listOf(heard("T:smarttag", "5E:11:22:33:44:02", path, 17.0, 20.0) { -62 })
+        assertTooSoon(debrief("Walk", tag, path, lateTail = true))
+        // Long enough but not far enough: standing still for the last ten minutes after a walk (55 m over 11 min).
+        val stop = path.mapIndexed { i, s -> if (i > 120) s.copy(lat = path[120].lat) else s }
+        val still = listOf(heard("T:smarttag", "5E:11:22:33:44:02", stop, 9.0, 20.0) { -62 })
+        assertTooSoon(debrief("Walk", still, stop, lateTail = true))
+        // Far enough but not long enough: a car or bus beside you at 400 m a minute for the last 3 minutes (1.2 km).
+        val drive = path(400.0)
+        val car = listOf(heard("T:smarttag", "5E:11:22:33:44:02", drive, 17.0, 20.0) { -62 })
+        assertTooSoon(debrief("Drive", car, drive, lateTail = true))
+        // Just over both (310 m over 5 min): a tail.
+        val brisk = path(62.0)
+        val over = listOf(heard("T:smarttag", "5E:11:22:33:44:02", brisk, 15.0, 20.0) { -62 })
+        val on = debrief("Walk", over, brisk, lateTail = true)
+        assertTrue(on, on.contains("1 possible tail(s) first heard after this sit started"))
+    }
+
+    /**
+     * P1-B9: a loud tag that joins while you sit still at the end of a walk. Today it's "with you the whole sit"; with
+     * the fix it hasn't moved far enough to test, so it's listed as joined late, not dropped as stationary.
+     */
+    @Test
+    fun lateTailFixListsALoudTagThatJoinsWhileYouSit() {
+        val path = path(55.0)
+        val stop = path.mapIndexed { i, s -> if (i > 180) s.copy(lat = path[180].lat) else s }
+        val tag = listOf(heard("T:airtag", "7A:11:22:33:44:04", stop, 15.5, 20.0) { -50 })
+        assertTrue(debrief("Walk", tag, stop, lateTail = false).contains("1 finder tag(s) with you the whole sit"))
+        val on = debrief("Walk", tag, stop, lateTail = true)
+        assertTooSoon(on)
+        assertFalse(on, on.contains("with you the whole sit"))
     }
 
     /** Pass-bys on a walk: a tag that fades as you leave it, and a Tile heard briefly at one spot. Neither is a tail. */
