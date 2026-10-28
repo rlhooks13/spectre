@@ -1163,7 +1163,6 @@
     "ui.cameras.along.path": "Camere de-a lungul traseului",
     "ui.cameras.along.note": "La circa {meters} m de acest traseu. O direcție salvată contează când arăta spre traseu. Fără direcție salvată contează ca pe traseu. O direcție salvată care arăta în altă parte nu este numărată.",
     "ui.cameras.lists.missing": "Listele de camere nu sunt pe acest telefon.",
-    "ui.cameras.plates.missing": "Lista cititoarelor de plăcuțe nu este pe acest telefon.",
     "ui.cameras.other.missing": "Lista altor camere nu este pe acest telefon.",
     "ui.cameras.no.path": "Această sesiune nu are traseu, așa că camerele de-a lungul lui nu sunt numărate.",
     "ui.cameras.none.along": "Nicio cameră listată nu a fost de-a lungul acestui traseu.",

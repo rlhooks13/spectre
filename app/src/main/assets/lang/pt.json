@@ -1166,7 +1166,6 @@
     "ui.cameras.along.path": "Câmaras ao longo do caminho",
     "ui.cameras.along.note": "A cerca de {meters} m deste caminho. Uma direção guardada conta quando apontava para o caminho. Sem direção guardada conta como no caminho. Uma direção guardada que apontava para o lado não conta.",
     "ui.cameras.lists.missing": "As listas de câmaras não estão neste telemóvel.",
-    "ui.cameras.plates.missing": "A lista de leitores de matrículas não está neste telemóvel.",
     "ui.cameras.other.missing": "A lista de outras câmaras não está neste telemóvel.",
     "ui.cameras.no.path": "Esta vigília não tem caminho, por isso as câmaras ao longo dele não são contadas.",
     "ui.cameras.none.along": "Nenhuma câmara listada estava ao longo deste caminho.",

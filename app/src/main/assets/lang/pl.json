@@ -1167,7 +1167,6 @@
     "ui.cameras.along.path": "Kamery wzdłuż ścieżki",
     "ui.cameras.along.note": "W odległości około {meters} m od tej ścieżki. Zapisany kierunek liczy się, gdy wskazywał na ścieżkę. Brak zapisanego kierunku liczy się jako na ścieżce. Zapisany kierunek, który wskazywał w bok, nie liczy się.",
     "ui.cameras.lists.missing": "Listy kamer nie są w tym telefonie.",
-    "ui.cameras.plates.missing": "Lista czytników tablic nie jest w tym telefonie.",
     "ui.cameras.other.missing": "Lista innych kamer nie jest w tym telefonie.",
     "ui.cameras.no.path": "Ta sesja nie ma ścieżki, więc kamery wzdłuż niej nie są liczone.",
     "ui.cameras.none.along": "Żadna wymieniona kamera nie była wzdłuż tej ścieżki.",

@@ -1124,7 +1124,6 @@
     "ui.cameras.along.path": "Myndavélar með leiðinni",
     "ui.cameras.along.note": "Innan um {meters} m frá þessari leið. Geymd stefna telur þegar hún vísaði að leiðinni. Engin geymd stefna telur sem á leiðinni. Geymd stefna sem vísaði í burtu telur ekki.",
     "ui.cameras.lists.missing": "Myndavélalistarnir eru ekki í þessum síma.",
-    "ui.cameras.plates.missing": "Listi númeralesara er ekki í þessum síma.",
     "ui.cameras.other.missing": "Listi annarra myndavéla er ekki í þessum síma.",
     "ui.cameras.no.path": "Þessi vakt hefur enga leið, svo myndavélar með henni eru ekki taldar.",
     "ui.cameras.none.along": "Engin skráð myndavél var með þessari leið.",

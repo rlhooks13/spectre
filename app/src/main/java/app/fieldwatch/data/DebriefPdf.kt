@@ -1220,7 +1220,8 @@ object DebriefPdf {
         val tile = tiles.firstOrNull()
         val line = when {
             tile != null -> FlockCredit.append(tile.basemap.creditLine(tile.overlays), cameras)
-            cameras -> FlockCredit.LINE
+            // A printed page can't link: give the copyright page (ADR-0018 §3).
+            cameras -> FlockCredit.PRINT
             else -> return
         }
         val text = Paint().apply {

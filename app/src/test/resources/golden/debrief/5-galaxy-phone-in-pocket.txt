@@ -86,6 +86,8 @@ Within about 150 m
 
 No listed camera was along this path.
 
+© OpenStreetMap contributors · openstreetmap.org/copyright
+
 4. TRACKING ASSESSMENT
 Overall distance traveled: 1.10 km along the GPS path (241 samples). Straight-line span 1.10 km.
 Co-travel is split by class: finder tags (AirTag / Find My, SmartTag, Tile, Chipolo, Pebblebee), retail beacons (iBeacon, Minew, Estimote, Kontakt.io, Atrius cart tag), wearables (watches, rings, fitness bands, AI recorders, game wristbands), and carried Apple devices (phone, iPad, Mac, Watch, AirPods).

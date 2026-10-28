@@ -83,6 +83,8 @@ object LanguageKeyRevisions {
             "ui.they.do.not.typically.recorder",
             // P1-B8b: a signature matched only by a vendor prefix on a rotating BLE address.
             "ui.signature.possible",
+            // P0-7e2: the bundled OpenStreetMap plate-reader snapshot's date, and its read failure.
+            "settings.layer.osm.date", "ui.cameras.plates.unreadable",
         )) put(key, 6)
     }
 

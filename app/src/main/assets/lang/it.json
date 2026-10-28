@@ -1162,7 +1162,6 @@
     "ui.cameras.along.path": "Telecamere lungo il percorso",
     "ui.cameras.along.note": "Entro circa {meters} m da questo percorso. Una direzione salvata conta se puntava verso il percorso. Nessuna direzione salvata conta come sul percorso. Una direzione salvata che puntava altrove non è contata.",
     "ui.cameras.lists.missing": "Gli elenchi delle telecamere non sono su questo telefono.",
-    "ui.cameras.plates.missing": "L'elenco dei lettori di targhe non è su questo telefono.",
     "ui.cameras.other.missing": "L'elenco delle altre telecamere non è su questo telefono.",
     "ui.cameras.no.path": "Questo turno non ha un percorso, quindi le telecamere lungo di esso non sono contate.",
     "ui.cameras.none.along": "Nessuna telecamera elencata era lungo questo percorso.",

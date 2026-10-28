@@ -102,6 +102,8 @@ Flock
   0 facing the path
   1 on the path with no direction
 
+© OpenStreetMap contributors · openstreetmap.org/copyright
+
 4. AIRCRAFT
 • masked
   Last masked

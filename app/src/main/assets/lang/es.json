@@ -1160,7 +1160,6 @@
     "ui.cameras.along.path": "Cámaras a lo largo de la ruta",
     "ui.cameras.along.note": "A unos {meters} m de esta ruta. Una dirección guardada cuenta cuando apuntaba hacia la ruta. Sin dirección guardada cuenta como en la ruta. Una dirección guardada que apuntaba hacia otro lado no se cuenta.",
     "ui.cameras.lists.missing": "Las listas de cámaras no están en este teléfono.",
-    "ui.cameras.plates.missing": "La lista de lectores de matrículas no está en este teléfono.",
     "ui.cameras.other.missing": "La lista de otras cámaras no está en este teléfono.",
     "ui.cameras.no.path": "Esta guardia no tiene ruta, así que las cámaras a lo largo de ella no se cuentan.",
     "ui.cameras.none.along": "Ninguna cámara listada estaba a lo largo de esta ruta.",

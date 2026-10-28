@@ -128,7 +128,57 @@ android {
     }
 }
 
+/**
+ * P0-7e (ADR-0018): `assets/cameras/osm-alpr.jsonl` from the committed OpenStreetMap snapshot in `catalog/osm/`.
+ * The meta on one line, then the rows. No network: the snapshot is refreshed by `scripts/build_alpr.py`.
+ */
+@CacheableTask
+abstract class OsmSnapshotAsset : DefaultTask() {
+    /** Only the two files that go into the asset, so editing the README or the query doesn't rebuild it. */
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val meta: RegularFileProperty
+
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val rows: RegularFileProperty
+
+    /** The ODbL notice, which ships in the APK with the data (ADR-0018 §3): `assets/licenses/LICENSE-ODbL.txt`. */
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val license: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun build() {
+        // The meta is pretty-printed JSON; its strings can't span lines, so trimming each line keeps it valid.
+        val metaLine = meta.get().asFile.readLines().joinToString("") { it.trim() }
+        // Plain text: a .gz asset came out of the build renamed (osm-alpr.json), and the APK's zip compresses this to
+        // about the gzipped size (2.5 MB).
+        outputDir.get().asFile.deleteRecursively()
+        val out = outputDir.file("cameras/osm-alpr.jsonl").get().asFile
+        out.parentFile.mkdirs()
+        out.outputStream().buffered().use { file ->
+            file.write((metaLine + "\n").toByteArray(Charsets.UTF_8))
+            rows.get().asFile.inputStream().use { it.copyTo(file) }
+        }
+        license.get().asFile.copyTo(outputDir.file("licenses/LICENSE-ODbL.txt").get().asFile, overwrite = true)
+    }
+}
+
+val osmSnapshotAsset by tasks.registering(OsmSnapshotAsset::class) {
+    meta.set(rootProject.layout.projectDirectory.file("catalog/osm/alpr-meta.json"))
+    rows.set(rootProject.layout.projectDirectory.file("catalog/osm/alpr.jsonl"))
+    license.set(rootProject.layout.projectDirectory.file("LICENSE-ODbL.txt"))
+    outputDir.set(layout.buildDirectory.dir("generated/osm-snapshot"))
+}
+
 androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(osmSnapshotAsset, OsmSnapshotAsset::outputDir)
+    }
     // Staging shares release's code; running its unit tests again would only inflate the test count.
     beforeVariants(selector().withBuildType("staging")) { it.enableUnitTest = false }
     finalizeDsl { android ->

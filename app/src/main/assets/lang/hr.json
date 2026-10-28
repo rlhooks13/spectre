@@ -1170,7 +1170,6 @@
     "ui.cameras.along.path": "Kamere uz putanju",
     "ui.cameras.along.note": "Unutar oko {meters} m od ove putanje. Spremljeni smjer broji se kad je pokazivao prema putanji. Bez spremljenog smjera broji se kao na putanji. Spremljeni smjer koji je pokazivao u stranu ne broji se.",
     "ui.cameras.lists.missing": "Popisi kamera nisu na ovom telefonu.",
-    "ui.cameras.plates.missing": "Popis čitača tablica nije na ovom telefonu.",
     "ui.cameras.other.missing": "Popis drugih kamera nije na ovom telefonu.",
     "ui.cameras.no.path": "Ova straža nema putanju, pa se kamere uz nju ne broje.",
     "ui.cameras.none.along": "Nijedna navedena kamera nije bila uz ovu putanju.",

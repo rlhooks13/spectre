@@ -36,12 +36,12 @@ object Features {
     const val LATE_TAIL_FIX = false
 
     /**
-     * The plate-reader camera layer and its alert (ADR-0018). Off between P0-7c, which removed the third-party
-     * download, and P0-7e, which bundles the OpenStreetMap snapshot and turns this on. While off, the layer and its
-     * "ahead" alert are hidden rather than shown on with no data, which would be a silent alert. Users' saved
-     * switches are left as they are, so they carry over.
+     * The plate-reader camera layer and its alert (ADR-0018). It was off between P0-7c, which removed the third-party
+     * download, and P0-7e2, which bundles the OpenStreetMap snapshot and turned it on: off, the layer and its "ahead"
+     * alert are hidden rather than shown on with no data, which would be a silent alert. Users' saved switches are
+     * left as they are, so they carry over.
      */
-    const val PLATE_LAYER = false
+    const val PLATE_LAYER = true
 }
 
 /**

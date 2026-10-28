@@ -47,6 +47,8 @@ Flock
   1 facing the path
   0 on the path with no direction
 
+© OpenStreetMap contributors · openstreetmap.org/copyright
+
 4. OBSERVER NOTES
 Your captions on radios heard in this window. Same KIND+MAC as Named radios. Not catalog Notes.
   · WIFI  Flock-1A2B  B4:1E:52:0A:0B:0C  -70 dBm

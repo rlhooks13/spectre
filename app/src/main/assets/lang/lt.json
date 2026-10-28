@@ -1123,7 +1123,6 @@
     "ui.cameras.along.path": "Kameros palei kelią",
     "ui.cameras.along.note": "Maždaug {meters} m nuo šio kelio. Išsaugota kryptis skaičiuojama, kai rodė į kelią. Be išsaugotos krypties skaičiuojama kaip ant kelio. Išsaugota kryptis, kuri rodė į šoną, neskaičiuojama.",
     "ui.cameras.lists.missing": "Kamerų sąrašų nėra šiame telefone.",
-    "ui.cameras.plates.missing": "Numerių skaitytuvų sąrašo nėra šiame telefone.",
     "ui.cameras.other.missing": "Kitų kamerų sąrašo nėra šiame telefone.",
     "ui.cameras.no.path": "Ši pamaina neturi kelio, todėl kameros palei jį neskaičiuojamos.",
     "ui.cameras.none.along": "Nė viena nurodyta kamera nebuvo palei šį kelią.",

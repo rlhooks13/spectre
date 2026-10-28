@@ -1152,7 +1152,6 @@
     "ui.cameras.along.path": "Camera's langs het pad",
     "ui.cameras.along.note": "Binnen ongeveer {meters} m van dit pad. Een opgeslagen richting telt als die naar het pad wees. Geen opgeslagen richting telt als op het pad. Een opgeslagen richting die wegwees, telt niet.",
     "ui.cameras.lists.missing": "De cameralijsten staan niet op deze telefoon.",
-    "ui.cameras.plates.missing": "De lijst met kentekenlezers staat niet op deze telefoon.",
     "ui.cameras.other.missing": "De lijst met andere camera's staat niet op deze telefoon.",
     "ui.cameras.no.path": "Deze wacht heeft geen pad, dus camera's erlangs worden niet geteld.",
     "ui.cameras.none.along": "Geen vermelde camera lag langs dit pad.",

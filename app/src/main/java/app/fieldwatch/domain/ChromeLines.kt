@@ -798,7 +798,9 @@ internal object ChromeLines {
             LanguageSlot.BODY,
         ),
         en("ui.cameras.lists.missing", "The camera lists are not on this phone.", LanguageSlot.BODY),
-        en("ui.cameras.plates.missing", "The plate-reader list is not on this phone.", LanguageSlot.BODY),
+        // The list is bundled now (P0-7e2): "not on this phone" no longer fits; ui.cameras.plates.unreadable replaces it.
+        en("ui.cameras.plates.missing", "Unused", LanguageSlot.BODY),
+        en("ui.cameras.plates.unreadable", "The plate-reader camera data in the app could not be read.", LanguageSlot.BODY),
         en("ui.cameras.other.missing", "The other-camera list is not on this phone.", LanguageSlot.BODY),
         en("ui.cameras.no.path", "This sit has no path, so cameras along it are not counted.", LanguageSlot.BODY),
         en("ui.cameras.none.along", "No listed camera was along this path.", LanguageSlot.BODY),

@@ -20,6 +20,7 @@ import app.fieldwatch.radio.GnssMonitor
 import app.fieldwatch.data.AssetLanguageFiles
 import app.fieldwatch.data.ConfigStore
 import app.fieldwatch.data.FlockFiles
+import app.fieldwatch.data.OsmSnapshot
 import app.fieldwatch.data.SensorList
 import app.fieldwatch.data.LanguageStore
 import app.fieldwatch.domain.LanguageText
@@ -148,6 +149,18 @@ class FieldwatchApp : Application() {
      * clock ticks, and a newer Location.time was blanking the corner on every pass.
      */
     fun currentFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? = currentFixOf(phoneFix, now)
+
+    /**
+     * The bundled OpenStreetMap plate-reader snapshot (P0-7e), parsed on each call and not kept: the map and the
+     * report each build their own index from it, so holding the list too would only cost memory. Null if it can't be
+     * read. Call it off the main thread.
+     */
+    fun loadPlateSnapshot(): OsmSnapshot.Loaded? =
+        runCatching { assets.open(OsmSnapshot.ASSET).use { OsmSnapshot.read(it) } }.getOrNull()
+
+    /** The snapshot's `osmBase` from its meta line only, or null if the asset can't be read. Off the main thread. */
+    fun plateSnapshotBase(): String? =
+        runCatching { assets.open(OsmSnapshot.ASSET).use { OsmSnapshot.readBase(it) } }.getOrNull()
 
     /** Where a TAK GNSS interference mark goes: the last fix up to 10 minutes old ([gnssMarkFixOf]). */
     fun gnssMarkFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? = gnssMarkFixOf(phoneFix, now)
@@ -931,7 +944,8 @@ class FieldwatchApp : Application() {
         val gen = ++flockLoadGen
         scope.launch(Dispatchers.IO) {
             val cameras = ArrayList<FlockCamera>()
-            // P0-7c: no downloaded plate-reader list is read; the bundled OpenStreetMap snapshot (P0-7e) replaces it.
+            // The bundled OpenStreetMap snapshot (P0-7e); no downloaded plate-reader list is read (P0-7c).
+            if (showPlates) loadPlateSnapshot()?.cameras?.let { cameras.addAll(it) }
             if (showOther) FlockFiles.read(filesDir, SensorList.OTHER)?.cameras?.let { cameras.addAll(it) }
             if (gen != flockLoadGen) return@launch
             val now = config.settings

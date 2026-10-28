@@ -1127,7 +1127,6 @@
     "ui.cameras.along.path": "Kaamerad raja ääres",
     "ui.cameras.along.note": "Umbes {meters} m raadiuses sellest rajast. Salvestatud suund loeb, kui see osutas raja poole. Ilma salvestatud suunata loeb rajal olevana. Salvestatud suund, mis osutas eemale, ei loe.",
     "ui.cameras.lists.missing": "Kaamerate loendid ei ole selles telefonis.",
-    "ui.cameras.plates.missing": "Numbrilugejate loend ei ole selles telefonis.",
     "ui.cameras.other.missing": "Muude kaamerate loend ei ole selles telefonis.",
     "ui.cameras.no.path": "Sellel vahil pole rada, seega kaameraid selle ääres ei loeta.",
     "ui.cameras.none.along": "Ükski loetletud kaamera ei olnud selle raja ääres.",

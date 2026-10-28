@@ -212,6 +212,8 @@ class FlockLatch {
 object FlockCredit {
     const val LINE = "© OpenStreetMap contributors"
     const val URL = "https://www.openstreetmap.org/copyright"
+    /** For text that can't link: the credit with the copyright page (ADR-0018 §3). */
+    const val PRINT = "© OpenStreetMap contributors · openstreetmap.org/copyright"
 
     fun append(base: String, on: Boolean): String {
         if (!on || base.contains("OpenStreetMap")) return base

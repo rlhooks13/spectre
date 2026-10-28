@@ -1170,7 +1170,6 @@
     "ui.cameras.along.path": "Kamery pozdĺž trasy",
     "ui.cameras.along.note": "Asi do {meters} m od tejto trasy. Uložený smer sa počíta, keď mieril k trase. Bez uloženého smeru sa počíta ako na trase. Uložený smer, ktorý mieril inam, sa nepočíta.",
     "ui.cameras.lists.missing": "Zoznamy kamier nie sú v tomto telefóne.",
-    "ui.cameras.plates.missing": "Zoznam čítačiek značiek nie je v tomto telefóne.",
     "ui.cameras.other.missing": "Zoznam iných kamier nie je v tomto telefóne.",
     "ui.cameras.no.path": "Táto hliadka nemá trasu, preto sa kamery pozdĺž nej nepočítajú.",
     "ui.cameras.none.along": "Žiadna uvedená kamera nebola pozdĺž tejto trasy.",

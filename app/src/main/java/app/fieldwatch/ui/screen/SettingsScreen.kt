@@ -34,6 +34,7 @@ import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import app.fieldwatch.ui.PLATE_DATA_UNREADABLE
 import app.fieldwatch.ui.component.FieldwatchFilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -74,6 +75,7 @@ import app.fieldwatch.domain.AlertVoiceWhat
 import app.fieldwatch.domain.LanguageText
 import app.fieldwatch.domain.AppSettings
 import app.fieldwatch.domain.Features
+import app.fieldwatch.domain.FlockCredit
 import app.fieldwatch.data.FlockFiles
 import app.fieldwatch.domain.MapBasemap
 import app.fieldwatch.domain.MapFooter
@@ -114,6 +116,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val settings = state.settings
     val flock by vm.flockLayerUi.collectAsStateWithLifecycle()
+    val plateDate by vm.plateDataDate.collectAsStateWithLifecycle()
     val sensors by vm.sensorLayerUi.collectAsStateWithLifecycle()
     val saveSignatures = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json"),
@@ -663,12 +666,20 @@ fun SettingsScreen(
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
-            // Hidden between P0-7c (no download) and P0-7e (the bundled OpenStreetMap snapshot), ADR-0018: a switch
-            // and an alert with no data behind them would be a silent alert.
+            // The bundled OpenStreetMap snapshot (P0-7e, ADR-0018): its date and the fixed credit under the note.
             if (Features.PLATE_LAYER) {
                 SensorLayerBlock(
                     title = LanguageText.text("settings.layer.flock"),
-                    note = LanguageText.text("settings.layer.note"),
+                    note = listOfNotNull(
+                        LanguageText.text("settings.layer.note"),
+                        when (plateDate) {
+                            "" -> null
+                            PLATE_DATA_UNREADABLE -> LanguageText.text("ui.cameras.plates.unreadable")
+                            else -> LanguageText.text("settings.layer.osm.date", mapOf("date" to plateDate))
+                        },
+                        // The credit only when there is OpenStreetMap data to credit.
+                        FlockCredit.PRINT.takeIf { plateDate.isNotEmpty() && plateDate != PLATE_DATA_UNREADABLE },
+                    ).joinToString("\n"),
                     state = flock,
                     checked = settings.flockLayer,
                     onChecked = vm::setFlockLayer,

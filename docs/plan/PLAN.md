@@ -226,14 +226,17 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
        - An idempotent janitor deletes `flock-cameras.bin` and its temp files.
        - Never contact dontgetflocked, tests included.
        - Earlier partial work (source-host dialog, HTTPS-only) is superseded. The parse limits carry over to the snapshot reader.
-     - **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c). Split into two PRs:
+     - ✅ **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c). Split into two PRs:
        - ✅ **P0-7e1 Data:** `scripts/build_alpr.py`, the committed snapshot in `catalog/osm/`, `LICENSE-ODbL.txt`, `NOTICE` and `OsmSnapshotTest`.
-       - **P0-7e2 App:** the asset, the reader, the credit and the date key, and `PLATE_LAYER` on.
+       - ✅ **P0-7e2 App:** the asset, the reader, the credit and the date key, and `PLATE_LAYER` on. As built:
+         - The asset ships plain as `assets/cameras/osm-alpr.jsonl`; the Android build unpacks `.gz` assets anyway, and in the APK it's 2.5 MB compressed.
+         - `FieldwatchApp.plateSnapshot` parses it once, lazily, off the main thread.
+         - `ui.cameras.plates.missing` became `ui.cameras.plates.unreadable`.
          - The asset is the meta on one line, then the rows. `OsmSnapshotTest` and the script measure exactly that.
          - Most cameras (about 71%) say "Flock" only in `manufacturer`. The reader must use `manufacturer` when `brand` is blank, for `isFlock` and `plateBrand`, or most Flock labels are lost.
        - **The script.** `scripts/build_alpr.py` sets the pattern P1-E5 reuses. One Overpass query per data build, never in Gradle or CI, downloaded into a new empty directory and treated as data. One backed-off retry on 429 or 504.
          - It fails, writing nothing, on an Overpass `remark`, a count under `MIN_COUNT`, or a drop of more than 10% without a recorded override.
-       - **The snapshot.** Committed as `catalog/osm/alpr.jsonl` (sorted, one camera per line), `alpr-meta.json` (`spectre-alpr-1`, `osmBase`, query hash, count, tag table) and `query.overpassql`. The raw response is deleted. Gradle gzips it into `assets/cameras/osm-alpr.json.gz`.
+       - **The snapshot.** Committed as `catalog/osm/alpr.jsonl` (sorted, one camera per line), `alpr-meta.json` (`spectre-alpr-1`, `osmBase`, query hash, count, tag table) and `query.overpassql`. The raw response is deleted. Gradle builds `assets/cameras/osm-alpr.jsonl` from it (plain; see P0-7e2).
        - **Contents.** Worldwide (nodes, ways, relations by center). Kept: position, facings (at most 4, 0–359), and the manufacturer, brand and operator tags for `isFlock` and `plateBrand`. Keys come from `sensorKey`. At most 4 MiB and 400,000 cameras, and at least `MIN_COUNT`; the script and a test fail otherwise.
        - **Reading it.** Parsed once, off the main thread.
        - **License and credit.** `LICENSE-ODbL.txt` in the repo and the APK, saying where the database is published. `NOTICE` names the ODbL paths. The fixed credit "© OpenStreetMap contributors · openstreetmap.org/copyright" goes in the UI, the PDF and the exports (exports stay English). One new key, "Map data as of {date}".

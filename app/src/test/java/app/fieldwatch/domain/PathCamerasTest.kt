@@ -38,7 +38,10 @@ class PathCamerasTest {
                 "\n" +
                 "Speed cameras\n" +
                 "  1 facing the path\n" +
-                "  0 on the path with no direction",
+                "  0 on the path with no direction\n" +
+                // P0-7e2 (ADR-0018 §3): the camera locations are OpenStreetMap data.
+                "\n" +
+                "© OpenStreetMap contributors · openstreetmap.org/copyright",
             text,
         )
         assertEquals(listOf(1L, 2L, 6L), tally.cameras.map { it.key })
@@ -71,7 +74,8 @@ class PathCamerasTest {
                 emptyList()
             },
         )
-        assertEquals("The camera lists are not on this phone.", missing)
+        // The plate list is bundled (P0-7e2): with no Other-sensors list on offer, the missing list is unreadable data.
+        assertEquals("The plate-reader camera data in the app could not be read.", missing)
     }
 
     @Test

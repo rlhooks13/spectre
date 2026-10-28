@@ -33,7 +33,7 @@ They are not a Google product and are not covered by the MIT grant
 as original Fieldwatch source.
 
 Mapped plate-reader cameras in catalog/osm/ (and the asset built from it,
-app/src/main/assets/cameras/osm-alpr.json.gz) are OpenStreetMap data:
+assets/cameras/osm-alpr.jsonl in the app) are OpenStreetMap data:
 
   © OpenStreetMap contributors, under the Open Database License 1.0
   (see LICENSE-ODbL.txt). https://www.openstreetmap.org/copyright

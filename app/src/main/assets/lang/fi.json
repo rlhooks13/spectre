@@ -1167,7 +1167,6 @@
     "ui.cameras.along.path": "Kamerat polun varrella",
     "ui.cameras.along.note": "Noin {meters} m tämän polun sisällä. Tallennettu suunta lasketaan, kun se osoitti polkua kohti. Ilman tallennettua suuntaa se lasketaan polulla olevaksi. Tallennettu suunta, joka osoitti pois, ei lasketa.",
     "ui.cameras.lists.missing": "Kameralistat eivät ole tässä puhelimessa.",
-    "ui.cameras.plates.missing": "Rekisterinlukijoiden lista ei ole tässä puhelimessa.",
     "ui.cameras.other.missing": "Muiden kameroiden lista ei ole tässä puhelimessa.",
     "ui.cameras.no.path": "Tällä vahdilla ei ole polkua, joten kameroita sen varrella ei lasketa.",
     "ui.cameras.none.along": "Yksikään listattu kamera ei ollut tämän polun varrella.",

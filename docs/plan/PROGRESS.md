@@ -2,8 +2,8 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P0-7e2** (the snapshot in the app, `PLATE_LAYER` on), after P0-7e1 merges.
-  - Then **P1-B11 to P1-B13**, the research row fixes (owner order 2026-10-28), then P1-B14, then the rest of 1C–1E (P1-C2 next).
+- Current step: **P1-B11 Tracker-row fixes** (research §1, items 1–6), after P0-7e2 merges.
+  - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
@@ -32,7 +32,7 @@
     - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/7e1-osm-snapshot-data`
+- Branch: `p0/7e2-osm-snapshot-app`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -102,6 +102,40 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P0-7e2 OSM plate-reader snapshot in the app.** #83 (P0-7e1) merged as 47bbb01.
+  - **Asset:** a cacheable Gradle task (`OsmSnapshotAsset`) builds `assets/cameras/osm-alpr.jsonl` from `catalog/osm/` (the meta on one line, then the rows), registered as a generated assets dir for every variant.
+    - The Android build unpacks a `.gz` asset, so it ships plain: 6.67 MB stored, 2.51 MB compressed in the APK.
+    - No network.
+  - **Reader:** `OsmSnapshot.read` checks the format and the count limits.
+    - A malformed or short snapshot reads as nothing, never half a list.
+    - Brand and Flock come from `brand`, else `manufacturer`, plus Flock's Wikidata id Q108485435, which the data confirms. Most cameras say Flock only in `manufacturer`.
+    - `FieldwatchApp.plateSnapshot` loads it once, lazily, from IO callers, and also caches a failure.
+  - **Wiring:** `syncFlock` and `cameraReport` read it. `Features.PLATE_LAYER` is on.
+  - **Credit and keys:**
+    - The layer note shows "Map data as of {date}" (new key `settings.layer.osm.date`) and `FlockCredit.PRINT`.
+    - The camera section of sit reports, the Debrief and prompts ends with the credit.
+    - `ui.cameras.plates.missing` is "Unused" (pruned), replaced by `ui.cameras.plates.unreadable`. Revision 6 count 30 → 32.
+  - **Goldens:** 11 gain the credit line in their camera section (9 Debriefs, 2 sit prompts), and `since-v97.md` shows `PLATE_LAYER | on`.
+  - **Tests:** `OsmSnapshotTest` 2 → 5. The real snapshot reads in full with more than half Flock; a gzipped stream reads too; `brandOf` cases; broken snapshots read as nothing. `PathCamerasTest` expects the credit.
+  - **Device, debug:** cold start 1.5 s. The layer note shows the date and credit. Turning the layer on loaded the 156,273 cameras with no crash; PSS went from 224 MB to 254 MB (before the review fixes, which stopped holding the list). The switch was turned back off.
+  - **Device, staging (R8):** APK 11.02 → 13.23 MB. Cold start 0.37 s. The date shows, and turning the layer on loaded with no crash (176 MB PSS). Switched back off.
+  - **Reviews.**
+    - **Blocking (fixed):** the ODbL license wasn't in the APK. The Gradle task now copies it to `assets/licenses/LICENSE-ODbL.txt`, and it's in the APK.
+    - **Fixed:**
+      - the full parse just for the date (now the meta line only);
+      - the list held for the app's life (now loaded on use, not kept);
+      - an unreadable snapshot is now shown in Settings instead of a silent alert, and reports say "could not be read" rather than "not on this phone";
+      - consistent credit spacing;
+      - `@CacheableTask` with file inputs only;
+      - the tag-key check;
+      - a strict row end and trimmed head fields;
+      - an agency named "Flock" no longer makes another maker's camera Flock;
+      - the PDF credit includes the copyright page;
+      - the ADR, PLAN, NOTICE and license asset text.
+    - **Rebutted:**
+      - a bounded line reader: the asset is build-time data that `OsmSnapshotTest` verifies, and the count limits still apply;
+      - a Robolectric asset test: the device checks read the real merged asset in debug and staging;
+      - a linked Settings credit: the note is plain text and already includes the copyright page.
 - 2026-10-28: **P0-7e1 OSM plate-reader snapshot (data).** #81 (P0-7c) merged as 158153a.
   - **The script:** `scripts/build_alpr.py` (stdlib only, `python -I`). One Overpass query into a new empty directory; the raw response is deleted after conversion.
     - It refuses, writing nothing, on an Overpass `remark`, fewer than 1,000 or more than 400,000 cameras, more than 4 MiB gzipped, or a drop of more than 10% without `--allow-drop`. A drop override is recorded in the meta as `dropOverride`.

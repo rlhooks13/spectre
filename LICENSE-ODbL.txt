@@ -2,7 +2,7 @@ Mapped plate-reader camera data in Spectre
 
 The database of mapped plate-reader (ALPR) cameras in catalog/osm/ of this
 repository, and the file built from it that ships in the app
-(assets/cameras/osm-alpr.json.gz), is a derivative of OpenStreetMap data.
+(assets/cameras/osm-alpr.jsonl), is a derivative of OpenStreetMap data.
 
   © OpenStreetMap contributors
   https://www.openstreetmap.org/copyright

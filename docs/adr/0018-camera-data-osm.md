@@ -60,7 +60,7 @@
   - `query.overpassql`;
   - a README stating the data's license.
   - The raw Overpass response is deleted after conversion.
-- **In the APK.** Gradle gzips the two files into `assets/cameras/osm-alpr.json.gz`. Each camera is `[type, id, lat5, lon5, tagIndex|-1, [facings…]]`:
+- **In the APK.** Gradle writes the two files, the meta on one line then the rows, as `assets/cameras/osm-alpr.jsonl`. It ships plain: P0-7e2 found that a `.gz` asset came out of the build renamed, and the APK's zip compresses this one to about 2.5 MB. `LICENSE-ODbL.txt` goes to `assets/licenses/`. Each camera is `[type, id, lat5, lon5, tagIndex|-1, [facings…]]`:
   - `type`: 0 node, 1 way, 2 relation;
   - `lat5` and `lon5`: integer degrees × 1e5.
 - **Size budget:** at most 4 MiB compressed in the APK and 400,000 cameras. The script and a unit test both fail over either limit rather than truncating, and the test also requires at least `MIN_COUNT`. (Expected today: tens of thousands of cameras, about 1–2 MiB.)
