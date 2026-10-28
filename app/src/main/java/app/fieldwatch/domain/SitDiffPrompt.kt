@@ -45,7 +45,7 @@ object SitDiffPrompt {
                 append("  ").append(label)
             }
             if (row.mine) append("  Marked mine")
-            row.fleetNames.filter { it.isNotBlank() }.forEach { append("  ").append(it) }
+            row.markedFleetNames().filter { it.isNotBlank() }.forEach { append("  ").append(it) }
             if (row.extraAttention) append("  Extra attention")
             val labels = row.liveDecode.reportLabels()
             if (labels.isNotEmpty()) append("  ").append(labels.joinToString(", "))

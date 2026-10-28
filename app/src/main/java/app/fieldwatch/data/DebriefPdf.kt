@@ -1317,7 +1317,8 @@ object DebriefPdf {
             val d = m.dot
             val kind = if (d.kind.name == "WIFI") "WIFI" else "BLE"
             val tag = if (d.extraAttention) LanguageText.text("chrome.extra.attention") else null
-            val fleets = d.fleetNames.filter { it.isNotBlank() }.joinToString(", ")
+            // An export: a possible match is marked in English (P1-B8c).
+            val fleets = d.exportFleetNames().joinToString(", ")
             val obs = d.observerNotes.trim().takeIf { it.isNotEmpty() }?.let { "Observer: $it" }
             val who = listOfNotNull(kind, d.label.ifBlank { d.mac }, fleets.ifBlank { null }, tag, obs)
                 .joinToString(" ")

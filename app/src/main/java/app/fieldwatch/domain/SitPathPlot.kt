@@ -47,7 +47,28 @@ object SitPathPlot {
          * when this radio advertised them. Empty for a hear-point.
          */
         val advertisedNote: String = "",
-    )
+        /** The signature id of each of [fleetNames], in the same order (P1-B8c). */
+        val fleetIds: List<String> = emptyList(),
+        /** The ids in [fleetIds] that are only possible matches (P1-B8c). Marked by id, not name. */
+        val possibleFleetIds: Set<String> = emptySet(),
+    ) {
+        /** [fleetNames] for exports: a possible match marked in English. */
+        fun exportFleetNames(): List<String> = markedNames(EXPORT_POSSIBLE)
+
+        /** [fleetNames] on screen: a possible match marked with [marker], the `ui.signature.possible` text. */
+        fun shownFleetNames(marker: String): List<String> = markedNames(marker)
+
+        private fun markedNames(marker: String): List<String> =
+            fleetNames.mapIndexedNotNull { i, name ->
+                name.takeIf { it.isNotBlank() }?.let { possibleMarked(fleetIds.getOrNull(i).orEmpty(), it, possibleFleetIds, marker) }
+            }
+    }
+
+    /** [d]'s matched signatures for a [Dot]: the names and their ids, in order. [byId] holds the fleets. */
+    private fun dotNames(d: Sighting, byId: Map<String, Fleet>): Pair<List<String>, List<String>> {
+        val hits = d.fleetIds.mapNotNull { id -> byId[id]?.let { id to it.name } }
+        return hits.map { it.second } to hits.map { it.first }
+    }
 
     data class Model(
         val samples: List<GpsSample>,
@@ -751,6 +772,7 @@ object SitPathPlot {
         mineKeys: Set<String> = emptySet(),
     ): PlotRadios {
         val points = ArrayList<Dot>()
+        val byId = fleets.associateBy { it.id }
         devices
             .filter { device ->
                 val macAlert = device.key in bookmarkedKeys
@@ -773,6 +795,7 @@ object SitPathPlot {
                 val fleet = d.definiteFleetIds.firstNotNullOfOrNull { id ->
                     fleets.firstOrNull { it.id == id && id in watchedFleetIds }
                 } ?: d.definiteFleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
+                val (names, ids) = dotNames(d, byId)
                 points += Dot(
                     key = d.key,
                     lat = fix.lat,
@@ -782,7 +805,9 @@ object SitPathPlot {
                     named = bookmarked || d.key in namedKeys,
                     kind = d.kind,
                     mac = d.mac,
-                    fleetNames = d.fleetIds.mapNotNull { id -> fleets.firstOrNull { it.id == id }?.name?.let { d.signatureText(id, it) } },
+                    fleetNames = names,
+                    fleetIds = ids,
+                    possibleFleetIds = d.possibleFleetIds,
                     observerNotes = notes,
                     rssiMin = d.rssiMin,
                     rssiMax = d.rssiMax,
@@ -981,10 +1006,12 @@ object SitPathPlot {
         since: Long = Long.MIN_VALUE,
     ): List<Dot> {
         val points = ArrayList<Dot>(devices.size)
+        val byId = fleets.associateBy { it.id }
         for (d in devices) {
             val pin = advertisedFix(d)
             val fix = pin ?: loudestFix(d, since) ?: continue
-            val fleet = d.definiteFleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
+            val fleet = d.definiteFleetIds.firstNotNullOfOrNull { id -> byId[id] }
+            val (names, ids) = dotNames(d, byId)
             points += Dot(
                 key = d.key,
                 lat = fix.lat,
@@ -994,7 +1021,9 @@ object SitPathPlot {
                 named = d.key in customNames,
                 kind = d.kind,
                 mac = d.mac,
-                fleetNames = d.fleetIds.mapNotNull { id -> fleets.firstOrNull { it.id == id }?.name?.let { d.signatureText(id, it) } },
+                fleetNames = names,
+                fleetIds = ids,
+                possibleFleetIds = d.possibleFleetIds,
                 rssiMin = d.rssiMin,
                 rssiMax = d.rssiMax,
                 classKind = fleet?.kind,
