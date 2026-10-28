@@ -366,6 +366,18 @@ class SignatureEngine {
         }
     }
 
+    /**
+     * P1-B8: [fleet] matched [device] only through address rules (OUI, MAC prefix), with no name, UUID or payload rule
+     * backing it up. An all-rules signature is never address-only: its other rules had to hit too.
+     */
+    fun matchedOnlyByAddress(device: Sighting, fleet: Fleet): Boolean {
+        if (!fleet.matchAny) return false
+        val on = fleet.rules.filter { it.enabled && it.kind != RuleKind.RADIO_KIND }
+        val address = on.filter { it.kind == RuleKind.OUI || it.kind == RuleKind.MAC_PREFIX }
+        if (address.none { ruleHits(device, it) }) return false
+        return (on - address.toSet()).none { ruleHits(device, it) }
+    }
+
     private fun ruleHits(device: Sighting, rule: MatchRule): Boolean {
         if (rule.kind != RuleKind.RADIO_KIND && rule.radio != null && device.kind != rule.radio) {
             return false
