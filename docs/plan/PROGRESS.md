@@ -12,7 +12,11 @@
     - 1F is done.
   - **Waiting on the owner:** the late-tail flag's captures; the plugin servers (Needs human, "Still open"); a vetted list of new signatures, which arrives as a PLAN step.
   - **Signature additions are on hold:** the owner is researching new signatures (trackers, police and surveillance, recording devices). Don't start any signature-addition work until the owner's vetted list arrives as a PLAN step. Fixes to existing rows under existing steps (P1-B5d, P1-B10) are not additions.
-  - **#78 (CLAUDE.md command table, owner-signed):** the owner merges it when CI passes. Don't touch it.
+  - **How the owner is reached (owner decision 2026-10-27):**
+    - The owner doesn't use Remote Control. They work only through a manager session on the Windows host, which types into this tmux pane; its messages start with "Owner:".
+    - Everything that needs the owner goes under **Needs human (owner)** below. Write each item so it stands on its own, because the manager session reads it and relays it.
+    - Push notifications probably won't arrive. Keep sending them where LOOP_PROMPT says, but never block or retry on one, and never open an issue about an undelivered push.
+  - **#78** (CLAUDE.md command table, owner-signed) merged as 8c7d71a.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `p0/7c-camera-data-adr`
@@ -29,7 +33,7 @@
   - Also on the phone, and to be left alone: `app.fieldwatch` (official Fieldwatch 1.1.32, the reference) and an old `app.fieldwatch.staging`.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
-- Last cycle: 2026-10-27T21:10Z
+- Last cycle: 2026-10-28T03:15Z
 
 ## Needs human (owner)
 **For the owner:**
@@ -39,7 +43,6 @@
 
 **Still open:**
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
-- Set up Remote Control and push notifications. Until then, pushes may not arrive.
 - Host power settings (SETUP.md).
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
 - On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
@@ -59,7 +62,7 @@ The owner skipped the supervised dry run on 2026-10-27 (UTC) and told the agent 
 | Monitor runs `tools/usage-watch.sh` | Pass: started |
 | `./gradlew testDebugUnitTest` | Pass: 766 tests, 0 failures, 0 skipped |
 | `adb -s RFCX205JR3K get-state` | Pass: `device` |
-| Push notification | Partial: the terminal notification was sent, but the mobile push wasn't (Remote Control inactive) |
+| Push notification | Partial: the terminal notification was sent, but the mobile push wasn't (Remote Control inactive). Closed 2026-10-27: the owner doesn't use Remote Control; pushes are best-effort and the owner is reached through Needs human |
 | PR changing a non-protected file: CI runs, squash-merge | Pass: PR #2's APK, Unit tests and Protected paths checks passed, and it was squash-merged as `cd37758` |
 | PR changing `CLAUDE.md`: `Protected paths` fails | Pass, checked with PR #6, which changes protected `gradle/verification-metadata.xml` and `docs/plan/test-baseline.txt` and has unsigned agent commits: `Protected paths` failed (run 40464487804) |
 | Push under `.github/workflows/` rejected | Pending (P0-8) |
@@ -89,6 +92,8 @@ Newest first. One entry per cycle that changed something. Dates from 2026-10-27 
     - Left on the phone, untouched: `app.fieldwatch` (the 1.1.32 reference) and `app.fieldwatch.staging`.
   - **#78** (CLAUDE.md command table) is owner-signed and the owner merges it. The agent doesn't touch it, and its Needs-human item is removed.
   - **Signature additions on hold** until the owner's vetted list arrives as a PLAN step.
+  - **Owner channel:** no Remote Control. The owner's manager session types "Owner:" messages into this pane and relays Needs human. Pushes are best-effort: no blocking, no retries, no issues about them. "Set up Remote Control" is removed from Needs human. #78 merged as 8c7d71a.
+  - **First-run terms:** the debug build opens on Live (the owner accepted). The staging build still shows the screen, so it's in Needs human; the agent didn't accept it.
   - **ADR-0018 revised after its review** (no BLOCKING; 6 MAJOR, all taken):
     - P0-7c keeps the shared download path and `SENSOR_LIST` for "Other sensors", and ADR-0014's row is updated.
     - `PlateListSourceTest` is ported, not deleted.
