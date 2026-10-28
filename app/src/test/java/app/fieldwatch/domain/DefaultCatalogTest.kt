@@ -656,7 +656,8 @@ class DefaultCatalogTest {
         assertTrue(chipolo.rules.any { it.kind == RuleKind.SERVICE_UUID && it.text.equals("FE33", true) })
         assertFalse(chipolo.rules.any { it.text.equals("FE65", true) || it.text.equals("FE34", true) })
         assertTrue(DeviceExplain.uuidGloss("FE33")!!.contains("Chipolo"))
-        assertEquals(256, stock.size)
+        // P1-B11b adds the Find Hub accessory row (headphones and phones).
+        assertEquals(257, stock.size)
 
         val unnamed = ble(name = "", serviceUuids = listOf("FE33"))
             .copy(key = "BLE:c1", mac = "AA:BB:CC:DD:EE:41")

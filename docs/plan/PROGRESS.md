@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B11b** (Find Hub tag vs accessory by the Flags byte), after P1-B11a merges. P1-B11 is split a–f in PLAN.
+- Current step: **P1-B11c** (FD44 and "Find My" to `fleet-findmy`), after P1-B11b merges. P1-B11 is split a–f in PLAN.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -32,7 +32,7 @@
     - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b11a-finder-wording`
+- Branch: `p1/b11b-find-hub-accessory`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -102,6 +102,33 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B11b Find Hub headphones and phones are not tags (catalog v106).** #85 (P1-B11a) merged as 8749ce0.
+  - **Research claim** (§1 item 1): Find Hub headphones (Sony, JBL, Pixel Buds, Jabra, Moto Buds) and phones send the same FEAA 0x40 frame as a tag. AirGuard tells phones (Flags 0x02) from tags (0x06) by the Flags byte, which Spectre already stores.
+  - **New row:** `fleet-find-hub-accessory`, "Find Hub accessory (headphones or phone)", class AUDIO, rule FEAA 40, the Find Hub decode.
+  - **`routeFindHubAccessory`:** the accessory needs an identifying AUDIO or PHONE product match, and no other finder row on the radio. Fast Pair (a protocol tags speak too) and vendor-prefix-only hits don't count.
+    - The Flags rule (dual-mode means accessory) is behind `Features.FIND_HUB_FLAGS_ROUTING = false`, because no Spectre capture confirms AirGuard's heuristic.
+    - Without the tag row in the catalog, the radio is left unlabeled, never called headphones.
+    - 0x41 only matches the tag row.
+    - `advFlags` joined `matchIdentity`, so the Flags byte arriving re-matches.
+  - **Accessory row:** its decode (`findHubAccessory`) has no tag notes or emphasis. Its note no longer says "Not a finder tag"; it says the owner can still locate it through Find Hub. `DeviceExplain` gives it a headphones or phone hint and drops the frame's tag hint, so the guess isn't "a Google Find Hub tag".
+  - **Reviews** (no BLOCKING; the independent reviewer would have blocked on weak co-labels). Fixed:
+    - weak co-labels (Fast Pair, address-only);
+    - the deleted tag row;
+    - the stale relabel cache;
+    - the field-dependent Flags rule, now behind a flag;
+    - routing tests (`FindHubAccessoryRoutingTest`, 7 tests);
+    - the tag hint in the guess;
+    - tag notes on the accessory decode.
+    - Rebutted: the dist pack reaching older builds (the in-app catalog update is off, so no Spectre build fetches it).
+    - Accepted: phones in Find Hub show as AUDIO.
+  - **Device:** one `pm install` printed nothing and installed nothing (same pid). The retry printed `Success`. Always check for `Success`.
+  - **Catalog checklist:** v106, `ADDED_IN_V106` ladder step, v106 snapshot with v105 frozen, dist pack, stock count 256 → 257. No rules removed.
+  - **Corpus:**
+    - targets: an LE-only tag, a tag with no Flags byte, 0x41 from a dual-mode radio, a tag also sending Fast Pair, and Flags 0x02 with no headphone match (all tags); Sony headphones (accessory);
+    - near miss: Pixel Buds Pro 2 (not Find Hub, not a finder);
+    - the accessory row's lone positive is in `EXPECTED_MISSES` and ADR-0015's accepted collisions (routed to the tag by design).
+  - **Goldens:** `corpus.txt` and `corpus-live-group.txt` have the new cases. `since-v97.md` shows the new row, Sony headphones moving from "Google Find Hub (finder)" to "Find Hub accessory (audio)", and Pixel Buds Pro 2 the same. The 1.1.32 import config is at v106.
+  - **Device:** the config upgraded to v106 with the new row, and no FATAL, ANR or AndroidRuntime lines.
 - 2026-10-28: **P1-B11a Finder wording and EID (catalog v105).** #84 (P0-7e2) merged as 5b23265.
   - **Split:** P1-B11 is split into a–f in PLAN.
   - **Find Hub 0x40:** labeled "not yet in separated mode". Its note says protection switches on hours after a tag leaves its owner, so a tag planted recently can still show it. It no longer says "often your own tag". `AdvPayloadDecoder`'s "nearby / with owner" changed to match.

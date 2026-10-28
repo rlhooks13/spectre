@@ -394,7 +394,11 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
       - Reword the DULT near-owner note.
       - Split into PRs:
         - ✅ **P1-B11a Wording and EID** (items 1 and 5, catalog v105). Find Hub 0x40 reads "not yet in separated mode", and its note and DULT's near-owner note no longer suggest "often your own tag". Find Hub reads a 20- or 32-byte EID (frames of 22 or 34 bytes).
-        - **P1-B11b** Find Hub tag vs headphones or phone, by the Flags byte (item 1).
+        - ✅ **P1-B11b** Find Hub tag vs headphones or phone, by the Flags byte (item 1; catalog v106).
+          - A new row, `fleet-find-hub-accessory` (AUDIO).
+          - `SignatureEngine.routeFindHubAccessory` keeps it for a 0x40 frame that an identifying audio or phone product row also matched, with no other finder row. Otherwise the tag row is kept.
+          - The Flags-byte rule is behind `Features.FIND_HUB_FLAGS_ROUTING = false`. Acceptance: captures of a Find Hub tag and of Find Hub headphones confirm their Flags bytes.
+          - 0x41 is always a tag.
         - **P1-B11c** FD44 and `name("Find My")` to `fleet-findmy` (item 2).
         - **P1-B11d** SmartTag: anchored names, state decode, and co-travel on the privacy ID (item 3).
         - **P1-B11e** Tile: no finder alert for FEEC only, and the decode offset (item 4, capture needed).

@@ -405,6 +405,14 @@ internal object CatalogDecodes {
     )
 
     /**
+     * P1-B11b: the Find Hub frame on headphones, earbuds or a phone. The same fields as [findHub], without the tag notes
+     * ("a tag planted recently…") and the separated-mode emphasis, which don't fit the user's own earbuds.
+     */
+    val findHubAccessory: FleetDecode = findHub.copy(
+        fields = findHub.fields.map { it.copy(enumNotes = null, liveEmphasis = emptyList()) },
+    )
+
+    /**
      * IETF DULT location-enabled advertisement on FCB2.
      * Byte 0 is Network ID; LSB of byte 1 is near-owner (1) vs separated (0).
      */

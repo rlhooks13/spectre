@@ -263,6 +263,8 @@ class DeviceStore(
             // A newly learned address type changes what's "possible" (P1-B8).
             append('\u0001')
             append(device.facts.addressType.orEmpty())
+            // P1-B11b: the Flags byte can route a Find Hub frame (behind its flag), so its arrival re-matches.
+            append('|').append(device.facts.advFlags ?: -1)
         }
     }
 

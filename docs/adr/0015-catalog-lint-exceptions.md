@@ -13,6 +13,7 @@
 
 **Accepted (stay as they are).** These are corpus collisions where one real device legitimately carries both labels:
 - `fleet-target-atrius#0` → iBeacon: Atrius beacons are iBeacons.
+- `fleet-find-hub-accessory#0` → Google Find Hub (P1-B11b, 2026-10-28): both rows read the same 0x40 frame, and `SignatureEngine.routeFindHubAccessory` keeps exactly one. With no dual-mode Flags and no audio or phone match, as in the generated positive, the frame is read as a tag, because missing a tracker is worse than mislabeling headphones.
 - `fleet-honeywell-home#4` and `fleet-honeywell-home#5` → Amazon: the Amazon Smart Thermostat is a Honeywell-made Amazon product.
 - `fleet-marauder#3` → hobby BLE: "ESP32 Marauder" runs on an ESP32 board.
 - `fleet-inseego#3` and `fleet-novatel#0`, each hitting the other: Inseego is the former Novatel Wireless, and the hotspots carry both names.

@@ -42,6 +42,14 @@ object Features {
      * left as they are, so they carry over.
      */
     const val PLATE_LAYER = true
+
+    /**
+     * P1-B11b: read a Find Hub 0x40 frame from a dual-mode radio (Flags without "BR/EDR not supported") as headphones or
+     * a phone, not a tag. AirGuard's heuristic; field-dependent, so off until captures of at least one Find Hub tag and
+     * one pair of Find Hub headphones confirm the Flags byte. Without it, only an audio or phone product match makes the
+     * frame an accessory.
+     */
+    const val FIND_HUB_FLAGS_ROUTING = false
 }
 
 /**

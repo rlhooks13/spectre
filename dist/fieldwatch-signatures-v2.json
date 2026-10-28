@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 105,
+    "catalogVersion": 106,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -24364,6 +24364,90 @@
             "attentionNote": "Fieldy wearable AI note-taker (pendant). It records conversations and transcribes them. Not proof someone is recording you. A miss is not a clean bill (off, paired and quiet, or a different brand). Look with your eyes.",
             "builtIn": true,
             "kind": "WEARABLE"
+        },
+        {
+            "id": "fleet-find-hub-accessory",
+            "name": "Find Hub accessory (headphones or phone)",
+            "enabled": true,
+            "matchAny": true,
+            "colorIndex": 5,
+            "rules": [
+                {
+                    "kind": "SERVICE_DATA",
+                    "text": "FEAA",
+                    "companyId": 0,
+                    "dataPrefixHex": "40",
+                    "radio": "BLE",
+                    "enabled": true
+                }
+            ],
+            "minPeers": 0,
+            "peerWindowSec": 60,
+            "clusterByOui": false,
+            "sequentialMac": false,
+            "notes": "Headphones, earbuds or a phone in Google's Find Hub network (Sony, JBL, Pixel Buds, Jabra, Moto Buds and others). They send the same Find Hub frame as a tag; this one also matched a headphone or phone signature. Its owner can still locate it through Find Hub.",
+            "attentionNote": "",
+            "builtIn": true,
+            "kind": "AUDIO",
+            "decode": {
+                "source": "serviceData",
+                "serviceUuid": "FEAA",
+                "companyId": null,
+                "fields": [
+                    {
+                        "id": "mode",
+                        "label": "Mode",
+                        "offset": 0,
+                        "length": null,
+                        "type": "u8",
+                        "endian": "le",
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": {
+                            "64": "not yet in separated mode",
+                            "65": "separated"
+                        },
+                        "live": true,
+                        "when": null
+                    },
+                    {
+                        "id": "eid",
+                        "label": "Ephemeral ID",
+                        "offset": 1,
+                        "length": 20,
+                        "type": "hex",
+                        "endian": "le",
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": null,
+                        "when": null
+                    },
+                    {
+                        "id": "eid32",
+                        "label": "Ephemeral ID (32-byte key)",
+                        "offset": 1,
+                        "length": 32,
+                        "type": "hex",
+                        "endian": "le",
+                        "bitOffset": null,
+                        "bitWidth": null,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": null,
+                        "when": null
+                    }
+                ]
+            }
         },
         {
             "id": "fleet-findmy",
