@@ -89,6 +89,10 @@ object RetiredRules {
         Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "D0:39:57"), retiredIn = 113),
         Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.OUI, text = "E8:D0:FC"), retiredIn = 113),
         Entry("fleet-liteon-camera-radio", MatchRule(RuleKind.VENDOR_IE_OUI, text = "00:80:19"), retiredIn = 113),
+        // P1-B13a: Meta's bare company ids match Quest headsets too; the Meta device row takes them.
+        Entry("fleet-meta-glasses", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x01AB), retiredIn = 114),
+        Entry("fleet-meta-glasses", MatchRule(RuleKind.MANUFACTURER_ID, companyId = 0x058E), retiredIn = 114),
+        Entry("fleet-meta-glasses", MatchRule(RuleKind.SERVICE_UUID, text = "FEB8"), retiredIn = 114),
     )
 
     /** The shared rule key (P1-B6): ignores the switch, reads a long-form base UUID as its 16-bit alias. */

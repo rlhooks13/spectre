@@ -199,6 +199,13 @@ object MatchCorpus {
             sighting("T:smarttag-svcdata", serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
             "fleet-smarttag",
         ),
+        // P1-B13a: a Ray-Ban Meta at power-on (NullPxl/banrays capture): product 258 (0x0102 LE), with FD5F.
+        Target(
+            "Ray-Ban Meta glasses, product id 258",
+            sighting("T:rayban-meta", serviceUuids = listOf("FD5F"), mfg = listOf(MfgRecord(0x01AB, "020102102716E4"))),
+            "fleet-meta-glasses",
+        ),
+        Target("Oakley Meta HSTN, product id 265", sighting("T:oakley-meta", mfg = listOf(MfgRecord(0x01AB, "09010000"))), "fleet-meta-glasses"),
         // P1-B12c: the OUIs still find their Wi-Fi.
         Target("ShotSpotter sensor Wi-Fi on D4:11:D6", sighting("T:shotspotter-wifi", kind = RadioKind.WIFI, mac = mac("D4:11:D6", "0A0B0C"), name = "SST-0042"), "fleet-raven"),
         Target("Rhombus camera Wi-Fi on CC:47:BD", sighting("T:rhombus-wifi", kind = RadioKind.WIFI, mac = mac("CC:47:BD", "0A0B0C"), name = "R200-0042"), "fleet-rhombus"),
@@ -290,6 +297,39 @@ object MatchCorpus {
             "Static random BLE address starting CC:47:BD",
             sighting("NM:ble-cc47bd", mac = mac("CC:47:BD", "4A1B2C")).let { it.copy(facts = it.facts.copy(addressType = "Random")) },
             setOf("fleet-rhombus"),
+        ),
+        // P1-B13a: a Quest headset sends Meta's company ids without a glasses product id (synthetic payloads).
+        // As a Quest 3 advertised on the test phone: FEB8 with service data 22 01, company 0x058E (payload replaced).
+        NearMiss(
+            "Meta Quest 3 advertising FEB8 and company 0x058E",
+            sighting(
+                "NM:quest-feb8",
+                name = "Quest 3",
+                serviceUuids = listOf("FEB8"),
+                serviceData = listOf(ServiceDataRecord("FEB8", "2201")),
+                mfg = listOf(MfgRecord(0x058E, "00")),
+            ),
+            setOf("fleet-meta-glasses"),
+        ),
+        NearMiss(
+            "Meta Quest 3 on company 0x01AB, no glasses product id",
+            sighting("NM:quest-01ab", name = "Quest 3", mfg = listOf(MfgRecord(0x01AB, "5C010000"))),
+            setOf("fleet-meta-glasses"),
+        ),
+        // Product ids not on the glasses list, a wrong high byte, and a glasses prefix under the other Meta company id.
+        NearMiss("Meta 0x01AB, product id 260 (not glasses)", sighting("NM:meta-0401", mfg = listOf(MfgRecord(0x01AB, "0401"))), setOf("fleet-meta-glasses")),
+        NearMiss("Meta 0x01AB, payload 0202", sighting("NM:meta-0202", mfg = listOf(MfgRecord(0x01AB, "0202"))), setOf("fleet-meta-glasses")),
+        NearMiss("Meta 0x058E with payload 0201", sighting("NM:meta-058e-0201", mfg = listOf(MfgRecord(0x058E, "0201"))), setOf("fleet-meta-glasses")),
+        // Accepted until a Gen 2 capture (#capture issue): glasses on the newer v2 layout (byte 0 >= 0x80) read Meta device.
+        NearMiss(
+            "Meta glasses on the v2 payload layout (accepted miss until a Gen 2 capture)",
+            sighting("NM:meta-v2", mfg = listOf(MfgRecord(0x01AB, "810A0100"))),
+            setOf("fleet-meta-glasses"),
+        ),
+        NearMiss(
+            "Meta device on company 0x058E",
+            sighting("NM:meta-058e", mfg = listOf(MfgRecord(0x058E, "0100"))),
+            setOf("fleet-meta-glasses"),
         ),
         // P1-B12d: and for LiteOn's static-range prefixes.
         NearMiss(

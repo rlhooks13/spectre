@@ -1,8 +1,14 @@
 # Spectre progress
 
 ## Resume pointer
-- State: RUNNING
-- Current step: **P1-B13** (recording-device rows, research §1 items 15–21; the phone's live screen shows a Meta Quest 3 labeled "Ray-Ban / Meta glasses", item 15), after P1-B12e merges. Then P1-B11d3, P1-B11e, P1-B14. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
+- State: PAUSED_USAGE (weekly usage hit 80% at about 01:55 UTC on 2026-10-28; it resumes after the weekly window resets). P1-B13a is checkpointed on branch `p1/b13a-meta-glasses`: done, checked and device-tested. The fresh independent review of the final diff found no BLOCKING. Before its PR, fix:
+  - manual: rewrite the glasses appendix rows (5987, 6310), add a Meta device appendix row and add it to the Other and Silver lists, and reword lines 4293 and 4802;
+  - a dated note under research item 15, or an ADR, recording the Quest 3 FEB8 observation and the accepted glasses misses (#109);
+  - the Meta device note ("only if they advertise a glasses name");
+  - a Gen 2 (0A01) target;
+  - ladder tests for the hide set, presets and a user 0x01AB rule;
+  - PLAN's overlay list (v114, and older apps double-labeling glasses from the v114 pack).
+- Current step: **P1-B13b** (recording-device rows, research §1 items 16–21), after P1-B13a merges. Then P1-B11d3, P1-B11e, P1-B14. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +108,35 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B13a A Meta Quest is not Ray-Ban glasses (catalog v114).** #108 (P1-B12e) merged as 67fb509.
+  - **Field evidence:** the test phone's live list showed a Meta Quest 3 as "Ray-Ban / Meta glasses" with an attention card. Its detail screen showed FEB8 with service data `22 01` and company 0x058E. The maker payload looks like a serial and isn't recorded anywhere.
+  - **Rows:**
+    - the glasses row drops bare 0x01AB, 0x058E and FEB8, and matches 0x01AB only with the glasses product-id prefixes `0201`, `0301`, `0601`–`0A01` (macedonga/visor; NullPxl/banrays agrees). Names, 0x0D53 and FEB7 stay;
+    - the new "Meta device" row (OTHER, no attention, not watched) takes bare 0x01AB, 0x058E and FEB8;
+    - `SignatureEngine.dropMetaDeviceWhenGlasses` stops glasses also chipping Meta device.
+  - **Departs from the research:** it said keep FEB8 on glasses. The Quest capture shows FEB8 on a Quest, so it moved. #109 asks whether glasses send it too.
+  - **Accepted until #109:** glasses on the v2 layout with no name read Meta device (pinned near miss `NM:meta-v2`).
+  - **Ladder v114:**
+    - each bare id's "off" carries to Meta device, and 0x01AB's to the stock prefixes only;
+    - the glasses row off means Meta device starts off;
+    - filters and presets naming glasses name Meta device too;
+    - glasses notes and attention change only where still stock.
+  - **Reviews:** the independent reviewer had one BLOCKING finding on the first draft, which still left FEB8 on glasses. It was fixed after the device check showed the Quest still labeled. Also fixed:
+    - row-switch and filter carry;
+    - the v2 accepted miss;
+    - more near misses (product 260, payload 0202, 0x058E with 0201);
+    - attention wording;
+    - the stock-only prefix carry;
+    - a tighter ladder assert;
+    - the manual line.
+    - Capture issue #109 is opened.
+    - Rebutted:
+      - a general "supersedes" field instead of a fifth drop rule (later, with the overlay work);
+      - the stock-pack overlay (latent, PLAN Phase 4 note).
+    - A fresh independent review of the final diff ran before push.
+  - **Tests:** `CatalogV114LadderTest` (6). Corpus: Ray-Ban Meta (product 258, with FD5F) and Oakley Meta HSTN targets; near misses for the observed Quest 3 (FEB8, `2201`, 0x058E; payload replaced), a Quest on 0x01AB, 0x058E, product 260, `0202`, 0x058E with `0201`, and v2. Stock count 258. 1103 tests.
+  - **Goldens:** `since-v97.md` adds the new row, the glasses rule changes, and the Quest-like near misses moving from glasses (extra attention) to Meta device. The import pack's `fleetCount` goes up by one. The 1.1.32 import config is at v114.
+  - **Device:** `Success`, new pid 4962, 0 crash lines. The Quest 3 now reads "Other: Meta device", and the Glasses group is gone.
 - 2026-10-28: **P1-B12e Manual and release-notes wording for P1-B12.** #107 (P1-B12d) merged as f9e5db7. No catalog change.
   - **Manual (`docs/build_manual.py`):**
     - AirLink, Compex and Novatel are out of the police, extra-attention and default-watch lists and in the right class and color tables (AirLink: Vehicle/teal; Compex, Novatel: ISP/silver);

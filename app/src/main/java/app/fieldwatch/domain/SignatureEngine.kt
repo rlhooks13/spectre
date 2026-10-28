@@ -48,6 +48,7 @@ class SignatureEngine {
             dropAirTagsWhenAppleDevice(hits, device)
             routeFindHubAccessory(hits, device, compiled)
             dropCiscoWhenMeraki(hits)
+            dropMetaDeviceWhenGlasses(hits)
             byKey[device.key] = hits
         }
         applyClusters(devices, compiled, byKey, now)
@@ -321,6 +322,14 @@ class SignatureEngine {
      */
     private fun dropCiscoWhenMeraki(hits: MutableSet<String>) {
         if ("fleet-meraki" in hits) hits.remove("fleet-cisco")
+    }
+
+    /**
+     * P1-B13a: glasses send Meta's company id with a glasses product id, so they also hit the Meta device row's bare
+     * id. The glasses row is the specific one; do not also chip Meta device.
+     */
+    private fun dropMetaDeviceWhenGlasses(hits: MutableSet<String>) {
+        if ("fleet-meta-glasses" in hits) hits.remove("fleet-meta-device")
     }
 
     /**

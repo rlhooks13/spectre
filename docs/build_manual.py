@@ -4290,7 +4290,7 @@ def story():
         ),
         P(
             "A “!” is a pattern, not identity and not proof of recording or an attack. "
-            "Meta company IDs also match Quest headsets. Fieldy / Plaud Note are conversation "
+            "Since catalog v114 the glasses row needs a glasses product id or name; Quest headsets read Meta device (no Extra attention). Fieldy / Plaud Note are conversation "
             "recorders, not proof someone is recording you. PineAP clones look like ordinary SSIDs. "
             "You can type Extra attention on any other signature, built-in or custom."
         ),

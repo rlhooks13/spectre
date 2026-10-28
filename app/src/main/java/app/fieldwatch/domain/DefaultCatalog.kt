@@ -302,6 +302,7 @@ object DefaultCatalog {
         unifiProtect(),
         hobbyBleSerial(),
         metaGlasses(),
+        metaDevice(),
         snapSpectacles(),
         vuzix(),
         brilliantFrame(),
@@ -3050,12 +3051,15 @@ object DefaultCatalog {
         colorIndex = Hue.GLASSES,
         kind = SignatureClass.GLASSES,
         matchAny = true,
-        notes = "Ray-Ban Meta, Oakley Meta, or Meta Display smart glasses, or a Quest / other Meta wearable.",
-        attentionNote = "Meta / Luxottica BLE — often Ray-Ban Meta smart glasses. A Bluetooth name that starts with Meta RB Display is these glasses. The same company IDs show up on Quest headsets and other Meta wearables. Not proof someone is recording. A miss is not a clean bill (paired and quiet, asleep, or a different brand). Look with your eyes.",
+        notes = "Ray-Ban Meta, Oakley Meta, or Meta Display smart glasses. Quest headsets and other Meta gear are the Meta device row.",
+        attentionNote = "Meta / Luxottica smart glasses (Ray-Ban Meta, Oakley Meta, Meta Ray-Ban Display): a glasses product id in Meta's BLE data, a glasses name, or a Luxottica / Meta Bluetooth id not yet tied to other gear. Not proof someone is recording. A miss is not a clean bill (paired and quiet, asleep, a newer model, or a different brand). Look with your eyes.",
         builtIn = true,
         rules = listOf(
-            mfg(0x01AB),
-            mfg(0x058E),
+            // P1-B13a (research §1 item 15): bare 0x01AB and 0x058E also match Quest headsets; they moved to the Meta
+            // device row. Glasses send a product id in bytes 0-1 (LE): 258 Ray-Ban Meta, 259 Meta Ray-Ban Display,
+            // 262 Ray-Ban Meta Optics, 263 Meta glasses, 264 Oakley Meta Vanguard, 265 Oakley Meta HSTN, 266 Ray-Ban Meta
+            // Gen 2 (macedonga/visor; a Ray-Ban Meta capture in NullPxl/banrays agrees). The newer v2 layout waits for a
+            // capture.
             mfg(0x0D53),
             bleName("Ray-Ban"),
             bleName("RayBan"),
@@ -3065,6 +3069,35 @@ object DefaultCatalog {
             bleName("Oakley Meta"),
             bleGlob("Meta RB Display*"),
             uuid("FEB7"),
+            // FEB8 moved to Meta device (P1-B13a): a Quest 3 on the test phone advertised it, with company 0x058E.
+            // Last, as patchBuiltIn appends them.
+            mfgData(0x01AB, "0201"),
+            mfgData(0x01AB, "0301"),
+            mfgData(0x01AB, "0601"),
+            mfgData(0x01AB, "0701"),
+            mfgData(0x01AB, "0801"),
+            mfgData(0x01AB, "0901"),
+            mfgData(0x01AB, "0A01"),
+        ),
+    )
+
+    /**
+     * P1-B13a: Meta's company ids without a glasses product id: Quest headsets, controllers, and Meta glasses on a payload
+     * layout no capture has shown yet. Not extra attention.
+     */
+    private fun metaDevice() = Fleet(
+        id = "fleet-meta-device",
+        name = "Meta device",
+        enabled = true,
+        colorIndex = Hue.HOME_CAM,
+        kind = SignatureClass.OTHER,
+        matchAny = true,
+        notes = "Meta Quest headset, controller or other Meta gear. Newer Ray-Ban Meta glasses that no capture covers yet can also show here; the glasses row still catches them by name.",
+        builtIn = true,
+        rules = listOf(
+            mfg(0x01AB),
+            mfg(0x058E),
+            // A Quest 3 advertises FEB8 (Meta Platforms) with service data 22 01 (seen on the test phone, P1-B13a).
             uuid("FEB8"),
         ),
     )

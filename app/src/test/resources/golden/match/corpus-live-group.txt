@@ -46,6 +46,12 @@ T:smarttag	target	SmartTag on FD5A
 T:smarttag-svcdata	target	SmartTag with FD5A in service data only
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:rayban-meta	target	Ray-Ban Meta glasses, product id 258
+  expect fleet-meta-glasses
+  -> fleet-meta-glasses [GLASSES, attention]
+T:oakley-meta	target	Oakley Meta HSTN, product id 265
+  expect fleet-meta-glasses
+  -> fleet-meta-glasses [GLASSES, attention]
 T:shotspotter-wifi	target	ShotSpotter sensor Wi-Fi on D4:11:D6
   expect fleet-raven
   -> fleet-raven [SURVEILLANCE]
@@ -163,6 +169,27 @@ NM:ble-d411d6	near-miss	Static random BLE address starting D4:11:D6
 NM:ble-cc47bd	near-miss	Static random BLE address starting CC:47:BD
   must not fleet-rhombus
   -> (none)
+NM:quest-feb8	near-miss	Meta Quest 3 advertising FEB8 and company 0x058E
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:quest-01ab	near-miss	Meta Quest 3 on company 0x01AB, no glasses product id
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:meta-0401	near-miss	Meta 0x01AB, product id 260 (not glasses)
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:meta-0202	near-miss	Meta 0x01AB, payload 0202
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:meta-058e-0201	near-miss	Meta 0x058E with payload 0201
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:meta-v2	near-miss	Meta glasses on the v2 payload layout (accepted miss until a Gen 2 capture)
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
+NM:meta-058e	near-miss	Meta device on company 0x058E
+  must not fleet-meta-glasses
+  -> fleet-meta-device [OTHER]
 NM:ble-f46add	near-miss	Static random BLE address starting F4:6A:DD
   must not fleet-liteon-camera-radio
   -> (none)

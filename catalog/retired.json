@@ -766,6 +766,27 @@
             "step": "P1-B12d",
             "reason": "Vendor IE 00:80:19 is registered to Dayna Communications; no capture ties it to these Wi-Fi modules (research §1 item 12).",
             "rule": {"kind": "VENDOR_IE_OUI", "text": "00:80:19", "companyId": 0, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-meta-glasses",
+            "retiredIn": 114,
+            "step": "P1-B13a",
+            "reason": "Bare Meta Platforms, Inc. company id 0x01AB matches Quest headsets and other Meta gear. Glasses now match on their product-id prefixes; the bare id moved to the Meta device row.",
+            "rule": {"kind": "MANUFACTURER_ID", "text": "", "companyId": 427, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-meta-glasses",
+            "retiredIn": 114,
+            "step": "P1-B13a",
+            "reason": "Bare Meta Platforms Technologies company id 0x058E matches Quest headsets and other Meta gear. Moved to the Meta device row.",
+            "rule": {"kind": "MANUFACTURER_ID", "text": "", "companyId": 1422, "dataPrefixHex": "", "radio": null}
+        },
+        {
+            "fleetId": "fleet-meta-glasses",
+            "retiredIn": 114,
+            "step": "P1-B13a",
+            "reason": "A Meta Quest 3 advertises FEB8 (Meta Platforms) with service data 22 01, so it labeled the headset as glasses (seen on the test phone). Moved to the Meta device row.",
+            "rule": {"kind": "SERVICE_UUID", "text": "FEB8", "companyId": 0, "dataPrefixHex": "", "radio": null}
         }
     ]
 }

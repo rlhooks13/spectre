@@ -1471,6 +1471,43 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V113
         }
+        if (version < CATALOG_V114) {
+            // P1-B13a: the glasses row's bare 0x01AB and 0x058E are retired (RetiredRules strips them on load);
+            // patchBuiltIn appends its 0x01AB product-id prefixes, and the new Meta device row takes the bare ids. A bare
+            // id the user had switched off starts off on Meta device (and 0x01AB's prefixes off on the glasses row). The
+            // glasses note and attention note change only where still v113 stock.
+            val oldGlasses = cfg.fleets.firstOrNull { it.id == META_GLASSES && it.builtIn }
+            // The moved rules (bare 0x01AB, 0x058E, FEB8) are the same on both rows, so their keys match.
+            fun wasOff(rule: MatchRule) = oldGlasses?.rules?.any { !it.enabled && ruleKey(it) == ruleKey(rule) } == true
+            fun wasOff(companyId: Int) = wasOff(MatchRule(RuleKind.MANUFACTURER_ID, companyId = companyId))
+            val have = fleets.map { it.id }.toSet()
+            // The glasses row switched off: Meta device starts off too (its rules came from that row).
+            val extras = ADDED_IN_V114.mapNotNull { catalog[it] }.filter { it.id !in have }.map { row ->
+                row.copy(
+                    enabled = oldGlasses?.enabled != false,
+                    rules = row.rules.map { r -> if (wasOff(r)) r.copy(enabled = false) else r },
+                )
+            }
+            if (extras.isNotEmpty()) {
+                fleets = (fleets + extras).sortedBy { it.name.lowercase() }
+                // A filter or preset that named the glasses row names Meta device too: those radios were glasses until now.
+                filter = filter.withFleetAlongside(META_GLASSES, META_DEVICE)
+                presets = presets.map { p -> if (p.isBuiltIn()) p else p.copy(filter = p.filter.withFleetAlongside(META_GLASSES, META_DEVICE)) }
+            }
+            fleets = fleets.map { fleet ->
+                if (fleet.id != META_GLASSES || !fleet.builtIn) return@map fleet
+                val stock = catalog.getValue(META_GLASSES)
+                fleet.copy(
+                    notes = if (fleet.notes == V113_META_GLASSES_NOTES) stock.notes else fleet.notes,
+                    attentionNote = if (fleet.attentionNote == V113_META_GLASSES_ATTENTION) stock.attentionNote else fleet.attentionNote,
+                    // Only the stock prefixes this step added; a 0x01AB data rule the user wrote keeps its switch.
+                    rules = fleet.rules.map { r ->
+                        if (ruleKey(r) in GLASSES_PREFIX_KEYS_V114 && wasOff(0x01AB)) r.copy(enabled = false) else r
+                    },
+                )
+            }
+            version = CATALOG_V114
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1538,7 +1575,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 113
+        const val CATALOG_VERSION = 114
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1649,7 +1686,26 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V110 = 110
         private const val CATALOG_V111 = 111
         private const val CATALOG_V112 = 112
-        private const val CATALOG_V113 = CATALOG_VERSION
+        private const val CATALOG_V113 = 113
+        private const val CATALOG_V114 = CATALOG_VERSION
+
+        private const val META_GLASSES = "fleet-meta-glasses"
+        private const val META_DEVICE = "fleet-meta-device"
+
+        /** P1-B13a: the Meta device row takes Meta's bare company ids off the glasses row. */
+        private val ADDED_IN_V114 = listOf("fleet-meta-device")
+
+        /** The glasses product-id prefixes v114 added (0x01AB data), written out. */
+        private val GLASSES_PREFIX_KEYS_V114 = listOf("0201", "0301", "0601", "0701", "0801", "0901", "0A01")
+            .map { MatchRule(RuleKind.MANUFACTURER_DATA, companyId = 0x01AB, dataPrefixHex = it).matchKey() }.toSet()
+
+        /** The exact v113 stock glasses note and attention note (catalog/snapshots/v113.json). */
+        private const val V113_META_GLASSES_NOTES =
+            "Ray-Ban Meta, Oakley Meta, or Meta Display smart glasses, or a Quest / other Meta wearable."
+        private const val V113_META_GLASSES_ATTENTION = "Meta / Luxottica BLE — often Ray-Ban Meta smart glasses. A " +
+            "Bluetooth name that starts with Meta RB Display is these glasses. The same company IDs show up on Quest " +
+            "headsets and other Meta wearables. Not proof someone is recording. A miss is not a clean bill (paired and " +
+            "quiet, asleep, or a different brand). Look with your eyes."
 
         private const val LITEON = "fleet-liteon-camera-radio"
 

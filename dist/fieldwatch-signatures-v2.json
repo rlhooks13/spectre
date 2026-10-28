@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 113,
+    "catalogVersion": 114,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -46788,6 +46788,47 @@
             "kind": "MESH"
         },
         {
+            "id": "fleet-meta-device",
+            "name": "Meta device",
+            "enabled": true,
+            "matchAny": true,
+            "colorIndex": 6,
+            "rules": [
+                {
+                    "kind": "MANUFACTURER_ID",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_ID",
+                    "text": "",
+                    "companyId": 1422,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "SERVICE_UUID",
+                    "text": "FEB8",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": null,
+                    "enabled": true
+                }
+            ],
+            "minPeers": 0,
+            "peerWindowSec": 60,
+            "clusterByOui": false,
+            "sequentialMac": false,
+            "notes": "Meta Quest headset, controller or other Meta gear. Newer Ray-Ban Meta glasses that no capture covers yet can also show here; the glasses row still catches them by name.",
+            "attentionNote": "",
+            "builtIn": true,
+            "kind": "OTHER"
+        },
+        {
             "id": "fleet-microsoft",
             "name": "Microsoft Device",
             "enabled": true,
@@ -50667,22 +50708,6 @@
                 {
                     "kind": "MANUFACTURER_ID",
                     "text": "",
-                    "companyId": 427,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "MANUFACTURER_ID",
-                    "text": "",
-                    "companyId": 1422,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "MANUFACTURER_ID",
-                    "text": "",
                     "companyId": 3411,
                     "dataPrefixHex": "",
                     "radio": null,
@@ -50753,10 +50778,58 @@
                     "enabled": true
                 },
                 {
-                    "kind": "SERVICE_UUID",
-                    "text": "FEB8",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0201",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0301",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0601",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0701",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0801",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0901",
+                    "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "MANUFACTURER_DATA",
+                    "text": "",
+                    "companyId": 427,
+                    "dataPrefixHex": "0A01",
                     "radio": null,
                     "enabled": true
                 }
@@ -50765,8 +50838,8 @@
             "peerWindowSec": 60,
             "clusterByOui": false,
             "sequentialMac": false,
-            "notes": "Ray-Ban Meta, Oakley Meta, or Meta Display smart glasses, or a Quest / other Meta wearable.",
-            "attentionNote": "Meta / Luxottica BLE — often Ray-Ban Meta smart glasses. A Bluetooth name that starts with Meta RB Display is these glasses. The same company IDs show up on Quest headsets and other Meta wearables. Not proof someone is recording. A miss is not a clean bill (paired and quiet, asleep, or a different brand). Look with your eyes.",
+            "notes": "Ray-Ban Meta, Oakley Meta, or Meta Display smart glasses. Quest headsets and other Meta gear are the Meta device row.",
+            "attentionNote": "Meta / Luxottica smart glasses (Ray-Ban Meta, Oakley Meta, Meta Ray-Ban Display): a glasses product id in Meta's BLE data, a glasses name, or a Luxottica / Meta Bluetooth id not yet tied to other gear. Not proof someone is recording. A miss is not a clean bill (paired and quiet, asleep, a newer model, or a different brand). Look with your eyes.",
             "builtIn": true,
             "kind": "GLASSES"
         },

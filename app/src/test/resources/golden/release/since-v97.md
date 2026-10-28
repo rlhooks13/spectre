@@ -1,9 +1,10 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v113 -->
-### Signatures (stock catalog v97 → v113)
+<!-- generated: catalog v97 -> v114 -->
+### Signatures (stock catalog v97 → v114)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
+- **New:** Meta device (other) matches on Bluetooth company id 0x01AB; Bluetooth company id 0x058E; service uuid "FEB8".
 - **AirLink** (vehicle): class law enforcement → vehicle; no longer flagged for extra attention; notes reworded.
 - **Apple AirTags** (finder): stopped matching on name contains "Find My"; Bluetooth company id 0x004C data starting 12; service uuid "FD44"; notes reworded.
 - **Amazon** (home): stopped matching on name contains "Echo" (BLE); now also matches on name glob "Echo" (BLE); name glob "Echo *" (BLE); name glob "Echo-*" (BLE); name glob "Echo_*" (BLE).
@@ -34,6 +35,7 @@
 - **LiteOn Wi-Fi module** (other): renamed from LiteOn camera radio; class camera → other; stopped matching on vendor ie oui "00:80:19"; now Wi-Fi only: oui "D8:F3:BC", oui "C0:35:32", oui "E0:0A:F6", oui "E4:AA:EA", oui "F4:6A:DD", oui "F8:A2:D6", oui "D0:39:57", oui "E8:D0:FC"; notes reworded.
 - **Logitech** (home): stopped matching on name contains "Logi" (BLE); now also matches on name glob "Logi" (BLE); name glob "Logi *" (BLE); name glob "Logi-*" (BLE); name glob "Logi_*" (BLE).
 - **Mercedes MBUX** (vehicle): stopped matching on name contains "MBUX" (WIFI).
+- **Ray-Ban / Meta glasses** (glasses): attention note reworded; stopped matching on Bluetooth company id 0x01AB; Bluetooth company id 0x058E; service uuid "FEB8"; now also matches on Bluetooth company id 0x01AB data starting 0201; Bluetooth company id 0x01AB data starting 0301; Bluetooth company id 0x01AB data starting 0601; Bluetooth company id 0x01AB data starting 0701; Bluetooth company id 0x01AB data starting 0801; Bluetooth company id 0x01AB data starting 0901; Bluetooth company id 0x01AB data starting 0A01; notes reworded.
 - **Microsoft Device** (phone): stopped matching on name contains "Xbox" (BLE); now also matches on name glob "Xbox" (BLE); name glob "Xbox *" (BLE); name glob "Xbox-*" (BLE); name glob "Xbox_*" (BLE).
 - **myQ** (home): stopped matching on name contains "MyQ" (BLE); now also matches on name glob "MyQ" (BLE).
 - **Novatel Wireless** (isp): class law enforcement → isp; no longer flagged for extra attention; notes reworded.
@@ -72,6 +74,13 @@
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: Static random BLE address starting D4:11:D6: was Raven / ShotSpotter (surveillance), now no signature.
 - Near miss: Static random BLE address starting CC:47:BD: was Rhombus (surveillance, extra attention), now no signature.
+- Near miss: Meta Quest 3 advertising FEB8 and company 0x058E: was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta Quest 3 on company 0x01AB, no glasses product id: was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta 0x01AB, product id 260 (not glasses): was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta 0x01AB, payload 0202: was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta 0x058E with payload 0201: was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta glasses on the v2 payload layout (accepted miss until a Gen 2 capture): was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
+- Near miss: Meta device on company 0x058E: was Ray-Ban / Meta glasses (glasses, extra attention), now Meta device (other).
 - Near miss: Static random BLE address starting F4:6A:DD: was LiteOn camera radio (camera), now no signature.
 - Near miss: Public BLE address on F4:6A:DD (accepted miss until P1-B8): was LiteOn camera radio (camera), now no signature.
 - Near miss: Static random BLE address starting C4:79:05: was Uniview (surveillance, extra attention), now no signature.
