@@ -656,30 +656,30 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Text(
-                LanguageText.text("settings.layer.heading"),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            SensorLayerBlock(
-                title = LanguageText.text("settings.layer.flock"),
-                note = LanguageText.text("settings.layer.note") + "\n" +
-                    LanguageText.text("settings.layer.source", mapOf("host" to FlockFiles.PLATES_HOST)),
-                state = flock,
-                checked = settings.flockLayer,
-                onChecked = vm::setFlockLayer,
-                onUpdate = vm::updateFlockLayer,
-                more = if (!flock.fullList && flock.savedAt > 0L && !flock.busy) {
-                    LanguageText.text("settings.layer.more")
-                } else {
-                    null
-                },
-            ) {
-                SensorAlertRow(
-                    LanguageText.text("settings.layer.alert.plate"),
-                    settings.flockAlert,
-                    !flock.busy,
-                ) { on -> vm.updateSettings { it.copy(flockAlert = on) } }
+            if (Features.PLATE_LAYER || Features.OTHER_SENSORS_LAYER) {
+                Text(
+                    LanguageText.text("settings.layer.heading"),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+            // Hidden between P0-7c (no download) and P0-7e (the bundled OpenStreetMap snapshot), ADR-0018: a switch
+            // and an alert with no data behind them would be a silent alert.
+            if (Features.PLATE_LAYER) {
+                SensorLayerBlock(
+                    title = LanguageText.text("settings.layer.flock"),
+                    note = LanguageText.text("settings.layer.note"),
+                    state = flock,
+                    checked = settings.flockLayer,
+                    onChecked = vm::setFlockLayer,
+                    onUpdate = null,
+                ) {
+                    SensorAlertRow(
+                        LanguageText.text("settings.layer.alert.plate"),
+                        settings.flockAlert,
+                        !flock.busy,
+                    ) { on -> vm.updateSettings { it.copy(flockAlert = on) } }
+                }
             }
             if (Features.OTHER_SENSORS_LAYER) {
                 Spacer(Modifier.height(8.dp))
@@ -1218,30 +1218,6 @@ fun SettingsScreen(
             },
         )
     }
-    if (flock.confirm) {
-        AlertDialog(
-            onDismissRequest = vm::dismissFlockDownload,
-            title = { Text(LanguageText.text("settings.layer.download.title")) },
-            text = {
-                Text(
-                    LanguageText.text(
-                        "settings.layer.download.source",
-                        mapOf("host" to FlockFiles.PLATES_HOST, "size" to FlockFiles.PLATES_MB.toString()),
-                    ),
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = vm::confirmFlockDownload) {
-                    Text(LanguageText.text("settings.layer.download.action"))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = vm::dismissFlockDownload) {
-                    Text(LanguageText.text("language.cancel"))
-                }
-            },
-        )
-    }
     if (sensors.confirm) {
         AlertDialog(
             onDismissRequest = vm::dismissSensorDownload,
@@ -1292,8 +1268,8 @@ private fun SensorLayerBlock(
     state: FlockLayerUi,
     checked: Boolean,
     onChecked: (Boolean) -> Unit,
-    onUpdate: () -> Unit,
-    more: String? = null,
+    /** Null for a list the app never downloads (the plate readers, P0-7c): no Update button. */
+    onUpdate: (() -> Unit)?,
     alerts: @Composable () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1324,13 +1300,6 @@ private fun SensorLayerBlock(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            if (more != null) {
-                Text(
-                    more,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
             val notice = state.noticeKey
             if (notice != null) {
                 Text(
@@ -1342,7 +1311,7 @@ private fun SensorLayerBlock(
         }
         FieldwatchSwitch(checked, onChecked, enabled = !state.busy)
     }
-    if (checked && state.savedAt > 0L) {
+    if (checked && state.savedAt > 0L && onUpdate != null) {
         FieldwatchActionButton(onClick = onUpdate, enabled = !state.busy) {
             Text(LanguageText.text("settings.layer.update"))
         }

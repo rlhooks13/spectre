@@ -33,8 +33,13 @@ enum class SensorList(
     /** Version 1 of the plate file saved Flock only and must be fetched again. */
     val refillFlockOnly: Boolean,
 ) {
+    /**
+     * Plate readers. Never downloaded (P0-7c, ADR-0018): no URL, so [FlockFiles.probe] and [FlockFiles.download] fail
+     * without opening a connection. The bundled OpenStreetMap snapshot (P0-7e) replaces the file. The entry stays,
+     * inert, because formats only grow; [FlockFiles.retirePlatesDownload] deletes a file an older version saved.
+     */
     PLATES(
-        "https://data.dontgetflocked.com/cameras.geojson.gz",
+        "",
         "flock-cameras.bin",
         37_748_018L,
         true,
@@ -53,8 +58,6 @@ enum class SensorList(
 }
 
 object FlockFiles {
-    val URL_ADDRESS = SensorList.PLATES.url
-    val NAME = SensorList.PLATES.fileName
     /** Version 1 saved Flock only. Version 2 and later saved every plate reader. */
     const val ALL_PLATES: Int = 2
     const val MAX_BYTES = 80L * 1024L * 1024L
@@ -78,23 +81,26 @@ object FlockFiles {
         data object Failed : Fetch()
     }
 
-    fun file(dir: File, list: SensorList = SensorList.PLATES): File = File(dir, list.fileName)
+    fun file(dir: File, list: SensorList): File = File(dir, list.fileName)
 
-    /** The site a list downloads from, named in the download dialog. Empty when the list has no URL. */
+    /** The site a list downloads from. Empty when the list has no URL, as the plate-reader list has none (P0-7c). */
     fun sourceHost(list: SensorList): String =
         if (list.url.isBlank()) "" else runCatching { URL(list.url).host.lowercase() }.getOrDefault("")
 
-    /** [sourceHost] for the plate-reader list, computed once for the dialog and the layer note. */
-    val PLATES_HOST: String = sourceHost(SensorList.PLATES)
+    /**
+     * P0-7c: deletes a plate-reader list an older version downloaded, and its temp files. Idempotent; run at start.
+     * Returns how many files it deleted.
+     */
+    fun retirePlatesDownload(dir: File): Int {
+        val name = SensorList.PLATES.fileName
+        return listOf(name, "$name.write", "$name.download").count { File(dir, it).let { f -> f.exists() && f.delete() } }
+    }
 
-    /** The plate-reader list's published size in whole MB, for the download dialog. */
-    val PLATES_MB: Long = (SensorList.PLATES.expectedBytes + 500_000L) / 1_000_000L
-
-    fun peek(dir: File, list: SensorList = SensorList.PLATES): Header? = peekFile(file(dir, list))
+    fun peek(dir: File, list: SensorList): Header? = peekFile(file(dir, list))
 
     fun camerasFrom(bytes: ByteArray): List<FlockCamera> = parseStream(bytes)
 
-    fun read(dir: File, list: SensorList = SensorList.PLATES): Saved? =
+    fun read(dir: File, list: SensorList): Saved? =
         runCatching { readFile(file(dir, list)) }.getOrNull()
 
     /**
@@ -106,7 +112,7 @@ object FlockFiles {
         cameras: List<FlockCamera>,
         etag: String,
         savedAt: Long,
-        list: SensorList = SensorList.PLATES,
+        list: SensorList,
     ): Boolean {
         if (cameras.size < FlockApproach.MIN_COUNT || cameras.size > 400_000) return false
         val dest = file(dir, list)
@@ -132,7 +138,7 @@ object FlockFiles {
         bytes: ByteArray,
         etag: String,
         savedAt: Long,
-        list: SensorList = SensorList.PLATES,
+        list: SensorList,
     ): Boolean {
         val cameras = try {
             parseStream(bytes)
@@ -145,7 +151,7 @@ object FlockFiles {
         return install(dir, cameras, etag, savedAt, list)
     }
 
-    fun probe(dir: File, list: SensorList = SensorList.PLATES): Probe {
+    fun probe(dir: File, list: SensorList): Probe {
         if (list.url.isBlank()) return Probe.FAILED
         val saved = peek(dir, list)?.etag.orEmpty()
         val conn = open(list, "HEAD", ifNoneMatch = null) ?: return Probe.FAILED
@@ -165,7 +171,7 @@ object FlockFiles {
 
     fun download(
         dir: File,
-        list: SensorList = SensorList.PLATES,
+        list: SensorList,
         onPercent: (Int) -> Unit,
     ): Fetch {
         if (list.url.isBlank()) return Fetch.Failed
@@ -228,11 +234,13 @@ object FlockFiles {
     }
 
     /**
-     * True when the response came from the host the dialog names (or a subdomain of it). Redirects
-     * are followed, so a list served from another host fails instead of being installed.
+     * True when the response came from [list]'s source host (or a subdomain of it) over HTTPS. Redirects are
+     * followed, so a list served from another host fails instead of being installed. A list with no URL fails.
      */
-    internal fun servedFromSource(finalUrl: URL, list: SensorList): Boolean {
-        val source = sourceHost(list)
+    internal fun servedFromSource(finalUrl: URL, list: SensorList): Boolean = servedFromHost(finalUrl, sourceHost(list))
+
+    /** [servedFromSource] against a named [source] host; empty matches nothing. */
+    internal fun servedFromHost(finalUrl: URL, source: String): Boolean {
         if (source.isEmpty()) return false
         val host = finalUrl.host.lowercase()
         return finalUrl.protocol == "https" && (host == source || host.endsWith(".$source"))

@@ -233,6 +233,29 @@ data class FieldwatchUi(
     val travelDeg: Double = Double.NaN,
 )
 
+/** What a sensor layer's switch does. */
+internal enum class LayerToggle { NONE, OFF, ON, NEEDS_NETWORK, CONFIRM_DOWNLOAD }
+
+/**
+ * A sensor layer's switch, decided without the ViewModel so it can be tested. The plate-reader list is never
+ * downloaded (P0-7c, ADR-0018): it turns on or off and never asks for a file, the network, or a download. [hasFile]
+ * and [online] are only asked when a list that downloads is turned on.
+ */
+internal fun layerToggle(
+    list: SensorList,
+    on: Boolean,
+    available: Boolean,
+    hasFile: () -> Boolean,
+    online: () -> Boolean,
+): LayerToggle = when {
+    !on -> LayerToggle.OFF
+    !available -> LayerToggle.NONE
+    list == SensorList.PLATES -> LayerToggle.ON
+    hasFile() -> LayerToggle.ON
+    !online() -> LayerToggle.NEEDS_NETWORK
+    else -> LayerToggle.CONFIRM_DOWNLOAD
+}
+
 class FieldwatchViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as FieldwatchApp
     val mapKeyRevision: StateFlow<Int> = app.mapKeys.revision
@@ -684,12 +707,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     // finishes, and ViewModelInitOrderTest fails on any property declared below it.
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            val header = FlockFiles.peek(app.filesDir, SensorList.PLATES)
-            if (header != null) {
-                _flockLayer.update {
-                    it.copy(savedAt = header.savedAt, fullList = header.version >= FlockFiles.ALL_PLATES)
-                }
-            }
+            // No plate-reader list file is read (P0-7c): the app deletes any old one at start.
             if (!Features.OTHER_SENSORS_LAYER) {
                 // Upstream's list from before P0-7b; P1-E5 downloads this project's own list.
                 FlockFiles.file(app.filesDir, SensorList.OTHER).delete()
@@ -2236,15 +2254,9 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
 
     fun setSensorLayer(on: Boolean) = setSensorList(SensorList.OTHER, on)
 
-    fun updateFlockLayer() = updateSensorList(SensorList.PLATES)
-
     fun updateSensorLayer() = updateSensorList(SensorList.OTHER)
 
-    fun confirmFlockDownload() = confirmSensorDownload(SensorList.PLATES)
-
     fun confirmSensorDownload() = confirmSensorDownload(SensorList.OTHER)
-
-    fun dismissFlockDownload() = dismissSensorDownload(SensorList.PLATES)
 
     fun dismissSensorDownload() = dismissSensorDownload(SensorList.OTHER)
 
@@ -2252,43 +2264,45 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
         if (list == SensorList.PLATES) _flockLayer else _sensorLayer
 
     /** The "Other sensors" layer is off with [Features.OTHER_SENSORS_LAYER]; its entry points do nothing. */
-    private fun available(list: SensorList): Boolean =
-        list != SensorList.OTHER || Features.OTHER_SENSORS_LAYER
+    /** Each layer is off with its flag: "Other sensors" with [Features.OTHER_SENSORS_LAYER], plates with [Features.PLATE_LAYER]. */
+    private fun available(list: SensorList): Boolean = when (list) {
+        SensorList.PLATES -> Features.PLATE_LAYER
+        SensorList.OTHER -> Features.OTHER_SENSORS_LAYER
+    }
+
+    /** Only "Other sensors" downloads. The plate-reader list never does (P0-7c, ADR-0018). */
+    private fun downloads(list: SensorList): Boolean = list != SensorList.PLATES
 
     private fun setSensorList(list: SensorList, on: Boolean) {
-        if (on && !available(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
-        if (!on) {
-            flow.update { it.copy(noticeKey = null, confirm = false) }
-            updateSettings { if (list == SensorList.PLATES) it.copy(flockLayer = false) else it.copy(sensorLayer = false) }
-            return
+        val action = layerToggle(
+            list,
+            on,
+            available(list),
+            hasFile = { FlockFiles.peek(app.filesDir, list) != null || flow.value.savedAt > 0L },
+            online = { PlaceLookup.online(app) },
+        )
+        when (action) {
+            LayerToggle.NONE -> Unit
+            LayerToggle.OFF, LayerToggle.ON -> {
+                val turnOn = action == LayerToggle.ON
+                flow.update { it.copy(noticeKey = null, confirm = false) }
+                updateSettings { if (list == SensorList.PLATES) it.copy(flockLayer = turnOn) else it.copy(sensorLayer = turnOn) }
+            }
+            LayerToggle.NEEDS_NETWORK -> flow.update { it.copy(noticeKey = "settings.layer.needs.network", confirm = false) }
+            LayerToggle.CONFIRM_DOWNLOAD -> flow.update { it.copy(noticeKey = null, confirm = true, confirmUpdate = false) }
         }
-        if (FlockFiles.peek(app.filesDir, list) != null || flow.value.savedAt > 0L) {
-            flow.update { it.copy(noticeKey = null, confirm = false) }
-            updateSettings { if (list == SensorList.PLATES) it.copy(flockLayer = true) else it.copy(sensorLayer = true) }
-            return
-        }
-        if (!PlaceLookup.online(app)) {
-            flow.update { it.copy(noticeKey = "settings.layer.needs.network", confirm = false) }
-            return
-        }
-        flow.update { it.copy(noticeKey = null, confirm = true, confirmUpdate = false) }
     }
 
     private fun updateSensorList(list: SensorList) {
-        if (!available(list)) return
+        if (!available(list) || !downloads(list)) return
         val flow = layerFlow(list)
         val enabled = if (list == SensorList.PLATES) app.config.settings.flockLayer else app.config.settings.sensorLayer
         if (flow.value.busy || !enabled) return
         viewModelScope.launch {
             if (!PlaceLookup.online(app)) {
                 flow.update { it.copy(noticeKey = "settings.layer.needs.network", confirm = false) }
-                return@launch
-            }
-            val header = withContext(Dispatchers.IO) { FlockFiles.peek(app.filesDir, list) }
-            if (list.refillFlockOnly && header != null && header.version < FlockFiles.ALL_PLATES) {
-                flow.update { it.copy(noticeKey = null, confirm = true, confirmUpdate = true) }
                 return@launch
             }
             val probe = withContext(Dispatchers.IO) { FlockFiles.probe(app.filesDir, list) }
@@ -2304,7 +2318,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     }
 
     private fun confirmSensorDownload(list: SensorList) {
-        if (!available(list)) return
+        if (!available(list) || !downloads(list)) return
         val flow = layerFlow(list)
         if (flow.value.busy) return
         flow.update {
@@ -3345,9 +3359,9 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
             if (!file.isFile) return 0L
             return file.lastModified() xor file.length()
         }
-        val plates = part(SensorList.PLATES)
+        // The plate-reader file is never read (P0-7c); P0-7e's bundled snapshot doesn't change on disk.
         val other = part(SensorList.OTHER)
-        return plates xor other.rotateLeft(1) xor if (plates == 0L && other == 0L) 1L else 0L
+        return other.rotateLeft(1) xor if (other == 0L) 1L else 0L
     }
 
     /** Same lists as [cameraReport], kept until a file on disk changes. */
@@ -3370,7 +3384,8 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
      * Other-sensors list while [Features.OTHER_SENSORS_LAYER] is off (P0-7b).
      */
     private fun cameraReport(): PathCameras.Report {
-        val plates = FlockFiles.read(app.filesDir, SensorList.PLATES)?.cameras
+        // P0-7c: no downloaded plate-reader list is read; P0-7e adds the bundled snapshot here.
+        val plates: List<FlockCamera>? = null
         val others = if (Features.OTHER_SENSORS_LAYER) FlockFiles.read(app.filesDir, SensorList.OTHER)?.cameras else null
         val index = FlockIndex()
         val all = ArrayList<FlockCamera>((plates?.size ?: 0) + (others?.size ?: 0))

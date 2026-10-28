@@ -1047,8 +1047,6 @@
     "settings.layer.alert.speed": "Alarm për kamera shpejtësie",
     "settings.layer.alert.gun": "Alarm për detektorë të shtënash",
     "settings.layer.alert.camera": "Alarm për kamera të tjera",
-    "settings.layer.download.title": "Shkarko lexues targash.",
-    "settings.layer.more": "Përditësoni për të përfshirë çdo lexues targash.",
     "settings.layer.other.download.title": "Shkarko sensorë të tjerë.",
     "settings.layer.other.download.body": "Rreth 1 MB. Më vonë mund ta përditësoni. Ajo qëndron në këtë telefon.",
     "settings.layer.download.action": "Shkarko",

@@ -218,12 +218,8 @@ private fun buildLines(): List<EnglishLine> = listOf(
     en("settings.layer.heading", "Layers", LanguageSlot.CONTROL),
     en("settings.layer.flock", "License plate reader cameras", LanguageSlot.CONTROL),
     en("settings.layer.note", "License plate reader cameras on the map. The alert is below.", LanguageSlot.BODY),
-    // Shown under the note (P0-7c), so people who already have the list see its source too.
-    en(
-        "settings.layer.source",
-        "From {host}, which Spectre does not run. OpenStreetMap data, © OpenStreetMap contributors.",
-        LanguageSlot.BODY,
-    ),
+    // Retired with the plate-reader download (P0-7c, ADR-0018): the list is no longer downloaded from a host.
+    en("settings.layer.source", "Unused", LanguageSlot.BODY),
     en("settings.layer.other", "Other sensors", LanguageSlot.CONTROL),
     en("settings.layer.other.note", "Speed cameras, red lights, gunshot detectors, and other cameras. Alerts for each type are below.", LanguageSlot.BODY),
     en("settings.layer.alert", "Alert when ahead", LanguageSlot.CONTROL),
@@ -239,17 +235,12 @@ private fun buildLines(): List<EnglishLine> = listOf(
         "Some countries, including Germany, Switzerland and France, restrict apps that warn drivers about cameras on the road, or using such apps while driving. Check the law where you drive before you turn on an alert.",
         LanguageSlot.BODY,
     ),
-    en("settings.layer.download.title", "Download license plate readers.", LanguageSlot.CONTROL),
-    en("settings.layer.more", "Update to include every plate reader.", LanguageSlot.BODY),
-    // Superseded by settings.layer.download.source (P0-7c): the dialog now names the source and its terms.
+    // Retired with the plate-reader download (P0-7c, ADR-0018): no download dialog, no "update for every plate reader".
+    en("settings.layer.download.title", "Unused", LanguageSlot.CONTROL),
+    en("settings.layer.more", "Unused", LanguageSlot.BODY),
+    // Retired earlier, when the plate-reader dialog first named its source; that dialog is gone too (P0-7c).
     en("settings.layer.download.body", "Unused", LanguageSlot.BODY),
-    en(
-        "settings.layer.download.source",
-        "United States plate-reader list, about {size} MB, from {host}. Spectre does not run that site; check it for its terms before you download. " +
-            "The camera locations are OpenStreetMap data (© OpenStreetMap contributors, ODbL). " +
-            "The list is crowdsourced and not complete. It stays on this phone, and you can update it later.",
-        LanguageSlot.BODY,
-    ),
+    en("settings.layer.download.source", "Unused", LanguageSlot.BODY),
     en("settings.layer.other.download.title", "Download other sensors.", LanguageSlot.CONTROL),
     en("settings.layer.other.download.body", "About 1 MB. You can update it later. It stays on this phone.", LanguageSlot.BODY),
     en("settings.layer.download.action", "Download", LanguageSlot.CONTROL),

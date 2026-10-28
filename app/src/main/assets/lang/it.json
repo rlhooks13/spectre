@@ -1084,8 +1084,6 @@
     "settings.layer.alert.gun": "Avviso rilevatori di spari",
     "settings.layer.alert.camera": "Avviso altre telecamere",
     "settings.layer.alert.region": "Alcuni paesi, tra cui Germania, Svizzera e Francia, limitano le app che avvisano i conducenti delle telecamere stradali, o il loro uso durante la guida. Verifica la legge del luogo in cui guidi prima di attivare un avviso.",
-    "settings.layer.download.title": "Scarica i lettori di targhe.",
-    "settings.layer.more": "Aggiorna per includere ogni lettore di targhe.",
     "settings.layer.other.download.title": "Scarica gli altri sensori.",
     "settings.layer.other.download.body": "Circa 1 MB. Si può aggiornare più tardi. Resta su questo telefono.",
     "settings.layer.download.action": "Scarica",

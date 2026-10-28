@@ -544,7 +544,8 @@ class LanguagePackTest {
             assertTrue("${bundled.tag} alert.plate.looking", preview.accepted.containsKey("alert.plate.looking"))
             assertTrue("${bundled.tag} alert.plate.ahead", preview.accepted.containsKey("alert.plate.ahead"))
             assertTrue("${bundled.tag} alert.plate.unknown.ahead", preview.accepted.containsKey("alert.plate.unknown.ahead"))
-            assertTrue("${bundled.tag} settings.layer.more", preview.accepted.containsKey("settings.layer.more"))
+            // Retired with the plate-reader download (P0-7c): pruned from every pack.
+            assertTrue("${bundled.tag} settings.layer.more", !preview.accepted.containsKey("settings.layer.more"))
             assertTrue("${bundled.tag} settings.layer.saved", preview.accepted.containsKey("settings.layer.saved"))
             assertTrue("${bundled.tag} settings.layer.downloading", preview.accepted.containsKey("settings.layer.downloading"))
             assertTrue("${bundled.tag} settings.layer.processing", preview.accepted.containsKey("settings.layer.processing"))

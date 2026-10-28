@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P0-7c Remove the dontgetflocked download**, then **P0-7e Bundled OSM camera snapshot** (both before 0.1.0; owner decision 2026-10-27, ADR-0018). Then **P1-C2 Storage**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P0-7e Bundled OSM camera snapshot** (before 0.1.0; ADR-0018), after P0-7c merges. Then **P1-C2 Storage**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never contact dontgetflocked, tests included:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. The owner chose OpenStreetMap on 2026-10-27 (ADR-0018). P0-7c removes the download, and P0-7e bundles an OSM snapshot built by one Overpass query per data build.
@@ -25,7 +25,7 @@
     - Never add a code path that skips the disclaimer.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p0/7c-camera-data-adr`
+- Branch: `p0/7c-remove-plates-download`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -89,6 +89,39 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P0-7c Remove the dontgetflocked download.** #79 (the camera-data and co-travel ADRs) merged as ac8a99a.
+  - **Removed:**
+    - `SensorList.PLATES.url` is blank, and the plates dialog, Update button and host note are gone.
+    - Four PLATES-only keys are "Unused" and pruned from the 31 packs.
+    - The `LanguagePackTest` line that required `settings.layer.more` now requires its absence.
+  - **Kept for "Other sensors":** the generic download path, `Egress.SENSOR_LIST` and its inventory entry. The host check is split into `servedFromHost` so it can be tested against a neutral host.
+  - **No plates file is read:**
+    - `syncFlock`, `cameraReport` and `cameraStamp` no longer read it, and the ViewModel init no longer peeks at it.
+    - A synchronous startup janitor deletes `flock-cameras.bin` and its `.write` and `.download` files.
+    - `FlockFiles`' list parameters no longer default to PLATES.
+  - **`Features.PLATE_LAYER = false`:** hides the plates block and gates its alert (`alertsFor`, `anySensorAlert`) and the map until P0-7e, so a switch and alert with no data behind them don't give false reassurance. Saved switches are untouched.
+  - **`layerToggle`:** the pure switch decision. Plates never ask for a file, the network or a download.
+  - **Tests:** `PlateListSourceTest` ported, 3 to 6 tests:
+    - no source, failing closed;
+    - the switch never downloads;
+    - no app source, resource, R8 rule or build script names the old host;
+    - the HTTPS host table against a neutral host;
+    - the size cap;
+    - the janitor.
+
+    `FlockCamerasTest` now names the list it tests.
+  - **Golden:** `since-v97.md` gains `PLATE_LAYER | off`. Count 1031 to 1034.
+  - **Reviews** (no BLOCKING). Fixed:
+    - stale plates reads, and the init peek racing the janitor;
+    - the switch and alert with no data (now flagged off);
+    - lost coverage for the host guard and size cap (restored);
+    - no toggle test (added);
+    - dead code (`more`, `NAME`, the refill branch);
+    - PLATES defaults;
+    - stale comments;
+    - a narrow scan.
+    - Rebutted: "ADR-0018 doesn't exist". It was in #79, merged before this PR.
+    - Deferred to P0-7e (recorded there): the `ui.cameras.plates.missing` key change.
 - 2026-10-28: **Owner decisions and done items recorded (2026-10-27, through the session).**
   - **Co-travel (ADR-0019):** the inherited finder, beacon, wearable and phone verdicts stay on; turning them off would miss trackers (severity 1). New or changed tail logic (P1-B9, Tail v2, linking) stays flagged off until its captures pass. Removed from Needs human.
   - **Done by the owner:**

@@ -1083,8 +1083,6 @@
     "settings.layer.alert.speed": "Varsel for fartskameraer",
     "settings.layer.alert.gun": "Varsel for skudd-detektorer",
     "settings.layer.alert.camera": "Varsel for andre kameraer",
-    "settings.layer.download.title": "Last ned skiltlesere.",
-    "settings.layer.more": "Oppdater for å ta med hver skiltleser.",
     "settings.layer.other.download.title": "Last ned andre sensorer.",
     "settings.layer.other.download.body": "Omtrent 1 MB. Du kan oppdatere den senere. Den blir på denne telefonen.",
     "settings.layer.download.action": "Last ned",

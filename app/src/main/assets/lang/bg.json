@@ -1096,8 +1096,6 @@
     "settings.layer.alert.speed": "Тревога за камери за скорост",
     "settings.layer.alert.gun": "Тревога за детектори на изстрели",
     "settings.layer.alert.camera": "Тревога за други камери",
-    "settings.layer.download.title": "Изтегляне на четци на номера.",
-    "settings.layer.more": "Актуализацията включва всеки четец на номера.",
     "settings.layer.other.download.title": "Изтегляне на други сензори.",
     "settings.layer.other.download.body": "Около 1 MB. Може да го обновите по-късно. Остава на този телефон.",
     "settings.layer.download.action": "Изтегли",

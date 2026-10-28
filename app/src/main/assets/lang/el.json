@@ -1090,8 +1090,6 @@
     "settings.layer.alert.speed": "Ειδοποίηση για ταχύτητα",
     "settings.layer.alert.gun": "Ειδοποίηση για πυροβολισμούς",
     "settings.layer.alert.camera": "Ειδοποίηση για άλλες κάμερες",
-    "settings.layer.download.title": "Λήψη αναγνωστών πινακίδων.",
-    "settings.layer.more": "Ενημέρωση για κάθε αναγνώστη πινακίδων.",
     "settings.layer.other.download.title": "Λήψη άλλων αισθητήρων.",
     "settings.layer.other.download.body": "Περίπου 1 MB. Μπορείτε να την ενημερώσετε αργότερα. Μένει σε αυτό το τηλέφωνο.",
     "settings.layer.download.action": "Λήψη",

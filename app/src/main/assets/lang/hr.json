@@ -1092,8 +1092,6 @@
     "settings.layer.alert.speed": "Upozorenje za kamere brzine",
     "settings.layer.alert.gun": "Upozorenje za detektore pucnja",
     "settings.layer.alert.camera": "Upozorenje za druge kamere",
-    "settings.layer.download.title": "Preuzmi čitače tablica.",
-    "settings.layer.more": "Ažurirajte da biste uključili svaki čitač tablica.",
     "settings.layer.other.download.title": "Preuzmi druge senzore.",
     "settings.layer.other.download.body": "Oko 1 MB. Kasnije je možete ažurirati. Ostaje na ovom telefonu.",
     "settings.layer.download.action": "Preuzmi",
