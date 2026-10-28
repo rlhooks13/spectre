@@ -17,7 +17,8 @@ class FilterEngine {
         val namedOk = if (filter.namedOnly) named else true
         val customNamedOk = if (filter.customNamesOnly) device.key in namedRadioKeys else true
         val watchedOk = if (!filter.watchedOnly) true else {
-            device.key in alertDeviceKeys || device.fleetIds.any { it in watchedFleetIds }
+            // Definite matches only (P1-B8c): a possible hit isn't watched, as it raises no alert.
+            device.key in alertDeviceKeys || device.definiteFleetIds.any { it in watchedFleetIds }
         }
         val typeOk = when (device.kind) {
             RadioKind.WIFI -> filter.showWifi
@@ -29,7 +30,9 @@ class FilterEngine {
         } else true
         val includeOk = if (!filter.signatureShowOn() || filter.includeFleetIds.isEmpty()) true
         else device.fleetIds.any { it in filter.includeFleetIds }
-        val deviceClasses = device.fleetIds.mapNotNull { classByFleetId[it] }.toSet()
+        // A radio's class comes from definite matches, as its badge does (P1-B8c). The signature filters above still
+        // see possible matches: their chips show them as possible.
+        val deviceClasses = device.definiteFleetIds.mapNotNull { classByFleetId[it] }.toSet()
         val hideClassOk = if (filter.useClassFilter && filter.excludeClasses && filter.classes.isNotEmpty()) {
             deviceClasses.none { it in filter.classes }
         } else true

@@ -2,6 +2,7 @@ package app.fieldwatch.data
 
 import app.fieldwatch.domain.BleAddress
 import app.fieldwatch.domain.Features
+import app.fieldwatch.domain.definiteFleetIds
 import app.fieldwatch.domain.Observation
 import app.fieldwatch.domain.OuiLookup
 import app.fieldwatch.domain.PresenceSpan
@@ -279,13 +280,14 @@ class DeviceStore(
                 matchStamp.remove(it.key)
             }
         }
-        val unnamed = live.values.filter { it.fleetIds.isEmpty() }
+        // A possible-only match is still unnamed for eviction (P1-B8c), as in a sit.
+        val unnamed = live.values.filter { it.definiteFleetIds.isEmpty() }
         val expired = unnamed.filter { now - it.lastSeen > lingerMs }.sortedBy { it.lastSeen }
         drop(expired, live.size - maxLive)
         if (live.size <= maxLive) return
         if (live.size <= hardLive) return
         val stillUnnamed = live.values.filter {
-            it.fleetIds.isEmpty() && !crowdPinned(it, now, lingerMs)
+            it.definiteFleetIds.isEmpty() && !crowdPinned(it, now, lingerMs)
         }.sortedBy { it.lastSeen }
         drop(stillUnnamed, live.size - hardLive)
         if (live.size <= hardLive) return
@@ -336,7 +338,7 @@ class DeviceStore(
         }
         relabel(live.values, fleets)
         live.values.filter { device ->
-            val cut = if (device.fleetIds.isEmpty()) evictAnonMs else evictAfterMs
+            val cut = if (device.definiteFleetIds.isEmpty()) evictAnonMs else evictAfterMs
             device.lastSeen < now - cut
         }.forEach {
             live.remove(it.key)

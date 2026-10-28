@@ -475,7 +475,11 @@ fun List<Fleet>.groupedByClass(): List<Pair<SignatureClass, List<Fleet>>> =
  * Attention, alerts, TAK and titles read this; a possible match is shown only as possible.
  */
 val Sighting.definiteFleetIds: Set<String>
-    get() = if (possibleFleetIds.isEmpty()) fleetIds else fleetIds - possibleFleetIds
+    get() = definiteOf(fleetIds, possibleFleetIds)
+
+/** [fleetIds] less [possible]: the one definition of "definite", for live sightings and saved sit rows alike. */
+fun definiteOf(fleetIds: Set<String>, possible: Set<String>): Set<String> =
+    if (possible.isEmpty()) fleetIds else fleetIds - possible
 
 /**
  * Signature name + Extra attention text for every matched signature on this radio that has one. A "possible" match

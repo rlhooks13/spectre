@@ -777,6 +777,140 @@ class SitTest {
         assertTrue(session.operatorPath.size >= 3)
     }
 
+    /** P1-B8c: a "possible" match is saved as possible, survives the file, and isn't written while there is none. */
+    @Test
+    fun aPossibleMatchIsSavedAsPossible() {
+        val session = SitSession.start("walk", 1L, emptyList(), fleets, emptySet(), emptySet())
+        val hit = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf("fleet-axon")).copy(possibleFleetIds = setOf("fleet-axon"))
+        session.ingest(hit, fleets, emptySet(), emptySet())
+        val row = session.snapshot().radios.single()
+        assertEquals(setOf("fleet-axon"), row.possibleFleetIds)
+        assertTrue(row.definiteFleetIds.isEmpty())
+        val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
+        val back = json.decodeFromString<SitRadio>(json.encodeToString(row))
+        assertEquals(setOf("fleet-axon"), back.toSighting().possibleFleetIds)
+        assertFalse(json.encodeToString(row.copy(possibleFleetIds = emptySet())).contains("possibleFleetIds"))
+    }
+
+    /** P1-B8c: one definite hear makes the match definite for the rest of the sit; a later possible hear can't undo it. */
+    @Test
+    fun aDefiniteHearMakesASavedMatchDefinite() {
+        val session = SitSession.start("walk", 1L, emptyList(), fleets, emptySet(), emptySet())
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf("fleet-axon"), lastSeen = 2L)
+        val possible = definite.copy(possibleFleetIds = setOf("fleet-axon"))
+        session.ingest(possible, fleets, emptySet(), emptySet())
+        session.ingest(definite, fleets, emptySet(), emptySet())
+        assertTrue(session.snapshot().radios.single().possibleFleetIds.isEmpty())
+        session.ingest(possible.copy(lastSeen = 3L), fleets, emptySet(), emptySet())
+        assertTrue(session.snapshot().radios.single().possibleFleetIds.isEmpty())
+    }
+
+    /** P1-B8c: a watched signature that only possibly matched raises no sit alert. */
+    @Test
+    fun aPossibleWatchedSignatureRaisesNoSitAlert() {
+        val watched = setOf("fleet-axon")
+        val session = SitSession.start("walk", 1L, emptyList(), fleets, emptySet(), watched)
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = watched, lastSeen = 5L)
+        val possible = radio("BLE:48:62:64:4A:1B:2D", fleetIds = watched, lastSeen = 5L).copy(possibleFleetIds = watched)
+        session.ingest(definite, fleets, emptySet(), watched)
+        session.ingest(possible, fleets, emptySet(), watched)
+        assertEquals(listOf(definite.key), session.alertsSince(0L, emptySet(), watched, emptySet()).map { it.key })
+    }
+
+    /**
+     * P1-B8c: a possible match to a watched signature isn't pinned. When a pinned radio arrives at a full sit, the
+     * possible one (oldest, unmatched for eviction) makes room; the definite one stays.
+     */
+    @Test
+    fun aPossibleWatchedSignatureIsNotPinned() {
+        val watched = setOf("fleet-axon")
+        val keysWatched = setOf("BLE:WATCH")
+        val session = SitSession.start("walk", 1L, emptyList(), fleets, keysWatched, watched)
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = watched)
+        val possible = radio("BLE:48:62:64:4A:1B:2D", fleetIds = watched).copy(possibleFleetIds = watched)
+        session.ingest(definite, fleets, keysWatched, watched)
+        session.ingest(possible, fleets, keysWatched, watched)
+        repeat(Sit.RADIO_CAP - 2) { i ->
+            val mac = "BB:BB:BB:BB:%02X:%02X".format(i / 256, i % 256)
+            session.ingest(radio("BLE:$mac", mac = mac, lastSeen = i.toLong() + 2), fleets, keysWatched, watched)
+        }
+        assertTrue(session.ingest(radio("BLE:WATCH", lastSeen = 9_999L), fleets, keysWatched, watched))
+        val keys = session.sightings().map { it.key }.toSet()
+        assertTrue(definite.key in keys)
+        assertFalse(possible.key in keys)
+        assertTrue("BLE:WATCH" in keys)
+    }
+
+    /** P1-B8c: a possible match to a finder signature doesn't make the radio a finder in the Debrief's co-travel test. */
+    @Test
+    fun aPossibleFinderMatchIsNoFinder() {
+        val stock = DefaultCatalog.fleets()
+        val names = stock.associate { it.id to it.name }
+        val classes = TrackerMatch.classesOf(stock)
+        val finder = classes.entries.first { it.value == SignatureClass.FINDER }.key
+        val tag = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf(finder), rssi = -80)
+        assertEquals(TrackerMatch.Kind.FINDER, TrackerMatch.kind(tag, names, classes))
+        assertNull(TrackerMatch.kind(tag.copy(possibleFleetIds = setOf(finder)), names, classes))
+    }
+
+    /** P1-B8c: an id the next hear doesn't carry keeps its state; a row can hold a possible and a definite id at once. */
+    @Test
+    fun aMixedRowKeepsEachIdsState() {
+        val session = SitSession.start("walk", 1L, emptyList(), fleets, emptySet(), emptySet())
+        val both = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf("fleet-axon", "fleet-remote-id"))
+            .copy(possibleFleetIds = setOf("fleet-axon"))
+        session.ingest(both, fleets, emptySet(), emptySet())
+        session.ingest(radio(both.key, fleetIds = setOf("fleet-remote-id"), lastSeen = 2L), fleets, emptySet(), emptySet())
+        val row = session.snapshot().radios.single()
+        assertEquals(setOf("fleet-axon"), row.possibleFleetIds)
+        assertEquals(setOf("fleet-remote-id"), row.definiteFleetIds)
+    }
+
+    /** P1-B8c: the sit map's watch markers and the live sit map leave a possible watched match out, and take no class from it. */
+    @Test
+    fun aPossibleWatchedSignatureIsNotOnTheSitMaps() {
+        val watched = setOf("fleet-axon")
+        val fix = listOf(GpsSample(1L, 40.0, -74.0, -60))
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = watched).copy(gpsTrail = fix)
+        val possible = radio("BLE:48:62:64:4A:1B:2D", fleetIds = watched).copy(gpsTrail = fix, possibleFleetIds = watched)
+        val devices = listOf(definite, possible)
+        val dots = SitPathPlot.dotsFrom(devices, fleets, emptySet(), watchedFleetIds = watched, alertsOnly = true).points
+        assertEquals(listOf(definite.key), dots.map { it.key })
+        assertEquals(listOf(definite.key), SitPathPlot.livePathRadios(devices, 0L, emptySet(), watched).map { it.key })
+        // On the map for its MAC alert, the possible radio takes no class or colour from the possible match.
+        val marked = SitPathPlot.dotsFrom(devices, fleets, emptySet(), bookmarkedKeys = setOf(possible.key), watchedFleetIds = watched, alertsOnly = true)
+            .points.single { it.key == possible.key }
+        assertNull(marked.classKind)
+        assertNull(SitPathPlot.liveDots(listOf(possible), fleets).single().classKind)
+        assertNotNull(SitPathPlot.liveDots(listOf(definite), fleets).single().classKind)
+    }
+
+    /** P1-B8c: Live's "watched only" filter and the TAK feed's "all signatures" leave a possible-only match out. */
+    @Test
+    fun aPossibleMatchIsNotWatchedOrSentAsASignature() {
+        val watched = setOf("fleet-axon")
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = watched)
+        val possible = definite.copy(possibleFleetIds = watched)
+        val engine = FilterEngine()
+        val onlyWatched = FilterState(watchedOnly = true)
+        assertTrue(engine.pass(definite, onlyWatched, watchedFleetIds = watched))
+        assertFalse(engine.pass(possible, onlyWatched, watchedFleetIds = watched))
+        val tak = AppSettings(takEnabled = true, takAllSignatures = true, takAttention = false, takPayloadFix = false, takWatchlist = false)
+        assertTrue(TakPublish.selected(definite, tak, fleets, emptyList()))
+        assertFalse(TakPublish.selected(possible, tak, fleets, emptyList()))
+    }
+
+    /** P1-B8c: a radio whose finder match is only possible isn't labeled with that finder. */
+    @Test
+    fun aPossibleFinderMatchGivesNoFinderLabel() {
+        val stock = DefaultCatalog.fleets()
+        val names = stock.associate { it.id to it.name }
+        val classes = TrackerMatch.classesOf(stock)
+        val finder = classes.entries.first { it.value == SignatureClass.FINDER }.key
+        val tag = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf(finder), rssi = -80).copy(possibleFleetIds = setOf(finder))
+        assertEquals("tracker-like", TrackerMatch.label(tag, names, classes))
+    }
+
     private fun driveOffset(lat: Double, lon: Double, northM: Double, eastM: Double): Pair<Double, Double> {
         val dLat = northM / 111_320.0
         val dLon = eastM / (111_320.0 * kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2))

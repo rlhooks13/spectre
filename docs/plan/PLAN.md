@@ -300,6 +300,25 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - ✅ **P1-B8b Wiring** (split from P1-B8): behind the same flag, a "possible" hit shows as possible, with no attention card or alert; rotating BLE addresses get no OUI vendor; the corpus's `randomAddressOuiHits` assert "possible" with the classifier on.
     - As built: the vendor skip is `BleAddress.withoutRotatingVendor`, applied where `DeviceStore` builds each sighting, because `RadioDb.vendorForMac` sees only the MAC, not the address type. `knownUntil = "P1-B8"` stays until the flag turns on.
     - **Before the flag turns on (P1-B8c):** Sit pinning (`SitRadio.from` stores `fleetIds`), exports, the log and CoT carry the possible state, so a possible hit isn't saved or sent as definite.
+      - ✅ **P1-B8c1 Sits and decisions:** `SitRadio.possibleFleetIds` is saved (not written while empty) and merged (definite once, definite for the sit). These use definite ids only (`definiteOf`):
+        - every keep, send, alert or classify decision;
+        - sit pinning, eviction and watch alerts;
+        - the sit and live maps' markers, and the sit-compare map's alert markers (`SitDiff.Row.possibleFleetIds`);
+        - `TrackerMatch`;
+        - Live's "watched only" and class filters, and the compact badge;
+        - live-store eviction;
+        - `FastPair.isAccountKeyOnly`;
+        - the Debrief inventory's keep rule;
+        - TAK's `selected`, its score, and the drone type and group.
+      - **P1-B8c2 Text that leaves the app:** these mark a possible match "(possible)". They stay English.
+        - sit export and the log;
+        - CoT remarks;
+        - the AI prompt;
+        - Debrief signature lines and charts;
+        - `SitDiff` names;
+        - `DeviceDetailText`;
+        - the sit-map dot's `fleetNames`.
+        - The by-signature Live filters keep matching possible hits, which their chips mark.
   - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.
     - Otherwise the class is **UNKNOWN** unless there's evidence: an ecosystem that requires random addresses (Apple 0x004C, FD5A, FD6F, Find Hub) means random; persistence over 20 minutes means stable.

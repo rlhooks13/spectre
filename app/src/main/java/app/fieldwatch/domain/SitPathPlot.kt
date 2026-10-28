@@ -754,7 +754,7 @@ object SitPathPlot {
         devices
             .filter { device ->
                 val macAlert = device.key in bookmarkedKeys
-                val signatureAlert = device.fleetIds.any { it in watchedFleetIds }
+                val signatureAlert = device.definiteFleetIds.any { it in watchedFleetIds }
                 if (alertsOnly) macAlert || signatureAlert
                 else macAlert || device.attentionNotes(fleets).isNotEmpty()
             }
@@ -769,9 +769,10 @@ object SitPathPlot {
                     observerNotes[d.key].orEmpty(),
                     d.key in mineKeys,
                 )
-                val fleet = d.fleetIds.firstNotNullOfOrNull { id ->
+                // The marker's class and colour come from a definite match (P1-B8c), as its alert does.
+                val fleet = d.definiteFleetIds.firstNotNullOfOrNull { id ->
                     fleets.firstOrNull { it.id == id && id in watchedFleetIds }
-                } ?: d.fleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
+                } ?: d.definiteFleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
                 points += Dot(
                     key = d.key,
                     lat = fix.lat,
@@ -966,7 +967,7 @@ object SitPathPlot {
     ): List<Sighting> = devices.filter { device ->
         device.key !in hiddenKeys &&
             device.lastSeen >= since &&
-            (device.key in alertKeys || device.fleetIds.any { it in watchedFleetIds })
+            (device.key in alertKeys || device.definiteFleetIds.any { it in watchedFleetIds })
     }
 
     /**
@@ -983,7 +984,7 @@ object SitPathPlot {
         for (d in devices) {
             val pin = advertisedFix(d)
             val fix = pin ?: loudestFix(d, since) ?: continue
-            val fleet = d.fleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
+            val fleet = d.definiteFleetIds.firstNotNullOfOrNull { id -> fleets.firstOrNull { it.id == id } }
             points += Dot(
                 key = d.key,
                 lat = fix.lat,

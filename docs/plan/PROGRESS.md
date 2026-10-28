@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **1C Platform fixes (P1-C1 Location)**, after P1-B9 merges. P1-B9's flag waits for owner-recorded captures. P1-B8c (possible state in sits, exports, the log and CoT) must land before P1-B8's flag turns on. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B8c2** (the "(possible)" label in exports, the log, CoT, the AI prompt and Debrief text), after P1-B8c1 merges; then **1C (P1-C1 Location)**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,9 +13,15 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b9-late-tail`
+- Branch: `p1/b8c1-possible-in-sits`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
+  - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
+  - Fallback, the same two steps done separately:
+    1. `timeout 120 adb -s $SERIAL push <apk> /data/local/tmp/spectre-check.apk`
+    2. `timeout 180 adb -s $SERIAL shell pm install -r /data/local/tmp/spectre-check.apk </dev/null`
+    3. `adb shell rm` the file.
+  - It worked first time on 2026-10-28.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
@@ -77,6 +83,31 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B8c1 Possible matches in sits (behind the B8 flag).** #73 (P1-B9) merged as 5aff70e.
+  - **Split:** P1-B8c becomes c1 (sits and decisions) and c2 (text that leaves the app). About 25 call sites in all, so two reviewable PRs.
+  - **`SitRadio.possibleFleetIds`:**
+    - A new field, `@EncodeDefault(NEVER)`, so sit files and goldens without one are byte-identical.
+    - `from` and `toSighting` carry it. `definiteFleetIds` is a getter, not serialized.
+    - Merge keeps an id possible only while neither side holds it as definite.
+  - **Definite ids only:** one helper, `definiteOf`, shared by `Sighting` and `SitRadio`. Used by:
+    - `Sit.pinned` (both callers), the sit's eviction "unmatched" pass, and `alertsSince`;
+    - `SitPathPlot`'s watch checks and marker class/colour (`dotsFrom`, `livePathRadios`, `liveDots`);
+    - `SitDiff`'s compare-map alert markers;
+    - `TrackerMatch` (`classHits`, `finderHits`, `isCarriedApple`, the carried-Apple label);
+    - FilterEngine's "watched only" and class filters, and the compact Live badge;
+    - DeviceStore's live eviction (three sites) and `FastPair.isAccountKeyOnly`;
+    - DebriefReport's `inventoryKeep`;
+    - TakPublish's `selected` (`signed`), its score, and the drone type and group.
+  - **`mergedPossible`** stays within the merged `fleetIds`.
+  - **Flag off:** possible sets are always empty, so nothing changes.
+  - **Tests (SitTest, 9 new):**
+    - saved and round-tripped; definite wins over the sit; a mixed row keeps each id's state;
+    - no sit alert; not pinned (evicted when a pinned radio arrives at the cap);
+    - not on the sit or live maps, and no class from a possible match;
+    - not "watched only" and not TAK-selected;
+    - no finder kind or label.
+  - **Reviews:** both found decision sites missing from c1. All are fixed here; c2 keeps only labels.
+    - Rebutted: honoring a saved possible state after the flag is turned back off. The flag is a compile-time constant, so that takes a new release, and the saved row records what the classifier said at the time.
 - 2026-10-28: **P1-B9 Late-tail fix (behind a flag).** #72 (P1-B8b) merged as ba52e65.
   - **Flag:** `Features.LATE_TAIL_FIX = false`. `DebriefReport.document` and `gpsAnalystMarkdown` take `lateTail` (default: the flag) and pass it to `followAssessments`.
   - **With the flag on:**

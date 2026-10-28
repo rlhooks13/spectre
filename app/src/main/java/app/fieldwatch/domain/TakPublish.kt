@@ -437,7 +437,8 @@ object TakPublish {
         val extra = hasAttention(device, fleets)
         val payload = PayloadLocation.validCoord(device.payloadLat, device.payloadLon)
         val watched = onWatchlist(device, watchlist)
-        val signed = device.fleetIds.isNotEmpty()
+        // A possible match alone isn't sent as a signature hit (P1-B8c).
+        val signed = device.definiteFleetIds.isNotEmpty()
         if (extra && settings.takAttention) return true
         if (payload && settings.takPayloadFix) return true
         if (watched && settings.takWatchlist) return true
@@ -485,7 +486,7 @@ object TakPublish {
         if (hasAttention(device, fleets)) n += 8
         if (advertisedPin(device)) n += 4
         if (onWatchlist(device, watchlist)) n += 2
-        if (device.fleetIds.isNotEmpty()) n += 1
+        if (device.definiteFleetIds.isNotEmpty()) n += 1
         return n
     }
 
@@ -712,7 +713,7 @@ object CotEvent {
 
     fun type(device: Sighting, fleets: List<Fleet>, advertised: Boolean, pilot: Boolean = false): String {
         if (pilot) return "a-u-G"
-        if (advertised && fleets.any { it.id in device.fleetIds && it.kind == SignatureClass.DRONE }) {
+        if (advertised && fleets.any { it.id in device.definiteFleetIds && it.kind == SignatureClass.DRONE }) {
             return "a-u-A-M-H-Q"
         }
         return "a-u-G"
@@ -725,7 +726,7 @@ object CotEvent {
         pilot: Boolean = false,
     ): String {
         if (pilot) return "Orange"
-        if (advertised && fleets.any { it.id in device.fleetIds && it.kind == SignatureClass.DRONE }) {
+        if (advertised && fleets.any { it.id in device.definiteFleetIds && it.kind == SignatureClass.DRONE }) {
             return "Yellow"
         }
         if (!advertised && TakPublish.hasAttention(device, fleets)) return "Maroon"
