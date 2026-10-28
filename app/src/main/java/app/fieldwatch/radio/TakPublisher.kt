@@ -60,6 +60,11 @@ class TakPublisher {
         gnssRemark: String? = null,
         gnssNotice: GnssNotice? = null,
         gnssLives: List<GnssLive> = emptyList(),
+        /**
+         * Where a GNSS interference mark goes: the last good fix, "where this phone was" (P1-C1). Not only a current
+         * one, which is [selfFix]: jamming is when the fix goes stale, and the mark must keep going out then.
+         */
+        gnssFix: Pair<Double, Double>? = selfFix,
     ): Boolean {
         if (!settings.takEnabled || settings.demoMode) {
             retractRadios(settings, now)
@@ -154,15 +159,15 @@ class TakPublisher {
             }
         }
 
-        val gnssFix = if (selfOk) selfFix else null
+        val markFix = gnssFix?.takeIf { PayloadOk(it) }
         if (current()) {
         val gnssPlan = TakGnss.plan(
             open = gnssMarks.values.firstOrNull { it.open },
             mode = settings.takGnss,
             notice = gnssNotice,
             lives = gnssLives,
-            lat = gnssFix?.first,
-            lon = gnssFix?.second,
+            lat = markFix?.first,
+            lon = markFix?.second,
             now = now,
             hold = settings.takGnssHold,
             tag = tag,

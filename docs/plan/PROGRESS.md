@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **1C (P1-C1 Location)**, after P1-B8c3 merges. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-C2 Storage**, after P1-C1 merges. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b8c3-possible-in-app`
+- Branch: `p1/c1-location`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -83,6 +83,18 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-C1 Location.** #76 (P1-B8c3) merged as 0229c2b.
+  - **Before:** ScanService stamped every batch of hears with `app.lastFix`, and sent it as TAK's self position, however old it was. After GPS was lost, new hears got the place the phone had left, and TAK kept placing the operator there.
+  - **Now:**
+    - Hears use `app.hearFix(tagLocation)` (tagging on, then `currentFix()`, 30 s).
+    - TAK's self marker gets `app.currentFix()`. With null, `TakPublisher` sends none, and ATAK stale-drops the old one within its 2 min stale time.
+    - With the fix not current, ScanService passes rows to sits and the log with no position: `DeviceStore` merge keeps the last tagged place, which would otherwise be stamped with the new hear's time. Place memory skips the batch. TAK heard-here pins keep the place the radio was last heard while tagged.
+    - GNSS interference marks get `gnssMarkFix()`, the last fix up to 10 min old. Jamming is when the fix goes stale, so the mark and its remark keep going out.
+  - **Fix storage:** the fix is one volatile `PhoneFix(lat, lon, at)`, so there's no torn position/time read. `at = min(Location.time, now)`, so a phone clock behind GPS time doesn't reject every fix.
+  - **Network provider:** `minDistance` goes from 15 m to 0, so a phone at rest indoors keeps getting a fix every 4 s.
+  - **Side effect:** with tagging off, location updates stop, so the self marker and GNSS marks stop too. Before, the frozen last fix was re-sent forever.
+  - **Tests:** `PhoneFixTest`: current (30 s boundary), the clock clamp, and the GNSS mark's 10 min bound.
+  - **Reviews** (no BLOCKING). Both flagged the GNSS mark loss under jamming and the stale place in merged rows; both fixed. Also fixed: the torn read, clock skew, network minDistance, and a duplicated rule. Not done: an explicit stale-now self event on loss (ATAK's 2 min stale time handles it), and a service-level wiring test.
 - 2026-10-28: **P1-B8c3 In-app "(possible)" through the language key (behind the B8 flag).** #75 (P1-B8c2) merged as 44fc7d9.
   - **`SitPathPlot.Dot`:**
     - `fleetNames` holds plain names again, with index-aligned `fleetIds` and the `possibleFleetIds`, so marking goes by id.

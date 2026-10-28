@@ -278,7 +278,8 @@ class ScanService : LifecycleService() {
             try {
                 val app = application as FieldwatchApp
                 if (app.config.settings.tagLocation) app.refreshFix()
-                val fix = if (app.config.settings.tagLocation) app.lastFix else null
+                // P1-C1: a stale fix isn't stamped on new hears.
+                val fix = app.hearFix(app.config.settings.tagLocation)
                 val tagged = if (fix == null) {
                     batch
                 } else {
@@ -293,8 +294,11 @@ class ScanService : LifecycleService() {
                     app.pairingFlood.consider(tagged[i], row.lastSeen, app.floodSpeed())
                 }
                 app.sits.noteFloods(app.pairingFlood.bursts())
-                app.sits.ingest(seen, fleets, app.config.watchlist)
-                if (settings.placeWatch && settings.tagLocation) {
+                // P1-C1: with no current fix, the merged rows still hold the last tagged place. Pass them on without
+                // it, so sits and the log don't stamp that old place with this hear's time; place memory skips them.
+                val placed = if (fix != null) seen else seen.map { it.copy(latitude = null, longitude = null) }
+                app.sits.ingest(placed, fleets, app.config.watchlist)
+                if (fix != null && settings.placeWatch && settings.tagLocation) {
                     app.places.hear(
                         seen,
                         fleets,
@@ -304,7 +308,7 @@ class ScanService : LifecycleService() {
                     )
                 }
                 if (settings.loggingEnabled) {
-                    val toLog = seen.filter { it.hitCount <= 1 || it.hitCount % 25 == 0 }.take(16)
+                    val toLog = placed.filter { it.hitCount <= 1 || it.hitCount % 25 == 0 }.take(16)
                     for (row in toLog) {
                         app.logs.append(row, fleets)
                     }
@@ -390,7 +394,9 @@ class ScanService : LifecycleService() {
                 fleets,
                 settings,
                 app.config.watchlist,
-                selfFix = app.lastFix,
+                // P1-C1: a stale self position is left out of TAK. A GNSS interference mark still goes at the last fix.
+                selfFix = app.currentFix(),
+                gnssFix = app.gnssMarkFix(),
                 gnssRemark = phoneNote,
                 gnssNotice = gnss.notice,
                 gnssLives = gnss.lives,
