@@ -1441,6 +1441,12 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V111
         }
+        if (version < CATALOG_V112) {
+            // P1-B12f: Uniview's, Hatch's and Arlo's any-radio OUIs in the BLE static-random range are retired
+            // (RetiredRules strips them on load); patchBuiltIn appends them Wi-Fi only, carrying an "off".
+            fleets = carryRetiredOff(fleets, cfg.fleets, CATALOG_V112, ADDED_RULES_V112)
+            version = CATALOG_V112
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1508,7 +1514,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 111
+        const val CATALOG_VERSION = 112
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1617,7 +1623,8 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V108 = 108
         private const val CATALOG_V109 = 109
         private const val CATALOG_V110 = 110
-        private const val CATALOG_V111 = CATALOG_VERSION
+        private const val CATALOG_V111 = 111
+        private const val CATALOG_V112 = CATALOG_VERSION
 
         /** The exact v110 stock Rhombus attention note (catalog/snapshots/v110.json). */
         private const val V110_RHOMBUS_ATTENTION = "Rhombus cloud cameras on buildings and some public sites. IEEE " +
@@ -2138,6 +2145,13 @@ class ConfigStore internal constructor(private val file: File) {
         private val ADDED_RULES_V111 = mapOf(
             "fleet-raven" to listOf(MatchRule(RuleKind.OUI, text = "D4:11:D6", radio = RadioKind.WIFI)),
             "fleet-rhombus" to listOf(MatchRule(RuleKind.OUI, text = "CC:47:BD", radio = RadioKind.WIFI)),
+        )
+
+        /** P1-B12f: the same, for Uniview, Hatch and Arlo. Written out. */
+        private val ADDED_RULES_V112 = mapOf(
+            "fleet-uniview" to listOf(MatchRule(RuleKind.OUI, text = "C4:79:05", radio = RadioKind.WIFI)),
+            "fleet-hatch" to listOf(MatchRule(RuleKind.OUI, text = "C8:FA:9C", radio = RadioKind.WIFI)),
+            "fleet-arlo" to listOf(MatchRule(RuleKind.OUI, text = "FC:9C:98", radio = RadioKind.WIFI)),
         )
 
         /** The exact v99 stock AirTags note (catalog/snapshots/v99.json). v100 rewords it only where still equal. */

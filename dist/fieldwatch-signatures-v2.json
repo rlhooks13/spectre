@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 111,
+    "catalogVersion": 112,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -1840,7 +1840,7 @@
                     "text": "FC:9C:98",
                     "companyId": 0,
                     "dataPrefixHex": "",
-                    "radio": null,
+                    "radio": "WIFI",
                     "enabled": true
                 }
             ],
@@ -26561,14 +26561,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "OUI",
-                    "text": "C8:FA:9C",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "Hatch Rest",
                     "companyId": 0,
@@ -26598,6 +26590,14 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "C8:FA:9C",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
                     "enabled": true
                 }
             ],
@@ -61928,14 +61928,6 @@
                     "enabled": true
                 },
                 {
-                    "kind": "OUI",
-                    "text": "C4:79:05",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "NAME_CONTAINS",
                     "text": "Uniview",
                     "companyId": 0,
@@ -61973,6 +61965,14 @@
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "OUI",
+                    "text": "C4:79:05",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "WIFI",
                     "enabled": true
                 }
             ],

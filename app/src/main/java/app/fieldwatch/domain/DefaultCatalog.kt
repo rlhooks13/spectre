@@ -1661,7 +1661,10 @@ object DefaultCatalog {
         rules = listOf(
             glob("Arlo*"),
             glob("ARLO_VMB_*"),
-        ) + ApVendorOuis.ARLO.map { oui(it) },
+        ) + ApVendorOuis.ARLO.filter { it != "FC:9C:98" }.map { oui(it) } + listOf(
+            // P1-B12f: FC:9C:98 Wi-Fi only (0xFC is in the BLE static-random range). Last, as patchBuiltIn appends it.
+            wifiOui("FC:9C:98"),
+        ),
     )
 
     private fun nest() = Fleet(
@@ -2690,13 +2693,16 @@ object DefaultCatalog {
         builtIn = true,
         rules = buildList {
             listOf(
-                "14:BA:88", "48:EA:63", "6C:F1:7E", "88:26:3F", "C4:79:05",
+                "14:BA:88", "48:EA:63", "6C:F1:7E", "88:26:3F",
             ).forEach { add(oui(it)) }
             add(name("Uniview"))
             add(glob("Uniview*"))
             add(glob("UNV-*"))
             add(name("Uniarch"))
             add(glob("Uniarch*"))
+            // P1-B12f: C4:79:05 Wi-Fi only. 0xC4 is in the BLE static-random range, so on BLE it matched random
+            // addresses by chance. Last, as patchBuiltIn appends it.
+            add(wifiOui("C4:79:05"))
         },
     )
 
@@ -3297,11 +3303,13 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             mfg(0x0434),
-            oui("C8:FA:9C"),
             bleName("Hatch Rest"),
             bleGlob("Hatch Rest*"),
             bleGlob("Hatch Restore*"),
             bleGlob("Hatch Mini*"),
+            // P1-B12f: C8:FA:9C Wi-Fi only (0xC8 is in the BLE static-random range); its company id and names find its
+            // BLE. Last, as patchBuiltIn appends it.
+            wifiOui("C8:FA:9C"),
         ),
     )
 
