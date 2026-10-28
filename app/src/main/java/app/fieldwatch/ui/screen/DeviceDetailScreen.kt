@@ -328,7 +328,7 @@ fun DeviceDetailScreen(
             if (attention.isNotEmpty()) {
                 StickyHeight(device.key to "attention") { ExtraAttentionCard(attention) }
             }
-            val notes = vm.signatureNotesFor(device)
+            val notes = vm.signatureNotesShown(device)
             if (notes.isNotEmpty()) {
                 StickyHeight(device.key to "notes") { SignatureNotesCard(notes) }
             }

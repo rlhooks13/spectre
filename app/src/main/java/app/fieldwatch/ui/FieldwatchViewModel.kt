@@ -79,6 +79,7 @@ import app.fieldwatch.domain.Rssi
 import app.fieldwatch.domain.RssiSample
 import app.fieldwatch.domain.Sighting
 import app.fieldwatch.domain.definiteFleetIds
+import app.fieldwatch.domain.possibleMarked
 import app.fieldwatch.domain.SignatureCandidate
 import app.fieldwatch.domain.SignatureCandidates
 import app.fieldwatch.domain.SignatureFamilyHint
@@ -504,11 +505,13 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
                     compareBy<Sighting> { it.firstSeen }.thenBy { it.mac }
                 ListSort.NAME ->
                     compareBy<Sighting> { d ->
-                        val names = d.fleetIds.map { fleetNames[it] ?: it }
+                        // Sorted by the title as shown, which reads definite matches only (P1-B8c).
+                        val names = d.definiteFleetIds.map { fleetNames[it] ?: it }
                         d.listLineText(config.settings.listTitleLine, names, watchNames[d.key]).lowercase()
                     }.thenBy { it.mac }
                 ListSort.SIGNATURES ->
-                    compareByDescending<Sighting> { it.fleetIds.isNotEmpty() }
+                    // A possible-only radio isn't a signature hit (P1-B8c), as its title and badge say.
+                    compareByDescending<Sighting> { it.definiteFleetIds.isNotEmpty() }
                         .thenByDescending { it.sortRssi(config.settings.strengthSort, windowMs, now) }
             },
         )
@@ -4052,7 +4055,7 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
      * Titles and guesses don't use this; they read [definiteFleetIds] only, so a possible match never drives them.
      */
     fun signatureLabel(device: Sighting, id: String): String =
-        if (id in device.possibleFleetIds) "${fleetName(id)} (${LanguageText.text("ui.signature.possible")})" else fleetName(id)
+        possibleMarked(id, fleetName(id), device.possibleFleetIds, LanguageText.text("ui.signature.possible"))
 
     /** Names of [device]'s definite matches, for titles and guesses (P1-B8). */
     fun definiteNames(device: Sighting): List<String> = device.definiteFleetIds.map { fleetName(it) }
@@ -4077,8 +4080,13 @@ class FieldwatchViewModel(application: Application) : AndroidViewModel(applicati
     fun attentionNotesFor(device: Sighting): List<Pair<String, String>> =
         device.attentionNotes(app.config.fleets)
 
+    /** Signature notes for exports and prompts: a possible match marked in English (P1-B8c). */
     fun signatureNotesFor(device: Sighting): List<Pair<String, String>> =
         device.signatureNotes(app.config.fleets)
+
+    /** Signature notes as the detail screen shows them: a possible match marked with the language key (P1-B8c). */
+    fun signatureNotesShown(device: Sighting): List<Pair<String, String>> =
+        device.signatureNotes(app.config.fleets, LanguageText.text("ui.signature.possible"))
 
     fun isWatched(deviceKey: String): Boolean =
         app.config.watchlist.any { it.deviceKey == deviceKey && it.alert }

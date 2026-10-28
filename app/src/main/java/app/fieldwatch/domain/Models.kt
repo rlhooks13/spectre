@@ -479,11 +479,14 @@ val Sighting.definiteFleetIds: Set<String>
 
 /**
  * [name], matched signature [id]'s name, for text that leaves the app (exports, the log, CoT, AI prompts, the Debrief):
- * a possible match (P1-B8, in [possible]) reads "Name (possible)". English, as those outputs are; the UI uses the
- * language key `ui.signature.possible` instead.
+ * a possible match (P1-B8, in [possible]) reads "Name ([marker])". The default marker is English, as those outputs
+ * are; the UI passes the language key `ui.signature.possible`'s text. The one place this format is written.
  */
-fun possibleMarked(id: String, name: String, possible: Set<String>): String =
-    if (id in possible) "$name (possible)" else name
+fun possibleMarked(id: String, name: String, possible: Set<String>, marker: String = EXPORT_POSSIBLE): String =
+    if (id in possible) "$name ($marker)" else name
+
+/** The English marker for a possible match in exports, the log, CoT and prompts (P1-B8c). */
+const val EXPORT_POSSIBLE = "possible"
 
 /** [possibleMarked] for this sighting's matches. */
 fun Sighting.signatureText(id: String, name: String): String = possibleMarked(id, name, possibleFleetIds)
@@ -508,15 +511,16 @@ fun Sighting.attentionNotes(fleets: List<Fleet>): List<Pair<String, String>> {
 
 /**
  * Signature name + Notes for every matched signature on this radio that has notes. Not Extra attention. A possible
- * match's name is marked "(possible)" (P1-B8c), so its notes don't read as describing a definite match.
+ * match's name is marked with [marker] (P1-B8c), so its notes don't read as describing a definite match: English for
+ * exports and prompts, the language key's text on screen.
  */
-fun Sighting.signatureNotes(fleets: List<Fleet>): List<Pair<String, String>> {
+fun Sighting.signatureNotes(fleets: List<Fleet>, marker: String = EXPORT_POSSIBLE): List<Pair<String, String>> {
     if (fleetIds.isEmpty()) return emptyList()
     val byId = fleets.associateBy { it.id }
     return fleetIds.mapNotNull { id ->
         val fleet = byId[id] ?: return@mapNotNull null
         val note = fleet.notes.trim()
-        if (note.isEmpty()) null else signatureText(id, fleet.name) to note
+        if (note.isEmpty()) null else possibleMarked(id, fleet.name, possibleFleetIds, marker) to note
     }
 }
 

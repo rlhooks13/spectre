@@ -881,6 +881,20 @@ class SitTest {
         val marked = SitPathPlot.dotsFrom(devices, fleets, emptySet(), bookmarkedKeys = setOf(possible.key), watchedFleetIds = watched, alertsOnly = true)
             .points.single { it.key == possible.key }
         assertNull(marked.classKind)
+        // P1-B8c3: the dot keeps plain names and which are possible; exports mark in English, the UI with its key.
+        assertEquals(listOf("Axon"), marked.fleetNames)
+        assertEquals(listOf("Axon (possible)"), marked.exportFleetNames())
+        assertEquals(listOf("Axon (möglich)"), marked.shownFleetNames("möglich"))
+        val live = SitPathPlot.liveDots(listOf(possible, definite), fleets)
+        assertEquals(listOf("Axon (possible)", "Axon"), live.map { it.exportFleetNames().single() })
+        // Marked by id: a definite match that shares its name with a possible one isn't marked.
+        val twin = axon.copy(id = "user-axon")
+        val both = radio("BLE:48:62:64:4A:1B:2E", fleetIds = setOf("user-axon", "fleet-axon"))
+            .copy(gpsTrail = fix, possibleFleetIds = watched)
+        assertEquals(listOf("Axon", "Axon (possible)"), SitPathPlot.liveDots(listOf(both), fleets + twin).single().exportFleetNames())
+        // Notes on screen take the language key's text, not English.
+        val noted = listOf(axon.copy(notes = "Body-worn cameras."))
+        assertEquals(listOf("Axon (möglich)" to "Body-worn cameras."), possible.signatureNotes(noted, "möglich"))
         assertNull(SitPathPlot.liveDots(listOf(possible), fleets).single().classKind)
         assertNotNull(SitPathPlot.liveDots(listOf(definite), fleets).single().classKind)
     }
@@ -924,8 +938,8 @@ class SitTest {
             SitExport.jsonl(listOf(d), LogExportRadios.BOTH, emptyMap(), emptyMap(), emptySet(), fleets),
             CotEvent.remarks(d, fleets, advertised = false),
             DebriefPrompt.build(listOf(d), fleets, AppSettings(), now = 1_000L),
-            SitDiff.fromSighting(d, fleets, emptyMap()).fleetNames.joinToString(),
-            SitDiff.fromSitRadio(SitRadio.from(d, fleets), fleets, emptyMap()).fleetNames.joinToString(),
+            SitDiff.fromSighting(d, fleets, emptyMap()).markedFleetNames().joinToString(),
+            SitDiff.fromSitRadio(SitRadio.from(d, fleets), fleets, emptyMap()).markedFleetNames().joinToString(),
         )
         outputs(possible).forEach { assertTrue(it, it.contains("Axon (possible)")) }
         outputs(definite).forEach { assertTrue(it, it.contains("Axon") && !it.contains("(possible)")) }

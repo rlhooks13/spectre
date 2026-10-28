@@ -41,7 +41,12 @@ object SitDiff {
         val payloadOpAt: Long? = null,
         val payloadOpPhoneLat: Double? = null,
         val payloadOpPhoneLon: Double? = null,
-    )
+    ) {
+        /** [fleetNames] (plain, in [fleetIds] order) for compare text: a possible match marked in English (P1-B8c). */
+        fun markedFleetNames(): List<String> = fleetNames.mapIndexed { i, name ->
+            possibleMarked(fleetIds.getOrNull(i).orEmpty(), name, possibleFleetIds.toSet())
+        }
+    }
 
     data class Side(
         val name: String,
@@ -89,7 +94,7 @@ object SitDiff {
         extraAttention = device.attentionNotes(fleets).isNotEmpty(),
         named = device.key in customNames,
         bookmarked = device.key in bookmarkedKeys,
-        fleetNames = device.fleetIds.map { id -> device.signatureText(id, fleets.firstOrNull { it.id == id }?.name ?: id) },
+        fleetNames = device.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
         fleetIds = device.fleetIds.toList(),
         possibleFleetIds = device.possibleFleetIds.toList(),
         randomized = device.randomized,
@@ -136,7 +141,7 @@ object SitDiff {
         extraAttention = row.extraAttention,
         named = row.key in customNames,
         bookmarked = row.key in bookmarkedKeys,
-        fleetNames = row.fleetIds.map { id -> possibleMarked(id, fleets.firstOrNull { it.id == id }?.name ?: id, row.possibleFleetIds) },
+        fleetNames = row.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
         fleetIds = row.fleetIds.toList(),
         possibleFleetIds = row.possibleFleetIds.toList(),
         randomized = row.randomized,
@@ -332,6 +337,8 @@ object SitDiff {
                     kind = r.kind,
                     mac = r.mac,
                     fleetNames = r.fleetNames,
+                    fleetIds = r.fleetIds,
+                    possibleFleetIds = r.possibleFleetIds.toSet(),
                     observerNotes = notes,
                     advertised = advertised != null,
                     advertisedNote = if (advertised != null) {
@@ -531,7 +538,7 @@ object SitDiff {
         if (radios.isEmpty()) return null
         val counts = linkedMapOf<String, Int>()
         for (radio in radios) {
-            val sigs = radio.fleetNames.filter { it.isNotBlank() }.distinct()
+            val sigs = radio.markedFleetNames().filter { it.isNotBlank() }.distinct()
             val key = if (sigs.isEmpty()) "Unmatched" else sigs.joinToString(" + ")
             counts[key] = (counts[key] ?: 0) + 1
         }
@@ -604,7 +611,7 @@ object SitDiff {
             append(label)
         }
         if (row.mine) append("  Marked mine")
-        row.fleetNames.filter { it.isNotBlank() }.forEach { name ->
+        row.markedFleetNames().filter { it.isNotBlank() }.forEach { name ->
             append("  ")
             append(name)
         }

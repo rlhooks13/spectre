@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B8c3** (in-app "(possible)" through the language key), after P1-B8c2 merges; then **1C (P1-C1 Location)**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **1C (P1-C1 Location)**, after P1-B8c3 merges. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b8c2-possible-labels`
+- Branch: `p1/b8c3-possible-in-app`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -83,6 +83,25 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B8c3 In-app "(possible)" through the language key (behind the B8 flag).** #75 (P1-B8c2) merged as 44fc7d9.
+  - **`SitPathPlot.Dot`:**
+    - `fleetNames` holds plain names again, with index-aligned `fleetIds` and the `possibleFleetIds`, so marking goes by id.
+    - `exportFleetNames()` is English and feeds `DebriefPdf`. `shownFleetNames(marker)` takes the key's text and feeds `ReportsScreen`'s path row.
+    - Blank names are dropped.
+  - **`SitDiff.Radio`:** keeps plain names, and `markedFleetNames()` marks its compare text and prompt. Its dots carry the ids.
+  - **One format:** `possibleMarked(id, name, possible, marker = EXPORT_POSSIBLE)`. `signatureNotes(fleets, marker)` and `vm.signatureLabel` use it, and the detail screen's notes pass the key.
+  - **Live sorts:** by name and by signatures, both read definite matches, as the title and badge do.
+  - **Reviews** (no BLOCKING). Fixed:
+    - marking by name, where a same-named definite match was marked too;
+    - SitDiff dots with pre-marked names;
+    - the signatures sort;
+    - the duplicated notes loop and format;
+    - `dotNames` computed twice;
+    - an English default on the UI call;
+    - a blank-name bare marker.
+    - Noted: the live map renders no signature names, so only the Reports path row changes on screen.
+  - **Test:** SitTest's map test checks plain names with export and shown markers, a same-named definite/possible pair (only the possible one marked), and notes with a non-English marker.
+  - **P1-B8 flag:** P1-B8c is done. The flag now waits only for its acceptance check: a 24 h addressType capture on the phone, which the agent can run, plus the static-tag checks.
 - 2026-10-28: **P1-B8c2 "(possible)" in text that leaves the app (behind the B8 flag).** #74 (P1-B8c1) merged as 8468e6d.
   - **One English helper:** `possibleMarked(id, name, possible)`, with `Sighting.signatureText`. The UI keeps its language key.
   - **Marked:**

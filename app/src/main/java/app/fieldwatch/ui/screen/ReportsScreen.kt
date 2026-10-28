@@ -1068,7 +1068,7 @@ private fun PathRadioRow(
     val mac = MacUtil.screenMac(dot.mac, demoMode)
     val named = dot.label.isNotBlank() && !dot.label.equals(dot.mac, ignoreCase = true)
     val label = MacUtil.redactMacIn(dot.label, dot.mac, demoMode)
-    val fleets = dot.fleetNames.joinToString(" · ")
+    val fleets = dot.shownFleetNames(LanguageText.text("ui.signature.possible")).joinToString(" · ")
     val note = dot.observerNotes.trim()
     val accent = (if (dot.accentArgb != 0) Color(dot.accentArgb) else MaterialTheme.colorScheme.onSurfaceVariant)
         .nightIf(LocalNightMode.current)

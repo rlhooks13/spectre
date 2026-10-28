@@ -314,7 +314,12 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - The detail and AI-export share subjects read definite matches only, and so do the bookmark, watch and mine label suggestions (a saved label becomes the TAK callsign).
         - The AI prompt and Debrief "signed" / "signature-matched" counts are definite only.
         - Signature notes are marked.
-      - **P1-B8c3 (before the flag turns on):** in-app text that shows the English "(possible)" goes through `ui.signature.possible`. Two places: the Reports path list and the live map read `Dot.fleetNames`, and the detail screen's signature notes read `signatureNotes`. Carry the possible ids on `Dot` and format in the UI.
+      - ✅ **P1-B8c3 (before the flag turns on):** as built:
+        - `Dot` keeps plain `fleetNames`, plus index-aligned `fleetIds` and `possibleFleetIds`. It marks by id: `exportFleetNames()` (English, for the PDF) and `shownFleetNames(marker)` (the key, for the Reports path row).
+        - `SitDiff.Radio` keeps plain names, and `markedFleetNames()` marks its compare text.
+        - The one format is `possibleMarked(…, marker)`, and `signatureNotes(fleets, marker)` uses it.
+        - The detail screen's notes use the key.
+        - The Live sorts by name and by signatures read definite matches. The original task: in-app text that shows the English "(possible)" goes through `ui.signature.possible`. Two places: the Reports path list and the live map read `Dot.fleetNames`, and the detail screen's signature notes read `signatureNotes`. Carry the possible ids on `Dot` and format in the UI.
         - sit export and the log;
         - CoT remarks;
         - the AI prompt;
