@@ -2,18 +2,18 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-C2 Storage**, after P1-C1 merges. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P0-7c Remove the dontgetflocked download**, then **P0-7e Bundled OSM camera snapshot** (both before 0.1.0; owner decision 2026-10-27, ADR-0018). Then **P1-C2 Storage**. P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
-  - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
+  - **Never contact dontgetflocked, tests included:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. The owner chose OpenStreetMap on 2026-10-27 (ADR-0018). P0-7c removes the download, and P0-7e bundles an OSM snapshot built by one Overpass query per data build.
   - **Deferred:**
     - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
+  - **Waiting on the owner:** the co-travel flag question; the late-tail flag's captures; where the plugin MCP servers seen on 2026-10-28 came from.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/c1-location`
+- Branch: `p0/7c-camera-data-adr`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
   - Since 2026-10-28, `install --no-streaming` itself sometimes hangs (3 of 4 tries), while `adb push` (0.4 s) and `pm path` respond.
@@ -44,7 +44,7 @@
 - Host power settings (SETUP.md).
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
 - On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
-- **P0-7c layer choice:** an OpenStreetMap-sourced plate-reader layer, or dropping the download. The dontgetflocked terms (Open Road Labs LLC) forbid automated or bulk requests, so the agent never downloads from it.
+- ~~**P0-7c layer choice:**~~ Decided 2026-10-27: OpenStreetMap, plus "Not on the map yet" (ADR-0018).
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -83,6 +83,25 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **Owner decision on P0-7c recorded (ADR-0018).** #77 (P1-C1) merged as 75a849a.
+  - **The decision (owner, 2026-10-27, through the session):** option A, OpenStreetMap, plus "Not on the map yet".
+    1. Remove the dontgetflocked download before the first public release.
+    2. Replace it with a bundled OSM snapshot (`man_made=surveillance` + `surveillance:type=ALPR`, manufacturer tags kept), built with one Overpass query per data build. ODbL file and "© OpenStreetMap contributors" credit. No phone network request.
+    3. Phase 4: snapshot updates as signed data releases on the catalog channel.
+    4. After P1-B: "Not on the map yet", behind a flag that depends on the classifier.
+  - **The agent's choices (ADR-0018):**
+    - coverage worldwide (nodes and way centers);
+    - only position, facing and manufacturer tags;
+    - format `spectre-alpr-1` (gzipped compact JSON), committed under `catalog/osm/`;
+    - at most 4 MiB and 400,000 cameras;
+    - unmapped radius 100 m from the loudest hear point, with accuracy of 30 m or better, tuned by captures.
+  - **PLAN:**
+    - P0-7c rewritten (remove);
+    - P0-7e added (snapshot);
+    - P1-B11 added ("Not on the map yet", with tests and acceptance);
+    - P4-7 added (signed snapshot updates);
+    - the risk row and the default updated.
+    - Also fixed: the P1-B8c3 entry had landed inside P1-B8c2's list.
 - 2026-10-28: **P1-C1 Location.** #76 (P1-B8c3) merged as 0229c2b.
   - **Before:** ScanService stamped every batch of hears with `app.lastFix`, and sent it as TAK's self position, however old it was. After GPS was lost, new hears got the place the phone had left, and TAK kept placing the operator there.
   - **Now:**

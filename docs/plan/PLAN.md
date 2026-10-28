@@ -205,14 +205,23 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
    - The "Nothing is transmitted" line (`ChromeLines.kt:556`) becomes accurate copy about receive-only scanning.
    - Disable the in-app GitHub catalog update until Phase 4.
    - Sensor list: ship `scripts/build_sensors.py` (Overpass, ODbL license file, "© OpenStreetMap contributors" in the UI and exports), or turn the layer off.
-   - dontgetflocked: show its operator and terms before download, cap the size, validate the schema. The agent handles only counts and hashes from it.
+   - Camera layer (owner decision 2026-10-27, ADR-0018): remove the dontgetflocked download, and replace it with a bundled OpenStreetMap snapshot of mapped plate-reader cameras.
    - Add a region notice for camera alerts (DE/CH/FR restrictions).
    - Split into sub-steps:
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
      - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
-     - **P0-7c** dontgetflocked: operator and terms before download, size cap, schema validation. **Partial (stays open):**
-       - Done: the dialog and the layer note name the source host, say Spectre doesn't run it, point to its terms and credit OpenStreetMap (ODbL). The download must come from that host over HTTPS (redirects elsewhere fail). Parse limits cover depth, string length, unpacked size and duplicates.
-       - Open: the operator's name and the terms themselves (needs-human). Then strict GeoJSON type checks, an atomic install, and download tests against a local server.
+     - **P0-7c Remove the dontgetflocked download** (owner decision 2026-10-27, ADR-0018 §1; before 0.1.0).
+       - Remove the code path, the URL and the dialog. `NetworkPolicy` and `EgressInventoryTest` lose the endpoint.
+       - Formats only grow: retired language keys keep the value "Unused", and serialized fields and the `SensorList` entry stay, inert.
+       - A previously downloaded camera file stops being read and is deleted on upgrade.
+       - Never contact dontgetflocked, tests included.
+       - Earlier partial work (source-host dialog, HTTPS-only, parse limits) is superseded; the parse limits carry over to the snapshot reader.
+     - **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c):
+       - `scripts/build_alpr.py`, the P1-E5 approach: one Overpass query per data build, downloaded into a new empty directory, treated as data.
+       - The snapshot is committed under `catalog/osm/` and copied to `assets/cameras/osm-alpr.json.gz` (format `spectre-alpr-1`).
+       - Worldwide, with position, facing and manufacturer tags only. At most 4 MiB and 400,000 cameras; the script and a test fail over either.
+       - `LICENSE-ODbL.txt` in the repo and the APK. "© OpenStreetMap contributors" in the UI, the PDF and the exports (exports stay English).
+       - The phone makes no network request for this layer.
      - ✅ **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
@@ -314,26 +323,47 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
         - The detail and AI-export share subjects read definite matches only, and so do the bookmark, watch and mine label suggestions (a saved label becomes the TAK callsign).
         - The AI prompt and Debrief "signed" / "signature-matched" counts are definite only.
         - Signature notes are marked.
-      - ✅ **P1-B8c3 (before the flag turns on):** as built:
+        - The marked outputs:
+          - sit export and the log;
+          - CoT remarks;
+          - the AI prompt;
+          - Debrief signature lines and charts;
+          - `SitDiff` names;
+          - `DeviceDetailText`;
+          - the sit-map dot's `fleetNames`.
+        - The by-signature Live filters keep matching possible hits, which their chips mark.
+      - ✅ **P1-B8c3 In-app "(possible)" through the language key** (before the flag turns on). The task: in-app text that shows the English "(possible)" goes through `ui.signature.possible`. Two places: the Reports path list and the live map read `Dot.fleetNames`, and the detail screen's signature notes read `signatureNotes`. Carry the possible ids on `Dot` and format in the UI. As built:
         - `Dot` keeps plain `fleetNames`, plus index-aligned `fleetIds` and `possibleFleetIds`. It marks by id: `exportFleetNames()` (English, for the PDF) and `shownFleetNames(marker)` (the key, for the Reports path row).
         - `SitDiff.Radio` keeps plain names, and `markedFleetNames()` marks its compare text.
         - The one format is `possibleMarked(…, marker)`, and `signatureNotes(fleets, marker)` uses it.
         - The detail screen's notes use the key.
-        - The Live sorts by name and by signatures read definite matches. The original task: in-app text that shows the English "(possible)" goes through `ui.signature.possible`. Two places: the Reports path list and the live map read `Dot.fleetNames`, and the detail screen's signature notes read `signatureNotes`. Carry the possible ids on `Dot` and format in the UI.
-        - sit export and the log;
-        - CoT remarks;
-        - the AI prompt;
-        - Debrief signature lines and charts;
-        - `SitDiff` names;
-        - `DeviceDetailText`;
-        - the sit-map dot's `fleetNames`.
-        - The by-signature Live filters keep matching possible hits, which their chips mark.
+        - The Live sorts by name and by signatures read definite matches.
   - **P1-B8 BLE address classifier.**
     - On API 35+, use addressType.
     - Otherwise the class is **UNKNOWN** unless there's evidence: an ecosystem that requires random addresses (Apple 0x004C, FD5A, FD6F, Find Hub) means random; persistence over 20 minutes means stable.
     - Recomputed on every merge.
     - An OUI-only BLE hit on a non-PUBLIC/STATIC address shows as "possible", with no attention card or alert, unless a non-OUI rule backs it up.
     - `RadioDb.vendorForMac` skips random addresses.
+  - **P1-B11 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5). Depends on P1-B8 (the classifier) and P0-7e (the snapshot). Behind `Features.UNMAPPED_CAMERA = false`, which can't turn on before `Features.BLE_ADDRESS_CLASSIFIER`.
+    - **Strong Flock radio hit:**
+      - a Wi-Fi SSID matching `Flock-*`;
+      - the OUI `B4:1E:52` on a universally administered Wi-Fi address;
+      - the OUI `B4:1E:52` on a BLE address the classifier calls PUBLIC or STATIC.
+      - Never an OUI-only match on a random, rotating or unknown BLE address. Invariant 1: weak matches stay "possible" and are never labeled unmapped.
+    - **Unmapped:** a strong hit with no snapshot ALPR camera within 100 m of its loudest hear point. That point is a current phone fix (P1-C1) with accuracy of 30 m or better. 100 m is tuned by the acceptance captures, and any change is recorded in ADR-0018.
+    - **Export (user-initiated only):** a GeoJSON Point and a GPX waypoint through the share sheet, for the user to submit to OpenStreetMap or DeFlock.
+      - It holds the estimated point, its accuracy, the hear time and the suggested tags.
+      - It says the point is estimated, not surveyed, and it has no MAC or SSID.
+      - Nothing uploads automatically. Any network action goes through `NetworkPolicy` and the user's choice.
+    - **Tests:**
+      - a strong hit near a mapped camera isn't labeled;
+      - a strong hit 150 m from one is;
+      - an OUI-only random-BLE hit never is;
+      - the export carries no MAC or SSID.
+    - **Flag acceptance (owner captures):**
+      - a drive past at least 3 mapped Flock cameras, with none labeled unmapped;
+      - at least 1 known unmapped camera, which is labeled;
+      - a no-camera drive, with no label.
   - ✅ **P1-B9 Late-tail fix** (code behind `Features.LATE_TAIL_FIX = false`; the flag waits for its captures).
     - Coverage counted from first-heard, used **only inside `possibleTail`**.
     - **OWN_LIKELY requires `presentAtStart`.**
@@ -514,6 +544,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - A **beta** pointer gets the catalog for 7 days before the **stable** pointer.
   - A small signed **`disable:[ids]` kill list** is checked often and is the fast fix for a bad signature.
 - **P4-6 The in-app update returns**, gated by `NetworkPolicy` and the first-run choice.
+- **P4-7 Camera snapshot updates** (ADR-0018 §4): the OSM plate-reader snapshot ships as signed data releases on the catalog channel (P4-4 signing, P4-5 beta/stable pointers), never as per-phone Overpass queries. A tampered snapshot is rejected like a tampered catalog.
 - **Exit:** a signed update installs on the phone and a tampered one is rejected. ADR-0007, ADR-0008.
 
 ### Phase 5: App decomposition → 0.4.0 (L)
@@ -726,7 +757,7 @@ They share one model, so the objective checks carry the most weight: tests, the 
 | The loop dies (7-day expiry, reboot, a 3-block stall) | Day-6 re-creation, `dontAsk` mode, the restart runbook, `PROGRESS.md` resume pointer, push notifications |
 | The phone is lost (adb authorization timeout, unplugged) | USB with the timeout disabled; device-offline mode |
 | The "Spectre" name collides | Display name in a single `Brand` object; distinct icon; NOTICE lineage statement |
-| Licensing and data: ODbL, dontgetflocked terms, camera-alert laws | ODbL file and attribution; terms shown before download; region notice |
+| Licensing and data: ODbL, third-party data terms, camera-alert laws | No third-party camera download (dontgetflocked removed, ADR-0018); a bundled OSM snapshot built by one Overpass query per data build; ODbL license file in the repo and APK; "© OpenStreetMap contributors" in the UI, PDF and exports; region notice |
 | The corpus leaks bystander data | Field-level scrubbing, the leak test, private repo, raw captures deleted |
 | A stale stock rule becomes a user override | Ladder plus three-way diff against the snapshots; the retired list |
 | Goldens are blessed wrongly, or R8 breaks after a move | Every golden diff justified; staging smoke test on the device |
@@ -737,7 +768,7 @@ They share one model, so the objective checks carry the most weight: tests, the 
 - Catalog channel: release assets plus a beta/stable pointer.
 - User `fieldwatch-language` packs are still accepted.
 - READ_PHONE_STATE is requested only when that feature is turned on.
-- dontgetflocked stays an optional download.
+- The camera layer is a bundled OpenStreetMap snapshot (ADR-0018). There's no third-party camera download, and the phone makes no request for the layer. (This replaces "dontgetflocked stays an optional download", by the owner's decision of 2026-10-27.)
 - Git history is kept.
 - TAK testing uses a local open-source server.
 - The phone's model and API level are detected in Phase 0. Without an Android 15+ phone, the BLE classifier flag stays off until the owner's captures pass.
