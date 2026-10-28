@@ -7,7 +7,7 @@
 - **AirLink** (vehicle): class law enforcement → vehicle; no longer flagged for extra attention; notes reworded.
 - **Apple AirTags** (finder): stopped matching on name contains "Find My"; Bluetooth company id 0x004C data starting 12; service uuid "FD44"; notes reworded.
 - **Amazon** (home): stopped matching on name contains "Echo" (BLE); now also matches on name glob "Echo" (BLE); name glob "Echo *" (BLE); name glob "Echo-*" (BLE); name glob "Echo_*" (BLE).
-- **Arlo** (camera): stopped matching on name contains "Arlo"; oui "FC:9C:98"; now also matches on oui "FC:9C:98" (WIFI).
+- **Arlo** (camera): stopped matching on name contains "Arlo"; now Wi-Fi only: oui "FC:9C:98".
 - **ASUS** (isp): stopped matching on name contains "ASUS" (WIFI).
 - **Audi MMI** (vehicle): stopped matching on name contains "Audi" (BLE); now also matches on name glob "Audi" (BLE); name glob "Audi *" (BLE); name glob "Audi-*" (BLE); name glob "Audi_*" (BLE).
 - **BlueTOAD Spectra** (surveillance): notes reworded.
@@ -26,12 +26,12 @@
 - **Ford** (vehicle): stopped matching on name contains "Ford" (BLE); now also matches on name glob "Ford" (BLE); name glob "Ford *" (BLE); name glob "Ford-*" (BLE); name glob "Ford_*" (BLE).
 - **goTenna** (mesh): notes reworded.
 - **Hak5 Pineapple** (hacking): stopped matching on name contains "Hak5".
-- **Hatch** (home): stopped matching on oui "C8:FA:9C"; now also matches on oui "C8:FA:9C" (WIFI).
+- **Hatch** (home): now Wi-Fi only: oui "C8:FA:9C".
 - **Hobby BLE serial** (hacking): attention note reworded; stopped matching on name contains "BT05" (BLE); now also matches on name glob "BT05" (BLE); name glob "BT05 *" (BLE); name glob "BT05-*" (BLE); name glob "BT05_*" (BLE); notes reworded.
 - **HP** (home): stopped matching on name contains "ENVY" (BLE); now also matches on name glob "HP ENVY*" (BLE).
 - **JBL / Harman** (audio): stopped matching on name contains "JBL" (BLE); now also matches on name glob "JBL" (BLE); name glob "JBL *" (BLE); name glob "JBL-*" (BLE); name glob "JBL_*" (BLE).
 - **Kevo** (lock): stopped matching on name contains "Kevo" (BLE).
-- **LiteOn Wi-Fi module** (other): renamed from LiteOn camera radio; class camera → other; stopped matching on oui "D8:F3:BC"; oui "C0:35:32"; oui "E0:0A:F6"; oui "E4:AA:EA"; oui "F4:6A:DD"; oui "F8:A2:D6"; oui "D0:39:57"; oui "E8:D0:FC"; vendor ie oui "00:80:19"; now also matches on oui "D8:F3:BC" (WIFI); oui "C0:35:32" (WIFI); oui "E0:0A:F6" (WIFI); oui "E4:AA:EA" (WIFI); oui "F4:6A:DD" (WIFI); oui "F8:A2:D6" (WIFI); oui "D0:39:57" (WIFI); oui "E8:D0:FC" (WIFI); notes reworded.
+- **LiteOn Wi-Fi module** (other): renamed from LiteOn camera radio; class camera → other; stopped matching on vendor ie oui "00:80:19"; now Wi-Fi only: oui "D8:F3:BC", oui "C0:35:32", oui "E0:0A:F6", oui "E4:AA:EA", oui "F4:6A:DD", oui "F8:A2:D6", oui "D0:39:57", oui "E8:D0:FC"; notes reworded.
 - **Logitech** (home): stopped matching on name contains "Logi" (BLE); now also matches on name glob "Logi" (BLE); name glob "Logi *" (BLE); name glob "Logi-*" (BLE); name glob "Logi_*" (BLE).
 - **Mercedes MBUX** (vehicle): stopped matching on name contains "MBUX" (WIFI).
 - **Microsoft Device** (phone): stopped matching on name contains "Xbox" (BLE); now also matches on name glob "Xbox" (BLE); name glob "Xbox *" (BLE); name glob "Xbox-*" (BLE); name glob "Xbox_*" (BLE).
@@ -40,9 +40,9 @@
 - **Nuki** (lock): stopped matching on name contains "Nuki" (BLE).
 - **Oura** (wearable): stopped matching on name contains "Oura" (BLE); now also matches on name glob "Oura" (BLE); name glob "Oura *" (BLE); name glob "Oura-*" (BLE); name glob "Oura_*" (BLE).
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).
-- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; oui "D4:11:D6"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI); oui "D4:11:D6" (WIFI).
+- **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI); now Wi-Fi only: oui "D4:11:D6".
 - **Reveal Media** (law enforcement): attention note reworded; stopped matching on name contains "BodyWorn"; name glob "BodyWorn*"; name glob "RS2-*"; notes reworded.
-- **Rhombus** (surveillance): attention note reworded; stopped matching on oui "CC:47:BD"; now also matches on oui "CC:47:BD" (WIFI).
+- **Rhombus** (surveillance): attention note reworded; now Wi-Fi only: oui "CC:47:BD".
 - **ASSA ABLOY** (lock): stopped matching on name contains "Seos" (BLE); name contains "Yale" (BLE); now also matches on name glob "Seos" (BLE); name glob "Seos *" (BLE); name glob "Seos-*" (BLE); name glob "Seos_*" (BLE).
 - **Samsung SmartTags** (finder): stopped matching on name contains "SmartTag"; name contains "Smart Tag"; name contains "Galaxy SmartTag"; Bluetooth company id 0x0075; now also matches on name glob "Smart Tag" (BLE); name glob "Smart Tag2" (BLE); name glob "Galaxy SmartTag*" (BLE); decoded fields changed.
 - **Sony** (audio): stopped matching on name contains "Sony" (BLE); now also matches on name glob "Sony" (BLE); name glob "Sony *" (BLE); name glob "Sony-*" (BLE); name glob "Sony_*" (BLE); notes reworded.
@@ -50,7 +50,7 @@
 - **Tile Trackers** (finder): stopped matching on name contains "Tile"; service uuid "FEDD"; Bluetooth company id 0x00C7; now also matches on name glob "Tile" (BLE); Bluetooth company id 0x067C.
 - **Tuya** (home): stopped matching on name contains "TUYA" (BLE).
 - **UniFi AP** (isp): stopped matching on name contains "UBNT" (WIFI).
-- **Uniview** (surveillance): stopped matching on oui "C4:79:05"; now also matches on oui "C4:79:05" (WIFI).
+- **Uniview** (surveillance): now Wi-Fi only: oui "C4:79:05".
 - **Utility Inc** (law enforcement): attention note reworded; now also matches on name glob "BodyWorn*"; notes reworded.
 - **Motorola Vigilant** (surveillance): stopped matching on name contains "Vigilant"; now also matches on name glob "Vigilant"; name glob "Vigilant-*"; name glob "Vigilant_*".
 - **Volkswagen** (vehicle): stopped matching on name contains "VW" (BLE); now also matches on name glob "VW" (BLE); name glob "VW *" (BLE); name glob "VW-*" (BLE); name glob "VW_*" (BLE).

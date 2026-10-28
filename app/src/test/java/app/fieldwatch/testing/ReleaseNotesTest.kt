@@ -3,8 +3,10 @@ package app.fieldwatch.testing
 import app.fieldwatch.data.ConfigStore
 import app.fieldwatch.domain.DefaultCatalog
 import app.fieldwatch.domain.MatchRule
+import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.RuleKind
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
@@ -81,6 +83,26 @@ class ReleaseNotesTest {
         assertTrue(ReleaseNotes.problems(dir).any { it.contains("0.1.1.md: starts at") })
         File(dir, "0.2.0.md").writeText("Only hand-written.\n")
         assertTrue(ReleaseNotes.problems(dir).any { it.contains("0.2.0.md: no generated block") })
+    }
+
+    /** P1-B12e: an any-radio rule replaced by the same rule on one radio reads as a narrowing. */
+    @Test
+    fun aNarrowedRadioReadsAsOneChange() {
+        val stock = DefaultCatalog.fleets()
+        val tile = stock.single { it.id == "fleet-tile" }
+        val anyRadio = MatchRule(RuleKind.OUI, text = "12:34:56")
+        val before = stock.map { if (it.id == "fleet-tile") it.copy(rules = it.rules + anyRadio) else it }
+        val after = stock.map { if (it.id == "fleet-tile") it.copy(rules = it.rules + anyRadio.copy(radio = RadioKind.WIFI)) else it }
+        val line = ReleaseNotes.signatures(1, 2, before, after).lines().single { it.startsWith("- **${tile.name}**") }
+        assertTrue(line, line.contains("now Wi-Fi only: oui \"12:34:56\""))
+        assertFalse(line, line.contains("stopped matching") || line.contains("now also matches"))
+        // Split across both radios, or switched off as well: not a plain narrowing.
+        val split = stock.map { if (it.id == "fleet-tile") it.copy(rules = it.rules + anyRadio.copy(radio = RadioKind.WIFI) + anyRadio.copy(radio = RadioKind.BLE)) else it }
+        val splitLine = ReleaseNotes.signatures(1, 2, before, split).lines().single { it.startsWith("- **${tile.name}**") }
+        assertFalse(splitLine, splitLine.contains(" only:"))
+        val offToo = stock.map { if (it.id == "fleet-tile") it.copy(rules = it.rules + anyRadio.copy(radio = RadioKind.WIFI, enabled = false)) else it }
+        val offLine = ReleaseNotes.signatures(1, 2, before, offToo).lines().single { it.startsWith("- **${tile.name}**") }
+        assertFalse(offLine, offLine.contains(" only:"))
     }
 
     /** The diff names cluster settings and switched rules plainly. */
