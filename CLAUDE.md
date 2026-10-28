@@ -42,8 +42,10 @@ Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a 
 | All checks (once P0 adds them) | `./gradlew check` |
 | Debug APK | `./gradlew assembleDebug` |
 | Staging APK (minified, test-signed; after P0) | `./gradlew assembleStaging` |
-| Regenerate the stock catalog pack | `WRITE_STOCK_CATALOG=1 ./gradlew testDebugUnitTest --tests '*StockCatalogFileTest*'` |
-| Re-bless goldens (after P1-A) | `UPDATE_GOLDEN=1 ./gradlew testDebugUnitTest`, then justify every changed golden in the PR |
+| Regenerate the stock catalog pack and its snapshot | `WRITE_STOCK_CATALOG=1 ./gradlew testDebugUnitTest --tests '*StockCatalogFileTest*'`, or `-PwriteStockCatalog` instead of the variable |
+| Re-bless goldens (after P1-A) | `UPDATE_GOLDEN=1 ./gradlew testDebugUnitTest` (or `-PupdateGolden`), then justify every changed golden in the PR |
+| Write or refresh a release's generated notes block | `./gradlew testDebugUnitTest --tests '*ReleaseNotesTest*' -PreleaseNotes=X.Y.Z` |
+| Drop retired ("Unused") keys from the bundled language packs | `./gradlew testDebugUnitTest -PpruneLanguagePacks` |
 | Test count | sum `tests=` over `app/build/test-results/**/*.xml` (later every module), compared with `docs/plan/test-baseline.txt` |
 
 ## Code rules that bite (verified facts about this codebase)
@@ -53,7 +55,7 @@ Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a 
   - Add English with `en("key","English",LanguageSlot.X)` in `ChromeLines.all` or `LanguageCopy.buildLines`.
   - Keys match `^[a-z0-9]+(\.[a-z0-9]+)+$`.
   - List every new key in `LanguageKeyRevisions` at revision `NEWEST` (ADR-0013). The first key-adding PR after a release raises `NEWEST`. A key left out of the table falls to revision 1, which is frozen, so `LanguageKeyRevisionTest` fails.
-  - A line whose meaning changes gets a new key. The old key stays, with the value "Unused".
+  - A line whose meaning changes gets a new key. The old key stays, with the value "Unused". Then run `-PpruneLanguagePacks` (see Commands), so the bundled packs drop their translations of it; `BundledPackRetiredKeysTest` fails until you do.
   - **Never rename a key**, including the 29 that contain "fieldwatch".
   - An unknown key renders as the raw key string.
   - Exports and CoT stay English.
@@ -97,7 +99,7 @@ Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a 
 ## Device checklist (dedicated phone)
 
 ```
-adb -s $SERIAL install -r <apk>
+adb -s $SERIAL install -r -g <apk>                             # -g grants runtime permissions (pm install -r -g too)
 adb -s $SERIAL shell am start -n <appId>/<launcher activity>
 adb -s $SERIAL logcat -d --pid=$(adb -s $SERIAL shell pidof <appId>) | grep -E "FATAL|ANR|AndroidRuntime"
 adb -s $SERIAL exec-out screencap -p > <scratch>/screen.png   # look at it
@@ -106,6 +108,13 @@ adb -s $SERIAL shell run-as <appId>.debug ls files/            # debug builds on
 ```
 
 `adb shell` reads stdin, so inside a script or heredoc give it `</dev/null`. Otherwise it swallows the rest of the script. Health checks during a soak filter by the app's package and UID. Device-touching work never runs during a battery-measurement window.
+
+### Setting up the test phone yourself (owner authorization, 2026-10-27)
+The dedicated test phone is yours to operate. For every Spectre debug and staging build, do the following yourself, and don't put them in Needs human:
+- **First-run disclaimer:** accept Spectre's own "Disclaimer and license" screen, and any later disclaimer revision. It's a step in testing our own app on the owner's test device. Tap through it with UI automation (`uiautomator dump`, then `input tap`) or an instrumented test, and check a screencap afterwards. Never add a code path that skips the disclaimer.
+- **Runtime permissions:** grant them over adb. Install with `-g`, or `pm grant <appId> <permission>` for each: location (background too), nearby devices (Bluetooth scan and connect), notifications. Use `appops` where a permission needs it.
+- **App data:** keep it between installs. Use `install -r`, and no `pm clear` or uninstall unless a test needs a fresh state. If one does, set the app back up yourself afterwards.
+- **Everything else adb can do:** taps, system settings, toggles and permissions are yours. Ask the owner only for what adb can't do: replugging the phone, a physical button, or field captures.
 
 ## Restart runbook (owner or agent)
 
