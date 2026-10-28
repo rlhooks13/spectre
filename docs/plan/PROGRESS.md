@@ -34,7 +34,7 @@
 ## Needs human (owner)
 **For the owner:**
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
-- **The Spectre debug build stops at its first-run "Disclaimer and license" screen.** The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
+- **The staging build (`io.github.rlhooks13.spectre.staging`) still shows the first-run "Disclaimer and license" screen** (screencap 2026-10-28 20:04 phone time). The owner accepted it on the debug build (`io.github.rlhooks13.spectre.debug`), which now opens on Live. The agent never accepts it, so please accept it on staging once.
 - **CLAUDE.md (protected), if you agree:** exempt OSM snapshot refresh PRs (data, `catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2).
 
 **Still open:**
