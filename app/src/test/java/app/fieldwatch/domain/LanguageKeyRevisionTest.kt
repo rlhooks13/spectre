@@ -17,7 +17,7 @@ class LanguageKeyRevisionTest {
     fun revisionsFollowTheReleasesThatAddedKeys() {
         // Counts read from each Fieldwatch release commit (3ebda52, a2563a3, 73d1006, da086fc, 819365d);
         // revision 6 is Spectre's own, open until its first release.
-        assertEquals(listOf(1099, 5, 2, 53, 69, 29), (1..6).map(::count))
+        assertEquals(listOf(1099, 5, 2, 53, 69, 30), (1..6).map(::count))
         assertEquals(6, EnglishCopy.KEY_REVISION)
         assertEquals(EnglishCopy.KEY_REVISION, EnglishCopy.lines.maxOf { it.revision })
         assertTrue(EnglishCopy.byKey.keys.containsAll(LanguageKeyRevisions.listed))

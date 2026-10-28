@@ -91,12 +91,20 @@ class MatchCorpusTest {
         }
     }
 
+    /**
+     * Matching still hits these by design. With the classifier on (P1-B8b), each reads as "possible": no attention
+     * card, no alert. The `knownUntil = "P1-B8"` marker stays until the flag turns on.
+     */
     @Test
     fun randomAddressOuiHitsStillMatchUntilTheClassifierLabelsThem() {
         val cases = MatchCorpus.randomAddressOuiHits
         val hits = engine.match(cases.map { it.sighting }, fleets)
         for (case in cases) {
             assertTrue(case.label, hits.getValue(case.sighting.key).containsAll(case.mustNotMatch))
+            val matched = case.sighting.copy(fleetIds = hits.getValue(case.sighting.key))
+            val read = BleAddress.reading(matched, byId, engine, enabled = true)
+            assertTrue("${case.label} reads as possible", read.possibleFleetIds.containsAll(case.mustNotMatch))
+            assertTrue("${case.label} has no attention card", read.attentionNotes(fleets).isEmpty())
             // Top two bits 00 or 01: a real random address, as the fixture claims.
             val top = case.sighting.mac.take(2).toInt(16) shr 6
             assertTrue(case.label, top == 0 || top == 1)

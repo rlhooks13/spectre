@@ -1,5 +1,7 @@
 package app.fieldwatch.data
 
+import app.fieldwatch.domain.BleAddress
+import app.fieldwatch.domain.Features
 import app.fieldwatch.domain.Observation
 import app.fieldwatch.domain.OuiLookup
 import app.fieldwatch.domain.PresenceSpan
@@ -183,11 +185,13 @@ class DeviceStore(
                 fastPairPairing = existing.fastPairPairing || FastPair.pairingAdvertised(observation.facts),
             )
         }
-        live[key] = merged
+        // P1-B8 (flag-gated): no OUI vendor on a rotating BLE address, on every advertisement, not only after a match.
+        val read = BleAddress.withoutRotatingVendor(merged)
+        live[key] = read
         if (observation.kind == app.fieldwatch.domain.RadioKind.WIFI && observation.fresh) {
             lastWifiBatchAt = System.currentTimeMillis()
         }
-        return merged
+        return read
     }
 
     private fun relabel(
@@ -214,17 +218,26 @@ class DeviceStore(
         val pool: Collection<Sighting> = if (cluster) live.values else dirty
         val matches = engine.match(pool, fleets)
         val update = if (cluster) ArrayList(live.values) else dirty
+        val byId = if (Features.BLE_ADDRESS_CLASSIFIER) fleets.associateBy { it.id } else emptyMap()
         for (d in update) {
             val cur = live[d.key] ?: continue
             val ids = matches[cur.key] ?: emptySet()
-            val labeled = if (ids == cur.fleetIds) cur else cur.copy(fleetIds = ids)
+            val labeled = addressReading(if (ids == cur.fleetIds) cur else cur.copy(fleetIds = ids), byId)
             val next = PayloadLocation.applySticky(labeled, fleets, heard[cur.key]).withLiveDecode(fleets)
             if (next !== cur) live[cur.key] = next
             matchStamp[cur.key] = matchIdentity(next)
         }
     }
 
-    /** Name, vendor IEs, UUIDs, manufacturer payloads — not RSSI / GPS / gone. */
+    /**
+     * P1-B8, behind [Features.BLE_ADDRESS_CLASSIFIER]: which matches are "possible" (vendor prefix only on an address
+     * that isn't public or static), and no OUI vendor on a random BLE address, whose leading bytes mean nothing.
+     * Recomputed with every match. [byId] is empty while the flag is off, and the sighting comes back as it was.
+     */
+    private fun addressReading(device: Sighting, byId: Map<String, Fleet>): Sighting =
+        BleAddress.reading(device, byId, engine)
+
+    /** Name, vendor IEs, UUIDs, manufacturer payloads, BLE address type — not RSSI / GPS / gone. */
     private fun matchIdentity(device: Sighting): String {
         val ies = device.vendorIeOuis
         val uuids = device.serviceUuids
@@ -246,6 +259,9 @@ class DeviceStore(
             mfg.forEach { append(it.companyId); append('='); append(it.dataHex); append(',') }
             append('\u0001')
             sd.forEach { append(it.uuid); append('='); append(it.dataHex); append(',') }
+            // A newly learned address type changes what's "possible" (P1-B8).
+            append('\u0001')
+            append(device.facts.addressType.orEmpty())
         }
     }
 

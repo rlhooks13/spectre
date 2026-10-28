@@ -109,6 +109,7 @@ import app.fieldwatch.domain.Palette
 import app.fieldwatch.domain.RadarPlot
 import app.fieldwatch.domain.RadioKind
 import app.fieldwatch.domain.Sighting
+import app.fieldwatch.domain.definiteFleetIds
 import app.fieldwatch.domain.SignatureClass
 import app.fieldwatch.ui.ClassGlyphs
 import app.fieldwatch.ui.RadioClassBadge
@@ -754,7 +755,7 @@ private fun liveEmpty(state: FieldwatchUi, fallback: String): String {
 private fun Sighting.rowTitle(vm: FieldwatchViewModel): String {
     val watch = vm.watchLabelFor(key)
     if (!watch.isNullOrBlank()) return watch
-    return listTitle(fleetIds.map { vm.fleetName(it) })
+    return listTitle(vm.definiteNames(this))
 }
 
 @Composable
@@ -1622,7 +1623,7 @@ fun DeviceRow(
                     Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(1.dp),
                 ) {
-                    val names = device.fleetIds.map { vm.fleetName(it) }
+                    val names = vm.definiteNames(device)
                     val watch = vm.watchLabelFor(device.key)
                     val crumbs = device.statusCrumbs()
                     val showSub = subtitleLine != ListLine.NONE
@@ -1828,7 +1829,7 @@ private fun FleetNameChips(
                 ) {
                     Text(
                         if (id == FastPair.FLEET_ID) FastPair.liveLabel(device.fastPairPairing)
-                        else vm.fleetName(id),
+                        else vm.signatureLabel(device, id),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = TextStyle(
@@ -1975,11 +1976,11 @@ private fun TimelineView(
                 Column(Modifier.padding(12.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioClassBadge(
-                            classKind = device.fleetIds.firstOrNull()?.let { vm.fleetKind(it) },
+                            classKind = device.definiteFleetIds.firstOrNull()?.let { vm.fleetKind(it) },
                             accent = color,
                         )
                         Spacer(Modifier.width(8.dp))
-                        val names = device.fleetIds.map { vm.fleetName(it) }
+                        val names = vm.definiteNames(device)
                         val watch = vm.watchLabelFor(device.key)
                         val crumbs = device.statusCrumbs()
                         val showSub = subtitleLine != ListLine.NONE
@@ -2008,7 +2009,7 @@ private fun TimelineView(
                         }
                     }
                     if (subtitleLine != ListLine.NONE) {
-                        val names = device.fleetIds.map { vm.fleetName(it) }
+                        val names = vm.definiteNames(device)
                         val watch = vm.watchLabelFor(device.key)
                         val sub = listSubtitle(device, subtitleLine, names, demoMode, watch)
                         RadioKindSubtitle(device.kind, sub)

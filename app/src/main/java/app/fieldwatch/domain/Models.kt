@@ -470,11 +470,21 @@ fun List<Fleet>.groupedByClass(): List<Pair<SignatureClass, List<Fleet>>> =
         .sortedBy { it.first.label().lowercase() }
         .map { (kind, rows) -> kind to rows.sortedBy { it.name.lowercase() } }
 
-/** Signature name + Extra attention text for every matched signature on this radio that has one. */
+/**
+ * The matches that count as definite: every match except a "possible" one (P1-B8, [Sighting.possibleFleetIds]).
+ * Attention, alerts, TAK and titles read this; a possible match is shown only as possible.
+ */
+val Sighting.definiteFleetIds: Set<String>
+    get() = if (possibleFleetIds.isEmpty()) fleetIds else fleetIds - possibleFleetIds
+
+/**
+ * Signature name + Extra attention text for every matched signature on this radio that has one. A "possible" match
+ * ([Sighting.possibleFleetIds]) gets no attention card.
+ */
 fun Sighting.attentionNotes(fleets: List<Fleet>): List<Pair<String, String>> {
     if (fleetIds.isEmpty()) return emptyList()
     val byId = fleets.associateBy { it.id }
-    return fleetIds.mapNotNull { id ->
+    return definiteFleetIds.mapNotNull { id ->
         val fleet = byId[id] ?: return@mapNotNull null
         val note = fleet.attentionNote.trim()
         if (note.isEmpty()) null else fleet.name to note
@@ -1493,6 +1503,12 @@ data class Sighting(
     val fleetIds: Set<String>,
     val rssiHistory: List<RssiSample>,
     val presence: List<PresenceSpan>,
+    /**
+     * Of [fleetIds], the ones matched only through a vendor prefix on a BLE address that isn't public or static
+     * (P1-B8, [BleAddress.possibleOnly]): shown as "possible", with no attention card or alert. Recomputed with every
+     * match. Always empty while [Features.BLE_ADDRESS_CLASSIFIER] is off.
+     */
+    val possibleFleetIds: Set<String> = emptySet(),
     val latitude: Double? = null,
     val longitude: Double? = null,
     val gone: Boolean = false,

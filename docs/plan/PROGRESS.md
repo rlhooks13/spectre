@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B8b Wiring**, after P1-B8a merges. Then P1-B9. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B9 Late-tail fix**, after P1-B8b merges. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b8a-ble-address-classifier`
+- Branch: `p1/b8b-address-wiring`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -77,6 +77,19 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B8b Address wiring (behind the flag).** #71 (P1-B8a) merged as da6e1ed.
+  - **Model:** `Sighting.possibleFleetIds` is a new field with a default, so the format only grows. It's set after every match by `BleAddress.reading` (from `DeviceStore`). A match recomputes when the address type arrives, because `matchIdentity` now includes it.
+  - **A "possible" match:**
+    - shows "Name (possible)" on Live chips and the detail screen's matched-signature list (`vm.signatureLabel`, new key `ui.signature.possible`);
+    - doesn't drive titles, guesses, the class colour or the TAK callsign, which read `Sighting.definiteFleetIds` only. (`DeviceExplain` strips parenthesized text, so a "(possible)" title would never have rendered.)
+    - gets no attention card (`attentionNotes`);
+    - doesn't raise a signature watch (`shouldRaiseWatch`);
+    - doesn't count as attention or watched in TAK.
+  - **Vendor:** a rotating BLE address gets no OUI vendor. This is applied on every advertisement in `DeviceStore.upsert` (`BleAddress.withoutRotatingVendor`), so the next merge can't restore it. A static random address keeps its vendor, as it keeps a definite match.
+  - **Flag off:** `reading` returns the sighting untouched, except that a leftover possible set is cleared.
+  - **Deferred to P1-B8c, before the flag turns on:** Sit pinning, exports, the log and CoT carry the possible state.
+  - **Environment note:** plugin MCP servers (engineering: github, asana, pagerduty; legal: box) showed up as configured and failed to connect. They aren't claude.ai servers and provided no tools. Flagged to the owner.
+  - **Corpus:** the random-address cases assert "possible" and no attention card with the classifier on; the `knownUntil = "P1-B8"` marker stays until the flag turns on.
 - 2026-10-27: **P1-B8a BLE address classifier (behind a flag).** #65 (P1-B7) merged as ffd6ee7.
   - **P1-B10:** it needs captures, so I opened field-capture issues #66–#70 (above) and moved on.
   - **P1-B8 split:** B8a is the domain pieces; B8b wires them into the UI, alerts, the vendor lookup and the corpus.

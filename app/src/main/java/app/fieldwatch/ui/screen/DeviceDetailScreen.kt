@@ -118,7 +118,7 @@ fun DeviceDetailScreen(
                 title = {
                     val custom = vm.watchLabelFor(device.key)
                     val title = custom?.takeIf { it.isNotBlank() }
-                        ?: device.listTitle(device.fleetIds.map { vm.fleetName(it) })
+                        ?: device.listTitle(vm.definiteNames(device))
                     Text(MacUtil.redactMacIn(title, device.mac, demoMode), maxLines = 1)
                 },
                 navigationIcon = {
@@ -260,7 +260,7 @@ fun DeviceDetailScreen(
                         if (lastSaved.isBlank() && draftNotes.isNotBlank()) {
                             val suggest = RadioBookmarks.suggestLabel(
                                 device,
-                                device.fleetIds.map { vm.fleetName(it) },
+                                vm.definiteNames(device),
                             )
                             lastSaved = suggest
                             nameDraft = suggest
@@ -304,7 +304,7 @@ fun DeviceDetailScreen(
                                 if (on && lastSaved.isBlank()) {
                                     val suggest = RadioBookmarks.suggestLabel(
                                         device,
-                                        device.fleetIds.map { vm.fleetName(it) },
+                                        vm.definiteNames(device),
                                     )
                                     lastSaved = suggest
                                     nameDraft = suggest
@@ -322,7 +322,7 @@ fun DeviceDetailScreen(
                 }
             }
 
-            val guess = DeviceExplain.guess(device, device.fleetIds.map { vm.fleetName(it) })
+            val guess = DeviceExplain.guess(device, vm.definiteNames(device))
             StickyHeight(device.key to "guess") { GuessCard(guess) }
             val attention = vm.attentionNotesFor(device)
             if (attention.isNotEmpty()) {
@@ -639,7 +639,7 @@ fun DeviceDetailScreen(
                     Meta(
                         LanguageText.text("ui.matched.signatures"),
                         device.fleetIds.joinToString("\n") { id ->
-                            val name = vm.fleetName(id)
+                            val name = vm.signatureLabel(device, id)
                             if (vm.fleetHasDecode(id)) "$name  ⬡" else name
                         },
                     )

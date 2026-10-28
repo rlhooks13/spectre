@@ -131,6 +131,54 @@ class BleAddressTest {
         assertEquals("Random", RadioFacts(addressType = "Random").merge(RadioFacts()).addressType)
     }
 
+    /** P1-B8b: after a match, a vendor-prefix-only hit on a rotating address is "possible", and it gets no OUI vendor. */
+    @Test
+    fun aReadingMarksPossibleMatchesAndDropsTheVendorOnARotatingAddress() {
+        val byId = fleets.associateBy { it.id }
+        val random = ble("48:62:64:4A:1B:2C", "Random", fleetIds = setOf("fleet-arlo")).copy(vendor = "Arlo Technologies")
+        val read = BleAddress.reading(random, byId, engine, enabled = true)
+        assertEquals(setOf("fleet-arlo"), read.possibleFleetIds)
+        assertEquals(null, read.vendor)
+        // A public address keeps both: the hit is definite and the OUI is the vendor.
+        val public = random.copy(facts = RadioFacts(addressType = "Public"))
+        val definite = BleAddress.reading(public, byId, engine, enabled = true)
+        assertTrue(definite.possibleFleetIds.isEmpty())
+        assertEquals("Arlo Technologies", definite.vendor)
+        // A static random address is definite too, so it keeps its vendor, matching its definite hit.
+        val static = random.copy(mac = "C8:62:64:4A:1B:2C")
+        val staticRead = BleAddress.reading(static, byId, engine, enabled = true)
+        assertTrue(staticRead.possibleFleetIds.isEmpty())
+        assertEquals("Arlo Technologies", staticRead.vendor)
+        // Flag off: unchanged, and a possible set left from when it was on is cleared.
+        assertTrue(BleAddress.reading(random, byId, engine, enabled = false) === random)
+        assertTrue(BleAddress.reading(read, byId, engine, enabled = false).possibleFleetIds.isEmpty())
+    }
+
+    /** The store's per-advertisement vendor skip: a rotating address loses its OUI vendor whether or not anything matched. */
+    @Test
+    fun noVendorOnARotatingAddressAtTheSource() {
+        val rotating = ble("48:62:64:4A:1B:2C", "Random").copy(vendor = "Arlo Technologies")
+        assertEquals(null, BleAddress.withoutRotatingVendor(rotating, enabled = true).vendor)
+        val static = rotating.copy(mac = "C8:62:64:4A:1B:2C")
+        assertTrue(BleAddress.withoutRotatingVendor(static, enabled = true) === static)
+        val public = rotating.copy(facts = RadioFacts(addressType = "Public"))
+        assertTrue(BleAddress.withoutRotatingVendor(public, enabled = true) === public)
+        assertTrue(BleAddress.withoutRotatingVendor(rotating, enabled = false) === rotating)
+    }
+
+    /** A "possible" match gets no attention card and doesn't raise a signature watch. */
+    @Test
+    fun aPossibleMatchHasNoAttentionCardAndNoAlert() {
+        val axonHit = ble("00:25:DF:4A:1B:2C", "Random", fleetIds = setOf("fleet-axon"))
+        assertTrue(axonHit.attentionNotes(fleets).isNotEmpty())
+        val possible = axonHit.copy(possibleFleetIds = setOf("fleet-axon"))
+        assertTrue(possible.attentionNotes(fleets).isEmpty())
+        val watch = WatchTarget(id = "watch-fleet-axon", fleetId = "fleet-axon", label = "Axon")
+        assertTrue(app.fieldwatch.alert.shouldRaiseWatch(watch, axonHit, emptySet()))
+        assertFalse(app.fieldwatch.alert.shouldRaiseWatch(watch, possible, emptySet()))
+        assertFalse(TakPublish.hasAttention(possible, fleets))
+    }
+
     @Test
     fun theFlagIsOff() {
         assertFalse(Features.BLE_ADDRESS_CLASSIFIER)
