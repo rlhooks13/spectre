@@ -911,6 +911,42 @@ class SitTest {
         assertEquals("tracker-like", TrackerMatch.label(tag, names, classes))
     }
 
+    /**
+     * P1-B8c2: text that leaves the app (sit export, CoT remarks, the AI prompt, the detail text, sit compare) marks a
+     * possible match "(possible)"; a definite one reads as before. The detail title and guess leave a possible one out.
+     */
+    @Test
+    fun aPossibleMatchIsMarkedInTextThatLeavesTheApp() {
+        val definite = radio("BLE:48:62:64:4A:1B:2C", fleetIds = setOf("fleet-axon"), lastSeen = 1_000L)
+        val possible = definite.copy(possibleFleetIds = setOf("fleet-axon"))
+        fun outputs(d: Sighting): List<String> = listOf(
+            SitExport.csv(listOf(d), LogExportRadios.BOTH, emptyMap(), emptyMap(), emptySet(), fleets),
+            SitExport.jsonl(listOf(d), LogExportRadios.BOTH, emptyMap(), emptyMap(), emptySet(), fleets),
+            CotEvent.remarks(d, fleets, advertised = false),
+            DebriefPrompt.build(listOf(d), fleets, AppSettings(), now = 1_000L),
+            SitDiff.fromSighting(d, fleets, emptyMap()).fleetNames.joinToString(),
+            SitDiff.fromSitRadio(SitRadio.from(d, fleets), fleets, emptyMap()).fleetNames.joinToString(),
+        )
+        outputs(possible).forEach { assertTrue(it, it.contains("Axon (possible)")) }
+        outputs(definite).forEach { assertTrue(it, it.contains("Axon") && !it.contains("(possible)")) }
+        // The detail text: "Matched signatures" marks it; the title (line 5) and the guess leave it out, which they
+        // don't for a definite match.
+        fun titleAndGuess(text: String) = text.lines()[4] + " | " + text.lines().first { it.startsWith("What this looks like:") }
+        val detail = DeviceDetailText.build(possible, listOf("Axon"), now = 1_000L, fleets = fleets)
+        assertTrue(detail, detail.contains("Matched signatures") && detail.contains("Axon (possible)"))
+        assertFalse(titleAndGuess(detail), titleAndGuess(detail).contains("Axon"))
+        val definiteDetail = DeviceDetailText.build(definite, listOf("Axon"), now = 1_000L, fleets = fleets)
+        assertTrue(titleAndGuess(definiteDetail), titleAndGuess(definiteDetail).contains("Axon"))
+        // The per-radio AI prompt's subject, likewise; and a possible match's signature notes are marked.
+        fun subject(d: Sighting) = DeviceDetailPrompt.build(d, listOf("Axon"), AppSettings(), now = 1_000L, fleets = fleets)
+            .lines().first { it.startsWith("- Subject:") }
+        assertFalse(subject(possible), subject(possible).contains("Axon"))
+        assertTrue(subject(definite), subject(definite).contains("Axon"))
+        val noted = listOf(axon.copy(notes = "Body-worn cameras."))
+        assertEquals(listOf("Axon (possible)" to "Body-worn cameras."), possible.signatureNotes(noted))
+        assertEquals(listOf("Axon" to "Body-worn cameras."), definite.signatureNotes(noted))
+    }
+
     private fun driveOffset(lat: Double, lon: Double, northM: Double, eastM: Double): Pair<Double, Double> {
         val dLat = northM / 111_320.0
         val dLon = eastM / (111_320.0 * kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2))

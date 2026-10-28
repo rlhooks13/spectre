@@ -10,6 +10,7 @@ import app.fieldwatch.domain.LogRadio
 import app.fieldwatch.domain.LogReplay
 import app.fieldwatch.domain.MacUtil
 import app.fieldwatch.domain.Sighting
+import app.fieldwatch.domain.signatureText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -60,7 +61,7 @@ class LogStore(context: Context) {
     suspend fun append(device: Sighting, fleets: List<Fleet>): Long {
         if (!enabled || paused.get()) return lines
         val gen = generation.get()
-        val names = fleets.filter { it.id in device.fleetIds }.joinToString("+") { it.name }
+        val names = fleets.filter { it.id in device.fleetIds }.joinToString("+") { device.signatureText(it.id, it.name) }
         val row = jsonLine(device, names)
         return mutex.withLock {
             if (paused.get() || generation.get() != gen) return@withLock lines

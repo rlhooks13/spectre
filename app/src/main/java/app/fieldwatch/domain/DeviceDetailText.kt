@@ -10,6 +10,24 @@ import java.util.Locale
  * Not a legal identity.
  */
 object DeviceDetailText {
+    /**
+     * [signatureNames], one per [Sighting.fleetIds] in order (as callers build them), split for P1-B8c: the definite
+     * ones, for titles and guesses, and all of them with a possible one marked, for "Matched signatures". With no
+     * possible match, both are [signatureNames] as given.
+     */
+    fun splitNames(device: Sighting, signatureNames: List<String>): Pair<List<String>, List<String>> {
+        if (device.possibleFleetIds.isEmpty()) return signatureNames to signatureNames
+        val ids = device.fleetIds.toList()
+        val definite = ArrayList<String>()
+        val marked = ArrayList<String>()
+        signatureNames.forEachIndexed { i, name ->
+            val id = ids.getOrNull(i)
+            if (id == null || id !in device.possibleFleetIds) definite += name
+            marked += if (id == null) name else device.signatureText(id, name)
+        }
+        return definite to marked
+    }
+
     fun build(
         device: Sighting,
         signatureNames: List<String>,
@@ -26,8 +44,10 @@ object DeviceDetailText {
         val fmt = SimpleDateFormat("HH:mm:ss", Locale.US)
         val iso = SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.US)
         val facts = device.facts
-        val title = device.listTitle(signatureNames)
-        val guess = DeviceExplain.guess(device, signatureNames)
+        // P1-B8c: the title and guess read definite matches only; "Matched signatures" marks a possible one.
+        val (definiteNames, markedNames) = splitNames(device, signatureNames)
+        val title = device.listTitle(definiteNames)
+        val guess = DeviceExplain.guess(device, definiteNames)
         val out = StringBuilder()
 
         fun line(label: String, value: String) {
@@ -266,7 +286,7 @@ object DeviceDetailText {
         }
         Geo.screenGrid(device.latitude, device.longitude, demo)?.let { line("Grid", it) }
         if (device.fleetIds.isNotEmpty()) {
-            line("Matched signatures", signatureNames.joinToString("; ").ifBlank {
+            line("Matched signatures", markedNames.joinToString("; ").ifBlank {
                 device.fleetIds.joinToString("; ")
             })
         }

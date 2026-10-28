@@ -89,7 +89,7 @@ object SitDiff {
         extraAttention = device.attentionNotes(fleets).isNotEmpty(),
         named = device.key in customNames,
         bookmarked = device.key in bookmarkedKeys,
-        fleetNames = device.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
+        fleetNames = device.fleetIds.map { id -> device.signatureText(id, fleets.firstOrNull { it.id == id }?.name ?: id) },
         fleetIds = device.fleetIds.toList(),
         possibleFleetIds = device.possibleFleetIds.toList(),
         randomized = device.randomized,
@@ -136,7 +136,7 @@ object SitDiff {
         extraAttention = row.extraAttention,
         named = row.key in customNames,
         bookmarked = row.key in bookmarkedKeys,
-        fleetNames = row.fleetIds.map { id -> fleets.firstOrNull { it.id == id }?.name ?: id },
+        fleetNames = row.fleetIds.map { id -> possibleMarked(id, fleets.firstOrNull { it.id == id }?.name ?: id, row.possibleFleetIds) },
         fleetIds = row.fleetIds.toList(),
         possibleFleetIds = row.possibleFleetIds.toList(),
         randomized = row.randomized,
@@ -443,7 +443,9 @@ object SitDiff {
             val row = byKey[key] ?: return@mapNotNull null
             if (!row.extraAttention) return@mapNotNull null
             ExtraAttentionHit(
-                signature = row.fleetNames.firstOrNull() ?: "Extra attention",
+                // Extra attention comes from a definite match (P1-B8c): name the first one, not a possible one.
+                signature = row.fleetIds.indices.firstOrNull { row.fleetIds[it] !in row.possibleFleetIds }
+                    ?.let { row.fleetNames.getOrNull(it) } ?: row.fleetNames.firstOrNull() ?: "Extra attention",
                 radioLabel = line(row),
                 note = where,
             )

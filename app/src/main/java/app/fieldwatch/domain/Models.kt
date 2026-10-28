@@ -477,6 +477,17 @@ fun List<Fleet>.groupedByClass(): List<Pair<SignatureClass, List<Fleet>>> =
 val Sighting.definiteFleetIds: Set<String>
     get() = definiteOf(fleetIds, possibleFleetIds)
 
+/**
+ * [name], matched signature [id]'s name, for text that leaves the app (exports, the log, CoT, AI prompts, the Debrief):
+ * a possible match (P1-B8, in [possible]) reads "Name (possible)". English, as those outputs are; the UI uses the
+ * language key `ui.signature.possible` instead.
+ */
+fun possibleMarked(id: String, name: String, possible: Set<String>): String =
+    if (id in possible) "$name (possible)" else name
+
+/** [possibleMarked] for this sighting's matches. */
+fun Sighting.signatureText(id: String, name: String): String = possibleMarked(id, name, possibleFleetIds)
+
 /** [fleetIds] less [possible]: the one definition of "definite", for live sightings and saved sit rows alike. */
 fun definiteOf(fleetIds: Set<String>, possible: Set<String>): Set<String> =
     if (possible.isEmpty()) fleetIds else fleetIds - possible
@@ -495,14 +506,17 @@ fun Sighting.attentionNotes(fleets: List<Fleet>): List<Pair<String, String>> {
     }
 }
 
-/** Signature name + Notes for every matched signature on this radio that has notes. Not Extra attention. */
+/**
+ * Signature name + Notes for every matched signature on this radio that has notes. Not Extra attention. A possible
+ * match's name is marked "(possible)" (P1-B8c), so its notes don't read as describing a definite match.
+ */
 fun Sighting.signatureNotes(fleets: List<Fleet>): List<Pair<String, String>> {
     if (fleetIds.isEmpty()) return emptyList()
     val byId = fleets.associateBy { it.id }
     return fleetIds.mapNotNull { id ->
         val fleet = byId[id] ?: return@mapNotNull null
         val note = fleet.notes.trim()
-        if (note.isEmpty()) null else fleet.name to note
+        if (note.isEmpty()) null else signatureText(id, fleet.name) to note
     }
 }
 

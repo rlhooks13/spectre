@@ -20,7 +20,8 @@ object DeviceDetailPrompt {
         phoneLat: Double? = null,
         phoneLon: Double? = null,
     ): String {
-        val title = device.listTitle(signatureNames)
+        // P1-B8c: the subject reads definite matches only, as the detail title does.
+        val title = device.listTitle(DeviceDetailText.splitNames(device, signatureNames).first)
         val kind = if (device.kind == RadioKind.WIFI) "Wi-Fi access point" else "Bluetooth LE advertiser"
         return buildString {
             append(DebriefPrompt.experimentalDisclaimerMarkdown())

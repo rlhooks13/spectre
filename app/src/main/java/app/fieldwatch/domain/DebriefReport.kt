@@ -335,7 +335,7 @@ object DebriefReport {
         }.sortedByDescending { Rssi.rank(it.rssi) }.take(20)
         val omittedRand = ble.count { !inventoryKeep(it, settings, bookmarkedKeys) }
         val bleBody = buildString {
-            appendLine("Heard ${ble.size} advertiser(s); $randomized with randomized addresses; ${named.count { it.kind == RadioKind.BLE }} signature-matched.")
+            appendLine("Heard ${ble.size} advertiser(s); $randomized with randomized addresses; ${named.count { it.kind == RadioKind.BLE && it.definiteFleetIds.isNotEmpty() }} signature-matched.")
             if (omittedRand > 0) {
                 appendLine("Unmatched rotating BLE omitted from lists ($omittedRand). Counts include them. Sit export has every radio.")
             }
@@ -344,7 +344,8 @@ object DebriefReport {
             buildString {
                 appendLine(LanguageText.text("ui.notable.ble"))
                 notable.forEach { d ->
-                    val guess = DeviceExplain.guess(d, d.fleetIds.map { names[it] ?: it })
+                    // A guess reads definite matches only (P1-B8c), as the Live title does.
+                    val guess = DeviceExplain.guess(d, d.definiteFleetIds.map { names[it] ?: it })
                     appendLine("  · ${bleLine(d, names, windowStart, now, customNames)}  |  ${guess.headline}")
                     if (d.key in mineKeys) appendLine(("    " + LanguageText.text("ui.marked.mine")))
                     d.attentionNotes(fleets).forEach { (sig, note) ->
@@ -379,7 +380,7 @@ object DebriefReport {
             ""
         } else if (showAll) {
             buildString {
-                named.groupBy { it.fleetIds.joinToString("+") { id -> names[id] ?: id } }
+                named.groupBy { d -> d.fleetIds.joinToString("+") { id -> d.signatureText(id, names[id] ?: id) } }
                     .toList().sortedByDescending { it.second.size }
                     .forEach { (sig, list) ->
                         appendLine(sig)
@@ -1050,7 +1051,8 @@ object DebriefReport {
             LanguageText.text("ui.last.15.minutes.3")
         }
         append("$whenPhrase ${Brand.NAME} heard ${wifi.size} Wi-Fi access points and ${ble.size} BLE advertisers")
-        append(" (${named.size} signature-matched")
+        // Counted from definite matches (P1-B8c), as the class chart is; the signature lists mark a possible one.
+        append(" (${named.count { it.definiteFleetIds.isNotEmpty() }} signature-matched")
         if (mineHeard > 0) append(", $mineHeard marked mine")
         append(", ${hidden.size} hidden SSIDs, $randomized randomized BLE). ")
         if (settings.tagLocation && pathLen > 0) {
@@ -1250,7 +1252,7 @@ object DebriefReport {
                 val here = devices.filter { heardAt(it, leg) }
                 val aps = here.count { it.kind == RadioKind.WIFI }
                 val ble = here.count { it.kind == RadioKind.BLE }
-                val sigs = here.flatMap { d -> d.fleetIds.map { names[it] ?: it } }.distinct()
+                val sigs = here.flatMap { d -> d.fleetIds.map { d.signatureText(it, names[it] ?: it) } }.distinct()
                 append("   Heard here: $aps AP(s), $ble BLE")
                 if (sigs.isNotEmpty()) append("  ·  ${sigs.take(6).joinToString(", ")}")
                 appendLine()
@@ -1319,7 +1321,7 @@ object DebriefReport {
         append("  ").append(d.rssi).append(" dBm")
         if (d.channel != 0) append("  ch ").append(d.channel)
         if (d.hiddenSsid) append("  hidden")
-        if (d.fleetIds.isNotEmpty()) append("  ").append(d.fleetIds.joinToString("+") { names[it] ?: it })
+        if (d.fleetIds.isNotEmpty()) append("  ").append(d.fleetIds.joinToString("+") { d.signatureText(it, names[it] ?: it) })
         append("  dwell ").append(fmtDur(dwellMs(d, from, now)))
     }
 
@@ -1333,7 +1335,7 @@ object DebriefReport {
         append(d.reportName(customNames)).append("  ").append(d.mac)
         if (d.randomized) append("  RAND")
         append("  ").append(d.rssi).append(" dBm")
-        if (d.fleetIds.isNotEmpty()) append("  ").append(d.fleetIds.joinToString("+") { names[it] ?: it })
+        if (d.fleetIds.isNotEmpty()) append("  ").append(d.fleetIds.joinToString("+") { d.signatureText(it, names[it] ?: it) })
         append("  dwell ").append(fmtDur(dwellMs(d, from, now)))
     }
 
@@ -1360,7 +1362,8 @@ object DebriefReport {
         var unmatched = 0
         var multi = false
         for (d in devices) {
-            val classes = d.fleetIds.mapNotNull { byId[it] }.toSet()
+            // A radio's class comes from definite matches (P1-B8c); a possible-only one counts as unmatched.
+            val classes = d.definiteFleetIds.mapNotNull { byId[it] }.toSet()
             if (classes.isEmpty()) {
                 unmatched++
             } else {
@@ -1384,7 +1387,7 @@ object DebriefReport {
         if (named.isEmpty()) return null
         val counts = linkedMapOf<String, Int>()
         for (d in named) {
-            val sigs = d.fleetIds.map { names[it] ?: it }.filter { it.isNotBlank() }.distinct()
+            val sigs = d.fleetIds.mapNotNull { id -> (names[id] ?: id).takeIf { it.isNotBlank() }?.let { d.signatureText(id, it) } }.distinct()
             val key = if (sigs.isEmpty()) "Unmatched" else sigs.joinToString(" + ")
             counts[key] = (counts[key] ?: 0) + 1
         }
