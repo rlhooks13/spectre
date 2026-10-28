@@ -413,6 +413,51 @@ internal object CatalogDecodes {
     )
 
     /**
+     * P1-B11d (research §1 item 3): Samsung SmartTag service data on FD5A, as Yu et al. (USENIX Security 2024) and
+     * AirGuard read it. Byte 0's high five bits are 0x10 and its low three the state; bytes 1–3 an aging counter, 4–11
+     * the privacy ID, which holds for 24 h in overmature offline while the address changes about every 15 minutes.
+     * Only the state is shown. Byte 12 (UWB and battery flags) waits for a capture to confirm its bit order.
+     */
+    val smartTag: FleetDecode = FleetDecode(
+        source = DecodeSource.SERVICE_DATA,
+        serviceUuid = "FD5A",
+        fields = listOf(
+            bits(
+                "state", "State", 0,
+                bitOffset = 0, bitWidth = 3,
+                enumLabels = mapOf(
+                    // 0 and 7 aren't in the research's table; name them rather than show a bare digit.
+                    "0" to "state not known",
+                    "1" to "offline (just separated)",
+                    "2" to "offline (over 15 min)",
+                    "3" to "offline (over 24 h)",
+                    "4" to "paired or connected",
+                    "5" to "paired or connected",
+                    "6" to "paired or connected",
+                    "7" to "state not known",
+                ),
+                live = true,
+                liveEmphasis = listOf("3"),
+                enumNotes = mapOf(
+                    "3" to "Away from its owner's phone for over a day. Its privacy ID holds for the day while its address changes about every 15 minutes, so one tag can show as several radios.",
+                    "4" to SMART_TAG_CONNECTED_NOTE,
+                    "5" to SMART_TAG_CONNECTED_NOTE,
+                    "6" to SMART_TAG_CONNECTED_NOTE,
+                ),
+                gate = smartTagFrame(),
+            ),
+            // No privacy ID field yet: it holds for a day, so a shared report would carry a bystander tag's handle.
+            // P1-B11d2 reads it for co-travel and decides how reports show it.
+        ),
+    )
+
+    private const val SMART_TAG_CONNECTED_NOTE =
+        "Paired with or connected to a phone. The state can lag after the tag leaves that phone, so a tag planted recently can still show it. It doesn't tell you whose phone it is."
+
+    /** Byte 0's high five bits are exactly 0x10: bit 4 set, bits 3 and 5–7 clear. */
+    private fun smartTagFrame(): DecodeWhen = mask(0, "10", nmask(0, "E8"))
+
+    /**
      * IETF DULT location-enabled advertisement on FCB2.
      * Byte 0 is Network ID; LSB of byte 1 is near-owner (1) vs separated (0).
      */

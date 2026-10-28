@@ -522,6 +522,36 @@ class SignatureFieldDecoderTest {
         assertEquals(0.0, rows.number("heading")!!, 1e-6)
     }
 
+    /** P1-B11d: SmartTag FD5A, byte 0 = 0x10 | state, then a 3-byte aging counter and the 8-byte privacy ID. */
+    @Test
+    fun catalogSmartTagState() {
+        val fleet = DefaultCatalog.fleets().single { it.id == "fleet-smarttag" }
+        val body = "000102" + "A1A2A3A4A5A6A7A8" + "00"
+        val over24h = SignatureFieldDecoder.decodeSighting(bleService("FD5A", "13$body", fleet.id), listOf(fleet))
+        assertEquals("offline (over 24 h)", over24h.display("state"))
+        // The privacy ID isn't shown: it would put a bystander tag's day-long handle in shared reports (P1-B11d2).
+        assertTrue(over24h.none { it.id == "privacy_id" })
+        val chip = SignatureFieldDecoder.liveChips(bleService("FD5A", "13$body", fleet.id), listOf(fleet)).single()
+        assertTrue(chip.emphasis)
+        assertTrue(chip.note.contains("several radios"))
+        val connected = SignatureFieldDecoder.liveChips(bleService("FD5A", "15$body", fleet.id), listOf(fleet)).single()
+        assertEquals("paired or connected", connected.text)
+        assertFalse(connected.emphasis)
+        assertTrue(connected.note.contains("doesn't tell you whose"))
+        assertTrue(connected.note.contains("planted recently"))
+        // States 0 and 7 aren't in the table: named, never a bare digit, never emphasized.
+        for (state in listOf("10", "17")) {
+            val chip0 = SignatureFieldDecoder.liveChips(bleService("FD5A", "$state$body", fleet.id), listOf(fleet)).single()
+            assertEquals("state not known", chip0.text)
+            assertFalse(chip0.emphasis)
+        }
+        // Byte 0's high bits other than 0x10 (another frame layout): no fields at all.
+        for (other in listOf("03", "33", "93", "1B")) {
+            val rows = SignatureFieldDecoder.decodeSighting(bleService("FD5A", "$other$body", fleet.id), listOf(fleet))
+            assertTrue(other, rows.none { it.id == "state" })
+        }
+    }
+
     @Test
     fun catalogFindHubSeparatedMode() {
         val fleet = DefaultCatalog.fleets().single { it.id == "fleet-find-hub" }

@@ -71,7 +71,9 @@ class ReleaseNotesTest {
     fun problemsCatchATamperedListAGapAndAMissingBlock() {
         val dir = tmp.newFolder("bad")
         val notes = ReleaseNotes.write("0.1.0", dir)
-        notes.writeText(notes.readText().replace("- **Samsung SmartTags** (finder): stopped matching on Bluetooth company id 0x0075.\n", ""))
+        val text = notes.readText()
+        val smartTags = text.lines().single { it.startsWith("- **Samsung SmartTags** (finder): stopped matching on") }
+        notes.writeText(text.replace(smartTags + "\n", ""))
         assertTrue(ReleaseNotes.problems(dir).single().contains("aren't the v97 → v${ConfigStore.CATALOG_VERSION} diff"))
         // A release that skips catalog versions: it starts after where 0.1.0 ended.
         val gap = File(dir, "0.1.1.md")

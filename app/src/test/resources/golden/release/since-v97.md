@@ -1,6 +1,6 @@
 <!-- generated: begin -->
-<!-- generated: catalog v97 -> v107 -->
-### Signatures (stock catalog v97 → v107)
+<!-- generated: catalog v97 -> v108 -->
+### Signatures (stock catalog v97 → v108)
 
 - **New:** Find Hub accessory (headphones or phone) (audio) matches on service data "FEAA" data starting 40 (BLE).
 - **New:** Find My device (finder) matches on Bluetooth company id 0x004C data starting 12; service uuid "FD44"; name contains "Find My" (BLE).
@@ -37,7 +37,7 @@
 - **Paxton** (lock): stopped matching on name contains "Net2" (BLE).
 - **Raven / ShotSpotter** (surveillance): stopped matching on name contains "RAVEN"; now also matches on name glob "RAVEN"; name glob "RAVEN-*"; name glob "RAVEN_*"; name glob "DIRECT-??-Raven-*" (WIFI).
 - **ASSA ABLOY** (lock): stopped matching on name contains "Seos" (BLE); name contains "Yale" (BLE); now also matches on name glob "Seos" (BLE); name glob "Seos *" (BLE); name glob "Seos-*" (BLE); name glob "Seos_*" (BLE).
-- **Samsung SmartTags** (finder): stopped matching on Bluetooth company id 0x0075.
+- **Samsung SmartTags** (finder): stopped matching on name contains "SmartTag"; name contains "Smart Tag"; name contains "Galaxy SmartTag"; Bluetooth company id 0x0075; now also matches on name glob "Smart Tag" (BLE); name glob "Smart Tag2" (BLE); name glob "Galaxy SmartTag*" (BLE); decoded fields changed.
 - **Sony** (audio): stopped matching on name contains "Sony" (BLE); now also matches on name glob "Sony" (BLE); name glob "Sony *" (BLE); name glob "Sony-*" (BLE); name glob "Sony_*" (BLE); notes reworded.
 - **Tapo** (camera): stopped matching on name contains "Tapo".
 - **Tile Trackers** (finder): stopped matching on name contains "Tile"; service uuid "FEDD"; Bluetooth company id 0x00C7; now also matches on name glob "Tile" (BLE); Bluetooth company id 0x067C.
@@ -60,6 +60,12 @@
 - Near miss: Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40: was Google (phone), Google Find Hub (finder), now Find Hub accessory (headphones or phone) (audio), Google (phone).
 - Near miss: Third-party Find My tag on FD44, Offline Finding status 0x20: was Apple AirTags (finder), now Find My device (finder).
 - Near miss: AirPods sending FD44 and an AirPods status 0x30: was Apple AirTags (finder), now Find My device (finder).
+- Near miss: Kogan Smart Tag (a Find Hub tag): was Google Find Hub (finder), Samsung SmartTags (finder), now Google Find Hub (finder).
+- Near miss: NOVOO Smart Tag by name: was Samsung SmartTags (finder), now no signature.
+- Near miss: Clone tag named XYZ SmartTag, no FD5A: was Samsung SmartTags (finder), now no signature.
+- Near miss: BLE name My Galaxy SmartTag holder, no FD5A: was Samsung SmartTags (finder), now no signature.
+- Near miss: Wi-Fi network named "Galaxy SmartTag Setup": was Phone hotspot (phone), Samsung SmartTags (finder), now Phone hotspot (phone).
+- Near miss: Wi-Fi network named "Smart Tag": was Samsung SmartTags (finder), now no signature.
 - Near miss: Wi-Fi network named "Find My Hotspot": was Apple AirTags (finder), now no signature.
 - Near miss: Galaxy phone advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.
 - Near miss: Galaxy Buds advertising Samsung 0x0075: was Samsung SmartTags (finder), now no signature.

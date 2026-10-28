@@ -560,6 +560,45 @@
                 "dataPrefixHex": "",
                 "radio": null
             }
+        },
+        {
+            "fleetId": "fleet-smarttag",
+            "retiredIn": 108,
+            "step": "P1-B11d",
+            "reason": "\"SmartTag\" anywhere in a name, on any radio, matched clones and other names. Replaced by whole BLE names (Smart Tag, Smart Tag2, Galaxy SmartTag*); FD5A stays.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "SmartTag",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-smarttag",
+            "retiredIn": 108,
+            "step": "P1-B11d",
+            "reason": "\"Smart Tag\" anywhere in a name labeled other brands' Find Hub tags (Kogan, Amine, NOVOO, Maginon Smart Tag) as Samsung. Replaced by the whole BLE names Smart Tag and Smart Tag2.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Smart Tag",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-smarttag",
+            "retiredIn": 108,
+            "step": "P1-B11d",
+            "reason": "A contains rule on any radio; replaced by the BLE name Galaxy SmartTag*, anchored at the start.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Galaxy SmartTag",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }

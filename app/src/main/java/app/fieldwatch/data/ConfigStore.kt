@@ -1346,6 +1346,23 @@ class ConfigStore internal constructor(private val file: File) {
             }
             version = CATALOG_V107
         }
+        if (version < CATALOG_V108) {
+            // P1-B11d: SmartTag's "contains" names are retired (RetiredRules strips them on load); patchBuiltIn appends
+            // the whole BLE names. A retired name the user had switched off switches off its own replacements. The stock
+            // row gains its FD5A decode where it has none; a decode the user wrote stays.
+            val oldTag = cfg.fleets.firstOrNull { it.id == SMART_TAG && it.builtIn }
+            val off = REPLACED_NAMES_V108.filter { (retired, _) ->
+                oldTag?.rules?.any { !it.enabled && ruleKey(it) == ruleKey(retired) } == true
+            }.values.flatten().map { ruleKey(it) }.toSet()
+            fleets = fleets.map { fleet ->
+                if (fleet.id != SMART_TAG || !fleet.builtIn) return@map fleet
+                fleet.copy(
+                    rules = fleet.rules.map { r -> if (ruleKey(r) in off) r.copy(enabled = false) else r },
+                    decode = fleet.decode ?: catalog.getValue(SMART_TAG).decode,
+                )
+            }
+            version = CATALOG_V108
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1413,7 +1430,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 107
+        const val CATALOG_VERSION = 108
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1518,7 +1535,18 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V104 = 104
         private const val CATALOG_V105 = 105
         private const val CATALOG_V106 = 106
-        private const val CATALOG_V107 = CATALOG_VERSION
+        private const val CATALOG_V107 = 107
+        private const val CATALOG_V108 = CATALOG_VERSION
+
+        /**
+         * SmartTag's "contains" names v108 retired (P1-B11d), each with the whole BLE names that replace it: an "off" on
+         * one carries only to its own replacements. Written out.
+         */
+        private val REPLACED_NAMES_V108 = mapOf(
+            MatchRule(RuleKind.NAME_CONTAINS, text = "SmartTag") to globs(RadioKind.BLE, "Galaxy SmartTag*"),
+            MatchRule(RuleKind.NAME_CONTAINS, text = "Smart Tag") to globs(RadioKind.BLE, "Smart Tag", "Smart Tag2"),
+            MatchRule(RuleKind.NAME_CONTAINS, text = "Galaxy SmartTag") to globs(RadioKind.BLE, "Galaxy SmartTag*"),
+        )
 
         /** P1-B11b: Find Hub headphones and phones get their own row, so their 0x40 frames stop reading as a tag. */
         private val ADDED_IN_V106 = listOf("fleet-find-hub-accessory")
@@ -1934,6 +1962,7 @@ class ConfigStore internal constructor(private val file: File) {
         )
         private const val AIRTAGS = "fleet-airtag"
         private const val FIND_MY = "fleet-findmy"
+        private const val SMART_TAG = "fleet-smarttag"
 
         /** The bare Offline Finding rule v100 moved from AirTags to Find My device (P1-B3), written out. */
         private val OFFLINE_FINDING_RULE_V100 = MatchRule(RuleKind.MANUFACTURER_DATA, companyId = 0x004C, dataPrefixHex = "12")

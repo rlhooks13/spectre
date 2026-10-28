@@ -46,6 +46,15 @@ T:smarttag	target	SmartTag on FD5A
 T:smarttag-svcdata	target	SmartTag with FD5A in service data only
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:smarttag-name	target	SmartTag advertising Smart Tag
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
+T:smarttag-name2	target	SmartTag2 advertising Smart Tag2
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
+T:smarttag-galaxy	target	Galaxy SmartTag2 by name
+  expect fleet-smarttag
+  -> fleet-smarttag [FINDER]
 T:tile-feed	target	Tile on FEED
   expect fleet-tile
   -> fleet-tile [FINDER]
@@ -130,6 +139,24 @@ NM:findmy-thirdparty	near-miss	Third-party Find My tag on FD44, Offline Finding 
 NM:findmy-airpods	near-miss	AirPods sending FD44 and an AirPods status 0x30
   must not fleet-airtag
   -> fleet-findmy [FINDER]
+NM:kogan-smart-tag	near-miss	Kogan Smart Tag (a Find Hub tag)
+  must not fleet-smarttag
+  -> fleet-find-hub [FINDER]
+NM:novoo-smart-tag	near-miss	NOVOO Smart Tag by name
+  must not fleet-smarttag
+  -> (none)
+NM:clone-smarttag	near-miss	Clone tag named XYZ SmartTag, no FD5A
+  must not fleet-smarttag
+  -> (none)
+NM:galaxy-smarttag-mention	near-miss	BLE name My Galaxy SmartTag holder, no FD5A
+  must not fleet-smarttag
+  -> (none)
+NM:galaxy-smarttag-wifi	near-miss	Wi-Fi network named "Galaxy SmartTag Setup"
+  must not fleet-smarttag (nor be a finder)
+  -> fleet-phone-hotspot [PHONE]
+NM:smarttag-wifi	near-miss	Wi-Fi network named "Smart Tag"
+  must not fleet-smarttag (nor be a finder)
+  -> (none)
 NM:findmy-wifi	near-miss	Wi-Fi network named "Find My Hotspot"
   must not fleet-airtag, fleet-findmy (nor be a finder)
   -> (none)

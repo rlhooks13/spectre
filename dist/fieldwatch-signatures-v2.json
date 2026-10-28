@@ -3,7 +3,7 @@
     "formatVersion": 1,
     "exportedAt": "",
     "appVersion": "stock",
-    "catalogVersion": 107,
+    "catalogVersion": 108,
     "fleets": [
         {
             "id": "fleet-actiontec",
@@ -56824,35 +56824,35 @@
             "colorIndex": 3,
             "rules": [
                 {
-                    "kind": "NAME_CONTAINS",
-                    "text": "SmartTag",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Smart Tag",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
-                    "kind": "NAME_CONTAINS",
-                    "text": "Galaxy SmartTag",
-                    "companyId": 0,
-                    "dataPrefixHex": "",
-                    "radio": null,
-                    "enabled": true
-                },
-                {
                     "kind": "SERVICE_UUID",
                     "text": "FD5A",
                     "companyId": 0,
                     "dataPrefixHex": "",
                     "radio": null,
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Smart Tag",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Smart Tag2",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
+                    "enabled": true
+                },
+                {
+                    "kind": "NAME_GLOB",
+                    "text": "Galaxy SmartTag*",
+                    "companyId": 0,
+                    "dataPrefixHex": "",
+                    "radio": "BLE",
                     "enabled": true
                 }
             ],
@@ -56863,7 +56863,60 @@
             "notes": "Samsung SmartTag / SmartTag+ item finder. Addresses often rotate.",
             "attentionNote": "",
             "builtIn": true,
-            "kind": "FINDER"
+            "kind": "FINDER",
+            "decode": {
+                "source": "serviceData",
+                "serviceUuid": "FD5A",
+                "companyId": null,
+                "fields": [
+                    {
+                        "id": "state",
+                        "label": "State",
+                        "offset": 0,
+                        "length": null,
+                        "type": "bits",
+                        "endian": "le",
+                        "bitOffset": 0,
+                        "bitWidth": 3,
+                        "scale": null,
+                        "offsetAdd": null,
+                        "modulo": null,
+                        "unit": null,
+                        "enum": {
+                            "0": "state not known",
+                            "1": "offline (just separated)",
+                            "2": "offline (over 15 min)",
+                            "3": "offline (over 24 h)",
+                            "4": "paired or connected",
+                            "5": "paired or connected",
+                            "6": "paired or connected",
+                            "7": "state not known"
+                        },
+                        "live": true,
+                        "liveEmphasis": [
+                            "3"
+                        ],
+                        "enumNotes": {
+                            "3": "Away from its owner's phone for over a day. Its privacy ID holds for the day while its address changes about every 15 minutes, so one tag can show as several radios.",
+                            "4": "Paired with or connected to a phone. The state can lag after the tag leaves that phone, so a tag planted recently can still show it. It doesn't tell you whose phone it is.",
+                            "5": "Paired with or connected to a phone. The state can lag after the tag leaves that phone, so a tag planted recently can still show it. It doesn't tell you whose phone it is.",
+                            "6": "Paired with or connected to a phone. The state can lag after the tag leaves that phone, so a tag planted recently can still show it. It doesn't tell you whose phone it is."
+                        },
+                        "when": {
+                            "offset": 0,
+                            "length": 1,
+                            "op": "mask",
+                            "valueHex": "10",
+                            "and": {
+                                "offset": 0,
+                                "length": 1,
+                                "op": "nmask",
+                                "valueHex": "E8"
+                            }
+                        }
+                    }
+                ]
+            }
         },
         {
             "id": "fleet-schlage",
