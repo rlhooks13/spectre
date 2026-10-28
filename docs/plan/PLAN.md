@@ -346,7 +346,13 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
       - **Language keys** for the new late-joiner lines. The neighbouring tail copy is hard-coded English too, and moves with it.
 
 **1C. Platform fixes**
-- **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK.
+- ✅ **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK. As built:
+  - The fix is one volatile `PhoneFix(lat, lon, at)`. A GPS time ahead of the phone clock counts as now.
+  - Hears are tagged with `hearFix`: tagging on and `currentFix()` (30 s).
+  - With no current fix, the rows passed to sits and the log carry no position, and place memory skips the batch.
+  - TAK's self marker gets `currentFix()`, and a null one isn't sent.
+  - GNSS interference marks get the last fix up to 10 minutes old, so they keep going out while GPS is jammed.
+  - Network location has no minimum distance, so a phone at rest indoors stays current.
 - **P1-C2 Storage:**
   - LogStore resumes from the highest existing index.
   - LogStore reads, exports and merges parts oldest first, not by file name. After the index wraps (or a restart, until the line above lands), the newest part sorts first. `readRadios` then merges an older part's position and RSSI over a newer hear, and exports are out of time order. The P1-A3 log goldens (`export/log.*`) pin today's order, so this fix shows as a golden diff.

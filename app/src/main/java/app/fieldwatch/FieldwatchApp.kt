@@ -122,10 +122,11 @@ class FieldwatchApp : Application() {
     @Volatile
     private var persistArrivalsAt = 0L
 
+    /** The last accepted phone fix, position and time in one volatile so no reader pairs one fix's place with another's time. */
     @Volatile
-    var lastFix: Pair<Double, Double>? = null
-    @Volatile
-    var lastFixAt: Long = 0L
+    private var phoneFix: PhoneFix? = null
+    val lastFix: Pair<Double, Double>? get() = phoneFix?.latLon
+    val lastFixAt: Long get() = phoneFix?.at ?: 0L
     /** GPS fix good enough for the Hunt cloud. Network fixes stay out. */
     @Volatile
     private var lastGpsFix: Pair<Double, Double>? = null
@@ -145,11 +146,14 @@ class FieldwatchApp : Application() {
      * A timestamp a few seconds ahead of [now] still counts. The map reads this between
      * clock ticks, and a newer Location.time was blanking the corner on every pass.
      */
-    fun currentFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? {
-        val fix = lastFix ?: return null
-        if (!phoneFixIsCurrent(lastFixAt, now)) return null
-        return fix
-    }
+    fun currentFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? = currentFixOf(phoneFix, now)
+
+    /** Where a TAK GNSS interference mark goes: the last fix up to 10 minutes old ([gnssMarkFixOf]). */
+    fun gnssMarkFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? = gnssMarkFixOf(phoneFix, now)
+
+    /** The fix to tag a batch of hears with (P1-C1): [currentFix], and only while GPS tagging is on. */
+    fun hearFix(tagLocation: Boolean, now: Long = System.currentTimeMillis()): Pair<Double, Double>? =
+        if (tagLocation) currentFix(now) else null
 
     /** Where the hunt dot is. A local meter picture until the walk is on a fix. Not a place to publish. */
     fun huntFix(now: Long = System.currentTimeMillis()): Pair<Double, Double>? {
@@ -787,7 +791,9 @@ class FieldwatchApp : Application() {
         }
         runCatching {
             if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4_000L, 15f, netListener, looper)
+                // No minimum distance (P1-C1): a phone at rest indoors on network location still gets a fresh fix every
+                // 4 s, so hears stay tagged and the fix stays current while it hasn't moved.
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 4_000L, 0f, netListener, looper)
                 requested = true
             }
         }
@@ -846,8 +852,7 @@ class FieldwatchApp : Application() {
         if (loc.hasAccuracy() && loc.accuracy > 75f) return
         val age = System.currentTimeMillis() - loc.time
         if (age > 30_000L) return
-        lastFix = loc.latitude to loc.longitude
-        lastFixAt = loc.time
+        phoneFix = PhoneFix(loc.latitude, loc.longitude, fixTime(loc.time, System.currentTimeMillis()))
         if (loc.hasSpeed() && loc.speed >= 0f && loc.speed.isFinite()) {
             val loose = loc.hasSpeedAccuracy() && loc.speedAccuracyMetersPerSecond > 4f
             if (!loose) {
@@ -998,6 +1003,33 @@ internal fun phoneFixIsCurrent(fixAt: Long, now: Long): Boolean {
     val age = now - fixAt
     return age >= -5_000L && age <= 30_000L
 }
+
+/** A phone fix: where, and when ([at], on this phone's clock; see [fixTime]). */
+internal data class PhoneFix(val lat: Double, val lon: Double, val at: Long) {
+    val latLon: Pair<Double, Double> get() = lat to lon
+}
+
+/**
+ * [fix]'s place while it is current (P1-C1), else null. A stale fix (GPS lost, location off) would stamp new hears
+ * and TAK's self marker with a place the phone has left. The one rule for the UI, hear tagging and TAK.
+ */
+internal fun currentFixOf(fix: PhoneFix?, now: Long): Pair<Double, Double>? =
+    fix?.takeIf { phoneFixIsCurrent(it.at, now) }?.latLon
+
+/**
+ * Where a TAK GNSS interference mark goes (P1-C1): the last fix, "where this phone was", while no older than
+ * [GNSS_MARK_FIX_MS]. Jamming is when the fix goes stale, so a mark can't wait for a current one.
+ */
+internal fun gnssMarkFixOf(fix: PhoneFix?, now: Long): Pair<Double, Double>? =
+    fix?.takeIf { now - it.at in -5_000L..GNSS_MARK_FIX_MS }?.latLon
+
+internal const val GNSS_MARK_FIX_MS = 10 * 60_000L
+
+/**
+ * When a fix counts as taken, on this phone's clock: Location.time is GPS time, and a phone clock that runs behind it
+ * would make every fix look like it's from the future and fail [phoneFixIsCurrent]. A time ahead of [now] counts as now.
+ */
+internal fun fixTime(locationTime: Long, now: Long): Long = minOf(locationTime, now)
 
 /**
  * Where a hunt may pin its start. A resumed walk already has a place, so it
