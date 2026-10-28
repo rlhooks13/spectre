@@ -99,7 +99,7 @@ Upstream `OffGridPete/Fieldwatch` is reference only. Never fetch from it into a 
 ## Device checklist (dedicated phone)
 
 ```
-adb -s $SERIAL install -r <apk>
+adb -s $SERIAL install -r -g <apk>                             # -g grants runtime permissions (pm install -r -g too)
 adb -s $SERIAL shell am start -n <appId>/<launcher activity>
 adb -s $SERIAL logcat -d --pid=$(adb -s $SERIAL shell pidof <appId>) | grep -E "FATAL|ANR|AndroidRuntime"
 adb -s $SERIAL exec-out screencap -p > <scratch>/screen.png   # look at it
@@ -108,6 +108,13 @@ adb -s $SERIAL shell run-as <appId>.debug ls files/            # debug builds on
 ```
 
 `adb shell` reads stdin, so inside a script or heredoc give it `</dev/null`. Otherwise it swallows the rest of the script. Health checks during a soak filter by the app's package and UID. Device-touching work never runs during a battery-measurement window.
+
+### Setting up the test phone yourself (owner authorization, 2026-10-27)
+The dedicated test phone is yours to operate. For every Spectre debug and staging build, do the following yourself, and don't put them in Needs human:
+- **First-run disclaimer:** accept Spectre's own "Disclaimer and license" screen, and any later disclaimer revision. It's a step in testing our own app on the owner's test device. Tap through it with UI automation (`uiautomator dump`, then `input tap`) or an instrumented test, and check a screencap afterwards. Never add a code path that skips the disclaimer.
+- **Runtime permissions:** grant them over adb. Install with `-g`, or `pm grant <appId> <permission>` for each: location (background too), nearby devices (Bluetooth scan and connect), notifications. Use `appops` where a permission needs it.
+- **App data:** keep it between installs. Use `install -r`, and no `pm clear` or uninstall unless a test needs a fresh state. If one does, set the app back up yourself afterwards.
+- **Everything else adb can do:** taps, system settings, toggles and permissions are yours. Ask the owner only for what adb can't do: replugging the phone, a physical button, or field captures.
 
 ## Restart runbook (owner or agent)
 
