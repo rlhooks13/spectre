@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B12b** (Reveal Media's BodyWorn names to Utility Inc), after P1-B12a merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
+- Current step: **P1-B12c** (ShotSpotter and Rhombus OUIs Wi-Fi only), after P1-B12b merges. Then P1-B12c–e, P1-B13, and P1-B11d3 (name-only "possible"), which unblocks P1-B11e (Tile, also capture #90). P1-B11d2 (privacy-ID co-travel, flagged off) and the optional P1-B11f (Chipolo) come after.
   - Then P1-B12 and P1-B13, then P1-B14, then the rest of 1C–1E (P1-C2 next), per the owner's order of 2026-10-28.
   - Also its own PR, any time: regenerate `radiodb.bin` offline from the owner's IEEE files (below). P1-B9's flag waits for owner-recorded captures. P1-B8's flag waits for its 24 h addressType capture, which the agent can run on the phone. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
@@ -102,6 +102,31 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **P1-B12b BodyWorn to Utility Inc, RS2-* retired (catalog v110).** #102 (P1-B12a) merged as adc57bc.
+  - **Rules:**
+    - Reveal Media's `name("BodyWorn")`, `glob("BodyWorn*")` and `glob("RS2-*")` are retired.
+    - Utility Inc gains `glob("BodyWorn*")` only. The contains twin matched nothing more except "BodyWorn" mid-name.
+    - Both rows' notes are reworded. The Coreforce rename stays in comments, not in user copy, because it's unverified.
+  - **Explain:** a Utility Inc radio named BodyWorn* gets "a BodyWorn body camera" (camera, weight 8). Utility's Wi-Fi APs keep the radio hint.
+  - **Ladder v110** (Utility is an older row with its own OUIs):
+    - the glob starts off only where the user switched off a BodyWorn name or the Reveal row; a pre-v74 config with no Reveal row gets it on;
+    - a Utility row the user switched off comes back on with only the glob on;
+    - a show filter on Reveal shows Utility, while hide sets and the watchlist are left alone;
+    - the notes change only where still stock.
+  - **Reviews** (no BLOCKING). Fixed:
+    - pre-v74 configs started the name off;
+    - a Utility row switched off;
+    - the hide-set filter carry;
+    - re-adding a removed Utility watch;
+    - the hotspot hint for cameras;
+    - the redundant contains rule;
+    - the duplicate near miss (now "My BodyWorn mount");
+    - the unverified Coreforce copy.
+    - Rebutted: the shared carry helper. The three moves differ (new row versus existing row), and P1-B12e or Phase 4 can fold them.
+    - Already noted in PLAN: the stock-pack overlay skipping the ladder.
+  - **Tests:** `CatalogV110LadderTest` (6), `BodyWornExplainTest` (2). Corpus: target BodyWorn-4A1B on Utility; near misses "My BodyWorn mount" and "RS2-0042". 1084 tests.
+  - **Goldens:** `since-v97.md` lists the retired and added names, the BodyWorn target moving to Utility Inc, and the two near misses going to no signature. The corpus goldens add the cases. The 1.1.32 import config is at v110.
+  - **Device:** `Success`, new pid 31392, 0 crash lines, config `"version": 110`.
 - 2026-10-28: **P1-B12a Novatel, Compex and AirLink aren't law enforcement (catalog v109).** #89 (P1-B11d1) merged as bb37a80.
   - **Field-capture issues** opened, as the owner asked:
     - #90 Tile FEEC-only and the FEED header (P1-B11e);

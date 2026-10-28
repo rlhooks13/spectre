@@ -195,6 +195,8 @@ object MatchCorpus {
             sighting("T:smarttag-svcdata", serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
             "fleet-smarttag",
         ),
+        // P1-B12b: BodyWorn is Utility's (now Coreforce) body camera.
+        Target("BodyWorn body camera by name", sighting("T:bodyworn", name = "BodyWorn-4A1B"), "fleet-utility-inc"),
         // P1-B11d: SmartTag's own names, whole and over BLE.
         Target("SmartTag advertising Smart Tag", sighting("T:smarttag-name", name = "Smart Tag"), "fleet-smarttag"),
         Target("SmartTag2 advertising Smart Tag2", sighting("T:smarttag-name2", name = "Smart Tag2"), "fleet-smarttag"),
@@ -268,6 +270,10 @@ object MatchCorpus {
             sighting("NM:findmy-airpods", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x30))),
             setOf("fleet-airtag"),
         ),
+        // P1-B12b: a BodyWorn camera isn't Reveal Media's, and "RS2-" is a generic prefix (an RS2 power tool, a router).
+        // "BodyWorn" mid-name (the retired contains rule) isn't Utility's camera either.
+        NearMiss("Accessory named My BodyWorn mount", sighting("NM:bodyworn-mid", name = "My BodyWorn mount"), setOf("fleet-reveal-media", "fleet-utility-inc")),
+        NearMiss("Device named RS2-0042", sighting("NM:rs2", name = "RS2-0042"), setOf("fleet-reveal-media")),
         // P1-B11d: other brands' Find Hub tags are sold as "<Brand> Smart Tag"; they're Find Hub, not Samsung.
         NearMiss(
             "Kogan Smart Tag (a Find Hub tag)",

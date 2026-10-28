@@ -25,6 +25,10 @@ object DeviceExplain {
             .filterNot { findHubAccessory && it.label == "a Google Find Hub tag" }
             .map { Hint(it.bucket, it.label, it.reason, it.weight) }
         hints += signatureHints(signatureNames)
+        // P1-B12b: Utility Inc holds both vehicle APs (by OUI) and BodyWorn cameras (by name); the name says which.
+        if (device.name.startsWith("BodyWorn", ignoreCase = true) && signatureNames.any { it.equals("Utility Inc", ignoreCase = true) }) {
+            hints += Hint("camera", "a BodyWorn body camera (Utility, Inc)", "Its name is a BodyWorn camera's.", 8)
+        }
         if (device.kind == RadioKind.WIFI) hints += wifiHints(device, signatureNames)
 
         if (hints.isEmpty()) {
@@ -631,6 +635,7 @@ object DeviceExplain {
                 n == "novatel wireless" ->
                     Hint("hotspot", "a Novatel Wireless / Inseego mobile hotspot or modem", "Matched signature $raw.", 6)
                 n == "utility inc" ->
+                    // A BodyWorn camera on this row gets its camera hint from its name in guess (P1-B12b).
                     Hint("hotspot", "a Utility, Inc vehicle or public-safety radio", "Matched signature $raw.", 6)
                 "gl.inet" in n || n == "glinet" ->
                     Hint("ap", "a GL.iNet travel router", "Matched signature $raw.", 6)
@@ -672,7 +677,7 @@ object DeviceExplain {
                     )
                 "digital ally" in n ->
                     Hint("camera", "a Digital Ally body-worn or in-car camera", "Matched signature $raw.", 8)
-                "reveal media" in n || "bodyworn" in n ->
+                "reveal media" in n ->
                     Hint("camera", "a Reveal Media body-worn camera", "Matched signature $raw.", 8)
                 n == "wolfcom" ->
                     Hint("camera", "a Wolfcom body-worn or in-car camera", "Matched signature $raw.", 8)

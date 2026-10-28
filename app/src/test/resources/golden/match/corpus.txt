@@ -46,6 +46,9 @@ T:smarttag	target	SmartTag on FD5A
 T:smarttag-svcdata	target	SmartTag with FD5A in service data only
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
+T:bodyworn	target	BodyWorn body camera by name
+  expect fleet-utility-inc
+  -> fleet-utility-inc [LAW_ENFORCEMENT, attention]
 T:smarttag-name	target	SmartTag advertising Smart Tag
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
@@ -139,6 +142,12 @@ NM:findmy-thirdparty	near-miss	Third-party Find My tag on FD44, Offline Finding 
 NM:findmy-airpods	near-miss	AirPods sending FD44 and an AirPods status 0x30
   must not fleet-airtag
   -> fleet-findmy [FINDER]
+NM:bodyworn-mid	near-miss	Accessory named My BodyWorn mount
+  must not fleet-reveal-media, fleet-utility-inc
+  -> (none)
+NM:rs2	near-miss	Device named RS2-0042
+  must not fleet-reveal-media
+  -> (none)
 NM:kogan-smart-tag	near-miss	Kogan Smart Tag (a Find Hub tag)
   must not fleet-smarttag
   -> fleet-find-hub [FINDER]
