@@ -211,17 +211,25 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
      - ✅ **P0-7a** Receive-only permission copy (new key `ui.permissions.receive.only`; the old key stays, "Unused") and the in-app catalog update off (`Features.IN_APP_CATALOG_UPDATE`; its URL now points at this repo).
      - ✅ **P0-7b** Sensor list: build script with ODbL credit, or the layer off; stop downloading from upstream. Done as "layer off" (`Features.OTHER_SENSORS_LAYER`, blank URL); P1-E5 brings it back with the build script.
      - **P0-7c Remove the dontgetflocked download** (owner decision 2026-10-27, ADR-0018 §1; before 0.1.0).
-       - Remove the code path, the URL and the dialog. `NetworkPolicy` and `EgressInventoryTest` lose the endpoint.
-       - Formats only grow: retired language keys keep the value "Unused", and serialized fields and the `SensorList` entry stay, inert.
-       - A previously downloaded camera file stops being read and is deleted on upgrade.
+       - `SensorList.PLATES.url` goes blank, and the PLATES dialog and Settings wiring are removed. `dontgetflocked` leaves every non-test source.
+       - The generic download code, `Egress.SENSOR_LIST` and its inventory entry stay for "Other sensors" (P1-E5). ADR-0014's row is updated.
+       - Port `PlateListSourceTest`, don't delete it: a blank URL and empty host; no non-test source names dontgetflocked; turning on the plates layer makes no request.
+       - Language keys (ADR-0018 §1):
+         - `settings.layer.source`, `.more`, `.download.title` and `.download.source` retire ("Unused", pruned).
+         - The shared download keys stay.
+         - `ui.cameras.plates.missing` gets a new key.
+       - Serialized fields and the `SensorList` entry stay, inert.
+       - An idempotent janitor deletes `flock-cameras.bin` and its temp files.
        - Never contact dontgetflocked, tests included.
-       - Earlier partial work (source-host dialog, HTTPS-only, parse limits) is superseded; the parse limits carry over to the snapshot reader.
+       - Earlier partial work (source-host dialog, HTTPS-only) is superseded. The parse limits carry over to the snapshot reader.
      - **P0-7e Bundled OpenStreetMap camera snapshot** (ADR-0018 §2–3; before 0.1.0; after P0-7c):
-       - `scripts/build_alpr.py`, the P1-E5 approach: one Overpass query per data build, downloaded into a new empty directory, treated as data.
-       - The snapshot is committed under `catalog/osm/` and copied to `assets/cameras/osm-alpr.json.gz` (format `spectre-alpr-1`).
-       - Worldwide, with position, facing and manufacturer tags only. At most 4 MiB and 400,000 cameras; the script and a test fail over either.
-       - `LICENSE-ODbL.txt` in the repo and the APK. "© OpenStreetMap contributors" in the UI, the PDF and the exports (exports stay English).
-       - The phone makes no network request for this layer.
+       - **The script.** `scripts/build_alpr.py` sets the pattern P1-E5 reuses. One Overpass query per data build, never in Gradle or CI, downloaded into a new empty directory and treated as data. One backed-off retry on 429 or 504.
+         - It fails, writing nothing, on an Overpass `remark`, a count under `MIN_COUNT`, or a drop of more than 10% without a recorded override.
+       - **The snapshot.** Committed as `catalog/osm/alpr.jsonl` (sorted, one camera per line), `alpr-meta.json` (`spectre-alpr-1`, `osmBase`, query hash, count, tag table) and `query.overpassql`. The raw response is deleted. Gradle gzips it into `assets/cameras/osm-alpr.json.gz`.
+       - **Contents.** Worldwide (nodes, ways, relations by center). Kept: position, facings (at most 4, 0–359), and the manufacturer, brand and operator tags for `isFlock` and `plateBrand`. Keys come from `sensorKey`. At most 4 MiB and 400,000 cameras, and at least `MIN_COUNT`; the script and a test fail otherwise.
+       - **Reading it.** Parsed once, off the main thread.
+       - **License and credit.** `LICENSE-ODbL.txt` in the repo and the APK, saying where the database is published. `NOTICE` names the ODbL paths. The fixed credit "© OpenStreetMap contributors · openstreetmap.org/copyright" goes in the UI, the PDF and the exports (exports stay English). One new key, "Map data as of {date}".
+       - **No phone request.** The phone makes no network request for this layer until P4-7.
      - ✅ **P0-7d** Region notice for camera alerts.
 8. **CI.**
    - The agent's token has no Workflows permission, so it can't push `.github/workflows/`. The agent drafts workflow files in `docs/setup/workflows/` (a protected path). After reviewing the PR, the owner copies them into `.github/workflows/`.
@@ -344,26 +352,6 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
     - Recomputed on every merge.
     - An OUI-only BLE hit on a non-PUBLIC/STATIC address shows as "possible", with no attention card or alert, unless a non-OUI rule backs it up.
     - `RadioDb.vendorForMac` skips random addresses.
-  - **P1-B11 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5). Depends on P1-B8 (the classifier) and P0-7e (the snapshot). Behind `Features.UNMAPPED_CAMERA = false`, which can't turn on before `Features.BLE_ADDRESS_CLASSIFIER`.
-    - **Strong Flock radio hit:**
-      - a Wi-Fi SSID matching `Flock-*`;
-      - the OUI `B4:1E:52` on a universally administered Wi-Fi address;
-      - the OUI `B4:1E:52` on a BLE address the classifier calls PUBLIC or STATIC.
-      - Never an OUI-only match on a random, rotating or unknown BLE address. Invariant 1: weak matches stay "possible" and are never labeled unmapped.
-    - **Unmapped:** a strong hit with no snapshot ALPR camera within 100 m of its loudest hear point. That point is a current phone fix (P1-C1) with accuracy of 30 m or better. 100 m is tuned by the acceptance captures, and any change is recorded in ADR-0018.
-    - **Export (user-initiated only):** a GeoJSON Point and a GPX waypoint through the share sheet, for the user to submit to OpenStreetMap or DeFlock.
-      - It holds the estimated point, its accuracy, the hear time and the suggested tags.
-      - It says the point is estimated, not surveyed, and it has no MAC or SSID.
-      - Nothing uploads automatically. Any network action goes through `NetworkPolicy` and the user's choice.
-    - **Tests:**
-      - a strong hit near a mapped camera isn't labeled;
-      - a strong hit 150 m from one is;
-      - an OUI-only random-BLE hit never is;
-      - the export carries no MAC or SSID.
-    - **Flag acceptance (owner captures):**
-      - a drive past at least 3 mapped Flock cameras, with none labeled unmapped;
-      - at least 1 known unmapped camera, which is labeled;
-      - a no-camera drive, with no label.
   - ✅ **P1-B9 Late-tail fix** (code behind `Features.LATE_TAIL_FIX = false`; the flag waits for its captures).
     - Coverage counted from first-heard, used **only inside `possibleTail`**.
     - **OWN_LIKELY requires `presentAtStart`.**
@@ -374,6 +362,38 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
       - **"Present at start":** take it from in-window presence, not `firstSeen`. A radio heard before the window, then gone, that rejoins mid-window is still treated as present. Also check the 15 s grace against real first-hear delays (scan start, slow advertisers).
       - **Despike** the trail and the path since first heard (`Geo.despikePath`) before the 300 m minimum and the coverage ratio.
       - **Language keys** for the new late-joiner lines. The neighbouring tail copy is hard-coded English too, and moves with it.
+  - **P1-B11 "Not on the map yet"** (owner decision 2026-10-27, ADR-0018 §5; after the rest of P1-B).
+    - **Depends on:** P1-B8 (the classifier), P0-7e (the snapshot), P1-C1 (current fix) and P1-E3 (`ShareHelper`).
+    - **Flag:** `Features.UNMAPPED_CAMERA = false`. A unit test enforces `!UNMAPPED_CAMERA || BLE_ADDRESS_CLASSIFIER`.
+    - **Strong Flock radio hit:**
+      - a Wi-Fi SSID matching `Flock-*`;
+      - the OUI `B4:1E:52` on a universally administered Wi-Fi address;
+      - the OUI `B4:1E:52` on a BLE address that is PUBLIC (API 35 addressType, or the classifier's PUBLIC). A BLE random static address can't carry `B4` (its top bits are 10), so "static" adds nothing.
+      - Never strong (invariant 1): OUI-only on a random, rotating, unknown or stable BLE address. Weak matches stay "possible" and are never labeled.
+    - **Unmapped**, only when all of these hold:
+      - the snapshot loaded with at least `MIN_COUNT` cameras;
+      - the peak level was at least −75 dBm;
+      - the loudest hear point is a current fix within 5 s of the peak, with accuracy of 30 m or better;
+      - no snapshot camera lies within 100 m of it.
+      - The captures tune −75 dBm and 100 m, and any change is recorded in ADR-0018.
+    - **Shown as:** "Not in Spectre's map data (OpenStreetMap, as of {date})", plus "look at the pole and check the current map before submitting". It appears on detail, the map dot and the Debrief line. It is never an alert, notification or attention card.
+    - **Export:** user-initiated only, and unavailable in Privacy mode. A GeoJSON Point and a GPX waypoint through `ShareHelper`.
+      - It holds the estimated point, its accuracy, the date only, and the suggested tags (ADR-0018 §5).
+      - It says "estimated, not surveyed", with no MAC or SSID.
+      - Nothing uploads automatically. Any network action goes through `NetworkPolicy` and the user's choice.
+    - **Language keys:** the label, the advice and the export action and disclaimer are new keys at `NEWEST`.
+    - **Tests:**
+      - a strong hit near a mapped camera isn't labeled;
+      - one 150 m away is;
+      - an OUI-only random-BLE hit never is;
+      - a `B4:1E:52` BLE address the classifier calls STATIC or STABLE isn't strong;
+      - a missing or short snapshot labels nothing;
+      - a peak under −75 dBm isn't labeled;
+      - the export has no MAC, SSID or time of day;
+      - the flag dependency holds.
+    - **Flag acceptance** (charter Decision policy): at least 3 owner-recorded captures with owner-written ground truth pass in `CaptureReplay`.
+      - They include at least 3 strong hits heard near mapped cameras (none labeled), at least 1 known unmapped camera (labeled), and a no-camera drive (no label).
+      - This needs a scrubber and replay extension: a `Flock-` SSID prefix marker, and the snapshot cameras moved with the path's secret rotation and offset. It lands with this step, or the flag stays off.
 
 **1C. Platform fixes**
 - ✅ **P1-C1 Location:** `currentFix()` at ScanService :281 and :393; a stale self position is left out of TAK. As built:
@@ -436,7 +456,7 @@ Sizes are S, M or L. Every phase ends with a gate (see Execution model). "Agent-
   - Download size caps.
   - OSM: at most 2 connections, no prefetch.
 - **P1-E5 Other-sensors layer returns** (off since P0-7b):
-  - Ship `scripts/build_sensors.py`: an Overpass query, the ODbL license file, and the "© OpenStreetMap contributors" credit in the UI and exports.
+  - Ship `scripts/build_sensors.py` on the pattern P0-7e's `build_alpr.py` sets (ADR-0018): an Overpass query, the ODbL license file it added, and the "© OpenStreetMap contributors" credit in the UI and exports.
   - Build and host the list from this repo (or a release asset); set `SensorList.OTHER.url` and `Features.OTHER_SENSORS_LAYER`.
   - Gate the download through `NetworkPolicy`.
 - **P1-E6 What carries over from Fieldwatch** (found by the P1-A3 1.1.32 decode goldens, `golden/import-1.1.32/`, which pin today's behavior; the fix re-blesses them):
@@ -768,7 +788,7 @@ They share one model, so the objective checks carry the most weight: tests, the 
 - Catalog channel: release assets plus a beta/stable pointer.
 - User `fieldwatch-language` packs are still accepted.
 - READ_PHONE_STATE is requested only when that feature is turned on.
-- The camera layer is a bundled OpenStreetMap snapshot (ADR-0018). There's no third-party camera download, and the phone makes no request for the layer. (This replaces "dontgetflocked stays an optional download", by the owner's decision of 2026-10-27.)
+- The camera layer is a bundled OpenStreetMap snapshot (ADR-0018). There's no third-party camera download, and the phone makes no request for the layer until P4-7's signed updates. (This replaces "dontgetflocked stays an optional download", by the owner's decision of 2026-10-27.)
 - Git history is kept.
 - TAK testing uses a local open-source server.
 - The phone's model and API level are detected in Phase 0. Without an Android 15+ phone, the BLE classifier flag stays off until the owner's captures pass.

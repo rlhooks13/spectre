@@ -21,7 +21,7 @@
   | `MAP_TILES` | `onlineLookup` |
   | `PLACE_NAMES` | `onlineLookup` and not Privacy (`demoMode`), as the callers already required |
   | `CATALOG_UPDATE` | `Features.IN_APP_CATALOG_UPDATE` (off until P4-6) |
-  | `SENSOR_LIST` | always. Every request follows a user action in the layer's Settings block, which names the source host (P0-7c). Download follows a confirmation dialog with the source and its terms. The update check (a HEAD request) follows the user's Update tap. The "Other sensors" list stays off through its blank URL and feature flag. |
+  | `SENSOR_LIST` | always. The plate-reader list makes no request: it is a bundled OpenStreetMap snapshot (ADR-0018, which supersedes the P0-7c dialog here). For the "Other sensors" list, every request follows a user action in the layer's Settings block, which names the source host. Download follows a confirmation dialog with the source and its terms. The update check (a HEAD request) follows the user's Update tap. That list stays off through its blank URL and feature flag until P1-E5. |
   | `TAK_PUBLISH` | `takEnabled` and not Privacy. This covers the DNS lookup of the TAK host as well as the packets. |
   | `TAK_RETRACT` | always. When the feed or Privacy turns off, tombstones withdraw the spots the feed already published, so teammates' maps stop showing them. Blocking them would leave the user's spots visible. |
 

@@ -10,7 +10,9 @@
     - P1-A6 waits for build-logic (P2-1).
     - P0-8d waits for P1-B1's snapshots.
     - 1F is done.
-  - **Waiting on the owner:** the co-travel flag question; the late-tail flag's captures; where the plugin MCP servers seen on 2026-10-28 came from.
+  - **Waiting on the owner:** the late-tail flag's captures; the plugin servers (Needs human, "Still open"); a vetted list of new signatures, which arrives as a PLAN step.
+  - **Signature additions are on hold:** the owner is researching new signatures (trackers, police and surveillance, recording devices). Don't start any signature-addition work until the owner's vetted list arrives as a PLAN step. Fixes to existing rows under existing steps (P1-B5d, P1-B10) are not additions.
+  - **#78 (CLAUDE.md command table, owner-signed):** the owner merges it when CI passes. Don't touch it.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
 - Branch: `p0/7c-camera-data-adr`
@@ -22,7 +24,9 @@
     2. `timeout 180 adb -s $SERIAL shell pm install -r /data/local/tmp/spectre-check.apk </dev/null`
     3. `adb shell rm` the file.
   - It worked first time on 2026-10-28.
-- **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
+- **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`).
+  - The owner uninstalled the stale `app.fieldwatch.debug` on 2026-10-27.
+  - Also on the phone, and to be left alone: `app.fieldwatch` (official Fieldwatch 1.1.32, the reference) and an old `app.fieldwatch.staging`.
 - Phone model / API level: Galaxy S23 SM-S911U, Android 16, API 36 (checked with getprop on 2026-10-27). adb authorized, stay awake on (`stay_on_while_plugged_in=7`, and forced with `svc power stayon true`), screen timeout at maximum, adb authorization timeout off, automatic system updates off (owner-reported).
 - Loop created at: 2026-10-27T05:41Z
 - Last cycle: 2026-10-27T21:10Z
@@ -30,13 +34,8 @@
 ## Needs human (owner)
 **For the owner:**
 - **Leave `dryrun/v*` out of the `release-tags` ruleset,** so scratch tags can be deleted.
-- **Decide on the inherited co-travel verdicts (CHARTER: field-dependent logic behind flags that default off).** The finder, beacon, wearable and now phone "moved with you" and "possible tail" verdicts came from Fieldwatch unflagged, and the Debrief has always shown them. Should they go behind a `Features` flag that defaults off (the Debrief loses its tracking assessment until field acceptance), or stay on as inherited behavior? P1-B4 replaced carried-phone FINDER verdicts with milder PHONE ones and left the rest as it found them.
-- **CLAUDE.md command table (protected):** add the build switches the agent added:
-  - `-PwriteStockCatalog`, the short form of `WRITE_STOCK_CATALOG=1`;
-  - `-PreleaseNotes=X.Y.Z`, which writes a release's generated notes;
-  - `-PpruneLanguagePacks`, which drops retired ("Unused") keys from the bundled packs (P1-B4b). The language-key rules could also say to run it after a key goes "Unused".
-- **Uninstall the stale `app.fieldwatch.debug` from the phone** if you don't need its data (the agent leaves it alone because uninstalling deletes that data). Also, the Spectre debug build stops at its first-run "Disclaimer and license" screen. The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
-- **Delete the remote branch `p0/language-pack-cap`** (no PR). P0-4g (#17) superseded it: #17 set the cap to 280 KiB, replacing that branch's 272 KiB first draft.
+- **The Spectre debug build stops at its first-run "Disclaimer and license" screen.** The agent doesn't accept it on your behalf, so device checks after launch need you to accept it once.
+- **CLAUDE.md (protected), if you agree:** exempt OSM snapshot refresh PRs (data, `catalog/osm/`) from the ~600-line PR size rule (ADR-0018 §2).
 
 **Still open:**
 - Disable the `engineering` and `legal` plugins for this account. Their MCP servers (asana, github, pagerduty, box) show up in the session as failed connections. They aren't claude.ai connectors, aren't authenticated, and managed settings deny every `mcp__` tool, but runbook step 4 expects no servers at all.
@@ -44,7 +43,6 @@
 - Host power settings (SETUP.md).
 - Logon tasks: `docs/setup/install-logon-tasks.ps1`.
 - On the Windows checkout that signs protected PRs, run `git config core.longpaths true` (P0-2). It's a per-clone setting that can't be committed, and it has no effect in the distro.
-- ~~**P0-7c layer choice:**~~ Decided 2026-10-27: OpenStreetMap, plus "Not on the map yet" (ADR-0018).
 
 Until the remaining dry-run checks pass, any step that relies on an unverified control (protected-path enforcement, the workflow-push rejection, server-side 403s) verifies that control first.
 
@@ -83,6 +81,24 @@ The agent adds an entry here, plus a `field-capture` issue, for each scenario it
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-28: **Owner decisions and done items recorded (2026-10-27, through the session).**
+  - **Co-travel (ADR-0019):** the inherited finder, beacon, wearable and phone verdicts stay on; turning them off would miss trackers (severity 1). New or changed tail logic (P1-B9, Tail v2, linking) stays flagged off until its captures pass. Removed from Needs human.
+  - **Done by the owner:**
+    - deleted the remote branch `p0/language-pack-cap`;
+    - uninstalled `app.fieldwatch.debug`.
+    - Left on the phone, untouched: `app.fieldwatch` (the 1.1.32 reference) and `app.fieldwatch.staging`.
+  - **#78** (CLAUDE.md command table) is owner-signed and the owner merges it. The agent doesn't touch it, and its Needs-human item is removed.
+  - **Signature additions on hold** until the owner's vetted list arrives as a PLAN step.
+  - **ADR-0018 revised after its review** (no BLOCKING; 6 MAJOR, all taken):
+    - P0-7c keeps the shared download path and `SENSOR_LIST` for "Other sensors", and ADR-0014's row is updated.
+    - `PlateListSourceTest` is ported, not deleted.
+    - Every language key's fate is listed.
+    - P1-B11's acceptance runs in `CaptureReplay`, with a scrubber extension.
+    - BLE "strong" means PUBLIC only: a random static address can't carry `B4`.
+    - New guards: a minimum snapshot size, a −75 dBm peak and a fix within 5 s.
+    - The label names its data date and never alerts.
+    - The script fails on an Overpass `remark`, a short count, or a drop of more than 10%.
+    - Minors taken: relations as type 2; the snapshot committed as sorted JSONL; ODbL publication and NOTICE; brand and operator kept for `isFlock`; facings capped; an export with the date only and none in Privacy mode; "until P4-7"; a flag-dependency test; the janitor; P1-B11 moved after the rest of P1-B, with its dependencies.
 - 2026-10-28: **Owner decision on P0-7c recorded (ADR-0018).** #77 (P1-C1) merged as 75a849a.
   - **The decision (owner, 2026-10-27, through the session):** option A, OpenStreetMap, plus "Not on the map yet".
     1. Remove the dontgetflocked download before the first public release.
