@@ -167,6 +167,11 @@ object MatchCorpus {
         // A record too short to read the status byte: type unknown, still a finder.
         Target("Offline Finding record too short to read", sighting("T:findmy-short", mfg = apple("1219")), "fleet-findmy"),
         Target("AirTag near its owner, short Offline Finding form", sighting("T:airtag-near-owner", mfg = apple(offlineFindingNearOwner(0x10))), "fleet-airtag"),
+        // P1-B11c: FD44 (Apple's Find My accessory service) is a finder on "Find My device"; the status byte still names
+        // an AirTag. A radio sending FD44 stays a finder whatever else its status byte says.
+        Target("Find My accessory service FD44 alone", sighting("T:findmy-fd44", serviceUuids = listOf("FD44")), "fleet-findmy"),
+        Target("AirTag with FD44 and status 0x10", sighting("T:airtag-fd44", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x10))), "fleet-airtag"),
+        Target("Find My tag named \"Find My\" over BLE", sighting("T:findmy-name", name = "Find My Tag"), "fleet-findmy"),
         Target(
             "SmartTag on FD5A",
             sighting("T:smarttag", serviceUuids = listOf("FD5A"), serviceData = listOf(ServiceDataRecord("FD5A", "1000"))),
@@ -237,6 +242,23 @@ object MatchCorpus {
             "Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40",
             withFlags(sighting("NM:findhub-buds", name = "Pixel Buds Pro 2", serviceData = findHubFrame("40")), 0x02),
             setOf("fleet-find-hub"), checkFinder = true,
+        ),
+        // P1-B11c: third-party Find My tags (Chipolo, Pebblebee, eufy) and AirPods send FD44 too; it isn't an AirTag.
+        NearMiss(
+            "Third-party Find My tag on FD44, Offline Finding status 0x20",
+            sighting("NM:findmy-thirdparty", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x20))),
+            setOf("fleet-airtag"),
+        ),
+        NearMiss(
+            "AirPods sending FD44 and an AirPods status 0x30",
+            sighting("NM:findmy-airpods", serviceUuids = listOf("FD44"), mfg = apple(offlineFinding(0x30))),
+            setOf("fleet-airtag"),
+        ),
+        // "Find My" anywhere in a name, on any radio, used to say AirTag: a Wi-Fi network with the words in it.
+        NearMiss(
+            "Wi-Fi network named \"Find My Hotspot\"",
+            sighting("NM:findmy-wifi", kind = RadioKind.WIFI, mac = mac("02:11:22", "334455"), name = "Find My Hotspot"),
+            setOf("fleet-airtag", "fleet-findmy"), checkFinder = true,
         ),
         // Samsung's company id is on every Galaxy phone and Buds, not only SmartTags.
         NearMiss(

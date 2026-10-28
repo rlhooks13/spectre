@@ -1226,10 +1226,12 @@ class ConfigStore internal constructor(private val file: File) {
             // now, so what the user set on it carries over: switched off, the new row's rule starts off; watched or
             // filtered on AirTags, the new row is watched or filtered too.
             val oldAirTags = cfg.fleets.firstOrNull { it.id == AIRTAGS && it.builtIn }
-            val ruleOff = oldAirTags?.rules?.any { RetiredRules.isRetired(AIRTAGS, it) && !it.enabled } == true
+            // Only the rule v100 moved: the row today also holds what v107 moved (FD44, "Find My"), which v107 carries.
+            val ruleOff = oldAirTags?.rules?.any { RetiredRules.retiredIn(AIRTAGS, it) == CATALOG_V100 && !it.enabled } == true
+            val movedKey = ruleKey(OFFLINE_FINDING_RULE_V100)
             val have = fleets.map { it.id }.toSet()
             val extras = ADDED_IN_V100.mapNotNull { catalog[it] }.filter { it.id !in have }
-                .map { if (ruleOff) it.copy(rules = it.rules.map { r -> r.copy(enabled = false) }) else it }
+                .map { if (ruleOff) it.copy(rules = it.rules.map { r -> if (ruleKey(r) == movedKey) r.copy(enabled = false) else r }) else it }
             if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
             if (extras.isNotEmpty()) {
                 val findMy = extras.single()
@@ -1303,6 +1305,47 @@ class ConfigStore internal constructor(private val file: File) {
             if (extras.isNotEmpty()) fleets = (fleets + extras).sortedBy { it.name.lowercase() }
             version = CATALOG_V106
         }
+        if (version < CATALOG_V107) {
+            // P1-B11c: AirTags' FD44 and "Find My" are retired (RetiredRules strips them on load), and patchBuiltIn above
+            // appends their replacements to "Find My device" switched on. What the user set on them carries over:
+            // - a moved rule switched off on AirTags, or all of them when the AirTags row was off or gone, starts off;
+            // - a Find My device row the user had switched off comes back on with only its old rules off, so FD44
+            //   radios AirTags labeled stay labeled while what the user silenced stays silent;
+            // - watched or filtered on AirTags, Find My device is watched or filtered too (as v100 did).
+            // The Find My device note changes only where still stock.
+            val oldAirTags = cfg.fleets.firstOrNull { it.id == AIRTAGS && it.builtIn }
+            val movedKeys = MOVED_TO_FIND_MY_V107.map { ruleKey(it.second) }.toSet()
+            val off = MOVED_TO_FIND_MY_V107.filter { (retired, _) ->
+                oldAirTags == null || !oldAirTags.enabled ||
+                    oldAirTags.rules.any { !it.enabled && ruleKey(it) == ruleKey(retired) }
+            }.map { ruleKey(it.second) }.toSet()
+            fleets = fleets.map { fleet ->
+                if (fleet.id != FIND_MY || !fleet.builtIn) return@map fleet
+                val rowOff = !fleet.enabled && off.size < movedKeys.size
+                fleet.copy(
+                    enabled = fleet.enabled || rowOff,
+                    notes = if (fleet.notes == V106_FIND_MY_NOTES) catalog.getValue(FIND_MY).notes else fleet.notes,
+                    rules = fleet.rules.map { r ->
+                        val key = ruleKey(r)
+                        when {
+                            key in off -> r.copy(enabled = false)
+                            rowOff && key !in movedKeys -> r.copy(enabled = false)
+                            else -> r
+                        }
+                    },
+                )
+            }
+            val findMy = fleets.firstOrNull { it.id == FIND_MY }
+            if (findMy != null && oldAirTags != null) {
+                val watched = watchlist.firstOrNull { it.fleetId == AIRTAGS }
+                if (watched != null && watchlist.none { it.fleetId == FIND_MY }) {
+                    watchlist = watchlist + watched.copy(id = "watch-$FIND_MY", fleetId = FIND_MY, label = findMy.name)
+                }
+                filter = filter.withFleetAlongside(AIRTAGS, FIND_MY)
+                presets = presets.map { p -> if (p.isBuiltIn()) p else p.copy(filter = p.filter.withFleetAlongside(AIRTAGS, FIND_MY)) }
+            }
+            version = CATALOG_V107
+        }
         if (!settings.darkTheme) settings = settings.copy(darkTheme = true)
         if (settings.scanControlsExpanded) settings = settings.copy(scanControlsExpanded = false)
         presets = presets.filterNot { it.isBuiltIn() && it.id in hiddenPresetIds }
@@ -1370,7 +1413,7 @@ class ConfigStore internal constructor(private val file: File) {
 
     companion object {
         /** Stock catalog generation. Settings footer and the GitHub pack use this. */
-        const val CATALOG_VERSION = 106
+        const val CATALOG_VERSION = 107
         private const val CATALOG_V2 = 2
         private const val CATALOG_V3 = 3
         private const val CATALOG_V4 = 4
@@ -1474,10 +1517,25 @@ class ConfigStore internal constructor(private val file: File) {
         private const val CATALOG_V103 = 103
         private const val CATALOG_V104 = 104
         private const val CATALOG_V105 = 105
-        private const val CATALOG_V106 = CATALOG_VERSION
+        private const val CATALOG_V106 = 106
+        private const val CATALOG_V107 = CATALOG_VERSION
 
         /** P1-B11b: Find Hub headphones and phones get their own row, so their 0x40 frames stop reading as a tag. */
         private val ADDED_IN_V106 = listOf("fleet-find-hub-accessory")
+
+        /**
+         * P1-B11c: the AirTags rules v107 retired and the "Find My device" rule that replaces each. Written out, not read
+         * from DefaultCatalog, so a later catalog change can't rewrite what v107 moved.
+         */
+        private val MOVED_TO_FIND_MY_V107 = listOf(
+            MatchRule(RuleKind.NAME_CONTAINS, text = "Find My") to MatchRule(RuleKind.NAME_CONTAINS, text = "Find My", radio = RadioKind.BLE),
+            MatchRule(RuleKind.SERVICE_UUID, text = "FD44") to MatchRule(RuleKind.SERVICE_UUID, text = "FD44"),
+        )
+
+        /** The exact v106 stock "Find My device" note (catalog/snapshots/v106.json). v107 rewords it only where still equal. */
+        private const val V106_FIND_MY_NOTES = "Apple Find My network tag or accessory (Offline Finding) whose type isn't " +
+            "AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. This row's rule also finds nameless AirTags, " +
+            "iPhones and AirPods for their own rows; switching it off stops those too. Addresses rotate."
 
         /** Rows whose stock decode v105 refreshes (P1-B11a). */
         private val REFRESHED_DECODES_V105 = setOf("fleet-find-hub", "fleet-dult")
@@ -1875,6 +1933,10 @@ class ConfigStore internal constructor(private val file: File) {
             "fleet-findmy",
         )
         private const val AIRTAGS = "fleet-airtag"
+        private const val FIND_MY = "fleet-findmy"
+
+        /** The bare Offline Finding rule v100 moved from AirTags to Find My device (P1-B3), written out. */
+        private val OFFLINE_FINDING_RULE_V100 = MatchRule(RuleKind.MANUFACTURER_DATA, companyId = 0x004C, dataPrefixHex = "12")
 
         private fun globs(radio: RadioKind?, vararg texts: String): List<MatchRule> =
             texts.map { MatchRule(RuleKind.NAME_GLOB, text = it, radio = radio) }

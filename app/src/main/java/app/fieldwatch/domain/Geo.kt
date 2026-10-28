@@ -870,6 +870,16 @@ object TrackerMatch {
     private fun isPhoneOrAirPodsRecord(device: Sighting): Boolean =
         offlineFindingType(device).let { it == OF_APPLE_DEVICE || it == OF_AIRPODS }
 
+    private val FIND_MY_ACCESSORY_UUIDS = uuidAliases("FD44")
+
+    /**
+     * P1-B11c: the radio sends FD44, Apple's Find My accessory service (as a service UUID or service data). Tags send
+     * it, so a radio that does stays a finder whatever its Offline Finding status byte says.
+     */
+    fun sendsFindMyAccessoryService(device: Sighting): Boolean =
+        (device.serviceUuids.asSequence() + device.facts.serviceData.asSequence().map { it.uuid })
+            .any { uuid -> uuidAliases(uuid).any { it in FIND_MY_ACCESSORY_UUIDS } }
+
     /**
      * An Offline Finding record whose type isn't Apple device or AirPods: a tag, an accessory, or a record too short
      * to read. A finder whatever else matched it, so an AirTag stays a finder when the Find My rows are off.
@@ -906,11 +916,13 @@ object TrackerMatch {
 
     /**
      * FINDER-class matches. "Find My device" whose record says Apple device or AirPods is left out: the engine leaves
-     * it there only when that type's row is missing, and the radio is still a phone or buds, not a tag.
+     * it there only when that type's row is missing, and the radio is still a phone or buds, not a tag. A radio that
+     * also sends FD44 ([sendsFindMyAccessoryService]) is the exception: the engine keeps it on "Find My device", a finder.
      */
     private fun finderHits(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): List<String> =
         device.definiteFleetIds.filter { id ->
-            classes[id] == SignatureClass.FINDER && !(id == SignatureEngine.FIND_MY && isPhoneOrAirPodsRecord(device))
+            classes[id] == SignatureClass.FINDER &&
+                !(id == SignatureEngine.FIND_MY && isPhoneOrAirPodsRecord(device) && !sendsFindMyAccessoryService(device))
         }.map { names[it] ?: it }
 
     fun label(device: Sighting, names: Map<String, String>, classes: Map<String, SignatureClass>): String {

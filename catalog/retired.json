@@ -534,6 +534,32 @@
                 "dataPrefixHex": "",
                 "radio": "WIFI"
             }
+        },
+        {
+            "fleetId": "fleet-airtag",
+            "retiredIn": 107,
+            "step": "P1-B11c",
+            "reason": "\"Find My\" anywhere in a name, on any radio, labeled third-party Find My tags (and Wi-Fi names) as AirTags. Moved to Find My device as a BLE-only name.",
+            "rule": {
+                "kind": "NAME_CONTAINS",
+                "text": "Find My",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
+        },
+        {
+            "fleetId": "fleet-airtag",
+            "retiredIn": 107,
+            "step": "P1-B11c",
+            "reason": "FD44 is Apple's Find My accessory service, sent by third-party Find My tags and AirPods too, so it labeled them as AirTags. Moved to Find My device, where the Offline Finding status byte routes AirTags back.",
+            "rule": {
+                "kind": "SERVICE_UUID",
+                "text": "FD44",
+                "companyId": 0,
+                "dataPrefixHex": "",
+                "radio": null
+            }
         }
     ]
 }

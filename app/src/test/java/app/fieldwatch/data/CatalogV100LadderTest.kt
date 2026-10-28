@@ -58,7 +58,8 @@ class CatalogV100LadderTest {
     @Test
     fun theRetiredEntryIsTheV99Rule() {
         val v99 = airTags(snapshot(99))
-        assertEquals(1, v99.rules.count { RetiredRules.isRetired("fleet-airtag", it) })
+        // v100's one entry; P1-B11c (v107) retired two more of this row's rules.
+        assertEquals(1, v99.rules.count { RetiredRules.retiredIn("fleet-airtag", it) == 100 })
         assertFalse(RetiredRules.strip(v99).hasOfflineFindingRule())
     }
 
@@ -75,8 +76,11 @@ class CatalogV100LadderTest {
     @Test
     fun aV99ConfigWithTheRuleOffGetsFindMysRuleOff() {
         val loaded = ConfigUpgrade.load(v99Config(ruleEnabled = false))
-        assertTrue(findMy(loaded.fleets).rules.none { it.enabled })
+        val findMy = findMy(loaded.fleets)
+        assertTrue(findMy.rules.filter { it.kind == RuleKind.MANUFACTURER_DATA }.none { it.enabled })
         assertFalse(airTags(loaded.fleets).hasOfflineFindingRule())
+        // P1-B11c: FD44 and "Find My", which v107 moved here, were still on under AirTags, so they stay on.
+        assertTrue(findMy.rules.filter { it.kind != RuleKind.MANUFACTURER_DATA }.all { it.enabled })
     }
 
     @Test
@@ -130,7 +134,7 @@ class CatalogV100LadderTest {
         val v99 = airTags(snapshot(99))
         val row = v99.copy(
             builtIn = true,
-            rules = v99.rules.map { if (RetiredRules.isRetired("fleet-airtag", it)) it.copy(enabled = ruleEnabled) else it },
+            rules = v99.rules.map { if (RetiredRules.retiredIn("fleet-airtag", it) == 100) it.copy(enabled = ruleEnabled) else it },
             notes = airTagNotes ?: v99.notes,
         )
         c.copy(

@@ -31,6 +31,15 @@ T:findmy-short	target	Offline Finding record too short to read
 T:airtag-near-owner	target	AirTag near its owner, short Offline Finding form
   expect fleet-airtag
   -> fleet-airtag [FINDER]
+T:findmy-fd44	target	Find My accessory service FD44 alone
+  expect fleet-findmy
+  -> fleet-findmy [FINDER]
+T:airtag-fd44	target	AirTag with FD44 and status 0x10
+  expect fleet-airtag
+  -> fleet-airtag [FINDER]
+T:findmy-name	target	Find My tag named "Find My" over BLE
+  expect fleet-findmy
+  -> fleet-findmy [FINDER]
 T:smarttag	target	SmartTag on FD5A
   expect fleet-smarttag
   -> fleet-smarttag [FINDER]
@@ -115,6 +124,15 @@ T:cradlepoint	target	Cradlepoint IBR900 router
 NM:findhub-buds	near-miss	Pixel Buds Pro 2 in Find Hub, dual-mode Flags 0x02, frame 0x40
   must not fleet-find-hub (nor be a finder)
   -> fleet-find-hub-accessory [AUDIO]; fleet-google [PHONE]
+NM:findmy-thirdparty	near-miss	Third-party Find My tag on FD44, Offline Finding status 0x20
+  must not fleet-airtag
+  -> fleet-findmy [FINDER]
+NM:findmy-airpods	near-miss	AirPods sending FD44 and an AirPods status 0x30
+  must not fleet-airtag
+  -> fleet-findmy [FINDER]
+NM:findmy-wifi	near-miss	Wi-Fi network named "Find My Hotspot"
+  must not fleet-airtag, fleet-findmy (nor be a finder)
+  -> (none)
 NM:galaxy	near-miss	Galaxy phone advertising Samsung 0x0075
   must not fleet-smarttag (nor be a finder)
   -> (none)

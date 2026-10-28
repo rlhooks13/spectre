@@ -411,17 +411,17 @@ object DefaultCatalog {
         builtIn = true,
         rules = listOf(
             name("AirTag"),
-            name("Find My"),
             // A bare Offline Finding record (0x12) is "Find My device" (P1-B3); the engine routes it here when its
-            // status byte says AirTag (SignatureEngine.routeOfflineFinding).
-            uuid("FD44"),
+            // status byte says AirTag (SignatureEngine.routeOfflineFinding). FD44 and the name "Find My" moved there
+            // too (P1-B11c): third-party tags and AirPods send them, so they don't say AirTag.
         ),
     )
 
     /**
      * An Apple Offline Finding record (company 0x004C, type 0x12) whose device type doesn't decode to an AirTag, an
      * Apple device or AirPods: a third-party Find My accessory (status type 0x20), or a record too short to read.
-     * The engine routes the decoded types to their own rows (P1-B3).
+     * The engine routes the decoded types to their own rows (P1-B3). Since P1-B11c it also takes FD44 (Apple's Find My
+     * accessory service) and the BLE name "Find My"; a radio sending FD44 is routed only to AirTags (ADR-0020).
      */
     private fun findMyDevice() = Fleet(
         id = "fleet-findmy",
@@ -429,10 +429,14 @@ object DefaultCatalog {
         colorIndex = Hue.FIND_MY,
         kind = SignatureClass.FINDER,
         matchAny = true,
-        notes = "Apple Find My network tag or accessory (Offline Finding) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. This row's rule also finds nameless AirTags, iPhones and AirPods for their own rows; switching it off stops those too. Addresses rotate.",
+        notes = "Apple Find My network tag or accessory (Offline Finding, or Apple's Find My accessory service FD44) whose type isn't AirTag, iPhone, Mac or AirPods: often a third-party Find My tag. A radio sending FD44 stays here whatever type it reports, because tags send it. This row's rules also find nameless AirTags, iPhones and AirPods for their own rows; switching them off stops those too. Addresses rotate.",
         builtIn = true,
         rules = listOf(
             mfgData(0x004C, "12"),
+            // P1-B11c (research §1 item 2): FD44 is Apple's Find My accessory service, sent by AirTags, third-party
+            // Find My tags and AirPods alike, so it names the network, not an AirTag.
+            uuid("FD44"),
+            bleName("Find My"),
         ),
     )
 
