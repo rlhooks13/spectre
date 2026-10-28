@@ -2,7 +2,7 @@
 
 ## Resume pointer
 - State: RUNNING
-- Current step: **P1-B10 Bare vendor ids**, then P1-B8 and B9, after P1-B7 merges. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
+- Current step: **P1-B8b Wiring**, after P1-B8a merges. Then P1-B9. P1-B10 waits for captures (issues #66–#70); with none by the 0.1.0 gate, it drops the bare ids. P1-B5d (anchored short brand globs vs first names) waits for captures. Each catalog PR re-blesses `golden/release/since-v97.md`, so its diff lists exactly that PR's label and verdict changes.
   - **Baseline 956:** the owner adopted #43 as owner-signed #58 (8dd258f), with the baseline at 956 (main's count at 5da4d2a), not 858. Branch from, or merge in, the current main before each PR.
   - **P2-1** (build-logic) is unblocked. It can run beside 1B; P1-A6 waits for it.
   - **Never download from dontgetflocked:** its terms (Open Road Labs LLC) forbid automated or bulk requests to its data servers. P0-7c stays parked until the owner chooses between an OpenStreetMap-sourced layer and dropping the download. **Don't change the existing user-triggered download until the owner decides.**
@@ -13,7 +13,7 @@
   - **Waiting on the owner:** the P0-7c layer choice (parked, owner-confirmed 2026-10-27); the co-travel flag question.
   - **Stale branches:** no branch-delete rule is coming. GitHub auto-deletes merged head branches; clean local refs with `git fetch --prune`.
 - **Protected PRs carry no PLAN or PROGRESS edits.** Their bookkeeping goes in the next unprotected PR, so they never conflict with each other and the owner never has to re-sign for a log line.
-- Branch: `p1/b7-readings`
+- Branch: `p1/b8a-ble-address-classifier`
 - Phone serial: RFCX205JR3K
 - **Install with `adb -s $SERIAL install --no-streaming -r <apk>`.** Streamed installs of the ~65 MB debug APK hang over usbip (5 times on 2026-10-27, with nothing on the phone's screen). A push install takes under a second. Wrap it in `timeout 300`.
 - **Device checklist app id:** `io.github.rlhooks13.spectre.debug` (launcher `app.fieldwatch.MainActivity`). The phone also has a stale `app.fieldwatch.debug` from 2026-10-27 08:43 PDT (`ff3bdd7.dirty`, built before the applicationId change). Never check against it: it doesn't update, so a check of it proves nothing.
@@ -65,10 +65,38 @@ The owner skipped the supervised dry run on 2026-10-27 (UTC) and told the agent 
 ## Field-capture requests (owner)
 The agent adds an entry here, plus a `field-capture` issue, for each scenario it needs.
 - **Offline Finding status byte (P1-B3):** a short capture of an AirTag, an iPhone, AirPods and a third-party Find My tag, each separated from its owner and near it. It checks the device type that `routeOfflineFinding` reads from status bits 4-5 (AirGuard's layout), in both the `12 19` and `12 02` forms. Payload hex only, no addresses.
+- **Bare vendor ids (P1-B10):** payload-prefix hex from the owner's own devices, so each row can move off its bare id. One issue per row family:
+  - #66: DJI 0x08AA;
+  - #67: Google 0x00E0 and 0x018E (`fleet-google`, `fleet-fitbit`);
+  - #68: Microsoft 0x0006;
+  - #69: Huf 0x070A;
+  - #70: Lite-On camera's vendor IE 00:0A:EB, which is TP-Link's.
+
+  With none by the 0.1.0 gate, each bare id is dropped.
 
 ## Log
 Newest first. One entry per cycle that changed something. Dates from 2026-10-27 on are UTC; earlier entries use the owner's local time (UTC−7).
 
+- 2026-10-27: **P1-B8a BLE address classifier (behind a flag).** #65 (P1-B7) merged as ffd6ee7.
+  - **P1-B10:** it needs captures, so I opened field-capture issues #66–#70 (above) and moved on.
+  - **P1-B8 split:** B8a is the domain pieces; B8b wires them into the UI, alerts, the vendor lookup and the corpus.
+  - **B8a:**
+    - `BleAddress.classify` uses API 35 addressType when there is one (Public; Random split into STATIC by top bits 11, ROTATING otherwise; Anonymous is ROTATING).
+    - Without it, an Apple 0x004C, FD5A, FD6F or Find Hub FCB2 radio is ROTATING, and one heard for 20 minutes on one address is STABLE. Anything else is UNKNOWN.
+    - It's computed from the sighting as it stands, so every merge recomputes it.
+    - `SignatureEngine.matchedOnlyByAddress` is true when an any-rule signature hit only through OUI or MAC-prefix rules.
+    - `BleAddress.possibleOnly` = flag on, BLE, not PUBLIC/STATIC/STABLE, and address-only.
+    - `Features.BLE_ADDRESS_CLASSIFIER = false`: it turns on once the heuristic agrees with addressType over a 24 h capture on the phone (Android 16, so agent-runnable) and the static-tag checks pass.
+  - **Review fixes (both reviewers):**
+    - A full MAC rule (what "make a signature from this radio" saves) backs a hit up; only OUI and MAC prefixes of at most 3 bytes are vendor-prefix rules.
+    - "Find Hub" is FEAA frames 0x40/0x41; FCB2 is IETF DULT, kept and labeled. Plain Eddystone FEAA doesn't count.
+    - Apple's iBeacon layout (02 15), sent by fixed third-party beacons, doesn't count as Apple's rotating ecosystem.
+    - Only PUBLIC and STATIC make a vendor-prefix hit definite, as the step says. STABLE doesn't: a 20-minute random address on Axon's OUI stays "possible".
+    - STABLE needs 20 minutes of unbroken presence, not first-to-last seen.
+    - An all-rules signature made only of vendor-prefix rules counts.
+    - A fleet the device didn't match is never "possible".
+    - UUIDs go through `uuidAliases`.
+    - `RadioFacts.merge` keeps a known address type over a later "Unknown".
 - 2026-10-27: **P1-B7 Readings.** #64 (P1-B6) merged as 6aaabe8.
   - **RSSI:** `Rssi.measured` is −127..−1. It used to be −127..126, so 0 (an unset or missing level) and the positive values no radio reports counted as hears, and a 0 read as the strongest signal in ranges and the latest reading. `SitPathPlot`'s own `rssi == 0` check is now redundant and gone.
   - **Decoder cache:** `SignatureFieldDecoder`'s parse cache is a synchronized LRU of 512. It was an unbounded `ConcurrentHashMap` keyed by payload, and rotating payloads never repeat.

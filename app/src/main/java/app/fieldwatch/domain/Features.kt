@@ -17,6 +17,14 @@ object Features {
      * builds and hosts; it used to download upstream's copy.
      */
     const val OTHER_SENSORS_LAYER = false
+
+    /**
+     * P1-B8's BLE address classifier ([BleAddress]): an address-only signature hit on a rotating BLE address reads as
+     * "possible", with no attention card or alert. Field-dependent, so off until its acceptance check passes: the
+     * heuristic agrees with API 35 addressType over a 24 h capture on the dedicated phone, and the static-tag checks
+     * pass (PLAN, feature-flag acceptance).
+     */
+    const val BLE_ADDRESS_CLASSIFIER = false
 }
 
 /**

@@ -366,6 +366,25 @@ class SignatureEngine {
         }
     }
 
+    /**
+     * P1-B8: [fleet], which matched [device] (it is in `device.fleetIds`), did so only through vendor-prefix rules: an
+     * OUI, or a MAC prefix of at most 3 bytes. Those are the rules a rotating address satisfies by chance. A longer MAC
+     * prefix (a full address saved from one radio) names that radio, so it backs a hit up like a name or a UUID does.
+     * An all-rules signature counts when every rule it has (radio kind aside) is a vendor prefix. False for a fleet the
+     * device didn't match.
+     */
+    fun matchedOnlyByAddress(device: Sighting, fleet: Fleet): Boolean {
+        if (fleet.id !in device.fleetIds) return false
+        val on = fleet.rules.filter { it.enabled && it.kind != RuleKind.RADIO_KIND }
+        val prefix = on.filter(::isVendorPrefix)
+        if (prefix.none { ruleHits(device, it) }) return false
+        val others = on.filterNot(::isVendorPrefix)
+        return if (fleet.matchAny) others.none { ruleHits(device, it) } else others.isEmpty()
+    }
+
+    private fun isVendorPrefix(rule: MatchRule): Boolean =
+        rule.kind == RuleKind.OUI || (rule.kind == RuleKind.MAC_PREFIX && rule.text.count { it.isLetterOrDigit() } <= 6)
+
     private fun ruleHits(device: Sighting, rule: MatchRule): Boolean {
         if (rule.kind != RuleKind.RADIO_KIND && rule.radio != null && device.kind != rule.radio) {
             return false

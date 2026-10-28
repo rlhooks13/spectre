@@ -77,6 +77,7 @@
 
 | Switch | State |
 |---|---|
+| `BLE_ADDRESS_CLASSIFIER` | off |
 | `IN_APP_CATALOG_UPDATE` | off |
 | `OTHER_SENSORS_LAYER` | off |
 <!-- generated: end -->

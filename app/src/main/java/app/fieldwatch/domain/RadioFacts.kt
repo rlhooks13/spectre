@@ -16,6 +16,10 @@ data class ServiceDataRecord(
     val dataHex: String,
 )
 
+/** An address type the stack actually decided (BleAdParser.addressTypeOf), not "Unknown" or an unnamed "Type N". */
+internal fun knownAddressType(type: String?): Boolean =
+    type != null && (type.equals("Public", true) || type.equals("Random", true) || type.equals("Anonymous", true))
+
 data class RadioFacts(
     val txPowerDbm: Int? = null,
     val advFlags: Int? = null,
@@ -42,7 +46,8 @@ data class RadioFacts(
         txPowerDbm = newer.txPowerDbm ?: txPowerDbm,
         advFlags = newer.advFlags ?: advFlags,
         appearance = newer.appearance ?: appearance,
-        addressType = newer.addressType ?: addressType,
+        // A known type (Public, Random, Anonymous) isn't replaced by a later "Unknown" or "Type N" (P1-B8).
+        addressType = if (knownAddressType(addressType) && !knownAddressType(newer.addressType)) addressType else newer.addressType ?: addressType,
         advertisingIntervalMs = newer.advertisingIntervalMs ?: advertisingIntervalMs,
         periodicIntervalMs = newer.periodicIntervalMs ?: periodicIntervalMs,
         // Scan responses report not connectable; keep Yes once any ad was.
